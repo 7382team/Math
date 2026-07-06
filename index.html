@@ -66,6 +66,9 @@
   .subj:not(.open) .subj-chev{transform:rotate(-90deg);}
   .subj-body{background:var(--card);border:1.5px solid var(--line);border-top:none;border-radius:0 0 16px 16px;padding:2px 16px 6px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);}
   .subj:not(.open) .subj-body{display:none;}
+  .subj-ver{display:flex;align-items:center;gap:10px;padding:12px 0 10px;border-bottom:1px dashed var(--line);margin-bottom:2px;}
+  .subj-ver .vl{font-size:12px;color:var(--muted);letter-spacing:1px;}
+  .subj-ver select{flex:1;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-family:inherit;font-size:14px;color:var(--ink);}
   .toggle{width:48px;height:28px;border-radius:99px;background:#d8d5c9;position:relative;transition:.2s;flex:none;} .toggle.on{background:var(--blue);} .toggle.off-disabled{opacity:.4;}
   .toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:99px;background:#fff;transition:.2s;} .toggle.on i{left:23px;}
   .cfg{margin-top:12px;padding:12px;background:#faf8f1;border-radius:12px;display:flex;flex-direction:column;gap:12px;}
@@ -93,6 +96,12 @@
   .mk .recheck input{flex:1;min-width:120px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:'Lexend',sans-serif;font-size:15px;background:#fff;}
   .mk .recheck button{background:var(--blue);color:#fff;border-radius:10px;padding:9px 14px;font-size:14px;}
   .mk .recheck .r{font-size:13px;width:100%;} .mk .recheck .r.ok{color:var(--ok);} .mk .recheck .r.no{color:var(--seal);}
+  .mk .mk-mc{display:flex;flex-wrap:wrap;gap:8px;width:100%;}
+  .mk .mkopt{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 13px;font-family:inherit;font-size:14px;color:var(--ink);cursor:pointer;transition:.12s;}
+  .mk .mkopt:active{transform:scale(.97);}
+  .mk .mkopt.ok{border-color:var(--ok);background:#eaf5ec;color:var(--ok);font-weight:600;}
+  .mk .mkopt.no{border-color:var(--seal);background:#fbeeec;color:var(--seal);}
+  .mk .mkopt:disabled{opacity:.5;cursor:default;}
   .auth-wrap{max-width:400px;margin:0 auto;padding:60px 20px;} .auth-brand{text-align:center;margin-bottom:30px;}
   .auth-brand .seal-mini{margin:0 auto 14px;width:60px;height:60px;font-size:34px;border-radius:12px;} .auth-brand h1{font-family:'Noto Serif TC',serif;font-size:26px;letter-spacing:2px;} .auth-brand p{color:var(--muted);font-size:13px;margin-top:8px;}
   .field{margin-bottom:12px;} .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
@@ -147,12 +156,7 @@
   </section>
 
   <section id="tab-units" class="hidden">
-    <div class="sec-label">課本版本</div>
-    <div class="card">
-      <div class="course-pick"><label>選擇孩子學校用的版本，單元會照那個順序排列</label><select class="course" id="course-select"></select></div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.6;">版本順序為參考值，可依實際課本調整。標「準備中」的單元做好後會自動開放。</div>
-    </div>
-    <div class="sec-label">單元 · 打開老師教過的，設每天題數</div>
+    <div class="sec-label">單元 · 打開老師教過的，設每天題數；各科可各自選版本</div>
     <div id="unit-list"></div>
   </section>
 
@@ -201,7 +205,7 @@ const todayStr=()=>fmtDate(new Date());
 const escapeHtml=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
 let UNITS=[], COURSES=[], MISTAKES=[], SUBJECTS=[], collapsedSubj={};
-let settings={display_name:"",course_id:"",reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]};
+let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]};
 let todayAct={}, calMonth=new Date(), playUnit=null, playLevel="mix", playPractice=false;
 
 function cfg(uid){ let g=settings.daily_goals[uid];
@@ -213,7 +217,25 @@ function enabledUnits(){ return settings.selected_units.filter(u=>settings.daily
 function val(uid,act){ return cfg(uid).mode==="correct"?(act?.correct||0):(act?.done||0); }
 function isRestDay(d){ return (settings.rest_days||[]).includes(d.getDay()); }
 
+/* 示範模式：?demo=1 跳過登入，用假後端 + 假資料，直接看得到單元、可點練習 */
+function makeDemoSb(){ const R=d=>Promise.resolve({data:d,error:null});
+  const chain={ select:()=>chain, eq:()=>chain, gte:()=>chain, lte:()=>chain, in:()=>chain, order:()=>chain, limit:()=>chain, update:()=>chain, delete:()=>chain,
+    maybeSingle:()=>R(null), single:()=>R(null), insert:()=>R(null), upsert:()=>R(null), then:(res,rej)=>R([]).then(res,rej) };
+  return { from:()=>chain, rpc:()=>R(null),
+    auth:{ getUser:()=>R(null).then(()=>({data:{user:{id:'demo',email:'示範模式（未登入）'}}})),
+      getSession:()=>Promise.resolve({data:{session:null}}), onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
+      signInWithPassword:()=>R(null), signUp:()=>R(null), signOut:()=>R(null) } };
+}
+async function bootDemo(){
+  sb=makeDemoSb(); await loadUnits(); await enterApp();
+  settings.display_name="示範"; settings.course_by_subject={};
+  settings.selected_units=["gcd-lcm","linear-eq","bio-cell"];
+  settings.daily_goals={"gcd-lcm":{target:5,mode:"attempts",level:"basic"},"linear-eq":{target:8,mode:"attempts",level:"mix"},"bio-cell":{target:6,mode:"attempts",level:"mix"}};
+  renderUnits(); await renderToday(); switchTab("units");
+}
+
 async function boot(){
+  if(new URLSearchParams(location.search).get("demo")==="1"){ return bootDemo(); }
   if(!CONFIGURED){ showAuth(); authMsg("err","尚未設定 Supabase，請先填入鑰匙。"); return; }
   await loadUnits();
   const {data:{session}}=await sb.auth.getSession();
@@ -238,18 +260,18 @@ async function enterApp(){
   await loadSettings(); await loadToday();
   const {data:{user}}=await sb.auth.getUser();
   $("me-email").textContent=user?.email||""; $("me-name").value=settings.display_name||""; $("me-reward").value=settings.reward_msg||"";
-  renderCourseSelect(); renderRestDays(); renderUnits(); await renderToday(); switchTab("today");
+  renderRestDays(); renderUnits(); await renderToday(); switchTab("today");
 }
 async function loadSettings(){
   const {data:{user}}=await sb.auth.getUser();
   const q=sb.from("settings").select("*");
   const {data}=await (user? q.eq("user_id",user.id).maybeSingle() : q.maybeSingle());
-  if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[]}; }
-  else { settings={display_name:"",course_id:"",reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]}; await saveSettings(); }
+  if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||(data.course_id?{"數學":data.course_id}:{}),reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[]}; }
+  else { settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]}; await saveSettings(); }
 }
 async function saveSettings(){
   const {data:{user}}=await sb.auth.getUser(); if(!user) return;
-  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,updated_at:new Date().toISOString()},{onConflict:"user_id"});
   if(error) console.warn("[settings.save] 失敗：",error.message);
 }
 async function loadToday(){ todayAct={}; const {data}=await sb.from("activity").select("*").eq("day",todayStr()); (data||[]).forEach(r=> todayAct[r.unit_id]={done:r.done,correct:r.correct}); }
@@ -303,14 +325,23 @@ $("play-back").onclick=async()=>{ $("play-frame").src="about:blank"; $("view-pla
 window.addEventListener("message",async ev=>{ const d=ev.data; if(!d||!playUnit) return;
   if(d.type==="unit-progress"){ const inc=d.unitDone||0,cor=d.unitCorrect||0,cur=todayAct[playUnit]||{done:0,correct:0}; cur.done+=inc; cur.correct+=cor; todayAct[playUnit]=cur; updateLive();
     try{ const {error}=await sb.rpc("log_activity",{p_day:todayStr(),p_unit:playUnit,p_done:inc,p_correct:cor}); if(error) console.warn("[log_activity] 記錄失敗：",error.message); }catch(e){ console.warn("[log_activity] 例外：",e.message); } }
-  else if(d.type==="unit-mistake"){ try{
-      let {error}=await sb.rpc("log_mistake",{p_unit:playUnit,p_q:d.q||"",p_ans:d.ans||"",p_given:d.given||"",p_explain:d.steps||"",p_tip:d.tip||""});
-      if(error && (error.code==="PGRST202"||/function|schema cache/i.test(error.message||""))){ // 後端還是舊的 4 參數版 → 退回相容呼叫（詳解暫不存，但錯題照記）
-        ({error}=await sb.rpc("log_mistake",{p_unit:playUnit,p_q:d.q||"",p_ans:d.ans||"",p_given:d.given||""}));
-      }
-      if(error) console.warn("[log_mistake] 記錄失敗：",error.message,"（可能是還沒建 mistakes 資料表）");
-    }catch(e){ console.warn("[log_mistake] 例外：",e.message); } }
+  else if(d.type==="unit-mistake"){ await logMistake({unit:playUnit,q:d.q||"",ans:d.ans||"",given:d.given||"",explain:d.steps||"",tip:d.tip||"",choices:d.choices||null}); }
 });
+// 依後端 log_mistake 版本自動相容：完整(含選項/詳解) → 詳解 → 基本。任一成功即停。
+async function logMistake(p){
+  const variants=[
+    {p_unit:p.unit,p_q:p.q,p_ans:p.ans,p_given:p.given,p_explain:p.explain,p_tip:p.tip,p_choices:p.choices},
+    {p_unit:p.unit,p_q:p.q,p_ans:p.ans,p_given:p.given,p_explain:p.explain,p_tip:p.tip},
+    {p_unit:p.unit,p_q:p.q,p_ans:p.ans,p_given:p.given}
+  ];
+  for(const args of variants){
+    try{ const {error}=await sb.rpc("log_mistake",args);
+      if(!error) return;
+      if(error.code!=="PGRST202" && !/function|schema cache/i.test(error.message||"")){ console.warn("[log_mistake] 記錄失敗：",error.message); return; }
+    }catch(e){ console.warn("[log_mistake] 例外：",e.message); return; }
+  }
+  console.warn("[log_mistake] 找不到相容的函式，請執行 supabase-setup.sql");
+}
 
 /* 月曆 */
 async function renderCal(){
@@ -346,7 +377,9 @@ function renderMistakes(){
       <div class="meta">你的答案：${escapeHtml(r.given||"—")} · 錯 ${r.count} 次</div>
       <div class="ans">正確答案：${escapeHtml(r.answer)}</div>
       ${r.explain?`<div class="detail"><div class="detail-label">詳解</div><div class="steps">${r.explain}</div>${r.tip?`<div class="d-tip">${escapeHtml(r.tip)}</div>`:``}</div>`:``}
-      <div class="recheck"><input id="mkin-${i}" inputmode="text" autocomplete="off" placeholder="再算一次，把答案打出來" onkeydown="if(event.key==='Enter')mkCheck(${i})"><button onclick="mkCheck(${i})">確認</button><span class="r" id="mkres-${i}"></span></div>
+      <div class="recheck">${Array.isArray(r.choices)&&r.choices.length
+        ? `<div class="mk-mc">${r.choices.map((c,ci)=>`<button class="mkopt" onclick="mkPick(${i},${ci})">${escapeHtml(c)}</button>`).join("")}</div>`
+        : `<input id="mkin-${i}" inputmode="text" autocomplete="off" placeholder="再算一次，把答案打出來" onkeydown="if(event.key==='Enter')mkCheck(${i})"><button onclick="mkCheck(${i})">確認</button>`}<span class="r" id="mkres-${i}"></span></div>
       <div class="acts"><button class="reveal-btn" onclick="mkReveal(${i})">看答案</button><button class="done-btn" id="mkdone-${i}" disabled onclick="mkDone(${i})">訂正完成</button></div></div>`; });
   box.innerHTML=html;
 }
@@ -358,6 +391,13 @@ function mkCheck(i){ const r=MISTAKES[i]; if(!r) return; const inp=$("mkin-"+i),
   if(v===mkNorm(r.answer)){ res.textContent="✓ 答對了，這題你會了！"; res.className="r ok"; inp.disabled=true; done.disabled=false; done.textContent="訂正完成 ✓"; }
   else { res.textContent="還不對，再想想，或先看答案～"; res.className="r no"; }
 }
+function mkPick(i,ci){ const r=MISTAKES[i]; if(!r||!Array.isArray(r.choices)) return; const res=$("mkres-"+i),done=$("mkdone-"+i);
+  const btns=[...document.querySelectorAll("#mk-"+i+" .mkopt")];
+  if(mkNorm(r.choices[ci])===mkNorm(r.answer)){ res.textContent="✓ 答對了，這題你會了！"; res.className="r ok";
+    btns.forEach((b,k)=>{ b.disabled=true; if(k===ci) b.classList.add("ok"); }); done.disabled=false; done.textContent="訂正完成 ✓"; }
+  else { res.textContent="還不對，再想想，或先看答案～"; res.className="r no";
+    const b=btns[ci]; if(b){ b.classList.add("no"); setTimeout(()=>b.classList.remove("no"),500); } }
+}
 async function mkDone(i){ const r=MISTAKES[i]; if(!r) return; const btn=$("mkdone-"+i); if(btn&&btn.disabled) return;
   const {error}=await sb.from("mistakes").delete().eq("unit_id",r.unit_id).eq("question",r.question);
   if(error){ console.warn("[mistakes.delete] 失敗：",error.message); return; }
@@ -368,14 +408,16 @@ async function mkDone(i){ const r=MISTAKES[i]; if(!r) return; const btn=$("mkdon
   if(!box.querySelector('.mk')){ MISTAKES=[]; renderMistakes(); }   // 全部訂正完 → 顯示空狀態
 }
 
-/* 單元 / 版本 */
-function currentCourse(){ return COURSES.find(c=>c.id===settings.course_id); }
-function orderUnits(ids){ const c=currentCourse(); if(!c||!c.sequence.length) return ids.slice(); const seq=c.sequence;
-  return ids.slice().sort((a,b)=>{ const ia=seq.indexOf(a),ib=seq.indexOf(b); return (ia<0?999:ia)-(ib<0?999:ib); }); }
-function orderedPool(){ const c=currentCourse(); if(!c||!c.sequence.length) return UNITS.slice();
-  const inSeq=c.sequence.map(id=>UNITS.find(u=>u.id===id)).filter(Boolean); const rest=UNITS.filter(u=>!c.sequence.includes(u.id)); return inSeq.concat(rest); }
-function renderCourseSelect(){ $("course-select").innerHTML=COURSES.map(c=>`<option value="${c.id}" ${c.id===settings.course_id?"selected":""}>${c.title}</option>`).join(""); }
-$("course-select").onchange=async e=>{ settings.course_id=e.target.value; await saveSettings(); renderUnits(); await renderToday(); };
+/* 單元 / 版本（每個科目各自選版本） */
+function subjIndex(s){ const i=SUBJECTS.findIndex(x=>x.id===s); return i<0?999:i; }
+function coursesForSubject(s){ return COURSES.filter(c=>c.subject===s); }
+function courseForSubject(s){ const id=(settings.course_by_subject||{})[s]; return id?COURSES.find(c=>c.id===id&&c.subject===s):null; }
+function seqIndex(uid,s){ const c=courseForSubject(s); if(!c||!c.sequence.length) return 900; const i=c.sequence.indexOf(uid); return i<0?899:i; }
+function orderUnits(ids){ return ids.slice().sort((a,b)=>{ const ua=unit(a),ub=unit(b);
+  const d=subjIndex(ua.subject)-subjIndex(ub.subject); if(d) return d; return seqIndex(a,ua.subject)-seqIndex(b,ub.subject); }); }
+async function setSubjectCourse(s,cid){ settings.course_by_subject=settings.course_by_subject||{};
+  if(cid) settings.course_by_subject[s]=cid; else delete settings.course_by_subject[s];
+  await saveSettings(); renderUnits(); await renderToday(); }
 
 function subjMeta(id){ return SUBJECTS.find(s=>s.id===id)||{id,icon:"📚",color:"#8a857b"}; }
 function toggleSubj(id){ collapsedSubj[id]=!collapsedSubj[id]; renderUnits(); }
@@ -390,18 +432,21 @@ function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id)
 }
 function renderUnits(){
   const box=$("unit-list"); if(UNITS.length===0){ box.innerHTML=`<div class="card"><div class="empty">找不到單元清單（units.json）。</div></div>`; return; }
-  const order=[], groups={};
-  orderedPool().forEach(u=>{ const s=u.subject||"其他"; if(!groups[s]){ groups[s]=[]; order.push(s); } groups[s].push(u); });
-  box.innerHTML=order.map(s=>{ const m=subjMeta(s), list=groups[s], open=!collapsedSubj[s];
+  const groups={}; UNITS.forEach(u=>{ const s=u.subject||"其他"; (groups[s]=groups[s]||[]).push(u); });
+  const order=Object.keys(groups).sort((a,b)=>subjIndex(a)-subjIndex(b));
+  box.innerHTML=order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
+    const list=groups[s].slice().sort((a,b)=>seqIndex(a.id,s)-seqIndex(b.id,s));
     const total=list.length, onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length, prep=list.filter(u=>!u.ready).length;
     const meta=`共 <span class="n">${total}</span> 單元`+(onCnt?`<span class="subj-dot" style="background:${m.color}"></span>${onCnt} 個排了任務`:``)+(prep?`<span class="subj-dot" style="background:${m.color}"></span>${prep} 個準備中`:``);
+    const courses=coursesForSubject(s), cur=(settings.course_by_subject||{})[s]||"";
+    const verBar=courses.length?`<div class="subj-ver"><span class="vl">版本</span><select onchange="setSubjectCourse('${s}',this.value)"><option value="">預設順序</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:``;
     return `<div class="subj ${open?'open':''}">
       <div class="subj-head" onclick="toggleSubj('${s}')">
         <div class="subj-ic" style="background:${m.color}1a;color:${m.color}">${m.icon}</div>
         <div class="subj-tt"><div class="nm">${s}</div><div class="mt">${meta}</div></div>
         <div class="subj-chev">▼</div>
       </div>
-      <div class="subj-body">${list.map(unitRow).join("")}</div>
+      <div class="subj-body">${verBar}${list.map(unitRow).join("")}</div>
     </div>`; }).join("");
 }
 async function toggleUnit(uid){ const i=settings.selected_units.indexOf(uid);

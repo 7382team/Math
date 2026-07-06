@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>細胞與生物體的組成 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#3f7d4e;   /* 生物：綠 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:19px;font-weight:500;line-height:1.6;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#eaf3ec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:14px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;opacity:.9;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>細胞與生物體的組成</h1><div class="sub">生物 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 題庫：原創題目（用自己的話重寫，選項自訂）。level: basic 基礎 / adv 進階 */
+const BANK=[
+ {level:'basic',q:'生物體構造與功能的基本單位是什麼？',choices:['細胞','組織','器官','器官系統'],answer:0,explain:'所有生物體都由細胞組成，細胞是構造與功能的最小單位。'},
+ {level:'basic',q:'細胞中負責控制生命活動、儲存遺傳物質的構造是？',choices:['細胞膜','細胞核','液泡','細胞壁'],answer:1,explain:'細胞核像細胞的「指揮中心」，內含 DNA，控制細胞的各種活動。'},
+ {level:'basic',q:'下列哪一個構造是植物細胞有、而動物細胞沒有的？',choices:['細胞膜','粒線體','細胞壁','細胞核'],answer:2,explain:'細胞壁（主成分纖維素）與葉綠體、大液泡是植物細胞特有的；動物細胞沒有細胞壁。'},
+ {level:'basic',q:'能進行光合作用、使葉子呈現綠色的胞器是？',choices:['葉綠體','粒線體','液泡','細胞核'],answer:0,explain:'葉綠體含葉綠素，能吸收光能進行光合作用，也讓植物呈綠色。'},
+ {level:'basic',q:'被稱為細胞「發電廠」、進行呼吸作用產生能量的胞器是？',choices:['細胞核','葉綠體','粒線體','細胞膜'],answer:2,explain:'粒線體進行呼吸作用，把養分分解釋放能量，供細胞使用。'},
+ {level:'basic',q:'負責控制物質進出、包住細胞內部的構造是？',choices:['細胞壁','細胞膜','細胞核','液泡'],answer:1,explain:'細胞膜具選擇性，能控制哪些物質進出細胞。植物在細胞膜外還多一層細胞壁。'},
+ {level:'basic',q:'植物細胞壁的主要成分是？',choices:['蛋白質','脂質','纖維素','葡萄糖'],answer:2,explain:'細胞壁主要由纖維素構成，堅韌而有支持、保護的作用。'},
+ {level:'basic',q:'觀察細胞這類微小構造，最常使用的儀器是？',choices:['放大鏡','顯微鏡','望遠鏡','溫度計'],answer:1,explain:'細胞非常小，需要用顯微鏡放大才能看清楚。'},
+ {level:'basic',q:'植物細胞中常佔很大空間、用來儲存水分和養分的構造是？',choices:['液泡','粒線體','葉綠體','細胞核'],answer:0,explain:'成熟植物細胞常有一個大液泡，儲存水分、養分並維持細胞飽滿。'},
+ {level:'basic',q:'下列何者是「單細胞生物」？',choices:['向日葵','青蛙','草履蟲','蚯蚓'],answer:2,explain:'草履蟲整個個體只由一個細胞組成，屬於單細胞生物；其餘皆為多細胞生物。'},
+ {level:'basic',q:'生物體的組成層次由小到大，排在「細胞」後面的是？',choices:['器官','組織','器官系統','個體'],answer:1,explain:'順序是：細胞→組織→器官→器官系統→個體。相同細胞聚在一起先形成組織。'},
+ {level:'basic',q:'動物細胞和植物細胞「都有」的構造是下列何者？',choices:['細胞壁','葉綠體','粒線體','大液泡'],answer:2,explain:'粒線體、細胞膜、細胞核、細胞質是兩者共同有的；細胞壁、葉綠體、大液泡則是植物特有。'},
+ {level:'adv',q:'生物體組成層次的正確順序（由小到大）是？',choices:['細胞→器官→組織→系統→個體','細胞→組織→器官→器官系統→個體','組織→細胞→器官→系統→個體','細胞→組織→系統→器官→個體'],answer:1,explain:'正確為 細胞→組織→器官→器官系統→個體。組織比器官小，系統比器官大。'},
+ {level:'adv',q:'心臟主要由肌肉組織等構成，能完成打出血液的功能。心臟屬於哪一個層次？',choices:['細胞','組織','器官','器官系統'],answer:2,explain:'由不同組織合作完成特定功能的構造稱為器官，心臟即為器官。'},
+ {level:'adv',q:'使用顯微鏡觀察時，正確的做法是？',choices:['一開始就用高倍物鏡','先用低倍找到物體，再換高倍','倍率越高視野越大','不需調整光線'],answer:1,explain:'低倍鏡視野大、較易找到目標，找到並移到中央後再換高倍看細節。'},
+ {level:'adv',q:'某顯微鏡目鏡為 10 倍、物鏡為 40 倍，總放大倍率是多少？',choices:['50 倍','400 倍','4 倍','140 倍'],answer:1,explain:'總放大倍率＝目鏡倍率×物鏡倍率＝10×40＝400 倍。'},
+ {level:'adv',q:'成熟紅血球沒有細胞核，其主要功能是？',choices:['進行光合作用','運送氧氣','消化食物','支持身體'],answer:1,explain:'紅血球含血紅素，負責運送氧氣；成熟後失去細胞核以容納更多血紅素。'},
+ {level:'adv',q:'把細胞比喻成一間工廠，下列配對何者最恰當？',choices:['細胞核像大門警衛','粒線體像發電廠','細胞膜像倉庫','液泡像指揮中心'],answer:1,explain:'粒線體產生能量，像發電廠；細胞核才是指揮中心，細胞膜像控制進出的大門。'},
+ {level:'adv',q:'觀察洋蔥表皮細胞時看不到葉綠體，最合理的原因是？',choices:['顯微鏡壞了','表皮細胞不行光合作用，本來就沒有葉綠體','葉綠體太大看不到','染色劑把葉綠體溶解了'],answer:1,explain:'洋蔥鱗葉表皮不見光、不行光合作用，因此不含葉綠體，並非儀器問題。'},
+ {level:'adv',q:'物質從濃度高的地方往濃度低的地方移動，這種現象稱為？',choices:['擴散','燃燒','蒸發','凝結'],answer:0,explain:'擴散是物質由高濃度往低濃度自然移動，細胞就是靠擴散進行部分物質交換。'},
+ {level:'adv',q:'下列何者「不是」細胞內的胞器？',choices:['粒線體','葉綠體','組織','細胞核'],answer:2,explain:'組織是「許多細胞」聚集而成的層次，比細胞大，不是細胞內的胞器。'},
+ {level:'adv',q:'關於動物細胞與植物細胞的比較，下列敘述何者正確？',choices:['動物細胞有細胞壁','植物細胞沒有細胞膜','植物細胞有葉綠體，動物細胞沒有','兩者都沒有細胞核'],answer:2,explain:'葉綠體為植物特有；細胞膜與細胞核兩者皆有；細胞壁則是植物才有。'}
+];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=BANK[i]; render(); }
+
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  const go=document.getElementById('go'); go.disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:''}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-4]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+</body>
+</html>
