@@ -241,12 +241,16 @@ async function enterApp(){
   renderCourseSelect(); renderRestDays(); renderUnits(); await renderToday(); switchTab("today");
 }
 async function loadSettings(){
-  const {data}=await sb.from("settings").select("*").maybeSingle();
+  const {data:{user}}=await sb.auth.getUser();
+  const q=sb.from("settings").select("*");
+  const {data}=await (user? q.eq("user_id",user.id).maybeSingle() : q.maybeSingle());
   if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[]}; }
-  else { await sb.from("settings").insert({}); settings={display_name:"",course_id:"",reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]}; }
+  else { settings={display_name:"",course_id:"",reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]}; await saveSettings(); }
 }
 async function saveSettings(){
-  await sb.from("settings").upsert({display_name:settings.display_name,course_id:settings.course_id,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,updated_at:new Date().toISOString()});
+  const {data:{user}}=await sb.auth.getUser(); if(!user) return;
+  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  if(error) console.warn("[settings.save] 失敗：",error.message);
 }
 async function loadToday(){ todayAct={}; const {data}=await sb.from("activity").select("*").eq("day",todayStr()); (data||[]).forEach(r=> todayAct[r.unit_id]={done:r.done,correct:r.correct}); }
 
@@ -299,7 +303,13 @@ $("play-back").onclick=async()=>{ $("play-frame").src="about:blank"; $("view-pla
 window.addEventListener("message",async ev=>{ const d=ev.data; if(!d||!playUnit) return;
   if(d.type==="unit-progress"){ const inc=d.unitDone||0,cor=d.unitCorrect||0,cur=todayAct[playUnit]||{done:0,correct:0}; cur.done+=inc; cur.correct+=cor; todayAct[playUnit]=cur; updateLive();
     try{ const {error}=await sb.rpc("log_activity",{p_day:todayStr(),p_unit:playUnit,p_done:inc,p_correct:cor}); if(error) console.warn("[log_activity] 記錄失敗：",error.message); }catch(e){ console.warn("[log_activity] 例外：",e.message); } }
-  else if(d.type==="unit-mistake"){ try{ const {error}=await sb.rpc("log_mistake",{p_unit:playUnit,p_q:d.q||"",p_ans:d.ans||"",p_given:d.given||"",p_explain:d.steps||"",p_tip:d.tip||""}); if(error) console.warn("[log_mistake] 記錄失敗：",error.message,"（很可能是 Supabase 沒建 mistakes 資料表或 log_mistake 函式，或函式還是舊版沒有 p_explain 參數）"); }catch(e){ console.warn("[log_mistake] 例外：",e.message); } }
+  else if(d.type==="unit-mistake"){ try{
+      let {error}=await sb.rpc("log_mistake",{p_unit:playUnit,p_q:d.q||"",p_ans:d.ans||"",p_given:d.given||"",p_explain:d.steps||"",p_tip:d.tip||""});
+      if(error && (error.code==="PGRST202"||/function|schema cache/i.test(error.message||""))){ // 後端還是舊的 4 參數版 → 退回相容呼叫（詳解暫不存，但錯題照記）
+        ({error}=await sb.rpc("log_mistake",{p_unit:playUnit,p_q:d.q||"",p_ans:d.ans||"",p_given:d.given||""}));
+      }
+      if(error) console.warn("[log_mistake] 記錄失敗：",error.message,"（可能是還沒建 mistakes 資料表）");
+    }catch(e){ console.warn("[log_mistake] 例外：",e.message); } }
 });
 
 /* 月曆 */
