@@ -69,7 +69,8 @@
   .subj-ver{display:flex;align-items:center;gap:10px;padding:12px 0 10px;border-bottom:1px dashed var(--line);margin-bottom:2px;}
   .subj-ver .vl{font-size:12px;color:var(--muted);letter-spacing:1px;}
   .subj-ver select{flex:1;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-family:inherit;font-size:14px;color:var(--ink);}
-  .toggle{width:48px;height:28px;border-radius:99px;background:#d8d5c9;position:relative;transition:.2s;flex:none;} .toggle.on{background:var(--blue);} .toggle.off-disabled{opacity:.4;}
+  .toggle{width:48px;height:28px;border-radius:99px;background:#d8d5c9;position:relative;transition:.2s;flex:none;} .toggle.on{background:var(--blue);} .toggle.off-disabled{opacity:.4;} .toggle.ro{opacity:.55;pointer-events:none;}
+  .lockbar{background:#fbeeec;border:1.5px solid #f0d5d1;color:var(--seal);border-radius:12px;padding:10px 13px;font-size:13px;line-height:1.5;margin-bottom:12px;}
   .toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:99px;background:#fff;transition:.2s;} .toggle.on i{left:23px;}
   .cfg{margin-top:12px;padding:12px;background:#faf8f1;border-radius:12px;display:flex;flex-direction:column;gap:12px;}
   .cfg-row{display:flex;align-items:center;justify-content:space-between;gap:10px;} .cfg-row .lbl{font-size:13px;color:var(--muted);}
@@ -89,6 +90,7 @@
   .mk .detail .steps .lead{color:var(--muted);font-size:12px;margin-right:6px;}
   .mk .detail .steps .pos{color:var(--blue);font-weight:600;} .mk .detail .steps .neg{color:var(--orange);font-weight:600;} .mk .detail .steps .res{color:var(--ok);font-weight:700;}
   .mk .detail .d-tip{margin-top:8px;font-size:12px;color:var(--muted);background:#faf8f1;border-radius:8px;padding:8px 10px;line-height:1.6;}
+  .mk-head{font-size:13px;color:var(--muted);margin:2px 2px 14px;} .mk-head b{color:var(--seal);font-family:'Lexend',sans-serif;font-weight:700;}
   .mk .acts{display:flex;gap:8px;margin-top:12px;} .mk .reveal-btn{flex:1;background:#eceadf;border-radius:10px;padding:10px;font-size:14px;color:var(--ink);}
   .mk .done-btn{background:var(--ink);color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;}
   .mk .done-btn:disabled{opacity:.4;}
@@ -151,7 +153,7 @@
   </section>
 
   <section id="tab-wrong" class="hidden">
-    <div class="sec-label">錯題本 · 把答錯的題目再看一遍</div>
+    <div class="sec-label">錯題本 · 間隔複習，答對才會拉長下次出現的間隔</div>
     <div id="mistake-list"></div>
   </section>
 
@@ -161,18 +163,29 @@
   </section>
 
   <section id="tab-me" class="hidden">
-    <div class="card">
-      <div class="field"><label>顯示名稱</label><input id="me-name" type="text" placeholder="孩子的名字"></div>
-      <div class="field"><label>完成獎勵訊息（當天全部做完時跳出）</label><textarea class="reward-in" id="me-reward" placeholder="例如：今天全部完成，可以看 30 分鐘卡通！"></textarea></div>
-      <button class="primary" id="me-save">儲存</button>
+    <div id="me-lock" class="card hidden" style="text-align:center;">
+      <div style="font-size:34px;margin-bottom:2px;">🔒</div>
+      <div class="sec-label" style="letter-spacing:2px;">家長專區</div>
+      <div style="color:var(--muted);font-size:13px;margin:6px 0 14px;line-height:1.6;">要修改單元、每日題數、獎勵等設定，<br>請輸入家長 PIN。孩子平常可正常練習與複習。</div>
+      <input id="me-pin-in" inputmode="numeric" maxlength="8" placeholder="PIN" style="width:170px;text-align:center;letter-spacing:8px;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:20px;">
+      <button class="primary" id="me-pin-unlock" style="margin-top:12px;">解鎖設定</button>
+      <div id="me-pin-msg" class="msg" style="margin-top:10px;display:none;"></div>
     </div>
-    <div class="card">
-      <div class="sec-label" style="margin:0 0 10px">休息日（這幾天不排任務，也不會中斷連續紀錄）</div>
-      <div class="restdays" id="restdays"></div>
-    </div>
-    <div class="card" style="text-align:center;">
-      <div id="me-email" style="color:var(--muted);font-size:13px;margin-bottom:14px;"></div>
-      <button class="back" id="me-logout" style="display:inline-block;">登出</button>
+    <div id="me-body">
+      <div class="card">
+        <div class="field"><label>顯示名稱</label><input id="me-name" type="text" placeholder="孩子的名字"></div>
+        <div class="field"><label>完成獎勵訊息（當天全部做完時跳出）</label><textarea class="reward-in" id="me-reward" placeholder="例如：今天全部完成，可以看 30 分鐘卡通！"></textarea></div>
+        <button class="primary" id="me-save">儲存</button>
+      </div>
+      <div class="card">
+        <div class="sec-label" style="margin:0 0 10px">休息日（這幾天不排任務，也不會中斷連續紀錄）</div>
+        <div class="restdays" id="restdays"></div>
+      </div>
+      <div class="card" id="me-pin-card"></div>
+      <div class="card" style="text-align:center;">
+        <div id="me-email" style="color:var(--muted);font-size:13px;margin-bottom:14px;"></div>
+        <button class="back" id="me-logout" style="display:inline-block;">登出</button>
+      </div>
     </div>
   </section>
 </div>
@@ -205,8 +218,8 @@ const todayStr=()=>fmtDate(new Date());
 const escapeHtml=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
 let UNITS=[], COURSES=[], MISTAKES=[], SUBJECTS=[], collapsedSubj={};
-let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]};
-let todayAct={}, calMonth=new Date(), playUnit=null, playLevel="mix", playPractice=false;
+let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:""};
+let todayAct={}, calMonth=new Date(), playUnit=null, playLevel="mix", playPractice=false, parentUnlocked=false;
 
 function cfg(uid){ let g=settings.daily_goals[uid];
   if(g==null) return {target:10,mode:"attempts",level:"mix"};
@@ -260,18 +273,18 @@ async function enterApp(){
   await loadSettings(); await loadToday();
   const {data:{user}}=await sb.auth.getUser();
   $("me-email").textContent=user?.email||""; $("me-name").value=settings.display_name||""; $("me-reward").value=settings.reward_msg||"";
-  renderRestDays(); renderUnits(); await renderToday(); switchTab("today");
+  renderRestDays(); renderMe(); renderUnits(); await renderToday(); switchTab("today");
 }
 async function loadSettings(){
   const {data:{user}}=await sb.auth.getUser();
   const q=sb.from("settings").select("*");
   const {data}=await (user? q.eq("user_id",user.id).maybeSingle() : q.maybeSingle());
-  if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||(data.course_id?{"數學":data.course_id}:{}),reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[]}; }
-  else { settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[]}; await saveSettings(); }
+  if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||(data.course_id?{"數學":data.course_id}:{}),reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],parent_pin:data.parent_pin||""}; }
+  else { settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:""}; await saveSettings(); }
 }
 async function saveSettings(){
   const {data:{user}}=await sb.auth.getUser(); if(!user) return;
-  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,parent_pin:settings.parent_pin,updated_at:new Date().toISOString()},{onConflict:"user_id"});
   if(error) console.warn("[settings.save] 失敗：",error.message);
 }
 async function loadToday(){ todayAct={}; const {data}=await sb.from("activity").select("*").eq("day",todayStr()); (data||[]).forEach(r=> todayAct[r.unit_id]={done:r.done,correct:r.correct}); }
@@ -367,12 +380,17 @@ $("cal-prev").onclick=()=>{calMonth.setMonth(calMonth.getMonth()-1);renderCal();
 $("cal-next").onclick=()=>{calMonth.setMonth(calMonth.getMonth()+1);renderCal();};
 
 /* 錯題本 */
-async function loadMistakes(){ const {data}=await sb.from("mistakes").select("*"); MISTAKES=(data||[]).sort((a,b)=> a.unit_id<b.unit_id?-1:a.unit_id>b.unit_id?1:0); renderMistakes(); }
+async function loadMistakes(){ const {data}=await sb.from("mistakes").select("*"); MISTAKES=(data||[]).sort((a,b)=> a.unit_id<b.unit_id?-1:a.unit_id>b.unit_id?1:0); mkFirst={}; renderMistakes(); }
 function renderMistakes(){
-  const box=$("mistake-list");
-  if(MISTAKES.filter(Boolean).length===0){ box.innerHTML=`<div class="card"><div class="empty">目前沒有錯題，太棒了！<br>之後練習答錯的題目會自動收在這裡。</div></div>`; return; }
-  let html="",lastU=null;
-  MISTAKES.forEach((r,i)=>{ if(!r) return; if(r.unit_id!==lastU){ html+=`<div class="mk-unit" data-grp="${r.unit_id}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span>${unit(r.unit_id).title}</span>${unit(r.unit_id).ready?`<button class="start" style="padding:6px 12px;font-size:12px;" onclick="practice('${r.unit_id}')">去練這單元</button>`:``}</div>`; lastU=r.unit_id; }
+  const box=$("mistake-list"), today=todayStr();
+  const all=MISTAKES.filter(Boolean);
+  if(all.length===0){ box.innerHTML=`<div class="card"><div class="empty">目前沒有錯題，太棒了！<br>之後練習答錯的題目會自動收在這裡，並依「間隔複習」定期回來考你。</div></div>`; return; }
+  const due=all.filter(r=>(r.due||today)<=today), later=all.filter(r=>(r.due||today)>today);
+  if(due.length===0){ const nx=later.map(r=>r.due).filter(Boolean).sort()[0];
+    box.innerHTML=`<div class="card"><div class="empty">今天沒有要複習的錯題，太棒了！🎉<br>還有 <b>${later.length}</b> 題排在後面${nx?`，最近一題 ${nx.slice(5).replace("-","/")} 回來`:""}。</div></div>`; return; }
+  let html=`<div class="mk-head">今天要複習 <b>${due.length}</b> 題${later.length?` · 之後還有 ${later.length} 題`:""}</div>`, lastU=null;
+  MISTAKES.forEach((r,i)=>{ if(!r||(r.due||today)>today) return;
+    if(r.unit_id!==lastU){ html+=`<div class="mk-unit" data-grp="${r.unit_id}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span>${unit(r.unit_id).title}</span>${unit(r.unit_id).ready?`<button class="start" style="padding:6px 12px;font-size:12px;" onclick="practice('${r.unit_id}')">去練這單元</button>`:``}</div>`; lastU=r.unit_id; }
     html+=`<div class="mk" id="mk-${i}" data-uid="${r.unit_id}"><div class="q">${escapeHtml(r.question)}</div>
       <div class="meta">你的答案：${escapeHtml(r.given||"—")} · 錯 ${r.count} 次</div>
       <div class="ans">正確答案：${escapeHtml(r.answer)}</div>
@@ -380,32 +398,53 @@ function renderMistakes(){
       <div class="recheck">${Array.isArray(r.choices)&&r.choices.length
         ? `<div class="mk-mc">${r.choices.map((c,ci)=>`<button class="mkopt" onclick="mkPick(${i},${ci})">${escapeHtml(c)}</button>`).join("")}</div>`
         : `<input id="mkin-${i}" inputmode="text" autocomplete="off" placeholder="再算一次，把答案打出來" onkeydown="if(event.key==='Enter')mkCheck(${i})"><button onclick="mkCheck(${i})">確認</button>`}<span class="r" id="mkres-${i}"></span></div>
-      <div class="acts"><button class="reveal-btn" onclick="mkReveal(${i})">看答案</button><button class="done-btn" id="mkdone-${i}" disabled onclick="mkDone(${i})">訂正完成</button></div></div>`; });
+      <div class="acts"><button class="reveal-btn" onclick="mkReveal(${i})">看答案</button><button class="done-btn" id="mkdone-${i}" disabled onclick="mkDone(${i})">完成複習</button></div></div>`; });
   box.innerHTML=html;
 }
 function mkReveal(i){ const el=$("mk-"+i); if(el) el.classList.toggle("reveal"); }
 function mkNorm(s){ return (s||"").replace(/[−–—]/g,"-").replace(/\s+/g,"").toLowerCase(); }
-function mkCheck(i){ const r=MISTAKES[i]; if(!r) return; const inp=$("mkin-"+i),res=$("mkres-"+i),done=$("mkdone-"+i);
+
+/* 間隔重複（Leitner）：答對 box+1、間隔 1→2→4→8 天；超過即精熟移除。答錯 box 歸零、明天再來。 */
+const SR_INTERVALS=[1,2,4,8];
+let mkFirst={};   // 每張卡「第一次作答」的對錯，決定排程（loadMistakes 時重置）
+function srAddDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return fmtDate(d); }
+function srDaysUntil(due){ if(!due) return 0; return Math.round((new Date(due+"T00:00:00")-new Date(todayStr()+"T00:00:00"))/86400000); }
+async function srSchedule(i,correct){ const r=MISTAKES[i]; if(!r) return;
+  if(correct){ const nb=(r.box||0)+1;
+    if(nb>SR_INTERVALS.length){ r._graduate=true; return; }
+    r.box=nb; r.due=srAddDays(SR_INTERVALS[nb-1]); }
+  else { r.box=0; r.due=srAddDays(1); }
+  try{ await sb.from("mistakes").update({box:r.box,due:r.due}).eq("unit_id",r.unit_id).eq("question",r.question); }catch(e){ console.warn("[sr.update]",e.message); }
+}
+function mkResolve(i,correct){ const r=MISTAKES[i]; if(!r) return; const res=$("mkres-"+i),done=$("mkdone-"+i);
+  if(mkFirst[i]===undefined){ mkFirst[i]=correct; srSchedule(i,correct); }   // 只有第一次作答決定排程
+  if(correct){
+    if(r._graduate){ res.textContent="✓ 答對！這題已經精熟，完成後移出錯題本 🎉"; done.textContent="完成 · 移除"; }
+    else { const d=Math.max(1,srDaysUntil(r.due)); res.textContent=`✓ 答對！${d} 天後會再考你一次`; done.textContent="完成複習 ✓"; }
+    res.className="r ok"; done.disabled=false;
+  } else { res.textContent="還不對～先看詳解、再選一次（明天會再出現一次）"; res.className="r no"; }
+}
+function mkCheck(i){ const r=MISTAKES[i]; if(!r) return; const inp=$("mkin-"+i),res=$("mkres-"+i);
   const v=mkNorm(inp.value);
   if(v===""){ res.textContent="先算出答案再打進來"; res.className="r no"; return; }
-  if(v===mkNorm(r.answer)){ res.textContent="✓ 答對了，這題你會了！"; res.className="r ok"; inp.disabled=true; done.disabled=false; done.textContent="訂正完成 ✓"; }
-  else { res.textContent="還不對，再想想，或先看答案～"; res.className="r no"; }
+  const correct=(v===mkNorm(r.answer)); if(correct) inp.disabled=true;
+  mkResolve(i,correct);
 }
-function mkPick(i,ci){ const r=MISTAKES[i]; if(!r||!Array.isArray(r.choices)) return; const res=$("mkres-"+i),done=$("mkdone-"+i);
+function mkPick(i,ci){ const r=MISTAKES[i]; if(!r||!Array.isArray(r.choices)) return;
   const btns=[...document.querySelectorAll("#mk-"+i+" .mkopt")];
-  if(mkNorm(r.choices[ci])===mkNorm(r.answer)){ res.textContent="✓ 答對了，這題你會了！"; res.className="r ok";
-    btns.forEach((b,k)=>{ b.disabled=true; if(k===ci) b.classList.add("ok"); }); done.disabled=false; done.textContent="訂正完成 ✓"; }
-  else { res.textContent="還不對，再想想，或先看答案～"; res.className="r no";
-    const b=btns[ci]; if(b){ b.classList.add("no"); setTimeout(()=>b.classList.remove("no"),500); } }
+  const correct=(mkNorm(r.choices[ci])===mkNorm(r.answer));
+  if(correct){ btns.forEach((b,k)=>{ b.disabled=true; if(k===ci) b.classList.add("ok"); }); }
+  else { const b=btns[ci]; if(b){ b.classList.add("no"); setTimeout(()=>b.classList.remove("no"),500); } }
+  mkResolve(i,correct);
 }
 async function mkDone(i){ const r=MISTAKES[i]; if(!r) return; const btn=$("mkdone-"+i); if(btn&&btn.disabled) return;
-  const {error}=await sb.from("mistakes").delete().eq("unit_id",r.unit_id).eq("question",r.question);
-  if(error){ console.warn("[mistakes.delete] 失敗：",error.message); return; }
-  const uid=r.unit_id; MISTAKES[i]=null;              // 只移除這一張，不整個重畫（保住其他卡片已填的答案）
-  const card=$("mk-"+i); if(card) card.remove();
+  if(r._graduate){ const {error}=await sb.from("mistakes").delete().eq("unit_id",r.unit_id).eq("question",r.question);
+    if(error){ console.warn("[mistakes.delete] 失敗：",error.message); return; } MISTAKES[i]=null; }
+  // 非精熟：DB 已排到未來（srSchedule），保留在清單供之後複習，只移除今天這張卡
+  const uid=r.unit_id, card=$("mk-"+i); if(card) card.remove();
   const box=$("mistake-list");
-  if(!box.querySelector('.mk[data-uid="'+uid+'"]')){ const h=box.querySelector('[data-grp="'+uid+'"]'); if(h) h.remove(); } // 該單元最後一題也訂正完 → 收掉標題
-  if(!box.querySelector('.mk')){ MISTAKES=[]; renderMistakes(); }   // 全部訂正完 → 顯示空狀態
+  if(!box.querySelector('.mk[data-uid="'+uid+'"]')){ const h=box.querySelector('[data-grp="'+uid+'"]'); if(h) h.remove(); }
+  if(!box.querySelector('.mk')){ renderMistakes(); }   // 今天複習完 → 顯示「今天沒有要複習」或空狀態
 }
 
 /* 單元 / 版本（每個科目各自選版本） */
@@ -421,10 +460,11 @@ async function setSubjectCourse(s,cid){ settings.course_by_subject=settings.cour
 
 function subjMeta(id){ return SUBJECTS.find(s=>s.id===id)||{id,icon:"📚",color:"#8a857b"}; }
 function toggleSubj(id){ collapsedSubj[id]=!collapsedSubj[id]; renderUnits(); }
-function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id);
+function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id),locked=parentLocked();
   if(!u.ready){ return `<div class="unit"><div class="unit-head"><div class="toggle off-disabled"><i></i></div><div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||""}</div></div><span class="badge">準備中</span></div></div>`; }
-  return `<div class="unit"><div class="unit-head"><div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div><div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||u.subject||""} ${u.grade||""}</div></div><button class="start" style="padding:8px 14px;font-size:13px;" onclick="practice('${u.id}')">練習</button></div>
-    ${on?`<div class="cfg">
+  const toggle=locked?`<div class="toggle ${on?'on':''} ro"><i></i></div>`:`<div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div>`;
+  return `<div class="unit"><div class="unit-head">${toggle}<div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||u.subject||""} ${u.grade||""}</div></div><button class="start" style="padding:8px 14px;font-size:13px;" onclick="practice('${u.id}')">練習</button></div>
+    ${(on&&!locked)?`<div class="cfg">
       <div class="cfg-row"><span class="lbl">每天目標</span><input class="goal-in num" type="number" min="1" value="${c.target}" onchange="setGoal('${u.id}',this.value)"></div>
       <div class="cfg-row"><span class="lbl">計算方式</span><div class="seg"><button class="${c.mode==='attempts'?'on':''}" onclick="setMode('${u.id}','attempts')">做題數</button><button class="${c.mode==='correct'?'on':''}" onclick="setMode('${u.id}','correct')">答對數</button></div></div>
       <div class="cfg-row"><span class="lbl">難度</span><div class="seg"><button class="${c.level==='basic'?'on':''}" onclick="setLevel('${u.id}','basic')">基礎</button><button class="${c.level==='adv'?'on':''}" onclick="setLevel('${u.id}','adv')">進階</button><button class="${c.level==='mix'?'on':''}" onclick="setLevel('${u.id}','mix')">混合</button></div></div>
@@ -432,14 +472,16 @@ function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id)
 }
 function renderUnits(){
   const box=$("unit-list"); if(UNITS.length===0){ box.innerHTML=`<div class="card"><div class="empty">找不到單元清單（units.json）。</div></div>`; return; }
+  const locked=parentLocked();
+  const lockbar=locked?`<div class="lockbar">🔒 家長設定已鎖定 · 到「我」分頁輸入 PIN 才能改單元／題數（練習不受影響）</div>`:``;
   const groups={}; UNITS.forEach(u=>{ const s=u.subject||"其他"; (groups[s]=groups[s]||[]).push(u); });
   const order=Object.keys(groups).sort((a,b)=>subjIndex(a)-subjIndex(b));
-  box.innerHTML=order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
+  box.innerHTML=lockbar+order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
     const list=groups[s].slice().sort((a,b)=>seqIndex(a.id,s)-seqIndex(b.id,s));
     const total=list.length, onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length, prep=list.filter(u=>!u.ready).length;
     const meta=`共 <span class="n">${total}</span> 單元`+(onCnt?`<span class="subj-dot" style="background:${m.color}"></span>${onCnt} 個排了任務`:``)+(prep?`<span class="subj-dot" style="background:${m.color}"></span>${prep} 個準備中`:``);
     const courses=coursesForSubject(s), cur=(settings.course_by_subject||{})[s]||"";
-    const verBar=courses.length?`<div class="subj-ver"><span class="vl">版本</span><select onchange="setSubjectCourse('${s}',this.value)"><option value="">預設順序</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:``;
+    const verBar=(!locked&&courses.length)?`<div class="subj-ver"><span class="vl">版本</span><select onchange="setSubjectCourse('${s}',this.value)"><option value="">預設順序</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:``;
     return `<div class="subj ${open?'open':''}">
       <div class="subj-head" onclick="toggleSubj('${s}')">
         <div class="subj-ic" style="background:${m.color}1a;color:${m.color}">${m.icon}</div>
@@ -449,25 +491,59 @@ function renderUnits(){
       <div class="subj-body">${verBar}${list.map(unitRow).join("")}</div>
     </div>`; }).join("");
 }
-async function toggleUnit(uid){ const i=settings.selected_units.indexOf(uid);
+async function toggleUnit(uid){ if(parentLocked()) return; const i=settings.selected_units.indexOf(uid);
   if(i>=0){ settings.selected_units.splice(i,1); delete settings.daily_goals[uid]; }
   else { settings.selected_units.push(uid); if(settings.daily_goals[uid]==null) settings.daily_goals[uid]={target:10,mode:"attempts",level:"mix"}; }
   await saveSettings(); renderUnits(); await renderToday(); }
 function writeCfg(uid,patch){ settings.daily_goals[uid]={...cfg(uid),...patch}; }
-async function setGoal(uid,v){ writeCfg(uid,{target:Math.max(1,parseInt(v)||1)}); await saveSettings(); await renderToday(); }
-async function setMode(uid,mode){ writeCfg(uid,{mode}); await saveSettings(); renderUnits(); await renderToday(); }
-async function setLevel(uid,level){ writeCfg(uid,{level}); await saveSettings(); renderUnits(); await renderToday(); }
+async function setGoal(uid,v){ if(parentLocked()) return; writeCfg(uid,{target:Math.max(1,parseInt(v)||1)}); await saveSettings(); await renderToday(); }
+async function setMode(uid,mode){ if(parentLocked()) return; writeCfg(uid,{mode}); await saveSettings(); renderUnits(); await renderToday(); }
+async function setLevel(uid,level){ if(parentLocked()) return; writeCfg(uid,{level}); await saveSettings(); renderUnits(); await renderToday(); }
 
+/* 家長 PIN（軟鎖：把設定類的操作鎖在家長 PIN 後，孩子只能練習/複習/看進度） */
+function pinHash(s){ s=String(s); let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))>>>0; return "p"+h.toString(16); }
+function parentLocked(){ return !!settings.parent_pin && !parentUnlocked; }
+function pinLock(){ parentUnlocked=false; renderMe(); renderUnits(); }
+function pinUnlock(){ const v=($("me-pin-in").value||"").trim(), msg=$("me-pin-msg");
+  if(pinHash(v)===settings.parent_pin){ parentUnlocked=true; renderMe(); renderUnits(); }
+  else { msg.textContent="PIN 不對，再試一次"; msg.className="msg err"; msg.style.display="block"; } }
+async function pinSet(){ const el=$("me-pin-new"); if(!el) return; const v=(el.value||"").trim();
+  if(settings.parent_pin && v===""){ settings.parent_pin=""; await saveSettings(); renderMe(); renderUnits(); return; }  // 留空＝移除
+  if(!/^\d{4,8}$/.test(v)){ alert("請輸入 4~8 位數字的 PIN"); return; }
+  settings.parent_pin=pinHash(v); parentUnlocked=true; await saveSettings(); renderMe(); renderUnits(); }
+function renderMe(){ const locked=parentLocked();
+  $("me-lock").classList.toggle("hidden",!locked); $("me-body").classList.toggle("hidden",locked);
+  if(locked){ $("me-pin-in").value=""; const m=$("me-pin-msg"); m.style.display="none"; return; }
+  const has=!!settings.parent_pin;
+  $("me-pin-card").innerHTML = has
+    ? `<div class="sec-label" style="margin:0 0 8px">家長 PIN</div>
+       <div style="color:var(--muted);font-size:13px;margin-bottom:12px;line-height:1.6;">設定目前已解鎖。離開前按「鎖定」，孩子就無法修改設定。</div>
+       <button class="primary" id="me-lock-btn">🔒 鎖定設定</button>
+       <button class="link-btn" id="me-pin-change">變更或移除 PIN</button>
+       <div id="me-pin2" class="hidden">
+         <input id="me-pin-new" inputmode="numeric" maxlength="8" placeholder="新 PIN（留空＝移除鎖定）" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:16px;letter-spacing:4px;text-align:center;">
+         <button class="primary" id="me-pin-save2" style="margin-top:8px;">儲存</button>
+       </div>`
+    : `<div class="sec-label" style="margin:0 0 8px">家長 PIN（尚未設定）</div>
+       <div style="color:var(--muted);font-size:13px;margin-bottom:12px;line-height:1.6;">設定一組 PIN 後，單元、每日題數、難度、版本、獎勵等會被鎖住，孩子只能練習與複習。</div>
+       <input id="me-pin-new" inputmode="numeric" maxlength="8" placeholder="設定 PIN（4~8 位數字）" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:16px;letter-spacing:4px;text-align:center;">
+       <button class="primary" id="me-pin-save2" style="margin-top:8px;">設定 PIN</button>`;
+  const lb=$("me-lock-btn"); if(lb) lb.onclick=pinLock;
+  const ch=$("me-pin-change"); if(ch) ch.onclick=()=>$("me-pin2").classList.toggle("hidden");
+  const sv=$("me-pin-save2"); if(sv) sv.onclick=pinSet;
+}
 /* 我 / 休息日 */
 function renderRestDays(){ $("restdays").innerHTML=WD.map((w,i)=>`<div class="rd ${(settings.rest_days||[]).includes(i)?'on':''}" onclick="toggleRest(${i})">${w}</div>`).join(""); }
-async function toggleRest(i){ const arr=settings.rest_days||[]; const p=arr.indexOf(i); if(p>=0) arr.splice(p,1); else arr.push(i); settings.rest_days=arr; await saveSettings(); renderRestDays(); await renderToday(); }
-$("me-save").onclick=async()=>{ settings.display_name=$("me-name").value.trim(); settings.reward_msg=$("me-reward").value.trim(); await saveSettings(); await renderToday(); $("me-save").textContent="已儲存"; setTimeout(()=>$("me-save").textContent="儲存",1200); };
+async function toggleRest(i){ if(parentLocked()) return; const arr=settings.rest_days||[]; const p=arr.indexOf(i); if(p>=0) arr.splice(p,1); else arr.push(i); settings.rest_days=arr; await saveSettings(); renderRestDays(); await renderToday(); }
+$("me-save").onclick=async()=>{ if(parentLocked()) return; settings.display_name=$("me-name").value.trim(); settings.reward_msg=$("me-reward").value.trim(); await saveSettings(); await renderToday(); $("me-save").textContent="已儲存"; setTimeout(()=>$("me-save").textContent="儲存",1200); };
 $("me-logout").onclick=async()=>{ await sb.auth.signOut(); };
+$("me-pin-unlock").onclick=pinUnlock;
+$("me-pin-in").addEventListener("keydown",e=>{ if(e.key==="Enter") pinUnlock(); });
 
 /* 分頁 */
 function switchTab(tab){ ["today","cal","wrong","units","me"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==tab));
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
-  if(tab==="cal") renderCal(); if(tab==="wrong") loadMistakes(); }
+  if(tab==="cal") renderCal(); if(tab==="wrong") loadMistakes(); if(tab==="me") renderMe(); if(tab==="units") renderUnits(); }
 document.querySelectorAll(".nav button").forEach(b=> b.onclick=()=>switchTab(b.dataset.tab));
 
 boot();
