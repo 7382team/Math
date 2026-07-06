@@ -177,6 +177,12 @@
       <input id="me-pin-in" inputmode="numeric" maxlength="8" placeholder="PIN" style="width:170px;text-align:center;letter-spacing:8px;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:20px;">
       <button class="primary" id="me-pin-unlock" style="margin-top:12px;">解鎖設定</button>
       <div id="me-pin-msg" class="msg" style="margin-top:10px;display:none;"></div>
+      <button class="link-btn" id="me-pin-forgot" style="font-size:13px;margin-top:6px;">忘記 PIN？</button>
+      <div id="me-pin-recover" class="hidden" style="margin-top:6px;">
+        <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">輸入這個帳號的登入密碼即可解鎖，並可重設 PIN。</div>
+        <input id="me-acct-pw" type="password" placeholder="帳號登入密碼" style="width:200px;padding:11px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;">
+        <button class="primary" id="me-acct-unlock" style="margin-top:10px;">用帳號密碼解鎖</button>
+      </div>
     </div>
     <div id="me-body">
       <div class="card">
@@ -189,6 +195,12 @@
         <div class="restdays" id="restdays"></div>
       </div>
       <div class="card" id="me-pin-card"></div>
+      <div class="card">
+        <div class="sec-label" style="margin:0 0 10px">修改登入密碼</div>
+        <div class="field"><input id="me-newpw" type="password" autocomplete="new-password" placeholder="新密碼（至少 6 個字）"></div>
+        <button class="primary" id="me-pw-save">更新密碼</button>
+        <div id="me-pw-msg" class="msg" style="margin-top:10px;display:none;"></div>
+      </div>
       <div class="card" style="text-align:center;">
         <div id="me-email" style="color:var(--muted);font-size:13px;margin-bottom:14px;"></div>
         <button class="back" id="me-logout" style="display:inline-block;">登出</button>
@@ -217,7 +229,9 @@ const SUPABASE_URL  = "https://xmkenwcqxbjeqyzigdoj.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta2Vud2NxeGJqZXF5emlnZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODYxMjEsImV4cCI6MjA5ODg2MjEyMX0.2Imp7H39wt5m4tZ4V3W0y0lyPqYu61a2liWnlytZzLc";
 
 const CONFIGURED = !SUPABASE_URL.includes("在這裡") && !SUPABASE_ANON.includes("在這裡");
+const IS_RECOVERY = (location.hash||"").indexOf("type=recovery")>=0;   // 一進頁面就抓，避免被 supabase-js 清掉
 let sb = CONFIGURED ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+let recoveryMode = false;
 const WD=["日","一","二","三","四","五","六"];
 const $=id=>document.getElementById(id);
 const fmtDate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -244,7 +258,7 @@ function makeDemoSb(){ const R=d=>Promise.resolve({data:d,error:null});
   return { from:()=>chain, rpc:()=>R(null),
     auth:{ getUser:()=>R(null).then(()=>({data:{user:{id:'demo',email:'示範模式（未登入）'}}})),
       getSession:()=>Promise.resolve({data:{session:null}}), onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
-      signInWithPassword:()=>R(null), signUp:()=>R(null), signOut:()=>R(null) } };
+      signInWithPassword:()=>R(null), signUp:()=>R(null), signOut:()=>R(null), updateUser:()=>R(null) } };
 }
 async function bootDemo(){
   sb=makeDemoSb(); await loadUnits(); await enterApp();
@@ -258,10 +272,13 @@ async function boot(){
   if(new URLSearchParams(location.search).get("demo")==="1"){ return bootDemo(); }
   if(!CONFIGURED){ showAuth(); authMsg("err","尚未設定 Supabase，請先填入鑰匙。"); return; }
   await loadUnits();
-  const isRecovery=(location.hash||"").includes("type=recovery");
-  if(isRecovery){ showResetPanel(); }
+  if(IS_RECOVERY){ recoveryMode=true; showResetPanel(); }
   else { const {data:{session}}=await sb.auth.getSession(); if(session) enterApp(); else showAuth(); }
-  sb.auth.onAuthStateChange((event,s)=>{ if(event==="PASSWORD_RECOVERY"){ showResetPanel(); return; } if(s) enterApp(); else showAuth(); });
+  sb.auth.onAuthStateChange((event,s)=>{
+    if(event==="PASSWORD_RECOVERY"){ recoveryMode=true; showResetPanel(); return; }
+    if(recoveryMode) return;              // 重設密碼流程中，別自動進 App
+    if(s) enterApp(); else showAuth();
+  });
 }
 async function loadUnits(){ try{ const j=await (await fetch("units.json",{cache:"no-store"})).json(); UNITS=j.units||[]; COURSES=j.courses||[]; SUBJECTS=j.subjects||[]; }catch(e){ UNITS=[]; COURSES=[]; SUBJECTS=[]; } }
 
@@ -288,7 +305,7 @@ $("au-reset-do").onclick=async()=>{ const p=$("au-newpass").value;
   const {error}=await sb.auth.updateUser({password:p});
   if(error){ authMsg("err","更新失敗："+error.message); return; }
   try{ history.replaceState(null,"",location.pathname); }catch(e){}
-  authMsg("ok","密碼已更新，登入中…"); };
+  recoveryMode=false; authMsg("ok","密碼已更新，登入中…"); enterApp(); };
 
 async function enterApp(){
   $("view-auth").classList.add("hidden"); $("view-main").classList.remove("hidden"); $("nav").classList.remove("hidden");
@@ -529,30 +546,44 @@ function pinLock(){ parentUnlocked=false; renderMe(); renderUnits(); }
 function pinUnlock(){ const v=($("me-pin-in").value||"").trim(), msg=$("me-pin-msg");
   if(pinHash(v)===settings.parent_pin){ parentUnlocked=true; renderMe(); renderUnits(); }
   else { msg.textContent="PIN 不對，再試一次"; msg.className="msg err"; msg.style.display="block"; } }
-async function pinSet(){ const el=$("me-pin-new"); if(!el) return; const v=(el.value||"").trim();
-  if(settings.parent_pin && v===""){ settings.parent_pin=""; await saveSettings(); renderMe(); renderUnits(); return; }  // 留空＝移除
+const PIN_IN_STYLE="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:16px;letter-spacing:4px;text-align:center;";
+async function pinSet(lockAfter){ const el=$("me-pin-new"); if(!el) return; const v=(el.value||"").trim();
   if(!/^\d{4,8}$/.test(v)){ alert("請輸入 4~8 位數字的 PIN"); return; }
-  settings.parent_pin=pinHash(v); parentUnlocked=true; await saveSettings(); renderMe(); renderUnits(); }
+  settings.parent_pin=pinHash(v); parentUnlocked = lockAfter?false:true;   // 首次設定→直接鎖定；變更→維持解鎖
+  await saveSettings(); renderMe(); renderUnits();
+  if(lockAfter) alert("PIN 已設定並鎖定。要改設定時，輸入這組 PIN 解鎖即可。"); }
+async function pinRemove(){ if(!confirm("確定要移除家長 PIN 嗎？移除後孩子就能自由修改所有設定。")) return;
+  settings.parent_pin=""; parentUnlocked=false; await saveSettings(); renderMe(); renderUnits(); }
 function renderMe(){ const locked=parentLocked();
   $("me-lock").classList.toggle("hidden",!locked); $("me-body").classList.toggle("hidden",locked);
-  if(locked){ $("me-pin-in").value=""; const m=$("me-pin-msg"); m.style.display="none"; return; }
+  if(locked){ $("me-pin-in").value=""; if($("me-acct-pw"))$("me-acct-pw").value=""; $("me-pin-recover").classList.add("hidden");
+    const m=$("me-pin-msg"); if(m){ m.style.display="none"; m.textContent=""; } return; }
   const has=!!settings.parent_pin;
-  $("me-pin-card").innerHTML = has
-    ? `<div class="sec-label" style="margin:0 0 8px">家長 PIN</div>
-       <div style="color:var(--muted);font-size:13px;margin-bottom:12px;line-height:1.6;">設定目前已解鎖。離開前按「鎖定」，孩子就無法修改設定。</div>
-       <button class="primary" id="me-lock-btn">🔒 鎖定設定</button>
-       <button class="link-btn" id="me-pin-change">變更或移除 PIN</button>
-       <div id="me-pin2" class="hidden">
-         <input id="me-pin-new" inputmode="numeric" maxlength="8" placeholder="新 PIN（留空＝移除鎖定）" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:16px;letter-spacing:4px;text-align:center;">
-         <button class="primary" id="me-pin-save2" style="margin-top:8px;">儲存</button>
-       </div>`
-    : `<div class="sec-label" style="margin:0 0 8px">家長 PIN（尚未設定）</div>
-       <div style="color:var(--muted);font-size:13px;margin-bottom:12px;line-height:1.6;">設定一組 PIN 後，單元、每日題數、難度、版本、獎勵等會被鎖住，孩子只能練習與複習。</div>
-       <input id="me-pin-new" inputmode="numeric" maxlength="8" placeholder="設定 PIN（4~8 位數字）" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:'Lexend',sans-serif;font-size:16px;letter-spacing:4px;text-align:center;">
-       <button class="primary" id="me-pin-save2" style="margin-top:8px;">設定 PIN</button>`;
-  const lb=$("me-lock-btn"); if(lb) lb.onclick=pinLock;
-  const ch=$("me-pin-change"); if(ch) ch.onclick=()=>$("me-pin2").classList.toggle("hidden");
-  const sv=$("me-pin-save2"); if(sv) sv.onclick=pinSet;
+  if(has){
+    $("me-pin-card").innerHTML=`
+      <div class="sec-label" style="margin:0 0 8px">家長 PIN　<span style="color:var(--ok);font-size:12px;">已設定</span></div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px;line-height:1.6;">目前是解鎖狀態。交還給孩子前，按「鎖定設定」，他就不能修改設定。</div>
+      <button class="primary" id="me-lock-btn">🔒 鎖定設定</button>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="back" id="me-pin-change" style="flex:1;">變更 PIN</button>
+        <button class="back" id="me-pin-remove" style="flex:1;color:var(--seal);">移除 PIN</button>
+      </div>
+      <div id="me-pin2" class="hidden" style="margin-top:10px;">
+        <input id="me-pin-new" inputmode="numeric" maxlength="8" placeholder="新 PIN（4~8 位數字）" style="${PIN_IN_STYLE}">
+        <button class="primary" id="me-pin-save2" style="margin-top:8px;">確定變更</button>
+      </div>`;
+    $("me-lock-btn").onclick=pinLock;
+    $("me-pin-change").onclick=()=>$("me-pin2").classList.toggle("hidden");
+    $("me-pin-remove").onclick=pinRemove;
+    $("me-pin-save2").onclick=()=>pinSet(false);
+  } else {
+    $("me-pin-card").innerHTML=`
+      <div class="sec-label" style="margin:0 0 8px">家長 PIN（尚未設定）</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px;line-height:1.6;">設定一組 PIN 後，單元、每日題數、難度、版本、獎勵等會被鎖住，孩子只能練習與複習。</div>
+      <input id="me-pin-new" inputmode="numeric" maxlength="8" placeholder="設定 PIN（4~8 位數字）" style="${PIN_IN_STYLE}">
+      <button class="primary" id="me-pin-save2" style="margin-top:8px;">設定並鎖定</button>`;
+    $("me-pin-save2").onclick=()=>pinSet(true);
+  }
 }
 /* 我 / 休息日 */
 function renderRestDays(){ $("restdays").innerHTML=WD.map((w,i)=>`<div class="rd ${(settings.rest_days||[]).includes(i)?'on':''}" onclick="toggleRest(${i})">${w}</div>`).join(""); }
@@ -561,6 +592,19 @@ $("me-save").onclick=async()=>{ if(parentLocked()) return; settings.display_name
 $("me-logout").onclick=async()=>{ await sb.auth.signOut(); };
 $("me-pin-unlock").onclick=pinUnlock;
 $("me-pin-in").addEventListener("keydown",e=>{ if(e.key==="Enter") pinUnlock(); });
+// 登入後修改密碼
+$("me-pw-save").onclick=async()=>{ const p=$("me-newpw").value, msg=$("me-pw-msg");
+  if(!p||p.length<6){ msg.textContent="新密碼至少 6 個字"; msg.className="msg err"; msg.style.display="block"; return; }
+  const {error}=await sb.auth.updateUser({password:p});
+  if(error){ msg.textContent="更新失敗："+error.message; msg.className="msg err"; msg.style.display="block"; return; }
+  $("me-newpw").value=""; msg.textContent="密碼已更新，下次用新密碼登入"; msg.className="msg ok"; msg.style.display="block"; };
+// 忘記 PIN → 用帳號密碼解鎖
+$("me-pin-forgot").onclick=()=>{ $("me-pin-recover").classList.toggle("hidden"); };
+$("me-acct-unlock").onclick=async()=>{ const pw=$("me-acct-pw").value, msg=$("me-pin-msg");
+  if(!pw){ return; } const {data:{user}}=await sb.auth.getUser(); const email=user?.email;
+  const {error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){ msg.textContent="帳號密碼不對"; msg.className="msg err"; msg.style.display="block"; return; }
+  parentUnlocked=true; $("me-acct-pw").value=""; renderMe(); renderUnits(); switchTab("me"); };
 
 /* 分頁 */
 function switchTab(tab){ ["today","cal","wrong","units","me"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==tab));
