@@ -130,10 +130,17 @@
 <div id="view-auth" class="auth-wrap">
   <div class="auth-brand"><div class="seal-mini">學</div><h1>學習聯絡簿</h1><p>登入後每天的練習紀錄都存在雲端，換裝置也還在</p></div>
   <div id="auth-msg"></div>
-  <div class="field"><label>帳號（電子郵件）</label><input id="au-email" type="email" autocomplete="username" placeholder="例如 kid@family.tw"></div>
-  <div class="field"><label>密碼</label><input id="au-pass" type="password" autocomplete="current-password" placeholder="至少 6 個字"></div>
-  <button class="primary" id="au-login">登入</button>
-  <button class="link-btn" id="au-signup">第一次使用？建立帳號</button>
+  <div id="au-normal">
+    <div class="field"><label>帳號（電子郵件）</label><input id="au-email" type="email" autocomplete="username" placeholder="例如 kid@family.tw"></div>
+    <div class="field"><label>密碼</label><input id="au-pass" type="password" autocomplete="current-password" placeholder="至少 6 個字"></div>
+    <button class="primary" id="au-login">登入</button>
+    <button class="link-btn" id="au-signup">第一次使用？建立帳號</button>
+    <button class="link-btn" id="au-forgot" style="font-size:13px;">忘記密碼？</button>
+  </div>
+  <div id="au-reset" class="hidden">
+    <div class="field"><label>設定新密碼</label><input id="au-newpass" type="password" autocomplete="new-password" placeholder="至少 6 個字"></div>
+    <button class="primary" id="au-reset-do">更新密碼並登入</button>
+  </div>
 </div>
 
 <div id="view-main" class="app hidden">
@@ -251,13 +258,17 @@ async function boot(){
   if(new URLSearchParams(location.search).get("demo")==="1"){ return bootDemo(); }
   if(!CONFIGURED){ showAuth(); authMsg("err","尚未設定 Supabase，請先填入鑰匙。"); return; }
   await loadUnits();
-  const {data:{session}}=await sb.auth.getSession();
-  if(session) enterApp(); else showAuth();
-  sb.auth.onAuthStateChange((_e,s)=>{ if(s) enterApp(); else showAuth(); });
+  const isRecovery=(location.hash||"").includes("type=recovery");
+  if(isRecovery){ showResetPanel(); }
+  else { const {data:{session}}=await sb.auth.getSession(); if(session) enterApp(); else showAuth(); }
+  sb.auth.onAuthStateChange((event,s)=>{ if(event==="PASSWORD_RECOVERY"){ showResetPanel(); return; } if(s) enterApp(); else showAuth(); });
 }
 async function loadUnits(){ try{ const j=await (await fetch("units.json",{cache:"no-store"})).json(); UNITS=j.units||[]; COURSES=j.courses||[]; SUBJECTS=j.subjects||[]; }catch(e){ UNITS=[]; COURSES=[]; SUBJECTS=[]; } }
 
-function showAuth(){ $("view-auth").classList.remove("hidden"); $("view-main").classList.add("hidden"); $("view-play").classList.add("hidden"); $("nav").classList.add("hidden"); }
+function showAuth(){ $("view-auth").classList.remove("hidden"); $("view-main").classList.add("hidden"); $("view-play").classList.add("hidden"); $("nav").classList.add("hidden");
+  $("au-normal").classList.remove("hidden"); $("au-reset").classList.add("hidden"); }
+function showResetPanel(){ $("view-auth").classList.remove("hidden"); $("view-main").classList.add("hidden"); $("view-play").classList.add("hidden"); $("nav").classList.add("hidden");
+  $("au-normal").classList.add("hidden"); $("au-reset").classList.remove("hidden"); authMsg("ok","請設定一組新密碼。"); }
 function authMsg(k,t){ $("auth-msg").innerHTML=t?`<div class="msg ${k}">${t}</div>`:""; }
 function cn(m){ if(/Invalid login/.test(m))return "帳號或密碼不對"; if(/already registered/.test(m))return "這個帳號已存在，請直接登入"; return m; }
 $("au-login").onclick=async()=>{ const email=$("au-email").value.trim(),pass=$("au-pass").value;
@@ -267,6 +278,17 @@ $("au-signup").onclick=async()=>{ const email=$("au-email").value.trim(),pass=$(
   if(!email||pass.length<6){authMsg("err","建立帳號需要一個電子郵件，密碼至少 6 個字。");return;} authMsg("","");
   const {data,error}=await sb.auth.signUp({email,password:pass}); if(error){authMsg("err","建立失敗："+cn(error.message));return;}
   if(data.session) authMsg("ok","帳號建立成功，登入中…"); else authMsg("ok","帳號已建立。若開了信箱驗證請去收信；想省略可在 Supabase 用 Add user 並勾 Auto Confirm。"); };
+$("au-forgot").onclick=async()=>{ const email=$("au-email").value.trim();
+  if(!email){ authMsg("err","請先在上面填入你的帳號 email，再按忘記密碼。"); return; } authMsg("","");
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error) authMsg("err","寄送失敗："+error.message);
+  else authMsg("ok","重設信已寄到 "+email+"。去收信、點信裡的連結，回到本站就能設定新密碼（沒收到請看垃圾信匣）。"); };
+$("au-reset-do").onclick=async()=>{ const p=$("au-newpass").value;
+  if(!p||p.length<6){ authMsg("err","新密碼至少 6 個字。"); return; } authMsg("","");
+  const {error}=await sb.auth.updateUser({password:p});
+  if(error){ authMsg("err","更新失敗："+error.message); return; }
+  try{ history.replaceState(null,"",location.pathname); }catch(e){}
+  authMsg("ok","密碼已更新，登入中…"); };
 
 async function enterApp(){
   $("view-auth").classList.add("hidden"); $("view-main").classList.remove("hidden"); $("nav").classList.remove("hidden");

@@ -26,10 +26,12 @@ create table if not exists public.mistakes (
   updated_at  timestamptz not null default now()
 );
 
--- 補上詳解 / 提示 / 選項欄位（舊表沒有的話）
+-- 補上詳解 / 提示 / 選項 / 間隔複習欄位（舊表沒有的話）
 alter table public.mistakes add column if not exists explain text;
 alter table public.mistakes add column if not exists tip     text;
-alter table public.mistakes add column if not exists choices jsonb;   -- 選擇題的選項（讓錯題本用「選」的訂正）
+alter table public.mistakes add column if not exists choices jsonb;             -- 選擇題的選項（讓錯題本用「選」的訂正）
+alter table public.mistakes add column if not exists box     int  not null default 0;             -- 間隔複習的 Leitner 盒子
+alter table public.mistakes add column if not exists due     date not null default current_date;  -- 下次該複習的日期
 
 -- 確保新資料列會自動帶入登入者的 user_id
 alter table public.mistakes alter column user_id set default auth.uid();
@@ -61,8 +63,8 @@ language plpgsql
 security invoker            -- 以呼叫者身分執行，讓上面的 RLS 生效
 as $$
 begin
-  insert into public.mistakes (user_id, unit_id, question, answer, given, explain, tip, choices, count)
-  values (auth.uid(), p_unit, p_q, p_ans, p_given, p_explain, p_tip, p_choices, 1)
+  insert into public.mistakes (user_id, unit_id, question, answer, given, explain, tip, choices, box, due, count)
+  values (auth.uid(), p_unit, p_q, p_ans, p_given, p_explain, p_tip, p_choices, 0, current_date, 1)
   on conflict (user_id, unit_id, question)
   do update set count      = mistakes.count + 1,
                 given      = excluded.given,
@@ -70,6 +72,8 @@ begin
                 explain    = excluded.explain,
                 tip        = excluded.tip,
                 choices    = excluded.choices,
+                box        = 0,              -- 又答錯了 → 重置間隔，明天起重來
+                due        = current_date,
                 updated_at = now();
 end;
 $$;
@@ -86,6 +90,7 @@ alter table public.settings add column if not exists selected_units    jsonb def
 alter table public.settings add column if not exists daily_goals       jsonb default '{}'::jsonb;
 alter table public.settings add column if not exists rest_days         jsonb default '[]'::jsonb;
 alter table public.settings add column if not exists course_by_subject jsonb default '{}'::jsonb;  -- 各科各自選的版本
+alter table public.settings add column if not exists parent_pin text;                             -- 家長 PIN（雜湊後存）
 
 -- 確保新資料列會自動帶入登入者的 user_id
 alter table public.settings alter column user_id set default auth.uid();
