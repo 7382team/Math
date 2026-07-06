@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>正負數加減 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26;
+    --ink-soft:#5b606f;
+    --pos:#2563eb;      /* 正號：藍 */
+    --neg:#ea580c;      /* 負號：橘 */
+    --right:#16a34a;    /* 答對：綠 */
+    --wrong:#e11d48;    /* 答錯：紅 */
+    --line:#e6e8ef;
+    --card:#ffffff;
+    --key:#f3f5f9;
+    --key-press:#e3e7f0;
+    --bg:#f7f8fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      var(--bg);
+    display:flex;justify-content:center;
+    padding:14px;
+  }
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .streak b{color:var(--ink);font-weight:600;}
+
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;
+      font-weight:500;background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);
+      cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;
+        padding:26px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+
+  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+      text-align:center;font-size:30px;font-weight:500;line-height:1.35;letter-spacing:.5px;
+      word-spacing:2px;min-height:44px;}
+  .eq .pos{color:var(--pos);font-weight:600;}
+  .eq .neg{color:var(--neg);font-weight:600;}
+  .eq .op{color:var(--ink);margin:0 2px;}
+  .eq .q{color:var(--ink-soft);}
+
+  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);
+       display:flex;align-items:center;justify-content:center;
+       font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;
+       transition:.15s;background:#fbfcfe;}
+  .ans.empty{color:#b7bccb;}
+  .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
+  .ans.no{border-color:var(--wrong);color:var(--wrong);background:#fff1f4;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+
+  /* 解釋 */
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:16px;display:none;}
+  .explain.show{display:block;}
+  .steps{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+         font-size:17px;line-height:2;color:var(--ink);}
+  .steps .lead{color:var(--ink-soft);font-family:'Noto Sans TC';font-size:13px;margin-right:6px;}
+  .steps .pos{color:var(--pos);font-weight:600;}
+  .steps .neg{color:var(--neg);font-weight:600;}
+  .steps .res{color:var(--right);font-weight:700;}
+  .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;
+       border-radius:10px;padding:9px 12px;line-height:1.6;}
+  svg{width:100%;height:auto;margin-top:6px;display:block;}
+
+  /* 鍵盤 */
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);
+       font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;
+       height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key:active{background:var(--key-press);transform:scale(.96);}
+  .key.sign{color:var(--neg);font-weight:600;}
+  .key.del{color:var(--ink-soft);font-size:22px;}
+
+  .go{border:none;border-radius:16px;height:58px;width:100%;
+      font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);}
+  .go.next{background:var(--pos);}
+  .go:disabled{opacity:.4;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>正負數加減</h1>
+      <div class="sub">隨機出題 · 逐步解說</div>
+    </div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+
+  <div class="card">
+    <div class="eq" id="eq"></div>
+    <div class="ans empty" id="ans">?</div>
+
+    <div class="explain" id="explain">
+      <div class="steps" id="steps"></div>
+      <div id="numline"></div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <div class="pad" id="pad">
+    <button class="key" data-k="7">7</button>
+    <button class="key" data-k="8">8</button>
+    <button class="key" data-k="9">9</button>
+    <button class="key" data-k="4">4</button>
+    <button class="key" data-k="5">5</button>
+    <button class="key" data-k="6">6</button>
+    <button class="key" data-k="1">1</button>
+    <button class="key" data-k="2">2</button>
+    <button class="key" data-k="3">3</button>
+    <button class="key sign" data-k="sign">±</button>
+    <button class="key" data-k="0">0</button>
+    <button class="key del" data-k="del">⌫</button>
+  </div>
+
+  <button class="go" id="go">檢查</button>
+</div>
+
+<script>
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const opSign=o=>o==='＋'?1:-1;
+
+let level='basic', problem=null, entry='', answered=false, streak=0;
+
+// 產生一題：terms=每個括號內的帶號數, ops=中間的運算符
+function makeProblem(lv){
+  let n, mag;
+  if(lv==='basic'){n=2; mag=10;}
+  else if(lv==='adv'){n=rand(3,4); mag=15;}
+  else {n=rand(2,4); mag= n===2?10:15;}
+
+  const terms=[], ops=[];
+  for(let i=0;i<n;i++){
+    terms.push({s: Math.random()<0.5?1:-1, v: rand(1,mag)});
+    if(i>0) ops.push(Math.random()<0.5?'＋':'－');
+  }
+  // 計算答案 + 去括號後的帶號序列
+  const simplified=[]; // {s:+1/-1, v}
+  let sum=0;
+  terms.forEach((t,i)=>{
+    const eff = i===0 ? t.s : opSign(ops[i-1])*t.s;
+    simplified.push({s:eff, v:t.v});
+    sum += eff*t.v;
+  });
+  return {terms, ops, simplified, answer:sum};
+}
+
+function termHTML(t){
+  const cls = t.s<0?'neg':'pos';
+  const sign = t.s<0?'−':'+';
+  return `(<span class="${cls}">${sign}${t.v}</span>)`;
+}
+
+function render(){
+  const {terms,ops}=problem;
+  let h = termHTML(terms[0]);
+  for(let i=1;i<terms.length;i++){
+    h += ` <span class="op">${ops[i-1]}</span> ${termHTML(terms[i])}`;
+  }
+  h += ` <span class="op">=</span> <span class="q">?</span>`;
+  document.getElementById('eq').innerHTML=h;
+
+  entry=''; answered=false;
+  const ans=document.getElementById('ans');
+  ans.textContent='?'; ans.className='ans empty';
+  document.getElementById('explain').className='explain';
+  const go=document.getElementById('go');
+  go.textContent='檢查'; go.className='go'; go.disabled=false;
+}
+
+function showEntry(){
+  const ans=document.getElementById('ans');
+  if(entry===''||entry==='-'){ans.textContent = entry==='-'?'−':'?'; ans.className='ans empty'; return;}
+  ans.textContent = entry.replace('-','−'); ans.className='ans';
+}
+
+// 去括號後的一行： -3 ＋ 10
+function simplifiedLine(){
+  const s=problem.simplified;
+  let h = `<span class="${s[0].s<0?'neg':'pos'}">${s[0].s<0?'−':''}${s[0].v}</span>`;
+  for(let i=1;i<s.length;i++){
+    const op = s[i].s<0?'−':'＋';
+    const cls = s[i].s<0?'neg':'pos';
+    h += ` <span class="op">${op}</span> <span class="${cls}">${s[i].v}</span>`;
+  }
+  return h;
+}
+
+// 逐步：左到右累加
+function runningSteps(){
+  const s=problem.simplified;
+  let acc=s[0].s*s[0].v, lines=[];
+  for(let i=1;i<s.length;i++){
+    const prev=acc;
+    const op = s[i].s<0?'−':'＋';
+    acc += s[i].s*s[i].v;
+    const fin = i===s.length-1;
+    lines.push(
+      `${fmt(prev)} <span class="op">${op}</span> ${s[i].v} <span class="op">=</span> `+
+      (fin?`<span class="res">${fmt(acc)}</span>`:`${fmt(acc)}`)
+    );
+  }
+  return lines;
+}
+function fmt(n){
+  if(n<0) return `<span class="neg">−${Math.abs(n)}</span>`;
+  return `<span class="pos">${n}</span>`;
+}
+
+function buildTip(){
+  const {terms,ops}=problem;
+  let hasMinusNeg=false, hasFlip=false;
+  for(let i=1;i<terms.length;i++){
+    if(ops[i-1]==='－'&&terms[i].s<0) hasMinusNeg=true;
+    if((ops[i-1]==='＋'&&terms[i].s<0)||(ops[i-1]==='－'&&terms[i].s>0)) hasFlip=true;
+  }
+  if(hasMinusNeg) return '重點：－（－）＝＋，減去一個負數，等於加上正數。';
+  if(hasFlip) return '重點：運算符和數的符號相異時（＋負、－正），該項就是減。';
+  return '把括號拿掉後，由左到右一步一步算，符號跟著數字走。';
+}
+
+function drawNumberLine(){
+  const box=document.getElementById('numline');
+  if(problem.simplified.length!==2){box.innerHTML=''; return;}
+  const start=problem.simplified[0].s*problem.simplified[0].v;
+  const end=problem.answer;
+  const vals=[0,start,end];
+  let lo=Math.min(...vals)-2, hi=Math.max(...vals)+2;
+  const span=hi-lo, W=380, pad=24, H=88, base=58;
+  const x=v=>pad+((v-lo)/span)*(W-2*pad);
+  const step = span>22?2:1;
+  const first=Math.ceil(lo/step)*step;
+  let ticks='';
+  for(let v=first;v<=hi;v+=step){
+    const zero=v===0;
+    ticks+=`<line x1="${x(v)}" y1="${base-4}" x2="${x(v)}" y2="${base+4}" stroke="${zero?'#1b1d26':'#c9cede'}" stroke-width="${zero?2:1}"/>`;
+    ticks+=`<text x="${x(v)}" y="${base+20}" text-anchor="middle" font-size="11" fill="${zero?'#1b1d26':'#9aa0b3'}" font-family="Lexend">${v}</text>`;
+  }
+  const dir = end>=start?1:-1;
+  const midx=(x(start)+x(end))/2, arcY=26;
+  const arrow = Math.abs(end-start)<0.5 ? '' :
+    `<path d="M ${x(start)} ${base-8} Q ${midx} ${arcY} ${x(end)} ${base-8}" fill="none" stroke="#5b606f" stroke-width="2"/>
+     <path d="M ${x(end)} ${base-8} l ${dir*7} -6 M ${x(end)} ${base-8} l ${dir*7} 6" stroke="#5b606f" stroke-width="2" fill="none"/>`;
+  const cS=start<0?'#ea580c':'#2563eb', cE=end<0?'#ea580c':'#2563eb';
+  box.innerHTML=
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="數線">
+       <line x1="${pad}" y1="${base}" x2="${W-pad}" y2="${base}" stroke="#c9cede" stroke-width="2"/>
+       ${ticks}${arrow}
+       <circle cx="${x(start)}" cy="${base}" r="5" fill="#fff" stroke="${cS}" stroke-width="2.5"/>
+       <circle cx="${x(end)}" cy="${base}" r="5.5" fill="${cE}"/>
+       <text x="${x(start)}" y="${base-14}" text-anchor="middle" font-size="12" fill="${cS}" font-family="Lexend" font-weight="600">${start}</text>
+       <text x="${x(end)}" y="${arcY-6}" text-anchor="middle" font-size="13" fill="${cE}" font-family="Lexend" font-weight="700">${end}</text>
+     </svg>`;
+}
+
+function check(){
+  if(entry===''||entry==='-') return;
+  answered=true;
+  const val=parseInt(entry,10);
+  const ans=document.getElementById('ans');
+  const correct = val===problem.answer;
+  ans.className = 'ans '+(correct?'ok':'no');
+  ans.textContent = entry.replace('-','−');
+  if(!correct){ans.classList.add('shake'); setTimeout(()=>ans.classList.remove('shake'),400);}
+
+  streak = correct?streak+1:0;
+  document.getElementById('streak').textContent=streak;
+
+  // 回報進度給「學習聯絡簿」儀表板（單獨開啟時不受影響）
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+  }
+
+  // 解說
+  const stepsEl=document.getElementById('steps');
+  const needsExpand = problem.terms.some((t,i)=> i>0 && !(problem.ops[i-1]==='＋'&&t.s>0));
+  let html='';
+  if(needsExpand){
+    html+=`<div><span class="lead">去括號</span>${simplifiedLine()}</div>`;
+  }
+  runningSteps().forEach(l=> html+=`<div>${l}</div>`);
+  if(problem.simplified.length===1){ // 理論上不會發生，保險
+    html+=`<div class="res">${problem.answer}</div>`;
+  }
+  stepsEl.innerHTML=html;
+  document.getElementById('tip').textContent=buildTip();
+  drawNumberLine();
+  document.getElementById('explain').className='explain show';
+
+  const go=document.getElementById('go');
+  go.textContent='下一題'; go.className='go next';
+}
+
+function next(){ problem=makeProblem(level); render(); }
+
+// 事件
+document.getElementById('pad').addEventListener('click',e=>{
+  const b=e.target.closest('.key'); if(!b||answered) return;
+  const k=b.dataset.k;
+  if(k==='del'){ entry=entry.slice(0,-1); }
+  else if(k==='sign'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; }
+  else { if(entry.replace('-','').length<3) entry+=k; }
+  showEntry();
+});
+
+document.getElementById('go').addEventListener('click',()=> answered?next():check());
+
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; next();
+}));
+
+// 實體鍵盤（桌機測試用）
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ answered?next():check(); return; }
+  if(answered) return;
+  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<3) entry+=e.key; showEntry(); }
+  else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
+  else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); }
+});
+
+next();
+</script>
+</body>
+</html>

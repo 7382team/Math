@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學習聯絡簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --paper:#f6f5ef; --card:#fffdf8; --ink:#2b2b28; --muted:#8a857b;
+    --line:#e5e2d8; --seal:#c1352b; --blue:#2563eb; --orange:#ea580c;
+    --ok:#3f7d4e;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Noto Sans TC',system-ui,sans-serif;color:var(--ink);
+    background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/30px 30px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/30px 30px,
+      var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:460px;margin:0 auto;min-height:100vh;padding:0 16px 96px;}
+  .num{font-family:'Lexend',sans-serif;font-variant-numeric:tabular-nums;}
+  h1,h2,h3{margin:0;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  .hidden{display:none !important;}
+
+  /* header */
+  .top{display:flex;align-items:center;justify-content:space-between;padding:22px 2px 14px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .seal-mini{width:34px;height:34px;border:2px solid var(--seal);border-radius:8px;
+    color:var(--seal);font-family:'Noto Serif TC',serif;font-weight:700;font-size:19px;
+    display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);}
+  .brand h1{font-family:'Noto Serif TC',serif;font-size:20px;letter-spacing:1px;}
+  .top .who{font-size:13px;color:var(--muted);}
+
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;
+    padding:18px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);margin-bottom:14px;}
+
+  /* date block */
+  .datebar{display:flex;align-items:flex-end;gap:12px;margin:4px 2px 16px;}
+  .datebar .d{font-family:'Lexend',sans-serif;font-size:44px;font-weight:600;line-height:.9;}
+  .datebar .my{color:var(--muted);font-size:14px;padding-bottom:4px;}
+  .datebar .wd{margin-left:auto;color:var(--muted);font-size:14px;padding-bottom:6px;}
+
+  .sec-label{font-size:13px;color:var(--muted);letter-spacing:2px;margin:6px 2px 10px;font-weight:500;}
+
+  /* task row */
+  .task{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .task:last-child{border-bottom:none;}
+  .task .info{flex:1;min-width:0;}
+  .task .t-name{font-weight:500;font-size:16px;}
+  .task .t-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .bar{height:7px;background:#eceadf;border-radius:99px;margin-top:9px;overflow:hidden;}
+  .bar > i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .4s;}
+  .task .cnt{font-family:'Lexend',sans-serif;font-size:13px;color:var(--muted);margin-top:6px;}
+  .start{background:var(--ink);color:#fff;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:500;white-space:nowrap;}
+  .seal-done{width:52px;height:52px;flex:none;border:2.5px solid var(--seal);border-radius:10px;
+    color:var(--seal);font-family:'Noto Serif TC',serif;font-weight:700;font-size:26px;
+    display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);opacity:.92;}
+
+  .empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:14px;line-height:1.7;}
+  .empty b{color:var(--ink);}
+
+  /* calendar */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 14px;}
+  .cal-head h2{font-family:'Lexend',sans-serif;font-size:18px;font-weight:600;}
+  .cal-nav{background:#eceadf;border-radius:10px;width:38px;height:38px;font-size:18px;color:var(--ink);}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .dow{text-align:center;font-size:11px;color:var(--muted);padding:4px 0;}
+  .cell{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    position:relative;font-family:'Lexend',sans-serif;font-size:14px;color:var(--ink);}
+  .cell.pad{visibility:hidden;}
+  .cell.has{cursor:pointer;}
+  .cell.today{outline:2px solid var(--blue);outline-offset:-2px;}
+  .cell .stamp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:var(--seal);font-family:'Noto Serif TC',serif;font-weight:700;font-size:20px;
+    transform:rotate(-10deg);opacity:.9;}
+  .cell.partial::after{content:"";position:absolute;bottom:5px;width:5px;height:5px;border-radius:99px;background:var(--orange);}
+  .cell.num-dim{color:var(--muted);}
+
+  /* unit picker */
+  .unit{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .unit:last-child{border-bottom:none;}
+  .unit .u-info{flex:1;min-width:0;}
+  .unit .u-name{font-weight:500;}
+  .unit .u-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .goal-in{width:56px;padding:8px;border:1.5px solid var(--line);border-radius:9px;
+    font-family:'Lexend',sans-serif;font-size:15px;text-align:center;background:#fff;}
+  .toggle{width:48px;height:28px;border-radius:99px;background:#d8d5c9;position:relative;transition:.2s;flex:none;}
+  .toggle.on{background:var(--blue);}
+  .toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:99px;background:#fff;transition:.2s;}
+  .toggle.on i{left:23px;}
+
+  /* auth */
+  .auth-wrap{max-width:400px;margin:0 auto;padding:60px 20px;}
+  .auth-brand{text-align:center;margin-bottom:30px;}
+  .auth-brand .seal-mini{margin:0 auto 14px;width:60px;height:60px;font-size:34px;border-radius:12px;}
+  .auth-brand h1{font-family:'Noto Serif TC',serif;font-size:26px;letter-spacing:2px;}
+  .auth-brand p{color:var(--muted);font-size:13px;margin-top:8px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  .field input{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:16px;background:#fff;}
+  .primary{width:100%;background:var(--ink);color:#fff;padding:14px;border-radius:13px;font-size:16px;font-weight:600;margin-top:6px;}
+  .link-btn{background:none;color:var(--blue);font-size:14px;width:100%;padding:14px;margin-top:4px;}
+  .msg{font-size:13px;padding:10px 12px;border-radius:10px;margin-bottom:12px;line-height:1.6;}
+  .msg.err{background:#fdecea;color:#b3261e;}
+  .msg.ok{background:#eaf5ec;color:var(--ok);}
+
+  /* play */
+  .play-bar{display:flex;align-items:center;gap:12px;padding:14px 2px;}
+  .back{background:#eceadf;border-radius:10px;padding:9px 14px;font-size:14px;color:var(--ink);}
+  .play-bar .p-title{font-weight:500;}
+  .play-bar .p-live{margin-left:auto;font-family:'Lexend',sans-serif;font-size:13px;color:var(--muted);}
+  .frame{width:100%;height:calc(100vh - 130px);border:1.5px solid var(--line);border-radius:16px;background:#fff;}
+
+  /* bottom nav */
+  .nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,253,248,.94);
+    backdrop-filter:blur(8px);border-top:1.5px solid var(--line);}
+  .nav-inner{max-width:460px;margin:0 auto;display:flex;}
+  .nav button{flex:1;background:none;padding:10px 0 14px;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .nav button .ic{font-size:20px;line-height:1;}
+  .nav button.on{color:var(--ink);}
+
+  /* sheet */
+  .sheet-bg{position:fixed;inset:0;background:rgba(30,26,18,.4);display:flex;align-items:flex-end;z-index:20;}
+  .sheet{background:var(--card);width:100%;max-width:460px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 18px 30px;}
+  .sheet h3{font-family:'Lexend',sans-serif;font-size:16px;margin-bottom:4px;}
+  .sheet .s-date{color:var(--muted);font-size:13px;margin-bottom:14px;}
+  .sheet .s-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;}
+  .sheet .s-row:last-child{border-bottom:none;}
+  .sheet .s-row .n{font-family:'Lexend',sans-serif;color:var(--muted);}
+  .sheet .close{margin-top:16px;width:100%;background:#eceadf;padding:12px;border-radius:12px;font-size:15px;color:var(--ink);}
+</style>
+</head>
+<body>
+
+<!-- ============ 登入 ============ -->
+<div id="view-auth" class="auth-wrap">
+  <div class="auth-brand">
+    <div class="seal-mini" style="border:2.5px solid var(--seal);color:var(--seal);display:flex;align-items:center;justify-content:center;font-family:'Noto Serif TC',serif;font-weight:700;transform:rotate(-6deg);">學</div>
+    <h1>學習聯絡簿</h1>
+    <p>登入後，每天的練習紀錄都會存在雲端，換裝置也還在</p>
+  </div>
+  <div id="auth-msg"></div>
+  <div class="field"><label>帳號（電子郵件）</label><input id="au-email" type="email" autocomplete="username" placeholder="例如 kid@family.tw"></div>
+  <div class="field"><label>密碼</label><input id="au-pass" type="password" autocomplete="current-password" placeholder="至少 6 個字"></div>
+  <button class="primary" id="au-login">登入</button>
+  <button class="link-btn" id="au-signup">第一次使用？建立帳號</button>
+</div>
+
+<!-- ============ 主畫面 ============ -->
+<div id="view-main" class="app hidden">
+  <div class="top">
+    <div class="brand"><div class="seal-mini">學</div><h1>學習聯絡簿</h1></div>
+    <div class="who" id="who"></div>
+  </div>
+
+  <!-- 今日 -->
+  <section id="tab-today">
+    <div class="datebar">
+      <div class="d num" id="td-day">–</div>
+      <div class="my num" id="td-my"></div>
+      <div class="wd" id="td-wd"></div>
+    </div>
+    <div class="sec-label">今日任務</div>
+    <div class="card" id="today-tasks"></div>
+  </section>
+
+  <!-- 月曆 -->
+  <section id="tab-cal" class="hidden">
+    <div class="cal-head">
+      <button class="cal-nav" id="cal-prev">‹</button>
+      <h2 id="cal-title"></h2>
+      <button class="cal-nav" id="cal-next">›</button>
+    </div>
+    <div class="card">
+      <div class="grid" id="cal-dow"></div>
+      <div class="grid" id="cal-grid" style="margin-top:4px;"></div>
+    </div>
+  </section>
+
+  <!-- 單元 -->
+  <section id="tab-units" class="hidden">
+    <div class="sec-label">選擇單元 · 設定每日題數</div>
+    <div class="card" id="unit-list"></div>
+    <div style="text-align:center;color:var(--muted);font-size:12px;padding:4px 10px;">開啟開關代表要練這個單元；右邊數字是每天目標題數。</div>
+  </section>
+
+  <!-- 我 -->
+  <section id="tab-me" class="hidden">
+    <div class="card">
+      <div class="field"><label>顯示名稱</label><input id="me-name" type="text" placeholder="孩子的名字"></div>
+      <button class="primary" id="me-save">儲存名稱</button>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div id="me-email" style="color:var(--muted);font-size:13px;margin-bottom:14px;"></div>
+      <button class="back" id="me-logout" style="display:inline-block;">登出</button>
+    </div>
+  </section>
+</div>
+
+<!-- ============ 練習中 ============ -->
+<div id="view-play" class="app hidden">
+  <div class="play-bar">
+    <button class="back" id="play-back">‹ 返回</button>
+    <div class="p-title" id="play-title"></div>
+    <div class="p-live num" id="play-live"></div>
+  </div>
+  <iframe id="play-frame" class="frame"></iframe>
+</div>
+
+<!-- ============ 底部導覽 ============ -->
+<nav class="nav hidden" id="nav">
+  <div class="nav-inner">
+    <button data-tab="today" class="on"><span class="ic">📖</span>今日</button>
+    <button data-tab="cal"><span class="ic">📅</span>月曆</button>
+    <button data-tab="units"><span class="ic">📚</span>單元</button>
+    <button data-tab="me"><span class="ic">🙂</span>我</button>
+  </div>
+</nav>
+
+<div id="sheet-root"></div>
+
+<script>
+/* =====================================================================
+   1) 填入你的 Supabase 資料（設定好 Supabase 後把這兩行換掉）
+   ===================================================================== */
+const SUPABASE_URL  = "https://xmkenwcqxbjeqyzigdoj.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta2Vud2NxeGJqZXF5emlnZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODYxMjEsImV4cCI6MjA5ODg2MjEyMX0.2Imp7H39wt5m4tZ4V3W0y0lyPqYu61a2liWnlytZzLc";
+/* ===================================================================== */
+
+const CONFIGURED = !SUPABASE_URL.includes("在這裡") && !SUPABASE_ANON.includes("在這裡");
+let sb = null;
+if (CONFIGURED) sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const WD = ["日","一","二","三","四","五","六"];
+const $ = id => document.getElementById(id);
+const todayStr = () => fmtDate(new Date());
+function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+
+let UNITS = [];              // units.json
+let settings = {display_name:"", selected_units:[], daily_goals:{}};
+let todayAct = {};           // {unit_id:{done,correct}} 今天
+let calMonth = new Date();   // 月曆目前顯示月份
+let playUnit = null;
+
+/* ---------- 啟動 ---------- */
+async function boot(){
+  if(!CONFIGURED){
+    showAuth();
+    authMsg("err","尚未設定 Supabase。請先照下方步驟建立專案，把 Project URL 和 anon key 填進這個檔案最上面那兩行，再重新上傳。");
+    return;
+  }
+  await loadUnits();
+  const {data:{session}} = await sb.auth.getSession();
+  if(session) enterApp(); else showAuth();
+  sb.auth.onAuthStateChange((_e,s)=>{ if(s) enterApp(); else showAuth(); });
+}
+async function loadUnits(){
+  try{ const r = await fetch("units.json",{cache:"no-store"}); UNITS = (await r.json()).units || []; }
+  catch(e){ UNITS = []; }
+}
+
+/* ---------- 登入 ---------- */
+function showAuth(){
+  $("view-auth").classList.remove("hidden");
+  $("view-main").classList.add("hidden");
+  $("view-play").classList.add("hidden");
+  $("nav").classList.add("hidden");
+}
+function authMsg(kind,text){ $("auth-msg").innerHTML = text?`<div class="msg ${kind}">${text}</div>`:""; }
+
+$("au-login").onclick = async ()=>{
+  const email=$("au-email").value.trim(), pass=$("au-pass").value;
+  if(!email||!pass){ authMsg("err","請輸入帳號和密碼。"); return; }
+  authMsg("","");
+  const {error} = await sb.auth.signInWithPassword({email,password:pass});
+  if(error) authMsg("err","登入失敗："+cn(error.message));
+};
+$("au-signup").onclick = async ()=>{
+  const email=$("au-email").value.trim(), pass=$("au-pass").value;
+  if(!email||pass.length<6){ authMsg("err","建立帳號需要一個電子郵件，密碼至少 6 個字。"); return; }
+  authMsg("","");
+  const {data,error} = await sb.auth.signUp({email,password:pass});
+  if(error){ authMsg("err","建立失敗："+cn(error.message)); return; }
+  if(data.session) authMsg("ok","帳號建立成功，登入中…");
+  else authMsg("ok","帳號已建立。若 Supabase 開了信箱驗證，請去收信點確認；想省略可在 Supabase 關掉 Confirm email。");
+};
+function cn(m){
+  if(/Invalid login/.test(m)) return "帳號或密碼不對";
+  if(/already registered/.test(m)) return "這個帳號已存在，請直接登入";
+  return m;
+}
+
+/* ---------- 進入 App ---------- */
+async function enterApp(){
+  $("view-auth").classList.add("hidden");
+  $("view-main").classList.remove("hidden");
+  $("nav").classList.remove("hidden");
+  await loadSettings();
+  await loadToday();
+  const {data:{user}} = await sb.auth.getUser();
+  $("me-email").textContent = user?.email || "";
+  $("me-name").value = settings.display_name || "";
+  renderToday(); renderUnits();
+  switchTab("today");
+}
+
+async function loadSettings(){
+  const {data} = await sb.from("settings").select("*").maybeSingle();
+  if(data){ settings = {display_name:data.display_name||"", selected_units:data.selected_units||[], daily_goals:data.daily_goals||{}}; }
+  else { await sb.from("settings").insert({}); settings={display_name:"",selected_units:[],daily_goals:{}}; }
+  $("who").textContent = settings.display_name ? "嗨，"+settings.display_name : "";
+}
+async function saveSettings(){
+  await sb.from("settings").upsert({
+    display_name:settings.display_name,
+    selected_units:settings.selected_units,
+    daily_goals:settings.daily_goals,
+    updated_at:new Date().toISOString()
+  });
+  $("who").textContent = settings.display_name ? "嗨，"+settings.display_name : "";
+}
+async function loadToday(){
+  todayAct={};
+  const {data} = await sb.from("activity").select("*").eq("day",todayStr());
+  (data||[]).forEach(r=> todayAct[r.unit_id]={done:r.done,correct:r.correct});
+}
+
+/* ---------- 今日 ---------- */
+function renderToday(){
+  const now=new Date();
+  $("td-day").textContent=now.getDate();
+  $("td-my").textContent=`${now.getFullYear()}·${now.getMonth()+1}月`;
+  $("td-wd").textContent="星期"+WD[now.getDay()];
+
+  const goals = Object.keys(settings.daily_goals).filter(u=>settings.selected_units.includes(u));
+  const box=$("today-tasks");
+  if(goals.length===0){
+    box.innerHTML=`<div class="empty">還沒有設定任務。<br>到下方 <b>單元</b> 開啟想練的單元，設好每天題數，這裡就會出現。</div>`;
+    return;
+  }
+  box.innerHTML = goals.map(uid=>{
+    const u=UNITS.find(x=>x.id===uid)||{title:uid};
+    const target=settings.daily_goals[uid]||0;
+    const done=(todayAct[uid]?.done)||0;
+    const pct=target?Math.min(100,Math.round(done/target*100)):0;
+    const finished=target&&done>=target;
+    return `<div class="task">
+      <div class="info">
+        <div class="t-name">${u.title}</div>
+        <div class="t-sub">${u.subject||""} ${u.grade||""}</div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="cnt">${done} / ${target} 題${finished?" · 完成":""}</div>
+      </div>
+      ${finished?`<div class="seal-done">優</div>`
+                :`<button class="start" onclick="play('${uid}')">開始</button>`}
+    </div>`;
+  }).join("");
+}
+
+/* ---------- 練習（iframe + 回報進度） ---------- */
+function play(uid){
+  const u=UNITS.find(x=>x.id===uid); if(!u) return;
+  playUnit=uid;
+  $("view-main").classList.add("hidden");
+  $("nav").classList.add("hidden");
+  $("view-play").classList.remove("hidden");
+  $("play-title").textContent=u.title;
+  updateLive();
+  $("play-frame").src=u.file;
+}
+function updateLive(){
+  const target=settings.daily_goals[playUnit]||0;
+  const done=(todayAct[playUnit]?.done)||0;
+  $("play-live").textContent=`今日 ${done}${target?" / "+target:""}`;
+}
+$("play-back").onclick=()=>{
+  $("play-frame").src="about:blank";
+  $("view-play").classList.add("hidden");
+  $("view-main").classList.remove("hidden");
+  $("nav").classList.remove("hidden");
+  renderToday();
+};
+// 單元用 postMessage 回報：{type:'unit-progress', unitDone:1, unitCorrect:0|1}
+window.addEventListener("message", async ev=>{
+  const d=ev.data; if(!d||d.type!=="unit-progress"||!playUnit) return;
+  const inc=d.unitDone||0, cor=d.unitCorrect||0;
+  const cur=todayAct[playUnit]||{done:0,correct:0};
+  cur.done+=inc; cur.correct+=cor; todayAct[playUnit]=cur;
+  updateLive();
+  try{ await sb.rpc("log_activity",{p_day:todayStr(),p_unit:playUnit,p_done:inc,p_correct:cor}); }catch(e){}
+});
+
+/* ---------- 月曆 ---------- */
+function renderDow(){ $("cal-dow").innerHTML=WD.map(w=>`<div class="dow">${w}</div>`).join(""); }
+async function renderCal(){
+  renderDow();
+  const y=calMonth.getFullYear(), m=calMonth.getMonth();
+  $("cal-title").textContent=`${y} 年 ${m+1} 月`;
+  const first=new Date(y,m,1), days=new Date(y,m+1,0).getDate(), lead=first.getDay();
+  const from=fmtDate(new Date(y,m,1)), to=fmtDate(new Date(y,m,days));
+  const {data}=await sb.from("activity").select("*").gte("day",from).lte("day",to);
+  const byDay={};
+  (data||[]).forEach(r=>{ (byDay[r.day]=byDay[r.day]||[]).push(r); });
+
+  const goals=Object.keys(settings.daily_goals).filter(u=>settings.selected_units.includes(u));
+  let html="";
+  for(let i=0;i<lead;i++) html+=`<div class="cell pad"></div>`;
+  for(let dnum=1;dnum<=days;dnum++){
+    const ds=fmtDate(new Date(y,m,dnum));
+    const rows=byDay[ds]||[];
+    let full=false,partial=false;
+    if(goals.length){
+      const met=goals.filter(g=>{const r=rows.find(x=>x.unit_id===g);return r&&r.done>=(settings.daily_goals[g]||0);});
+      full=met.length===goals.length; partial=met.length>0&&!full;
+    } else if(rows.length){ partial=true; }
+    const has=rows.length>0;
+    const isToday=ds===todayStr();
+    html+=`<div class="cell ${has?'has':''} ${full?'':'num'} ${isToday?'today':''} ${partial?'partial':''} ${full?'num-dim':''}"
+        ${has?`onclick="dayDetail('${ds}')"`:""}>
+        ${full?`<span class="stamp">優</span>`:""}
+        <span>${dnum}</span></div>`;
+  }
+  $("cal-grid").innerHTML=html;
+}
+async function dayDetail(ds){
+  const {data}=await sb.from("activity").select("*").eq("day",ds);
+  const rows=data||[];
+  const list=rows.length?rows.map(r=>{
+    const u=UNITS.find(x=>x.id===r.unit_id)||{title:r.unit_id};
+    return `<div class="s-row"><span>${u.title}</span><span class="n">${r.done} 題 · 對 ${r.correct}</span></div>`;
+  }).join(""):`<div class="empty">這天沒有紀錄</div>`;
+  const [y,m,d]=ds.split("-");
+  $("sheet-root").innerHTML=`<div class="sheet-bg" onclick="closeSheet(event)">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <h3>${Number(m)}月${Number(d)}日 做了什麼</h3>
+      <div class="s-date">${ds}</div>
+      ${list}
+      <button class="close" onclick="closeSheet()">關閉</button>
+    </div></div>`;
+}
+function closeSheet(e){ if(e&&e.target.closest(".sheet"))return; $("sheet-root").innerHTML=""; }
+$("cal-prev").onclick=()=>{calMonth.setMonth(calMonth.getMonth()-1);renderCal();};
+$("cal-next").onclick=()=>{calMonth.setMonth(calMonth.getMonth()+1);renderCal();};
+
+/* ---------- 單元設定 ---------- */
+function renderUnits(){
+  const box=$("unit-list");
+  if(UNITS.length===0){
+    box.innerHTML=`<div class="empty">找不到單元清單（units.json）。<br>把單元的 html 放進 <b>units/</b> 資料夾，並在 units.json 加一筆，這裡就會出現。</div>`;
+    return;
+  }
+  box.innerHTML=UNITS.map(u=>{
+    const on=settings.selected_units.includes(u.id);
+    const goal=settings.daily_goals[u.id]||10;
+    return `<div class="unit">
+      <div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div>
+      <div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.subject||""} ${u.grade||""}</div></div>
+      <input class="goal-in num" type="number" min="1" value="${goal}" ${on?"":"disabled"}
+        onchange="setGoal('${u.id}',this.value)">
+    </div>`;
+  }).join("");
+}
+async function toggleUnit(uid){
+  const i=settings.selected_units.indexOf(uid);
+  if(i>=0){ settings.selected_units.splice(i,1); delete settings.daily_goals[uid]; }
+  else { settings.selected_units.push(uid); if(!settings.daily_goals[uid]) settings.daily_goals[uid]=10; }
+  await saveSettings(); renderUnits(); renderToday();
+}
+async function setGoal(uid,v){
+  const n=Math.max(1,parseInt(v)||1);
+  settings.daily_goals[uid]=n; await saveSettings(); renderToday();
+}
+
+/* ---------- 我 ---------- */
+$("me-save").onclick=async()=>{ settings.display_name=$("me-name").value.trim(); await saveSettings(); };
+$("me-logout").onclick=async()=>{ await sb.auth.signOut(); };
+
+/* ---------- 分頁切換 ---------- */
+function switchTab(tab){
+  ["today","cal","units","me"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==tab));
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
+  if(tab==="cal") renderCal();
+}
+document.querySelectorAll(".nav button").forEach(b=> b.onclick=()=>switchTab(b.dataset.tab));
+
+boot();
+</script>
+</body>
+</html>
