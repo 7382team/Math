@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>指數律 練習</title>
+<title>線對稱與三視圖 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -103,8 +103,8 @@
 
   <header>
     <div>
-      <h1>指數律</h1>
-      <div class="sub">同底相乘除 · 次方的次方</div>
+      <h1>線對稱與三視圖</h1>
+      <div class="sub">座標對稱 · 對稱軸 · 三視圖</div>
     </div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
@@ -147,56 +147,123 @@
 <script>
 /* ===== gen-start ===== */
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const nz=(lo,hi)=>{ const v=rand(lo,hi); return Math.random()<0.5?-v:v; };
 const pick=a=>a[rand(0,a.length-1)];
-function powInt(a,n){ let v=1; for(let i=0;i<n;i++) v*=a; return v; }
 
-function genMulDiv(){ const a=rand(2,9); const op=Math.random()<0.5?'×':'÷';
-  const m=rand(2,9); let n=rand(2,9);
-  if(op==='÷'){ while(n===m) n=rand(2,9); }  // 避免指數 0
-  return {kind:'muldiv',a,m,n,op,answer: op==='×'?m+n:m-n};
+// 對稱軸數量對照（審定）：type 供繪圖用
+const SHAPES=[
+  {name:'正三角形',axes:3,type:'reg',n:3},
+  {name:'正方形',axes:4,type:'reg',n:4},
+  {name:'正五邊形',axes:5,type:'reg',n:5},
+  {name:'正六邊形',axes:6,type:'reg',n:6},
+  {name:'長方形',axes:2,type:'rect'},
+  {name:'等腰三角形',axes:1,type:'isoTri'},
+  {name:'平行四邊形',axes:0,type:'para'},
+  {name:'菱形',axes:2,type:'rhombus'},
+];
+
+function genReflect(){                    // 座標對稱：對 x軸 或 y軸
+  const axis = Math.random()<0.5?'x-axis':'y-axis';
+  const x=nz(1,9), y=nz(1,9);
+  const rx = axis==='y-axis' ? -x : x;    // 對 y軸：x 變號
+  const ry = axis==='x-axis' ? -y : y;    // 對 x軸：y 變號
+  const ask = Math.random()<0.5?'x':'y';
+  return {kind:'reflect',axis,x,y,rx,ry,ask,answer: ask==='x'?rx:ry};
 }
-function genPowPow(){ const a=rand(2,9), m=rand(2,5), n=rand(2,4);
-  return {kind:'powpow',a,m,n,answer:m*n}; }
-function genChain(){ const a=rand(2,9), m=rand(2,6), n=rand(2,6), p=rand(2,6);
-  return {kind:'chain',a,m,n,p,answer:m+n-p}; }
-function genValue(){ const a=pick([2,2,3]); const cap=a===2?5:4;
-  const m=rand(1,cap-1), n=rand(1,cap-m);
-  return {kind:'value',a,m,n,answer:powInt(a,m+n)}; }
+function genAxes(){ const s=pick(SHAPES); return {kind:'axes',shape:s,answer:s.axes}; }
+
+function computeView(h,view){             // 由高度圖算某視圖的方格數
+  const R=h.length, C=h[0].length;
+  if(view==='top'){ let n=0; for(let r=0;r<R;r++)for(let c=0;c<C;c++) if(h[r][c]>0) n++; return n; }
+  if(view==='front'){ let s=0; for(let c=0;c<C;c++){ let m=0; for(let r=0;r<R;r++) m=Math.max(m,h[r][c]); s+=m; } return s; }
+  let s=0; for(let r=0;r<R;r++){ let m=0; for(let c=0;c<C;c++) m=Math.max(m,h[r][c]); s+=m; } return s; // side
+}
+function genBlocks(){                      // 積木三視圖（2×2 底、高 0~3）
+  const R=2,C=2; let h,occ,tot;
+  do{ h=[]; occ=0; tot=0;
+    for(let r=0;r<R;r++){ h.push([]); for(let c=0;c<C;c++){ const v=rand(0,3); h[r].push(v); if(v>0)occ++; tot+=v; } }
+  }while(occ<2 || tot<3 || tot>10);
+  const view=pick(['front','side','top']);
+  return {kind:'blocks',h,R,C,view,answer:computeView(h,view)};
+}
 
 function makeProblem(lv){
-  if(lv==='basic') return genMulDiv();
-  if(lv==='adv') return Math.random()<0.5?genPowPow():genChain();
+  if(lv==='basic') return genReflect();
+  if(lv==='adv') return genAxes();
   const r=Math.random();
-  if(r<0.35) return genMulDiv();
-  if(r<0.6) return genPowPow();
-  if(r<0.85) return genChain();
-  return genValue();
+  return r<0.25?genReflect():r<0.5?genAxes():genBlocks();
 }
 /* ===== gen-end ===== */
 
 let level='basic', problem=null, entry='', answered=false, streak=0;
 
+const VN={front:'正面',side:'側面',top:'上面'};
 function qText(){ const p=problem;
-  if(p.kind==='muldiv') return `${p.a}^${p.m} ${p.op} ${p.a}^${p.n} = ${p.a}^▢，▢ =`;
-  if(p.kind==='powpow') return `(${p.a}^${p.m})^${p.n} = ${p.a}^▢，▢ =`;
-  if(p.kind==='chain') return `${p.a}^${p.m} × ${p.a}^${p.n} ÷ ${p.a}^${p.p} = ${p.a}^▢，▢ =`;
-  return `${p.a}^${p.m} × ${p.a}^${p.n} 的值 =`;
+  if(p.kind==='reflect') return `A(${p.x}, ${p.y}) 對 ${p.axis==='x-axis'?'x':'y'}軸對稱，新點的 ${p.ask} 座標 =`;
+  if(p.kind==='axes') return `${p.shape.name} 有幾條對稱軸？`;
+  return `積木堆（高度 ${JSON.stringify(p.h)}）從${VN[p.view]}看有幾個小方格 =`;
 }
 
-const P=(a,e)=>`${a}<sup>${e}</sup>`;
-function eqHTML(){ const p=problem;
-  if(p.kind==='muldiv')
-    return `${P(p.a,p.m)} <span class="op">${p.op}</span> ${P(p.a,p.n)} <span class="op">=</span> ${p.a}<sup class="q">?</sup>`;
-  if(p.kind==='powpow')
-    return `<span class="op">(</span>${P(p.a,p.m)}<span class="op">)</span><sup>${p.n}</sup> <span class="op">=</span> ${p.a}<sup class="q">?</sup>`;
-  if(p.kind==='chain')
-    return `${P(p.a,p.m)} <span class="op">×</span> ${P(p.a,p.n)} <span class="op">÷</span> ${P(p.a,p.p)} <span class="op">=</span> ${p.a}<sup class="q">?</sup>`;
-  return `<div style="font-size:14px;color:var(--ink-soft);letter-spacing:2px;margin-bottom:4px;">求值</div>`+
-    `${P(p.a,p.m)} <span class="op">×</span> ${P(p.a,p.n)} <span class="op">=</span> <span class="q">?</span>`;
+/* ---------- SVG 繪圖 ---------- */
+function svgReflect(p){                    // 座標平面 + 原始點 + 對稱軸
+  const s=9, R=90; let g='';
+  for(let i=-9;i<=9;i++){ const t=i*s;
+    g+=`<line x1="${-R}" y1="${t}" x2="${R}" y2="${t}" stroke="#eef1f7" stroke-width="1"/>`;
+    g+=`<line x1="${t}" y1="${-R}" x2="${t}" y2="${R}" stroke="#eef1f7" stroke-width="1"/>`;
+  }
+  const xax=`<line x1="${-R}" y1="0" x2="${R}" y2="0" stroke="#b7bccb" stroke-width="1.5"/>`;
+  const yax=`<line x1="0" y1="${-R}" x2="0" y2="${R}" stroke="#b7bccb" stroke-width="1.5"/>`;
+  const hi = p.axis==='x-axis'
+    ? `<line x1="${-R}" y1="0" x2="${R}" y2="0" stroke="var(--neg)" stroke-width="3"/>`
+    : `<line x1="0" y1="${-R}" x2="0" y2="${R}" stroke="var(--neg)" stroke-width="3"/>`;
+  const px=p.x*s, py=-p.y*s;
+  const dot=`<circle cx="${px}" cy="${py}" r="5" fill="var(--pos)"/>`+
+    `<text x="${px+(p.x<0?-6:6)}" y="${py+(p.y<0?16:-9)}" fill="var(--pos)" font-size="13" font-family="Lexend" text-anchor="${p.x<0?'end':'start'}">A(${p.x}, ${p.y})</text>`;
+  return `<svg viewBox="-100 -100 200 200">${g}${xax}${yax}${hi}${dot}</svg>`;
+}
+function regPoly(n,rr,rot){ let pts=[]; for(let i=0;i<n;i++){ const a=rot+i*2*Math.PI/n; pts.push([rr*Math.cos(a),rr*Math.sin(a)]); } return pts; }
+function svgShape(sh){ let pts;
+  if(sh.type==='reg') pts=regPoly(sh.n,42, sh.n===4?Math.PI/4:-Math.PI/2);
+  else if(sh.type==='rect') pts=[[-48,-30],[48,-30],[48,30],[-48,30]];
+  else if(sh.type==='isoTri') pts=[[0,-36],[42,32],[-42,32]];
+  else if(sh.type==='para') pts=[[-54,-26],[30,-26],[54,26],[-30,26]];
+  else pts=[[0,-40],[32,0],[0,40],[-32,0]]; // rhombus
+  const d=pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+  return `<svg viewBox="-72 -56 144 112"><polygon points="${d}" style="fill:#dbe6ff;stroke:var(--pos);stroke-width:2.5;stroke-linejoin:round"/></svg>`;
+}
+function svgBlocks(h){                     // 等角視圖（painter：depth=r+c 由小到大、由下往上）
+  const R=h.length,C=h[0].length, W=24,Hh=12,ch=28;
+  const proj=(X,Y,Z)=>[(X-Y)*W,(X+Y)*Hh-Z*ch];
+  const cubes=[]; for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(let k=0;k<h[r][c];k++) cubes.push({r,c,k});
+  cubes.sort((a,b)=>(a.r+a.c)-(b.r+b.c)||a.k-b.k);
+  let poly='', minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+  const push=(P,fill)=>{ const d=P.map(q=>{ minX=Math.min(minX,q[0]);maxX=Math.max(maxX,q[0]);
+    minY=Math.min(minY,q[1]);maxY=Math.max(maxY,q[1]); return q[0].toFixed(1)+','+q[1].toFixed(1); }).join(' ');
+    poly+=`<polygon points="${d}" style="fill:${fill};stroke:#1b1d26;stroke-width:1.4;stroke-linejoin:round"/>`; };
+  for(const {r,c,k} of cubes){ const X=c,Y=r,Z=k;
+    push([proj(X,Y,Z),proj(X+1,Y,Z),proj(X+1,Y,Z+1),proj(X,Y,Z+1)],'#9db8ee');            // front
+    push([proj(X+1,Y,Z),proj(X+1,Y+1,Z),proj(X+1,Y+1,Z+1),proj(X+1,Y,Z+1)],'#6f93de');    // right
+    push([proj(X,Y,Z+1),proj(X+1,Y,Z+1),proj(X+1,Y+1,Z+1),proj(X,Y+1,Z+1)],'#e7eefc');    // top
+  }
+  const pad=8, vb=`${(minX-pad).toFixed(1)} ${(minY-pad).toFixed(1)} ${(maxX-minX+2*pad).toFixed(1)} ${(maxY-minY+2*pad).toFixed(1)}`;
+  return `<svg viewBox="${vb}">${poly}</svg>`;
+}
+
+function figHTML(){ const p=problem;
+  if(p.kind==='reflect'){
+    return `<div style="max-width:190px;margin:2px auto 8px;">${svgReflect(p)}</div>`+
+      `<div style="font-size:16px;font-family:'Noto Sans TC';">A(${p.x}, ${p.y}) 對 <b style="color:var(--neg)">${p.axis==='x-axis'?'x 軸':'y 軸'}</b> 對稱，<br>新點的 <b>${p.ask}</b> 座標 = <span class="q">?</span></div>`;
+  }
+  if(p.kind==='axes'){
+    return `<div style="max-width:160px;margin:2px auto 8px;">${svgShape(p.shape)}</div>`+
+      `<div style="font-size:16px;font-family:'Noto Sans TC';">這個圖形有幾條對稱軸？ <span class="q">?</span></div>`;
+  }
+  return `<div style="max-width:190px;margin:2px auto 8px;">${svgBlocks(p.h)}</div>`+
+    `<div style="font-size:16px;font-family:'Noto Sans TC';">從 <b style="color:var(--neg)">${VN[p.view]}</b> 看，有幾個小方格？ <span class="q">?</span></div>`;
 }
 
 function render(){
-  document.getElementById('eq').innerHTML=eqHTML();
+  document.getElementById('eq').innerHTML=figHTML();
   entry=''; answered=false;
   const ans=document.getElementById('ans'); ans.textContent='?'; ans.className='ans empty';
   document.getElementById('explain').className='explain';
@@ -207,27 +274,45 @@ function showEntry(){ const ans=document.getElementById('ans');
   ans.textContent=entry.replace('-','−'); ans.className='ans';
 }
 
-const fmt=n=> n<0 ? `<span class="neg">−${Math.abs(n)}</span>` : `${n}`;
+const fmt=n=> n<0 ? `<span class="neg">−${Math.abs(n)}</span>` : `<span class="pos">${n}</span>`;
+const AXTXT={'正三角形':'3 條（每個頂點連到對邊中點）','正方形':'4 條（水平、垂直、2 條對角線）',
+  '正五邊形':'5 條','正六邊形':'6 條','長方形':'2 條（水平、垂直中線；對角線不算！）',
+  '等腰三角形':'1 條（頂角的角平分線）','平行四邊形':'0 條（只有點對稱，沒有線對稱）','菱形':'2 條（兩條對角線）'};
 function buildSteps(){ const p=problem;
-  if(p.kind==='muldiv'){
-    return `<div><span class="lead">指數律</span>同底數相${p.op==='×'?'乘 → 指數相加':'除 → 指數相減'}</div>`+
-      `<div>${p.m} ${p.op==='×'?'+':'−'} ${p.n} = <span class="res">${fmt(p.answer)}</span></div>`;
+  if(p.kind==='reflect'){
+    const axname=p.axis==='x-axis'?'x 軸':'y 軸';
+    const rule=p.axis==='x-axis'?'y 座標變號、x 座標不變':'x 座標變號、y 座標不變';
+    return `<div><span class="lead">對稱軸</span>對 ${axname} 對稱</div>`+
+      `<div><span class="lead">規則</span>${rule}</div>`+
+      `<div>A(${p.x}, ${p.y}) → (${fmt(p.rx)}, ${fmt(p.ry)})</div>`+
+      `<div>新點的 ${p.ask} 座標 = <span class="res">${fmt(p.answer)}</span></div>`;
   }
-  if(p.kind==='powpow'){
-    return `<div><span class="lead">指數律</span>次方的次方 → 指數相乘</div>`+
-      `<div>${p.m} × ${p.n} = <span class="res">${p.answer}</span></div>`;
+  if(p.kind==='axes'){
+    return `<div><span class="lead">圖形</span>${p.shape.name}</div>`+
+      `<div><span class="lead">對稱軸</span>${AXTXT[p.shape.name]}</div>`+
+      `<div>共 <span class="res">${p.answer}</span> 條</div>`;
   }
-  if(p.kind==='chain'){
-    return `<div><span class="lead">指數律</span>相乘 → 加、相除 → 減</div>`+
-      `<div>${p.m} + ${p.n} − ${p.p} = <span class="res">${fmt(p.answer)}</span></div>`;
+  const h=p.h;
+  let out=`<div><span class="lead">口訣</span>${VN[p.view]}看＝把該方向「疊最高」的那一排算進去</div>`;
+  if(p.view==='top'){
+    out+=`<div><span class="lead">上面</span>從上往下，數有積木的格子數</div>`;
+    let n=0; for(const row of h) for(const v of row) if(v>0) n++;
+    out+=`<div>= <span class="res">${n}</span> 個</div>`;
+  }else if(p.view==='front'){
+    const cols=[]; for(let c=0;c<h[0].length;c++){ let m=0; for(let r=0;r<h.length;r++) m=Math.max(m,h[r][c]); cols.push(m); }
+    out+=`<div><span class="lead">正面</span>每一直行取最高：${cols.map((m,i)=>`第${i+1}行 ${m}`).join('、')}</div>`+
+      `<div>${cols.join(' + ')} = <span class="res">${p.answer}</span> 個</div>`;
+  }else{
+    const rows=[]; for(let r=0;r<h.length;r++){ let m=0; for(let c=0;c<h[0].length;c++) m=Math.max(m,h[r][c]); rows.push(m); }
+    out+=`<div><span class="lead">側面</span>每一直列取最高：${rows.map((m,i)=>`第${i+1}列 ${m}`).join('、')}</div>`+
+      `<div>${rows.join(' + ')} = <span class="res">${p.answer}</span> 個</div>`;
   }
-  const e=p.m+p.n;
-  return `<div><span class="lead">指數律</span>${p.m} + ${p.n} = ${e}，所以是 ${P(p.a,e)}</div>`+
-    `<div><span class="lead">求值</span>${Array(e).fill(p.a).join(' × ')} = <span class="res">${p.answer}</span></div>`;
+  return out;
 }
 function buildTip(){ const p=problem;
-  if(p.kind==='powpow') return '(aᵐ)ⁿ = aᵐⁿ：次方的次方，指數相乘。底數不變。';
-  return 'aᵐ × aⁿ = aᵐ⁺ⁿ、aᵐ ÷ aⁿ = aᵐ⁻ⁿ。底數不變，只處理指數。';
+  if(p.kind==='reflect') return '對 x軸對稱→上下翻，y 變號；對 y軸對稱→左右翻，x 變號。另一個座標不變。';
+  if(p.kind==='axes') return '對稱軸＝對摺後兩邊完全重疊的那條線。平行四邊形沒有對稱軸，別跟「點對稱」搞混。';
+  return '三視圖數方格：正面、側面各是「該方向每排最高的積木數」相加；上面是佔地的格子數。';
 }
 
 function check(){

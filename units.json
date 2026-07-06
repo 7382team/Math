@@ -11,12 +11,19 @@
     {"id":"algebra-expr","title":"代數式與化簡","subject":"數學","grade":"國一上","tag":"代數","file":"algebra-expr.html","ready":true},
     {"id":"linear-eq","title":"一元一次方程式","subject":"數學","grade":"國一上","tag":"方程式","file":"linear-eq.html","ready":true},
     {"id":"linear-eq-app","title":"一元一次方程式的應用","subject":"數學","grade":"國一上","tag":"方程式","file":"linear-eq-app.html","ready":true},
-    {"id":"symmetry-views","title":"線對稱與三視圖（翰林）","subject":"數學","grade":"國一上","tag":"幾何","file":"symmetry-views.html","ready":false}
+    {"id":"symmetry-views","title":"線對稱與三視圖（翰林）","subject":"數學","grade":"國一上","tag":"幾何","file":"symmetry-views.html","ready":true}
   ],
   "courses": [
     {"id":"","title":"（不指定版本，用預設順序）","sequence":[]},
-    {"id":"kanghsuan-g7a","title":"康軒 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","prime-factor","gcd-lcm","fraction-ops","exponent-law","algebra-expr","linear-eq","linear-eq-app"]},
-    {"id":"nani-g7a","title":"南一 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","prime-factor","gcd-lcm","fraction-ops","exponent-law","algebra-expr","linear-eq","linear-eq-app"]},
-    {"id":"hanlin-g7a","title":"翰林 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","prime-factor","gcd-lcm","fraction-ops","exponent-law","algebra-expr","linear-eq","linear-eq-app","symmetry-views"]}
+    {"id":"kanghsuan-g7a","title":"康軒 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","prime-factor","gcd-lcm","fraction-ops","algebra-expr","linear-eq","linear-eq-app","exponent-law","sci-notation"]},
+    {"id":"nani-g7a","title":"南一 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","exponent-law","prime-factor","gcd-lcm","fraction-ops","algebra-expr","linear-eq","linear-eq-app"]},
+    {"id":"hanlin-g7a","title":"翰林 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","prime-factor","gcd-lcm","fraction-ops","algebra-expr","linear-eq","linear-eq-app","exponent-law","sci-notation","symmetry-views"]}
+  ],
+  "subjects": [
+    {"id":"數學","icon":"📐","color":"#2563eb"},
+    {"id":"國文","icon":"📖","color":"#c1352b"},
+    {"id":"英文","icon":"🔤","color":"#0d9488"},
+    {"id":"自然","icon":"🔬","color":"#3f7d4e"},
+    {"id":"社會","icon":"🗺️","color":"#7c3aed"}
   ]
 }

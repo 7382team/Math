@@ -235,7 +235,7 @@ function check(){
 
   if(window.parent!==window){
     window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
-    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:String(problem.answer), given:entry.replace('-','−')}, '*'); }
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:String(problem.answer), given:entry.replace('-','−'), steps:(typeof buildSteps==='function'?buildSteps():''), tip:(typeof buildTip==='function'?buildTip():'')}, '*'); }
   }
 
   document.getElementById('steps').innerHTML=buildSteps();
