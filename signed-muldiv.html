@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>正負數加減 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26;
+    --ink-soft:#5b606f;
+    --pos:#2563eb;      /* 正號：藍 */
+    --neg:#ea580c;      /* 負號：橘 */
+    --right:#16a34a;    /* 答對：綠 */
+    --wrong:#e11d48;    /* 答錯：紅 */
+    --line:#e6e8ef;
+    --card:#ffffff;
+    --key:#f3f5f9;
+    --key-press:#e3e7f0;
+    --bg:#f7f8fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      var(--bg);
+    display:flex;justify-content:center;
+    padding:14px;
+  }
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .streak b{color:var(--ink);font-weight:600;}
+
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;
+      font-weight:500;background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);
+      cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;
+        padding:26px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+
+  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+      text-align:center;font-size:30px;font-weight:500;line-height:1.35;letter-spacing:.5px;
+      word-spacing:2px;min-height:44px;}
+  .eq .pos{color:var(--pos);font-weight:600;}
+  .eq .neg{color:var(--neg);font-weight:600;}
+  .eq .op{color:var(--ink);margin:0 2px;}
+  .eq .q{color:var(--ink-soft);}
+
+  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);
+       display:flex;align-items:center;justify-content:center;
+       font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;
+       transition:.15s;background:#fbfcfe;}
+  .ans.empty{color:#b7bccb;}
+  .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
+  .ans.no{border-color:var(--wrong);color:var(--wrong);background:#fff1f4;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+
+  /* 解釋 */
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:16px;display:none;}
+  .explain.show{display:block;}
+  .steps{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+         font-size:17px;line-height:2;color:var(--ink);}
+  .steps .lead{color:var(--ink-soft);font-family:'Noto Sans TC';font-size:13px;margin-right:6px;}
+  .steps .pos{color:var(--pos);font-weight:600;}
+  .steps .neg{color:var(--neg);font-weight:600;}
+  .steps .res{color:var(--right);font-weight:700;}
+  .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;
+       border-radius:10px;padding:9px 12px;line-height:1.6;}
+  svg{width:100%;height:auto;margin-top:6px;display:block;}
+
+  /* 鍵盤 */
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);
+       font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;
+       height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key:active{background:var(--key-press);transform:scale(.96);}
+  .key.sign{color:var(--neg);font-weight:600;}
+  .key.del{color:var(--ink-soft);font-size:22px;}
+
+  .go{border:none;border-radius:16px;height:58px;width:100%;
+      font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);}
+  .go.next{background:var(--pos);}
+  .go:disabled{opacity:.4;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>正負數乘除</h1>
+      <div class="sub">隨機出題 · 逐步解說</div>
+    </div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+
+  <div class="card">
+    <div class="eq" id="eq"></div>
+    <div class="ans empty" id="ans">?</div>
+
+    <div class="explain" id="explain">
+      <div class="steps" id="steps"></div>
+      <div id="numline"></div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <div class="pad" id="pad">
+    <button class="key" data-k="7">7</button>
+    <button class="key" data-k="8">8</button>
+    <button class="key" data-k="9">9</button>
+    <button class="key" data-k="4">4</button>
+    <button class="key" data-k="5">5</button>
+    <button class="key" data-k="6">6</button>
+    <button class="key" data-k="1">1</button>
+    <button class="key" data-k="2">2</button>
+    <button class="key" data-k="3">3</button>
+    <button class="key sign" data-k="sign">±</button>
+    <button class="key" data-k="0">0</button>
+    <button class="key del" data-k="del">⌫</button>
+  </div>
+
+  <button class="go" id="go">檢查</button>
+</div>
+
+<script>
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const sgn=()=>Math.random()<0.5?1:-1;
+function divs(n){ const r=[]; for(let d=2;d<=9;d++) if(n%d===0) r.push(d); return r; }
+
+let level='basic', problem=null, entry='', answered=false, streak=0;
+
+function makeProblem(lv){
+  let kind = lv==='basic' ? 'single' : lv==='adv' ? 'chain'
+    : (Math.random()<0.4?'single':Math.random()<0.7?'chain':'order');
+  if(kind==='single') return genSingle();
+  if(kind==='chain') return genChain();
+  return genOrder();
+}
+function genSingle(){
+  const op = Math.random()<0.5?'×':'÷'; let a,b;
+  if(op==='×'){ a={s:sgn(),v:rand(2,12)}; b={s:sgn(),v:rand(2,12)}; }
+  else { const q=rand(2,9), d=rand(2,9); a={s:sgn(),v:d*q}; b={s:sgn(),v:d}; }
+  const ans = op==='×' ? a.s*a.v*b.s*b.v : (a.s*a.v)/(b.s*b.v);
+  return {kind:'single',a,b,op,answer:ans};
+}
+function genChain(){
+  const n=3; const first={s:sgn(),v:rand(2,9)}; let val=first.s*first.v; const steps=[];
+  for(let i=1;i<n;i++){
+    let op = Math.random()<0.5?'×':'÷';
+    if(op==='÷' && divs(Math.abs(val)).length===0) op='×';
+    let f;
+    if(op==='×'){ f={s:sgn(),v:rand(2,6)}; val=val*(f.s*f.v); }
+    else { const ds=divs(Math.abs(val)); const d=ds[rand(0,ds.length-1)]; f={s:sgn(),v:d}; val=val/(f.s*f.v); }
+    steps.push({op,f});
+  }
+  return {kind:'chain',first,steps,answer:val};
+}
+function genOrder(){
+  const t1={s:sgn(),v:rand(2,12)}, addOp=Math.random()<0.5?'＋':'－';
+  const t2={s:sgn(),v:rand(2,9)}, t3={s:sgn(),v:rand(2,9)};
+  const prod=t2.s*t2.v*t3.s*t3.v;
+  const ans=(t1.s*t1.v)+(addOp==='＋'?prod:-prod);
+  return {kind:'order',t1,addOp,t2,t3,prod,answer:ans};
+}
+
+const termHTML=t=>`(<span class="${t.s<0?'neg':'pos'}">${t.s<0?'−':'+'}${t.v}</span>)`;
+const opS=o=>`<span class="op">${o}</span>`;
+const fmt=n=> n<0 ? `<span class="neg">−${Math.abs(n)}</span>` : `<span class="pos">${n}</span>`;
+const pterm=t=>'('+(t.s<0?'−':'+')+t.v+')';
+function qText(){ const p=problem;
+  if(p.kind==='single') return pterm(p.a)+' '+p.op+' '+pterm(p.b)+' =';
+  if(p.kind==='chain') return pterm(p.first)+p.steps.map(s=>' '+s.op+' '+pterm(s.f)).join('')+' =';
+  return pterm(p.t1)+' '+p.addOp+' '+pterm(p.t2)+' × '+pterm(p.t3)+' =';
+}
+
+function eqHTML(){ const p=problem; let h;
+  if(p.kind==='single') h=termHTML(p.a)+' '+opS(p.op)+' '+termHTML(p.b);
+  else if(p.kind==='chain') h=termHTML(p.first)+p.steps.map(s=>' '+opS(s.op)+' '+termHTML(s.f)).join('');
+  else h=termHTML(p.t1)+' '+opS(p.addOp)+' '+termHTML(p.t2)+' '+opS('×')+' '+termHTML(p.t3);
+  return h+' '+opS('=')+' <span class="q">?</span>';
+}
+
+function render(){
+  document.getElementById('eq').innerHTML=eqHTML();
+  entry=''; answered=false;
+  const ans=document.getElementById('ans'); ans.textContent='?'; ans.className='ans empty';
+  document.getElementById('explain').className='explain';
+  const go=document.getElementById('go'); go.textContent='檢查'; go.className='go'; go.disabled=false;
+}
+function showEntry(){ const ans=document.getElementById('ans');
+  if(entry===''||entry==='-'){ ans.textContent = entry==='-'?'−':'?'; ans.className='ans empty'; return; }
+  ans.textContent=entry.replace('-','−'); ans.className='ans';
+}
+
+function buildSteps(){ const p=problem;
+  if(p.kind==='single'){ const same=(p.a.s*p.b.s)>0;
+    return `<div><span class="lead">符號</span>${same?'同號 → 得正':'異號 → 得負'}</div>`+
+      `<div><span class="lead">計算</span>${p.a.v} ${p.op} ${p.b.v} = ${Math.abs(p.answer)}</div>`+
+      `<div>= <span class="res">${fmt(p.answer)}</span></div>`;
+  }
+  if(p.kind==='chain'){ let acc=p.first.s*p.first.v, out='';
+    p.steps.forEach((s,i)=>{ const prev=acc; acc = s.op==='×' ? acc*(s.f.s*s.f.v) : acc/(s.f.s*s.f.v);
+      const fin=i===p.steps.length-1;
+      out+=`<div>${fmt(prev)} ${opS(s.op)} ${termHTML(s.f)} ${opS('=')} ${fin?`<span class="res">${fmt(acc)}</span>`:fmt(acc)}</div>`; });
+    return out;
+  }
+  const same=(p.t2.s*p.t3.s)>0;
+  return `<div><span class="lead">先乘除</span>${termHTML(p.t2)} ${opS('×')} ${termHTML(p.t3)} ${same?'（同號得正）':'（異號得負）'} = ${fmt(p.prod)}</div>`+
+    `<div><span class="lead">再加減</span>${fmt(p.t1.s*p.t1.v)} ${opS(p.addOp)} ${fmt(p.prod)} ${opS('=')} <span class="res">${fmt(p.answer)}</span></div>`;
+}
+function buildTip(){ const p=problem;
+  if(p.kind==='order') return '先乘除，後加減。';
+  if(p.kind==='chain') return '由左到右一步一步算；同號得正、異號得負。';
+  return '兩數相乘除：同號得正、異號得負，數字直接乘或除。';
+}
+
+function check(){
+  if(entry===''||entry==='-') return;
+  answered=true;
+  const val=parseInt(entry,10);
+  const ans=document.getElementById('ans');
+  const correct = val===problem.answer;
+  ans.className='ans '+(correct?'ok':'no'); ans.textContent=entry.replace('-','−');
+  if(!correct){ ans.classList.add('shake'); setTimeout(()=>ans.classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0;
+  document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:String(problem.answer), given:entry.replace('-','−')}, '*'); }
+  }
+
+  document.getElementById('steps').innerHTML=buildSteps();
+  document.getElementById('numline').innerHTML='';
+  document.getElementById('tip').textContent=buildTip();
+  document.getElementById('explain').className='explain show';
+  const go=document.getElementById('go'); go.textContent='下一題'; go.className='go next';
+}
+function next(){ problem=makeProblem(level); render(); }
+
+document.getElementById('pad').addEventListener('click',e=>{
+  const b=e.target.closest('.key'); if(!b||answered) return; const k=b.dataset.k;
+  if(k==='del') entry=entry.slice(0,-1);
+  else if(k==='sign') entry = entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else { if(entry.replace('-','').length<4) entry+=k; }
+  showEntry();
+});
+document.getElementById('go').addEventListener('click',()=> answered?next():check());
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; next();
+}));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ answered?next():check(); return; }
+  if(answered) return;
+  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<4) entry+=e.key; showEntry(); }
+  else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
+  else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); }
+});
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+
+next();
+</script>
+</body>
+</html>

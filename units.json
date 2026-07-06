@@ -1,16 +1,22 @@
 {
   "units": [
-    {"id":"signed-numbers","title":"正負數的加減","subject":"數學","grade":"國一","tag":"整數運算","file":"signed-numbers.html","ready":true},
-    {"id":"signed-muldiv","title":"正負數的乘除","subject":"數學","grade":"國一","tag":"整數運算","file":"signed-muldiv.html","ready":false},
-    {"id":"exponent","title":"指數律與科學記號","subject":"數學","grade":"國一","tag":"指數","file":"exponent.html","ready":false},
-    {"id":"factors","title":"因數與倍數","subject":"數學","grade":"國一","tag":"因倍數","file":"factors.html","ready":false},
-    {"id":"fractions","title":"分數與小數運算","subject":"數學","grade":"國一","tag":"有理數","file":"fractions.html","ready":false},
-    {"id":"linear-eq","title":"一元一次方程式","subject":"數學","grade":"國一","tag":"方程式","file":"linear-eq.html","ready":false}
+    {"id":"num-line","title":"數與數線（含絕對值）","subject":"數學","grade":"國一上","tag":"數與量","file":"num-line.html","ready":true},
+    {"id":"signed-numbers","title":"正負數的加減","subject":"數學","grade":"國一上","tag":"整數運算","file":"signed-numbers.html","ready":true},
+    {"id":"signed-muldiv","title":"正負數的乘除與四則","subject":"數學","grade":"國一上","tag":"整數運算","file":"signed-muldiv.html","ready":true},
+    {"id":"sci-notation","title":"指數記法與科學記號","subject":"數學","grade":"國一上","tag":"指數","file":"sci-notation.html","ready":true},
+    {"id":"prime-factor","title":"質因數分解","subject":"數學","grade":"國一上","tag":"因倍數","file":"prime-factor.html","ready":true},
+    {"id":"gcd-lcm","title":"最大公因數與最小公倍數","subject":"數學","grade":"國一上","tag":"因倍數","file":"gcd-lcm.html","ready":true},
+    {"id":"fraction-ops","title":"分數的四則運算","subject":"數學","grade":"國一上","tag":"有理數","file":"fraction-ops.html","ready":true},
+    {"id":"exponent-law","title":"指數律","subject":"數學","grade":"國一上","tag":"指數","file":"exponent-law.html","ready":true},
+    {"id":"algebra-expr","title":"代數式與化簡","subject":"數學","grade":"國一上","tag":"代數","file":"algebra-expr.html","ready":true},
+    {"id":"linear-eq","title":"一元一次方程式","subject":"數學","grade":"國一上","tag":"方程式","file":"linear-eq.html","ready":true},
+    {"id":"linear-eq-app","title":"一元一次方程式的應用","subject":"數學","grade":"國一上","tag":"方程式","file":"linear-eq-app.html","ready":true},
+    {"id":"symmetry-views","title":"線對稱與三視圖（翰林）","subject":"數學","grade":"國一上","tag":"幾何","file":"symmetry-views.html","ready":false}
   ],
   "courses": [
     {"id":"","title":"（不指定版本，用預設順序）","sequence":[]},
-    {"id":"kanghsuan-g7","title":"康軒 · 國一數學（參考順序）","sequence":["signed-numbers","signed-muldiv","exponent","factors","fractions","linear-eq"]},
-    {"id":"nani-g7","title":"南一 · 國一數學（參考順序）","sequence":["signed-numbers","signed-muldiv","factors","exponent","fractions","linear-eq"]},
-    {"id":"hanlin-g7","title":"翰林 · 國一數學（參考順序）","sequence":["signed-numbers","signed-muldiv","fractions","exponent","factors","linear-eq"]}
+    {"id":"kanghsuan-g7a","title":"康軒 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","prime-factor","gcd-lcm","fraction-ops","exponent-law","algebra-expr","linear-eq","linear-eq-app"]},
+    {"id":"nani-g7a","title":"南一 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","prime-factor","gcd-lcm","fraction-ops","exponent-law","algebra-expr","linear-eq","linear-eq-app"]},
+    {"id":"hanlin-g7a","title":"翰林 · 國一上","sequence":["num-line","signed-numbers","signed-muldiv","sci-notation","prime-factor","gcd-lcm","fraction-ops","exponent-law","algebra-expr","linear-eq","linear-eq-app","symmetry-views"]}
   ]
 }

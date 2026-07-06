@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>指數記法與科學記號 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26;
+    --ink-soft:#5b606f;
+    --pos:#2563eb;      /* 正號：藍 */
+    --neg:#ea580c;      /* 負號：橘 */
+    --right:#16a34a;    /* 答對：綠 */
+    --wrong:#e11d48;    /* 答錯：紅 */
+    --line:#e6e8ef;
+    --card:#ffffff;
+    --key:#f3f5f9;
+    --key-press:#e3e7f0;
+    --bg:#f7f8fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      var(--bg);
+    display:flex;justify-content:center;
+    padding:14px;
+  }
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .streak b{color:var(--ink);font-weight:600;}
+
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;
+      font-weight:500;background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);
+      cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;
+        padding:26px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+
+  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+      text-align:center;font-size:30px;font-weight:500;line-height:1.35;letter-spacing:.5px;
+      word-spacing:2px;min-height:44px;}
+  .eq .pos{color:var(--pos);font-weight:600;}
+  .eq .neg{color:var(--neg);font-weight:600;}
+  .eq .op{color:var(--ink);margin:0 2px;}
+  .eq .q{color:var(--ink-soft);}
+
+  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);
+       display:flex;align-items:center;justify-content:center;
+       font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;
+       transition:.15s;background:#fbfcfe;}
+  .ans.empty{color:#b7bccb;}
+  .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
+  .ans.no{border-color:var(--wrong);color:var(--wrong);background:#fff1f4;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+
+  /* 解釋 */
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:16px;display:none;}
+  .explain.show{display:block;}
+  .steps{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+         font-size:17px;line-height:2;color:var(--ink);}
+  .steps .lead{color:var(--ink-soft);font-family:'Noto Sans TC';font-size:13px;margin-right:6px;}
+  .steps .pos{color:var(--pos);font-weight:600;}
+  .steps .neg{color:var(--neg);font-weight:600;}
+  .steps .res{color:var(--right);font-weight:700;}
+  .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;
+       border-radius:10px;padding:9px 12px;line-height:1.6;}
+  svg{width:100%;height:auto;margin-top:6px;display:block;}
+
+  /* 鍵盤 */
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);
+       font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;
+       height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key:active{background:var(--key-press);transform:scale(.96);}
+  .key.sign{color:var(--neg);font-weight:600;}
+  .key.del{color:var(--ink-soft);font-size:22px;}
+
+  .go{border:none;border-radius:16px;height:58px;width:100%;
+      font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);}
+  .go.next{background:var(--pos);}
+  .go:disabled{opacity:.4;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>指數記法與科學記號</h1>
+      <div class="sub">次方 · a×10ⁿ</div>
+    </div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+
+  <div class="card">
+    <div class="eq" id="eq"></div>
+    <div class="ans empty" id="ans">?</div>
+
+    <div class="explain" id="explain">
+      <div class="steps" id="steps"></div>
+      <div id="numline"></div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <div class="pad" id="pad">
+    <button class="key" data-k="7">7</button>
+    <button class="key" data-k="8">8</button>
+    <button class="key" data-k="9">9</button>
+    <button class="key" data-k="4">4</button>
+    <button class="key" data-k="5">5</button>
+    <button class="key" data-k="6">6</button>
+    <button class="key" data-k="1">1</button>
+    <button class="key" data-k="2">2</button>
+    <button class="key" data-k="3">3</button>
+    <button class="key sign" data-k="sign">±</button>
+    <button class="key" data-k="0">0</button>
+    <button class="key del" data-k="del">⌫</button>
+  </div>
+
+  <button class="go" id="go">檢查</button>
+</div>
+
+<script>
+/* ===== gen-start ===== */
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+function powInt(a,n){ let v=1; for(let i=0;i<n;i++) v*=a; return v; }
+const POWCAP={2:10,3:6,4:5,5:5,6:4,7:4,8:4,9:4};   // 底數 → 最大指數（值不超過 4 位數）
+
+function genPow(){ const a=rand(2,9), n=rand(2,POWCAP[a]), neg=Math.random()<0.4;
+  const v=powInt(a,n);
+  return {kind:'pow',a,n,neg,answer: (neg&&n%2===1)?-v:v};
+}
+function genSci(){ const t=rand(10,99), n=rand(1,6);   // t=係數×10（3.5 → t=35）
+  return {kind:'sci',t,n,answer:t*powInt(10,n-1)};
+}
+function genFindExp(){ const t=rand(10,99), n=rand(1,6);
+  return {kind:'exp',t,n,value:t*powInt(10,n-1),answer:n};
+}
+function makeProblem(lv){
+  if(lv==='basic') return genPow();
+  if(lv==='adv') return Math.random()<0.5?genSci():genFindExp();
+  const r=Math.random();
+  return r<0.4?genPow():r<0.7?genSci():genFindExp();
+}
+/* ===== gen-end ===== */
+
+let level='basic', problem=null, entry='', answered=false, streak=0;
+
+const coef=t=>(t/10).toFixed(1);
+function qText(){ const p=problem;
+  if(p.kind==='pow') return (p.neg?`(−${p.a})`:`${p.a}`)+`^${p.n} =`;
+  if(p.kind==='sci') return `${coef(p.t)} × 10^${p.n} =`;
+  return `${p.value} = ${coef(p.t)} × 10^▢，▢ =`;
+}
+
+function eqHTML(){ const p=problem;
+  if(p.kind==='pow'){
+    const base=p.neg?`<span class="op">(</span><span class="neg">−${p.a}</span><span class="op">)</span>`:`${p.a}`;
+    return `${base}<sup>${p.n}</sup> <span class="op">=</span> <span class="q">?</span>`;
+  }
+  if(p.kind==='sci')
+    return `${coef(p.t)} <span class="op">×</span> 10<sup>${p.n}</sup> <span class="op">=</span> <span class="q">?</span>`;
+  return `${p.value} <span class="op">=</span> ${coef(p.t)} <span class="op">×</span> 10<sup class="q">?</sup>`;
+}
+
+function render(){
+  document.getElementById('eq').innerHTML=eqHTML();
+  entry=''; answered=false;
+  const ans=document.getElementById('ans'); ans.textContent='?'; ans.className='ans empty';
+  document.getElementById('explain').className='explain';
+  const go=document.getElementById('go'); go.textContent='檢查'; go.className='go'; go.disabled=false;
+}
+function showEntry(){ const ans=document.getElementById('ans');
+  if(entry===''||entry==='-'){ ans.textContent = entry==='-'?'−':'?'; ans.className='ans empty'; return; }
+  ans.textContent=entry.replace('-','−'); ans.className='ans';
+}
+
+const fmt=n=> n<0 ? `<span class="neg">−${Math.abs(n)}</span>` : `${n}`;
+function buildSteps(){ const p=problem;
+  if(p.kind==='pow'){
+    const v=powInt(p.a,p.n);
+    let out=`<div><span class="lead">展開</span>${Array(p.n).fill(p.a).join(' × ')} = ${v}</div>`;
+    if(p.neg) out+=`<div><span class="lead">符號</span>負數的 ${p.n} 次方：${p.n%2===1?'奇數次 → 負':'偶數次 → 正'}</div>`;
+    return out+`<div>= <span class="res">${fmt(p.answer)}</span></div>`;
+  }
+  if(p.kind==='sci'){
+    return `<div><span class="lead">意思</span>${coef(p.t)} × ${1+'0'.repeat(p.n)}</div>`+
+      `<div><span class="lead">技巧</span>小數點向右移 ${p.n} 位</div>`+
+      `<div>= <span class="res">${p.answer}</span></div>`;
+  }
+  return `<div><span class="lead">找係數</span>小數點向左移到只剩一位整數：${p.value} → ${coef(p.t)}</div>`+
+    `<div><span class="lead">數位數</span>共移了 ${p.n} 位</div>`+
+    `<div>指數 = <span class="res">${p.answer}</span></div>`;
+}
+function buildTip(){ const p=problem;
+  if(p.kind==='pow') return 'aⁿ 是 a 自乘 n 次。負底數：偶數次方得正、奇數次方得負。';
+  return '科學記號：係數 1 ≤ a ＜ 10，再乘 10 的次方；次方數＝小數點移動的位數。';
+}
+
+function check(){
+  if(entry===''||entry==='-') return;
+  answered=true;
+  const val=parseInt(entry,10);
+  const ans=document.getElementById('ans');
+  const correct = val===problem.answer;
+  ans.className='ans '+(correct?'ok':'no'); ans.textContent=entry.replace('-','−');
+  if(!correct){ ans.classList.add('shake'); setTimeout(()=>ans.classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0;
+  document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:String(problem.answer), given:entry.replace('-','−')}, '*'); }
+  }
+
+  document.getElementById('steps').innerHTML=buildSteps();
+  document.getElementById('numline').innerHTML='';
+  document.getElementById('tip').textContent=buildTip();
+  document.getElementById('explain').className='explain show';
+  const go=document.getElementById('go'); go.textContent='下一題'; go.className='go next';
+}
+function next(){ problem=makeProblem(level); render(); }
+
+document.getElementById('pad').addEventListener('click',e=>{
+  const b=e.target.closest('.key'); if(!b||answered) return; const k=b.dataset.k;
+  if(k==='del') entry=entry.slice(0,-1);
+  else if(k==='sign') entry = entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else { if(entry.replace('-','').length<8) entry+=k; }   // 科學記號答案可到 7 位
+  showEntry();
+});
+document.getElementById('go').addEventListener('click',()=> answered?next():check());
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; next();
+}));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ answered?next():check(); return; }
+  if(answered) return;
+  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<8) entry+=e.key; showEntry(); }
+  else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
+  else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); }
+});
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+
+next();
+</script>
+</body>
+</html>
