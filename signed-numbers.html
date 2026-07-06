@@ -173,6 +173,9 @@ function makeProblem(lv){
   return {terms, ops, simplified, answer:sum};
 }
 
+function pterm(t){ return '('+(t.s<0?'−':'+')+t.v+')'; }
+function qText(){ const {terms,ops}=problem; let s=pterm(terms[0]);
+  for(let i=1;i<terms.length;i++) s+=' '+ops[i-1]+' '+pterm(terms[i]); return s+' ='; }
 function termHTML(t){
   const cls = t.s<0?'neg':'pos';
   const sign = t.s<0?'−':'+';
@@ -297,6 +300,9 @@ function check(){
   // 回報進度給「學習聯絡簿」儀表板（單獨開啟時不受影響）
   if(window.parent!==window){
     window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){
+      window.parent.postMessage({type:'unit-mistake', q:qText(), ans:String(problem.answer), given:entry.replace('-','−')}, '*');
+    }
   }
 
   // 解說
@@ -346,6 +352,15 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
   else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); }
 });
+
+// 由「學習聯絡簿」帶入難度：?level=basic|adv|mix
+(function(){
+  const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){
+    level=lv;
+    document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));
+  }
+})();
 
 next();
 </script>

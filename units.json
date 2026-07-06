@@ -1,11 +1,16 @@
 {
   "units": [
-    {
-      "id": "signed-numbers",
-      "title": "正負數加減",
-      "subject": "數學",
-      "grade": "國一",
-      "file": "signed-numbers.html"
-    }
+    {"id":"signed-numbers","title":"正負數的加減","subject":"數學","grade":"國一","tag":"整數運算","file":"signed-numbers.html","ready":true},
+    {"id":"signed-muldiv","title":"正負數的乘除","subject":"數學","grade":"國一","tag":"整數運算","file":"signed-muldiv.html","ready":false},
+    {"id":"exponent","title":"指數律與科學記號","subject":"數學","grade":"國一","tag":"指數","file":"exponent.html","ready":false},
+    {"id":"factors","title":"因數與倍數","subject":"數學","grade":"國一","tag":"因倍數","file":"factors.html","ready":false},
+    {"id":"fractions","title":"分數與小數運算","subject":"數學","grade":"國一","tag":"有理數","file":"fractions.html","ready":false},
+    {"id":"linear-eq","title":"一元一次方程式","subject":"數學","grade":"國一","tag":"方程式","file":"linear-eq.html","ready":false}
+  ],
+  "courses": [
+    {"id":"","title":"（不指定版本，用預設順序）","sequence":[]},
+    {"id":"kanghsuan-g7","title":"康軒 · 國一數學（參考順序）","sequence":["signed-numbers","signed-muldiv","exponent","factors","fractions","linear-eq"]},
+    {"id":"nani-g7","title":"南一 · 國一數學（參考順序）","sequence":["signed-numbers","signed-muldiv","factors","exponent","fractions","linear-eq"]},
+    {"id":"hanlin-g7","title":"翰林 · 國一數學（參考順序）","sequence":["signed-numbers","signed-muldiv","fractions","exponent","factors","linear-eq"]}
   ]
 }
