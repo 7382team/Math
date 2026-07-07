@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>細胞與生物體的組成 練習</title>
+<title>現在式與現在進行式 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     --pos:#2563eb; --neg:#ea580c;
     --right:#16a34a; --wrong:#e11d48;
     --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
-    --subj:#3f7d4e;   /* 科目主色 */
+    --subj:#0d9488;   /* 科目主色 */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;}
@@ -55,13 +55,13 @@
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "bio-cell",
-  "title": "細胞與生物體的組成",
-  "subject": "生物",
+  "id": "eng-present",
+  "title": "現在式與現在進行式",
+  "subject": "英文",
   "grade": "國一",
   "term": "上",
-  "chapter": 1,
-  "tag": "細胞",
+  "chapter": 2,
+  "tag": "文法",
   "ready": true
 }
 </script>
@@ -69,7 +69,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div><h1>細胞與生物體的組成</h1><div class="sub">生物 · 選擇題 · 附詳解</div></div>
+    <div><h1>現在式與現在進行式</h1><div class="sub">英文 · 文法選擇題 · 附詳解</div></div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
   <div class="levels">
@@ -87,7 +87,7 @@
 
 <script>
 /* ===== bank-start ===== 原創題庫：level 難度、topic 知識點、q 題幹、choices 選項、answer 正解索引、explain 詳解 */
-const BANK=[{"level":"basic","topic":"細胞學說","q":"關於細胞，下列敘述何者正確？","choices":["病毒是最小的細胞","細胞是生物體構造與功能的基本單位","所有細胞都看得到細胞核","細胞不能再分裂"],"answer":1,"explain":"細胞是生物體構造與功能的基本單位；病毒沒有細胞構造，成熟紅血球則無細胞核。"},{"level":"basic","topic":"胞器功能","q":"粒線體的主要功能是？","choices":["光合作用","進行呼吸作用、釋放能量","儲存遺傳物質","控制物質進出"],"answer":1,"explain":"粒線體是呼吸作用的場所，分解養分釋放能量。"},{"level":"adv","topic":"胞器功能","q":"人體哪一種細胞因為需要大量能量，通常粒線體特別多？","choices":["皮膚表皮細胞","心肌細胞","成熟紅血球","脂肪細胞"],"answer":1,"explain":"心肌不停收縮、耗能大，粒線體特別多；成熟紅血球連細胞核都沒有。"},{"level":"adv","topic":"細胞膜與細胞壁","q":"控制物質進出細胞的是細胞膜，那細胞壁的主要功能是？","choices":["控制物質進出","支持與保護","進行光合作用","儲存遺傳物質"],"answer":1,"explain":"細胞壁（纖維素）提供支持保護，不能選擇物質進出；控制進出是細胞膜。"},{"level":"basic","topic":"動植物細胞比較","q":"下列何者是植物細胞有、動物細胞沒有的？","choices":["細胞膜","細胞核","葉綠體","粒線體"],"answer":2,"explain":"葉綠體、細胞壁、大液泡為植物細胞特有。"},{"level":"adv","topic":"動植物細胞比較","q":"動物細胞和植物細胞都有、且都能釋放能量的胞器是？","choices":["葉綠體","粒線體","細胞壁","大液泡"],"answer":1,"explain":"粒線體兩者都有、都行呼吸作用產能；葉綠體只有植物有。"},{"level":"adv","topic":"胞器比喻","q":"把細胞比喻成工廠，「指揮中心」與「發電廠」分別對應？","choices":["細胞膜、液泡","細胞核、粒線體","粒線體、細胞核","葉綠體、細胞核"],"answer":1,"explain":"細胞核是指揮中心（含遺傳物質），粒線體是發電廠（產能）。"},{"level":"basic","topic":"顯微鏡倍率","q":"顯微鏡目鏡 10 倍、物鏡 40 倍，總放大倍率為？","choices":["50 倍","140 倍","400 倍","4 倍"],"answer":2,"explain":"總倍率＝目鏡×物鏡＝10×40＝400。"},{"level":"adv","topic":"顯微鏡操作","q":"使用複式顯微鏡，正確的做法是？","choices":["一開始就用高倍鏡","先用低倍鏡找到物體，再換高倍","倍率越高視野越大","高倍時視野越亮"],"answer":1,"explain":"先低倍（視野大好找），移到中央後再換高倍看細節。"},{"level":"adv","topic":"顯微鏡成像","q":"顯微鏡下的像上下顛倒、左右相反。若物體出現在視野的右下角，玻片要往哪個方向移才能把它移到中央？","choices":["往左上推","往右下推","往正上推","不用移動"],"answer":1,"explain":"像與實物方向相反，玻片移動方向與看到的相反：像在右下，玻片要往右下推。"},{"level":"basic","topic":"組成層次","q":"生物體組成層次由小到大，正確的是？","choices":["細胞→器官→組織→系統","細胞→組織→器官→器官系統→個體","組織→細胞→器官→個體","細胞→系統→器官→組織"],"answer":1,"explain":"細胞→組織→器官→器官系統→個體。"},{"level":"adv","topic":"組成層次","q":"血液能運送氧氣與養分。就組成層次而言，血液屬於？","choices":["細胞","組織","器官","器官系統"],"answer":1,"explain":"血液由血球與血漿組成、共同執行運輸，屬於「組織」。"},{"level":"adv","topic":"組成層次","q":"胃能磨碎並初步消化食物。胃屬於哪一個層次？","choices":["細胞","組織","器官","個體"],"answer":2,"explain":"由多種組織合作完成特定功能者為器官，胃是器官。"},{"level":"basic","topic":"單細胞生物","q":"下列何者是單細胞生物？","choices":["蚯蚓","草履蟲","水稻","蜜蜂"],"answer":1,"explain":"草履蟲整個個體只由一個細胞組成。"},{"level":"adv","topic":"構造配合功能","q":"神經細胞常有細長的突起，這種形狀最有利於？","choices":["儲存養分","快速分裂","長距離傳遞訊息","進行光合作用"],"answer":2,"explain":"細長突起利於把訊息傳到遠處，是「構造配合功能」的例子。"},{"level":"adv","topic":"葉綠體與環境","q":"植物根部的細胞通常不含葉綠體，最合理的原因是？","choices":["根不需要養分","根在地底照不到光，不行光合作用","根細胞太小","葉綠體會被土壤破壞"],"answer":1,"explain":"葉綠體行光合作用需要光，根在地底無光，故一般不含葉綠體。"},{"level":"basic","topic":"胞器功能","q":"成熟植物細胞常有一個大型構造，儲存水分與細胞液、使細胞飽滿，這是？","choices":["大液泡","粒線體","葉綠體","細胞核"],"answer":0,"explain":"大液泡儲存水分養分，並維持細胞的膨壓。"},{"level":"adv","topic":"葉綠體vs粒線體","q":"關於葉綠體與粒線體，下列何者正確？","choices":["兩者都只有植物才有","葉綠體行光合、粒線體行呼吸","兩者都行光合作用","粒線體行光合、葉綠體行呼吸"],"answer":1,"explain":"葉綠體光合、粒線體呼吸；粒線體動植物皆有，葉綠體只有植物有。"},{"level":"basic","topic":"細胞壁成分","q":"植物細胞壁的主要成分是？","choices":["蛋白質","脂質","纖維素","澱粉"],"answer":2,"explain":"細胞壁主要由纖維素構成。"},{"level":"adv","topic":"綜合判斷","q":"某細胞同時具有細胞壁、葉綠體和大液泡，據此判斷它最可能是？","choices":["動物細胞","植物細胞","病毒","紅血球"],"answer":1,"explain":"同時具細胞壁、葉綠體、大液泡是植物細胞的特徵。"},{"level":"adv","topic":"顯微鏡亮度","q":"用顯微鏡觀察時覺得視野太暗，最直接的調整方式是？","choices":["換高倍物鏡","調整光圈或反光鏡增加進光","把玻片翻面","移除蓋玻片"],"answer":1,"explain":"視野亮度由光圈與反光鏡控制。"},{"level":"basic","topic":"細胞核","q":"細胞內儲存遺傳物質、控制細胞各種活動的構造是？","choices":["細胞核","細胞膜","液泡","細胞壁"],"answer":0,"explain":"細胞核含 DNA，是細胞的控制中心。"}];
+const BANK=[{"level":"basic","topic":"現在簡單式","q":"I ___ to school every day.","choices":["go","goes","going","went"],"answer":0,"explain":"主詞 I，現在簡單式用原形 go。"},{"level":"adv","topic":"第三人稱單數","q":"She ___ to school by bus.","choices":["go","goes","going","gone"],"answer":1,"explain":"第三人稱單數（she）動詞字尾加 -s → goes。"},{"level":"adv","topic":"第三單數 y→ies","q":"He ___ English very hard.","choices":["study","studys","studies","studying"],"answer":2,"explain":"子音+y 結尾，去 y 加 -ies → studies。"},{"level":"adv","topic":"第三單數 -s","q":"My brother ___ fish a lot.","choices":["eat","eats","eating","ate"],"answer":1,"explain":"單數主詞，動詞加 -s → eats。"},{"level":"basic","topic":"複數主詞","q":"They ___ basketball after school.","choices":["play","plays","plaies","playing"],"answer":0,"explain":"複數主詞 they 用原形 play。"},{"level":"adv","topic":"否定 doesn’t","q":"She ___ like coffee.","choices":["don’t","doesn’t","isn’t","not"],"answer":1,"explain":"第三人稱單數否定用 doesn’t ＋原形。"},{"level":"adv","topic":"否定 don’t","q":"I ___ have any money.","choices":["doesn’t","don’t","isn’t","am not"],"answer":1,"explain":"主詞 I 否定用 don’t ＋原形。"},{"level":"adv","topic":"疑問 Does","q":"___ he like music?","choices":["Do","Does","Is","Are"],"answer":1,"explain":"第三人稱單數疑問用 Does ＋主詞＋原形。"},{"level":"adv","topic":"疑問 Do","q":"___ they live near here?","choices":["Do","Does","Is","Are"],"answer":0,"explain":"複數主詞疑問用 Do。"},{"level":"basic","topic":"現在進行式","q":"Look! He is ___ now.","choices":["run","runs","running","ran"],"answer":2,"explain":"現在進行式 be＋Ving；run 短母音雙寫 → running。"},{"level":"adv","topic":"現在進行式","q":"They are ___ TV in the living room.","choices":["watch","watches","watching","watched"],"answer":2,"explain":"進行式用 be＋Ving → watching。"},{"level":"adv","topic":"現在進行式","q":"I am ___ a comic book.","choices":["read","reads","reading","red"],"answer":2,"explain":"be＋Ving → reading。"},{"level":"adv","topic":"Ving 雙寫","q":"The old man is ___ on the bench.","choices":["siting","sitting","sit","sits"],"answer":1,"explain":"sit 短母音，雙寫 t → sitting。"},{"level":"adv","topic":"Ving 雙寫","q":"The kids are ___ in the pool.","choices":["swiming","swimming","swim","swims"],"answer":1,"explain":"swim 雙寫 m → swimming。"},{"level":"adv","topic":"進行式時機","q":"Be quiet! The baby ___ now.","choices":["sleeps","is sleeping","sleep","slept"],"answer":1,"explain":"Look、now 表「此刻正在」，用現在進行式。"},{"level":"adv","topic":"簡單式時機","q":"My mother ___ dinner every evening.","choices":["cook","cooks","is cooking","cooked"],"answer":1,"explain":"every evening 表習慣，用現在簡單式；主詞單數 → cooks。"},{"level":"adv","topic":"第三單數 -es","q":"He ___ TV after dinner.","choices":["watch","watchs","watches","watching"],"answer":2,"explain":"ch 結尾加 -es → watches。"},{"level":"adv","topic":"疑問 Does","q":"___ your sister play the piano?","choices":["Do","Does","Is","Are"],"answer":1,"explain":"your sister 第三人稱單數，疑問用 Does。"}];
 /* ===== bank-end ===== */
 
 const AB=['A','B','C','D','E'];

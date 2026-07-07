@@ -109,7 +109,28 @@ create policy "settings_insert_own" on public.settings for insert with check (au
 create policy "settings_update_own" on public.settings for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "settings_delete_own" on public.settings for delete using (auth.uid() = user_id);
 
+-- ---------- 3. 遊戲存檔 game_state（給 game.html 用；聯絡簿完全不受影響）----------
+-- 一人一列，整包遊戲進度（英雄、已攻略樓層、素材）存在 data 這個 jsonb。
+-- 以後遊戲長出裝備/建設，只要往 data 塞更多欄位，不用改表結構。
+create table if not exists public.game_state (
+  user_id    uuid primary key default auth.uid() references auth.users(id) on delete cascade,
+  data       jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table public.game_state alter column user_id set default auth.uid();
+
+-- 打開 RLS：每個帳號只能存取自己的存檔（別人看不到、也刪不掉）
+alter table public.game_state enable row level security;
+drop policy if exists "game_state_select_own" on public.game_state;
+drop policy if exists "game_state_insert_own" on public.game_state;
+drop policy if exists "game_state_update_own" on public.game_state;
+create policy "game_state_select_own" on public.game_state for select using (auth.uid() = user_id);
+create policy "game_state_insert_own" on public.game_state for insert with check (auth.uid() = user_id);
+create policy "game_state_update_own" on public.game_state for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+
 -- 完成。跑完後：
 --   ‧ 錯題本會記錄並顯示詳解（看答案時）
---   ‧ 別人（含沒登入）再也讀不到你的 settings / mistakes
+--   ‧ 別人（含沒登入）再也讀不到你的 settings / mistakes / game_state
+--   ‧ 遊戲(game.html)登入後，英雄/樓層/素材會存雲端，跨裝置同步、不會被清掉
 --   ‧ 記得在 App 重新勾選一次要練的單元（雲端那份先前被清空了），之後就會跨裝置同步

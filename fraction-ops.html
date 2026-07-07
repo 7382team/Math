@@ -97,6 +97,18 @@
   .go.next{background:var(--pos);}
   .go:disabled{opacity:.4;}
 </style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "fraction-ops",
+  "title": "分數的四則運算",
+  "subject": "數學",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 6,
+  "tag": "有理數",
+  "ready": true
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -302,6 +314,18 @@ document.addEventListener('keydown',e=>{
 })();
 
 next();
+</script>
+
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint/fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:10px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var eq=document.getElementById('eq');if(eq&&eq.parentNode){eq.parentNode.insertBefore(h,eq.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(typeof answered!=='undefined'&&answered)return;var t='';try{t=buildTip();}catch(e){}if(!t)return;box().innerHTML='💡 提示：'+t;}
+  function eliminateOne(){showHint();}          /* 數字輸入題：先給弱提示（沿用 buildTip） */
+  if(typeof next==='function'){var _n=next;next=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint']},'*');}
+})();
 </script>
 </body>
 </html>
