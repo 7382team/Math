@@ -30,6 +30,8 @@
   .datebar .my{color:var(--muted);font-size:14px;padding-bottom:4px;} .datebar .wd{margin-left:auto;color:var(--muted);font-size:14px;padding-bottom:6px;}
   .sec-label{font-size:13px;color:var(--muted);letter-spacing:2px;margin:6px 2px 10px;font-weight:500;}
   .rest-banner{background:#eef3ee;border:1.5px solid #d7e4d8;border-radius:16px;padding:14px 16px;margin-bottom:14px;font-size:15px;color:var(--ok);}
+  .reviewbar{background:#fbeeec;border:1.5px solid #f0d5d1;border-radius:16px;padding:14px 16px;margin-bottom:14px;font-size:15px;color:var(--seal);cursor:pointer;display:flex;align-items:center;gap:8px;transition:.12s;}
+  .reviewbar:active{transform:scale(.99);} .reviewbar b{font-family:'Lexend',sans-serif;font-weight:700;} .reviewbar .arr{margin-left:auto;font-weight:700;}
   .reward{display:flex;align-items:center;gap:14px;background:#fbf1e9;border:1.5px solid #f0dcc9;border-radius:16px;padding:16px;margin-bottom:14px;}
   .reward .r-txt{font-size:15px;line-height:1.5;} .reward .r-txt b{color:var(--seal);}
   .task{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);}
@@ -148,7 +150,7 @@
 
   <section id="tab-today">
     <div class="datebar"><div class="d num" id="td-day">–</div><div class="my num" id="td-my"></div><div class="wd" id="td-wd"></div></div>
-    <div id="rest-slot"></div><div id="reward-slot"></div>
+    <div id="rest-slot"></div><div id="reward-slot"></div><div id="review-slot"></div>
     <div class="sec-label" id="who"></div>
     <div class="sec-label">今日任務</div>
     <div class="card" id="today-tasks"></div>
@@ -325,6 +327,7 @@ async function renderToday(){
   $("td-day").textContent=now.getDate(); $("td-my").textContent=`${now.getFullYear()}·${now.getMonth()+1}月`; $("td-wd").textContent="星期"+WD[now.getDay()];
   $("who").textContent=settings.display_name?("嗨，"+settings.display_name):"";
   $("rest-slot").innerHTML = isRestDay(now) ? `<div class="rest-banner">😌 今天是休息日，好好放鬆。想練習也可以，都算加分。</div>` : "";
+  await renderReviewBar();
 
   const en=orderUnits(enabledUnits()), box=$("today-tasks");
   if(en.length===0){ box.innerHTML=`<div class="empty">還沒有設定任務。<br>到下方 <b>單元</b> 打開想練的單元、設好每天題數，這裡就會出現。</div>`; $("reward-slot").innerHTML=""; await refreshStreak(); return; }
@@ -338,6 +341,10 @@ async function renderToday(){
   await refreshStreak();
 }
 function lvName(l){ return l==="basic"?"基礎":l==="adv"?"進階":"混合"; }
+async function renderReviewBar(){ const slot=$("review-slot"); if(!slot) return;
+  try{ const {count}=await sb.from("mistakes").select("unit_id",{count:"exact",head:true}).lte("due",todayStr());
+    slot.innerHTML = (count>0) ? `<div class="reviewbar" onclick="switchTab('wrong')">📝 今天有 <b>${count}</b> 題錯題要複習<span class="arr">→</span></div>` : "";
+  }catch(e){ slot.innerHTML=""; } }
 
 async function refreshStreak(){
   const en=enabledUnits(), chip=$("streak-chip"); if(en.length===0){ chip.classList.add("hidden"); return; }
