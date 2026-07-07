@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家長後台 · 學習聯絡簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--paper:#f4f2ea;--card:#fffdf8;--ink:#2b2b28;--muted:#8a857b;--line:#e5e2d8;--seal:#c1352b;--blue:#2563eb;--orange:#ea580c;--ok:#3f7d4e;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/26px 26px,var(--paper);}
+  .num{font-family:'Lexend',sans-serif;font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;cursor:pointer;border:none;} a{color:inherit;text-decoration:none;} input,select{font-family:inherit;}
+  .hidden{display:none!important;}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;padding:0 16px 40px;}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:20px 2px 14px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .seal{width:36px;height:36px;border:2px solid var(--seal);border-radius:8px;color:var(--seal);font-family:'Noto Serif TC',serif;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);}
+  .brand h1{margin:0;font-family:'Noto Serif TC',serif;font-size:20px;letter-spacing:1px;}
+  .brand small{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:2px;letter-spacing:0;}
+  .links{display:flex;gap:7px;}
+  .chip{font-size:12px;background:#eceadf;border-radius:99px;padding:6px 11px;color:var(--ink);}
+  .chip.blue{background:#eaf1fb;color:var(--blue);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);}
+  .sec{font-size:13px;color:var(--muted);letter-spacing:2px;margin:6px 2px 12px;font-weight:500;}
+  .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .hdr h2{margin:0;font-size:16px;} .streak{font-size:12px;color:var(--seal);background:#fbeeec;border:1px solid #f0d5d1;border-radius:99px;padding:5px 11px;}
+  .streak b{font-family:'Lexend';font-weight:700;}
+  .big{font-family:'Lexend';font-size:30px;font-weight:700;} .big small{font-size:14px;color:var(--muted);font-weight:400;}
+  .task{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);} .task:last-child{border-bottom:none;}
+  .task .nm{flex:1;min-width:0;} .task .nm .t{font-weight:500;font-size:15px;} .task .nm .s{font-size:12px;color:var(--muted);margin-top:2px;}
+  .task .st{font-size:13px;font-weight:600;white-space:nowrap;} .task .st.ok{color:var(--ok);} .task .st.no{color:var(--muted);}
+  .week{display:flex;gap:6px;justify-content:space-between;margin-top:4px;}
+  .day{flex:1;text-align:center;} .day .dot{width:22px;height:22px;border-radius:8px;margin:4px auto 0;background:#eceadf;}
+  .day .dot.full{background:var(--ok);} .day .dot.part{background:var(--orange);} .day .lb{font-size:10px;color:var(--muted);}
+  .mrow{display:flex;gap:20px;} .mrow>div{flex:1;} .mrow .k{font-size:12px;color:var(--muted);}
+  .subj{margin-bottom:12px;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);}
+  .subj-h{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;}
+  .subj-h .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;}
+  .subj-h .nm{flex:1;font-family:'Noto Serif TC',serif;font-weight:700;font-size:16px;letter-spacing:1px;}
+  .subj-h .cnt{font-size:12px;color:var(--muted);} .subj-h .cv{font-size:12px;color:var(--muted);}
+  .subj-b{padding:2px 15px 8px;border-top:1px dashed var(--line);}
+  .verrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);}
+  .verrow .l{font-size:12px;color:var(--muted);} .verrow select{flex:1;padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-size:13px;}
+  .unit{padding:11px 0;border-bottom:1px solid var(--line);} .unit:last-child{border-bottom:none;}
+  .unit-h{display:flex;align-items:center;gap:11px;} .unit .info{flex:1;min-width:0;} .unit .info .t{font-weight:500;font-size:14px;} .unit .info .s{font-size:11px;color:var(--muted);margin-top:2px;}
+  .toggle{width:46px;height:27px;border-radius:99px;background:#d8d5c9;position:relative;transition:.2s;flex:none;} .toggle.on{background:var(--ok);}
+  .toggle i{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:99px;background:#fff;transition:.2s;} .toggle.on i{left:22px;}
+  .cfg{margin-top:10px;padding:10px;background:#faf8f1;border-radius:10px;display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;}
+  .cfg .l{font-size:12px;color:var(--muted);} .goal{width:58px;padding:7px;border:1.5px solid var(--line);border-radius:8px;text-align:center;font-family:'Lexend';font-size:14px;}
+  .seg{display:flex;background:#eceadf;border-radius:8px;padding:2px;} .seg button{background:none;padding:6px 10px;font-size:12px;color:var(--muted);border-radius:6px;} .seg button.on{background:#fff;color:var(--ink);font-weight:500;}
+  .save-hint{font-size:12px;color:var(--ok);text-align:center;height:16px;margin-top:4px;}
+  /* login */
+  .auth{max-width:380px;margin:0 auto;padding:70px 20px;} .auth .seal{width:56px;height:56px;font-size:26px;margin:0 auto 14px;}
+  .auth h1{text-align:center;font-family:'Noto Serif TC',serif;font-size:22px;} .auth p{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 24px;}
+  .field{margin-bottom:12px;} .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  .field input{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;background:#fff;}
+  .primary{width:100%;background:var(--ink);color:#fff;padding:14px;border-radius:13px;font-size:16px;font-weight:600;}
+  .msg{font-size:13px;text-align:center;min-height:18px;margin:10px 0;} .msg.err{color:var(--seal);} .msg.ok{color:var(--ok);}
+</style>
+</head>
+<body>
+
+<div id="view-auth" class="auth hidden">
+  <div class="seal">學</div><h1>家長後台</h1><p>用跟聯絡簿一樣的帳號登入,看進度、開放課程</p>
+  <div class="msg" id="authMsg"></div>
+  <div class="field"><label>帳號(電子郵件)</label><input id="email" type="email" autocomplete="username"></div>
+  <div class="field"><label>密碼</label><input id="pass" type="password" autocomplete="current-password"></div>
+  <button class="primary" id="loginBtn">登入</button>
+</div>
+
+<div id="view-main" class="app hidden">
+  <div class="top">
+    <div class="brand"><div class="seal">學</div><div><h1>家長後台<small id="whoLine"></small></h1></div></div>
+    <div class="links"><a class="chip blue" href="index.html">📖 聯絡簿</a><a class="chip" href="game.html">⚔ 遊戲</a><button class="chip" id="logout">登出</button></div>
+  </div>
+
+  <div class="card">
+    <div class="hdr"><h2>今日總覽</h2><span class="streak hidden" id="streakChip"></span></div>
+    <div class="big"><span id="todayMet">0</span><small> / <span id="todayTotal">0</span> 項任務達標</small></div>
+    <div id="taskList" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="card">
+    <div class="hdr"><h2>最近 7 天</h2></div>
+    <div class="week" id="week"></div>
+    <div class="mrow" style="margin-top:16px;">
+      <div><div class="k">錯題本</div><div class="big" id="mkTotal">0<small> 題</small></div></div>
+      <div><div class="k">今日待複習</div><div class="big" id="mkDue">0<small> 題</small></div></div>
+    </div>
+  </div>
+
+  <div class="sec">開放課程 · 打開孩子可以練/可以打的單元,設每日題數</div>
+  <div id="subjList"></div>
+  <div class="save-hint" id="saveHint"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUPABASE_URL="https://xmkenwcqxbjeqyzigdoj.supabase.co";
+const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta2Vud2NxeGJqZXF5emlnZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODYxMjEsImV4cCI6MjA5ODg2MjEyMX0.2Imp7H39wt5m4tZ4V3W0y0lyPqYu61a2liWnlytZzLc";
+const sb=window.supabase?supabase.createClient(SUPABASE_URL,SUPABASE_ANON):null;
+const WD=["日","一","二","三","四","五","六"];
+const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const todayStr=()=>fmt(new Date());
+
+let UNITS=[],COURSES=[],SUBJECTS=[],collapsed={};
+let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:null};
+let user=null;
+
+const unit=id=>UNITS.find(u=>u.id===id)||{title:id};
+const subjMeta=s=>SUBJECTS.find(x=>x.id===s)||{id:s,icon:"📚",color:"#8a857b"};
+const coursesFor=s=>COURSES.filter(c=>c.subject===s);
+const cfg=uid=>{let g=settings.daily_goals[uid];if(g==null)return{target:10,mode:"attempts",level:"mix"};if(typeof g==="number")return{target:g,mode:"attempts",level:"mix"};return{target:g.target||10,mode:g.mode||"attempts",level:g.level||"mix"};};
+const enabled=()=>settings.selected_units.filter(u=>settings.daily_goals[u]!=null);
+
+async function boot(){
+  if(!sb){ $("view-auth").classList.remove("hidden"); $("authMsg").className="msg err"; $("authMsg").textContent="Supabase 未載入"; return; }
+  try{ const j=await(await fetch("units.json",{cache:"no-store"})).json(); UNITS=j.units||[];COURSES=j.courses||[];SUBJECTS=j.subjects||[]; }catch(e){}
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){ user=session.user; enter(); } else showAuth();
+  sb.auth.onAuthStateChange((_e,s)=>{ if(s&&!user){ user=s.user; enter(); } if(!s){ user=null; showAuth(); } });
+}
+function showAuth(){ $("view-auth").classList.remove("hidden"); $("view-main").classList.add("hidden"); }
+$("loginBtn").onclick=async()=>{ const email=$("email").value.trim(),pass=$("pass").value,m=$("authMsg");
+  if(!email||!pass){m.className="msg err";m.textContent="請輸入帳號密碼";return;} m.className="msg";m.textContent="登入中…";
+  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){m.className="msg err";m.textContent=/Invalid login/.test(error.message)?"帳號或密碼不對":error.message;} };
+$("logout").onclick=async()=>{ await sb.auth.signOut(); };
+
+async function enter(){
+  $("view-auth").classList.add("hidden"); $("view-main").classList.remove("hidden");
+  $("whoLine").textContent=user.email;
+  await loadSettings(); await loadOverview(); renderSubjects();
+}
+async function loadSettings(){
+  const {data}=await sb.from("settings").select("*").eq("user_id",user.id).maybeSingle();
+  if(data) settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||{},reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],parent_pin:data.parent_pin||null};
+}
+async function saveSettings(){
+  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,parent_pin:settings.parent_pin,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  const h=$("saveHint"); if(error){h.style.color="var(--seal)";h.textContent="存檔失敗:"+error.message;} else {h.style.color="var(--ok)";h.textContent="已儲存 ✓";setTimeout(()=>h.textContent="",1200);}
+}
+
+/* 今日 + 7 天 + 錯題 */
+async function loadOverview(){
+  const from=new Date(); from.setDate(from.getDate()-6);
+  const {data:act}=await sb.from("activity").select("*").gte("day",fmt(from));
+  const byDay={}; (act||[]).forEach(r=>{(byDay[r.day]=byDay[r.day]||{})[r.unit_id]={done:r.done,correct:r.correct};});
+  const today=byDay[todayStr()]||{}, en=enabled();
+  // 今日任務
+  let met=0; $("taskList").innerHTML = en.length? en.map(uid=>{ const c=cfg(uid),a=today[uid]||{},v=c.mode==="correct"?(a.correct||0):(a.done||0),ok=v>=c.target; if(ok)met++;
+    return `<div class="task"><div class="nm"><div class="t">${unit(uid).title}</div><div class="s">${unit(uid).subject||""} · 目標 ${c.mode==="correct"?"答對":"做"} ${c.target} 題</div></div>
+      <div class="st ${ok?'ok':'no'}">${ok?'✓ 達標':(v>0?`還差 ${c.target-v} 題`:'未開始')}</div></div>`; }).join("")
+    : `<div class="task"><div class="nm s">還沒開放任何單元,往下打開幾個吧。</div></div>`;
+  $("todayMet").textContent=met; $("todayTotal").textContent=en.length;
+  // 7 天
+  $("week").innerHTML=[...Array(7)].map((_,i)=>{ const d=new Date();d.setDate(d.getDate()-(6-i));const ds=fmt(d),am=byDay[ds]||{};
+    let m=0,has=Object.keys(am).length>0; en.forEach(uid=>{const c=cfg(uid),a=am[uid],v=c.mode==="correct"?(a?.correct||0):(a?.done||0);if(a&&v>=c.target)m++;});
+    const full=en.length&&m===en.length,part=!full&&(m>0||has);
+    return `<div class="day"><div class="lb">${WD[d.getDay()]}</div><div class="dot ${full?'full':part?'part':''}"></div></div>`; }).join("");
+  // streak
+  let streak=0,d=new Date(); for(let i=0;i<60;i++){const ds=fmt(d),am=byDay[ds]; if(!am){if(ds===todayStr()){d.setDate(d.getDate()-1);continue;}break;} let m=0;en.forEach(uid=>{const c=cfg(uid),a=am[uid],v=c.mode==="correct"?(a?.correct||0):(a?.done||0);if(a&&v>=c.target)m++;}); const full=en.length&&m===en.length; if(full){streak++;d.setDate(d.getDate()-1);}else if(ds===todayStr()){d.setDate(d.getDate()-1);}else break; }
+  const chip=$("streakChip"); if(streak>0){chip.classList.remove("hidden");chip.innerHTML=`🔥 連續達標 <b>${streak}</b> 天`;}else chip.classList.add("hidden");
+  // 錯題
+  const {data:mk}=await sb.from("mistakes").select("due"); $("mkTotal").innerHTML=(mk?mk.length:0)+"<small> 題</small>";
+  const due=(mk||[]).filter(r=>!r.due||r.due<=todayStr()).length; $("mkDue").innerHTML=due+"<small> 題</small>";
+}
+
+/* 開放課程控制 */
+function renderSubjects(){
+  const subs=SUBJECTS.filter(s=>UNITS.some(u=>u.subject===s.id&&u.ready)).map(s=>s.id);
+  $("subjList").innerHTML=subs.map(sid=>{ const m=subjMeta(sid),open=!collapsed[sid];
+    const list=UNITS.filter(u=>u.subject===sid&&u.ready);
+    const onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length;
+    const courses=coursesFor(sid),cur=(settings.course_by_subject||{})[sid]||"";
+    const ver=courses.length?`<div class="verrow"><span class="l">版本</span><select onchange="setVer('${sid}',this.value)"><option value="">預設</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:"";
+    return `<div class="subj">
+      <div class="subj-h" onclick="toggleSubj('${sid}')"><div class="ic" style="background:${m.color}1a;color:${m.color}">${m.icon}</div>
+        <div class="nm">${sid}</div><div class="cnt">${onCnt}/${list.length} 開放</div></div>
+      ${open?`<div class="subj-b">${ver}${list.map(u=>unitRow(u)).join("")}</div>`:""}</div>`; }).join("");
+}
+function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id);
+  return `<div class="unit"><div class="unit-h"><div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div>
+    <div class="info"><div class="t">${u.title}</div><div class="s">${u.tag||u.subject||""}</div></div></div>
+    ${on?`<div class="cfg"><span class="l">每日題數</span><input class="goal" type="number" min="1" value="${c.target}" onchange="setGoal('${u.id}',this.value)">
+      <div class="seg"><button class="${c.level==='basic'?'on':''}" onclick="setLevel('${u.id}','basic')">基礎</button><button class="${c.level==='adv'?'on':''}" onclick="setLevel('${u.id}','adv')">進階</button><button class="${c.level==='mix'?'on':''}" onclick="setLevel('${u.id}','mix')">混合</button></div></div>`:""}</div>`;
+}
+window.toggleSubj=s=>{collapsed[s]=!collapsed[s];renderSubjects();};
+window.toggleUnit=async uid=>{ const i=settings.selected_units.indexOf(uid);
+  if(i>=0){settings.selected_units.splice(i,1);delete settings.daily_goals[uid];}
+  else{settings.selected_units.push(uid);if(settings.daily_goals[uid]==null)settings.daily_goals[uid]={target:10,mode:"attempts",level:"mix"};}
+  renderSubjects(); await saveSettings(); await loadOverview(); };
+function writeCfg(uid,p){settings.daily_goals[uid]={...cfg(uid),...p};}
+window.setGoal=async(uid,v)=>{writeCfg(uid,{target:Math.max(1,parseInt(v)||1)});await saveSettings();await loadOverview();};
+window.setLevel=async(uid,l)=>{writeCfg(uid,{level:l});renderSubjects();await saveSettings();};
+window.setVer=async(s,c)=>{settings.course_by_subject=settings.course_by_subject||{};if(c)settings.course_by_subject[s]=c;else delete settings.course_by_subject[s];await saveSettings();};
+
+boot();
+</script>
+</body>
+</html>

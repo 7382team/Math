@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>國中勇者</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--paper:#f4f2ea;--card:#fffdf8;--ink:#2b2b28;--muted:#8a857b;--line:#e5e2d8;--seal:#c1352b;
+    --blue:#2563eb;--orange:#ea580c;--ok:#3f7d4e;--gold:#c99a2e;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/26px 26px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/26px 26px,var(--paper);}
+  .num{font-family:'Lexend',sans-serif;font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;cursor:pointer;border:none;} a{color:inherit;text-decoration:none;}
+  input{font-family:inherit;}
+  .hidden{display:none !important;}
+  .app{max-width:460px;margin:0 auto;min-height:100vh;padding:0 16px 30px;}
+
+  .top{display:flex;align-items:center;justify-content:space-between;padding:16px 2px 10px;gap:8px;}
+  .brand{display:flex;align-items:center;gap:9px;}
+  .seal{width:34px;height:34px;border:2px solid var(--seal);border-radius:8px;color:var(--seal);
+    font-family:'Noto Serif TC',serif;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);}
+  .brand h1{margin:0;font-family:'Noto Serif TC',serif;font-size:19px;letter-spacing:1px;}
+  .mats{display:flex;gap:8px;font-size:12px;color:var(--muted);align-items:center;}
+  .mats b{color:var(--ink);font-family:'Lexend';font-weight:700;}
+  .link{font-size:12px;color:var(--blue);background:#eaf1fb;border:1px solid #cfe0f6;border-radius:99px;padding:5px 10px;}
+  .cloudline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 8px;font-size:12px;}
+  .cloudline .who{color:var(--muted);} .cloudline .who b{color:var(--ok);}
+
+  .sec{font-size:13px;color:var(--muted);letter-spacing:2px;margin:6px 2px 12px;font-weight:500;}
+
+  .heroGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .heroCard{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px 6px 10px;text-align:center;transition:.12s;}
+  .heroCard:active{transform:scale(.97);} .heroCard.pick{border-color:var(--seal);box-shadow:0 0 0 2px #f0d5d1;}
+  .heroCard img{width:74px;height:74px;object-fit:contain;}
+  .heroCard .nm{font-size:12px;color:var(--muted);margin-top:4px;}
+
+  .subj{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;
+    padding:16px;margin-bottom:12px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);transition:.12s;}
+  .subj:active{transform:scale(.99);}
+  .subj .ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none;}
+  .subj .tt{flex:1;min-width:0;} .subj .tt .n{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;letter-spacing:1px;}
+  .subj .tt .m{font-size:12px;color:var(--muted);margin-top:3px;}
+  .subj .prog{height:7px;background:#eceadf;border-radius:99px;margin-top:8px;overflow:hidden;}
+  .subj .prog>i{display:block;height:100%;background:var(--ok);border-radius:99px;transition:.4s;}
+  .subj .chev{color:var(--muted);font-size:20px;}
+
+  .backbar{display:flex;align-items:center;gap:12px;padding:16px 2px 12px;}
+  .back{background:#eceadf;border-radius:10px;padding:9px 14px;font-size:14px;}
+  .backbar .t{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;letter-spacing:1px;}
+  .floor{display:flex;align-items:center;gap:13px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:12px 14px;margin-bottom:10px;position:relative;transition:.12s;}
+  .floor:active{transform:scale(.99);} .floor.locked{opacity:.55;}
+  .floor .lv{width:34px;height:34px;border-radius:10px;background:#eceadf;color:var(--muted);font-family:'Lexend';font-weight:700;
+    font-size:14px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .floor.boss .lv{background:#fbeeec;color:var(--seal);}
+  .floor img{width:52px;height:52px;object-fit:contain;flex:none;}
+  .floor.locked img{filter:grayscale(1);}
+  .floor .info{flex:1;min-width:0;} .floor .info .n{font-weight:500;font-size:15px;}
+  .floor .info .s{font-size:12px;color:var(--muted);margin-top:2px;}
+  .floor .info .s.boss{color:var(--seal);font-weight:600;}
+  .floor .stamp{position:absolute;right:12px;top:50%;transform:translateY(-50%) rotate(-10deg);color:var(--seal);
+    font-family:'Noto Serif TC',serif;font-weight:700;font-size:24px;opacity:.9;}
+  .floor .lock{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;}
+
+  #screen-battle{position:fixed;inset:0;max-width:460px;margin:0 auto;background:var(--paper);display:flex;flex-direction:column;padding:0 12px;}
+  .bbar{display:flex;align-items:center;gap:10px;padding:12px 2px 8px;}
+  .bbar .flr{font-weight:600;font-size:14px;} .bbar .flr small{color:var(--muted);font-weight:400;}
+  .stage{position:relative;background:var(--card);background-size:cover;background-position:center;border:1.5px solid var(--line);border-radius:18px;padding:8px 12px 10px;text-align:center;overflow:hidden;}
+  .stage::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,0) 34%,rgba(0,0,0,.16));}
+  .stage .monHP,.stage .mName,.stage .monWrap{position:relative;z-index:2;} .stage .combo,.stage .floatL{z-index:3;}
+  .villBanner{height:118px;border-radius:16px;background:url('assets/bg/village.jpg') center 42%/cover;border:1.5px solid var(--line);margin-bottom:14px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);}
+  .combo{position:absolute;top:8px;right:12px;font-size:12px;color:var(--orange);font-weight:700;opacity:0;transition:.2s;}
+  .combo.on{opacity:1;}
+  .monHP{display:flex;gap:4px;justify-content:center;min-height:15px;margin-bottom:2px;}
+  .monWrap{width:118px;height:118px;margin:0 auto;}
+  .monWrap.bob{animation:bob 2.6s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .monWrap.hit{animation:hit .4s;} @keyframes hit{0%{transform:scale(1)}20%{transform:scale(1.15,.85) rotate(-4deg);filter:brightness(1.8)}50%{transform:translateX(-6px)}75%{transform:translateX(6px)}100%{transform:scale(1)}}
+  .monWrap.atk{animation:atk .4s;} @keyframes atk{0%{transform:translateY(0)}40%{transform:translateY(9px) scale(1.06,.94)}100%{transform:translateY(0)}}
+  .monWrap.die{animation:die .5s forwards;} @keyframes die{to{transform:scale(.2) rotate(18deg);opacity:0}}
+  .monWrap img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.4));}
+  .mName{display:inline-block;background:rgba(43,43,40,.72);color:#fff;padding:3px 12px;border-radius:99px;font-size:12px;} .mName b{color:#fff;}
+  .pbar{display:flex;align-items:center;gap:9px;padding:8px 4px;}
+  .pbar img{width:40px;height:40px;object-fit:contain;transition:.15s;}
+  .pbar img.lunge{transform:translateX(14px) scale(1.05);}
+  .pbar .hearts{display:flex;gap:3px;}
+  .frame{flex:1;width:100%;border:1.5px solid var(--line);border-radius:16px 16px 0 0;background:#fff;min-height:0;}
+  .floatL{position:absolute;inset:0;pointer-events:none;}
+  .dmg{position:absolute;font-family:'Lexend';font-weight:800;font-size:22px;color:var(--seal);animation:up .8s forwards;}
+  @keyframes up{0%{opacity:1}30%{transform:translateY(-10px) scale(1.25)}100%{opacity:0;transform:translateY(-50px)}}
+  #screen-battle.shake{animation:shk .3s;} @keyframes shk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  .overlay{position:absolute;inset:0;background:rgba(30,26,18,.55);display:flex;align-items:center;justify-content:center;z-index:5;}
+  .ocard{background:var(--card);border-radius:20px;padding:24px 22px;text-align:center;max-width:300px;width:82%;}
+  .ocard .big{font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;margin-bottom:6px;}
+  .ocard .big.win{color:var(--ok);} .ocard .big.lose{color:var(--seal);}
+  .ocard .sub{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+  .ocard img{width:96px;height:96px;object-fit:contain;margin-bottom:8px;}
+  .ocard .btns{display:flex;gap:8px;} .ocard button{flex:1;padding:13px;border-radius:13px;font-size:15px;font-weight:600;}
+  .ocard .primary{background:var(--ink);color:#fff;} .ocard .ghost{background:#eceadf;color:var(--ink);}
+
+  /* 登入 sheet */
+  .sbg{position:fixed;inset:0;background:rgba(30,26,18,.45);display:flex;align-items:flex-end;z-index:20;}
+  .sheet{background:var(--card);width:100%;max-width:460px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 18px 28px;}
+  .sheet h3{margin:0 0 4px;font-size:17px;} .sheet .ssub{color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.5;}
+  .sheet input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;margin-bottom:10px;background:#fff;}
+  .sheet .primary{width:100%;background:var(--ink);color:#fff;padding:13px;border-radius:12px;font-size:16px;font-weight:600;}
+  .sheet .ghost2{width:100%;background:none;color:var(--blue);padding:12px;font-size:14px;}
+  .sheet .closebtn{width:100%;background:#eceadf;padding:11px;border-radius:12px;font-size:14px;margin-top:4px;}
+  .sheet .msg{font-size:13px;color:var(--seal);margin-bottom:10px;min-height:16px;}
+  .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:rgba(43,43,40,.94);color:#fff;
+    padding:10px 16px;border-radius:12px;font-size:14px;z-index:30;opacity:0;transition:.2s;pointer-events:none;max-width:88%;text-align:center;}
+  .toast.on{opacity:1;}
+</style>
+</head>
+<body>
+
+<div id="screen-hero" class="app hidden">
+  <div class="top"><div class="brand"><div class="seal">勇</div><h1>選擇你的英雄</h1></div></div>
+  <div class="sec">選一個形象開始冒險（之後可以換）</div>
+  <div class="heroGrid" id="heroGrid"></div>
+</div>
+
+<div id="screen-village" class="app hidden">
+  <div class="top">
+    <div class="brand"><div class="seal">勇</div><h1>國中勇者村</h1></div>
+    <div class="mats"><span>🪵<b id="mWood">0</b></span><span>⛏<b id="mOre">0</b></span><span>✦<b id="mStar">0</b></span></div>
+  </div>
+  <div class="cloudline"><span class="who" id="cloudWho"></span><span id="cloudBtn"></span></div>
+  <div class="villBanner"></div>
+  <div class="sec" id="villHi">選一個副本進去攻略</div>
+  <div id="subjList"></div>
+  <div style="text-align:center;margin-top:16px;display:flex;gap:8px;justify-content:center;">
+    <button class="back" id="reHero">🙂 換英雄</button>
+    <a class="back" href="index.html" style="display:inline-block;">📖 聯絡簿</a>
+  </div>
+</div>
+
+<div id="screen-dungeon" class="app hidden">
+  <div class="backbar"><button class="back" id="dgBack">‹ 村莊</button><div class="t" id="dgTitle"></div></div>
+  <div class="sec" id="dgSub"></div>
+  <div id="floorList"></div>
+</div>
+
+<div id="screen-battle">
+  <div class="bbar"><button class="back" id="btBack">‹ 撤退</button><div class="flr" id="btFloor"></div></div>
+  <div class="stage" id="stage">
+    <div class="combo" id="combo">🔥 連段 ×<span id="comboN">0</span></div>
+    <div class="monHP" id="monHP"></div>
+    <div class="monWrap bob" id="monWrap"><img id="monImg" alt="魔物"></div>
+    <div class="mName"><b id="monName"></b> · <span id="monLv"></span></div>
+    <div class="floatL" id="floatL"></div>
+  </div>
+  <div class="pbar"><img id="heroImg" alt="英雄"><span class="hearts" id="pHP"></span>
+    <span style="margin-left:auto;font-size:12px;color:var(--muted)">答對＝攻擊 · 答錯＝挨打</span></div>
+  <iframe id="frame" class="frame"></iframe>
+  <div id="ovRoot"></div>
+</div>
+
+<div id="sheetRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUPABASE_URL="https://xmkenwcqxbjeqyzigdoj.supabase.co";
+const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta2Vud2NxeGJqZXF5emlnZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODYxMjEsImV4cCI6MjA5ODg2MjEyMX0.2Imp7H39wt5m4tZ4V3W0y0lyPqYu61a2liWnlytZzLc";
+const sb = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+
+const PLAYERS=["monk","barbarian","paladin","alchemist","bard","ranger","engineer","mage","gnome","assassin","sorcerer","priest","druid","witch","healer","cat_warrior","martial_artist","knight","pirate_dog","warrior_axe"];
+const MONSTERS=["slime_green","slime_rainbow","slime_king","slime_mustache","slime_tophat","goblin","goblin_mechanic","ghost","ghost_small","ghost_skull","bat","bat_small","gargoyle","gargoyle_gray","gargoyle_stone","spider","spider_purple","skeleton","mummy","golem_rock","golem_ice","golem_crystal","golem_stone","swamp_beast","tree_sapling","mushroom_trio","mushroom_red","naga","dragon_fire","dragon_green","dragon_red","dragon_egg","wolf","tiger_saber","fox","scorpion","eye_monster","tornado","ice_wraith","ice_cube","snowman","robot_clockwork","robot","imp_purple","devil_small","phoenix","griffin","lizard_green","lizard_teal","dino_baby","mimic_chest","mimic_bookshelf","mimic_door","mimic_chest_red","cursed_mirror"];
+const BOSSES=["reaper","demon_king","vampire","dragon_twohead","hydra","dark_knight","treant","spider_queen"];
+const NAMES={slime_green:"綠史萊姆",slime_rainbow:"彩虹史萊姆",slime_king:"史萊姆王",goblin:"哥布林",ghost:"幽靈",bat:"蝙蝠",gargoyle:"石像鬼",spider:"蜘蛛",skeleton:"骷髏",mummy:"木乃伊",golem_rock:"岩石巨人",golem_ice:"冰巨人",swamp_beast:"沼澤獸",naga:"蛇妖",dragon_fire:"火龍",wolf:"惡狼",tiger_saber:"劍齒虎",phoenix:"鳳凰",mushroom_trio:"蘑菇怪",eye_monster:"眼球怪",reaper:"死神",demon_king:"惡魔王",vampire:"吸血鬼",dragon_twohead:"雙頭龍",hydra:"九頭蛇",dark_knight:"暗黑騎士",treant:"樹妖王",spider_queen:"蜘蛛女王"};
+const nm=k=>NAMES[k]||k.replace(/_/g," ");
+const P=(cat,name)=>`assets/sprites/${cat}/${name}.png`;
+const HEART=f=>`<svg width="15" height="15" viewBox="0 0 24 24"><path d="M12 21S3 15 3 8.7C3 5.5 5.4 4 7.6 4 9.3 4 11 5 12 6.6 13 5 14.7 4 16.4 4 18.6 4 21 5.5 21 8.7 21 15 12 21 12 21z" ${f?`fill="${f}"`:'fill="none" stroke="#c7bfb6" stroke-width="2"'}/></svg>`;
+const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h;};
+const BIOME={"數學":"cave","生物":"forest","國文":"night","英文":"snow","自然":"forest","社會":"temple"};
+const bgFor=(sid,isBoss)=> isBoss?"temple":(BIOME[sid]||"cave");
+const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+
+let UNITS=[],COURSES=[],SUBJECTS=[];
+let hero=localStorage.getItem("kg_hero")||"";
+let cleared=new Set(JSON.parse(localStorage.getItem("kg_cleared")||"[]"));
+let mats=JSON.parse(localStorage.getItem("kg_mats")||'{"wood":0,"ore":0,"star":0}');
+let user=null, selectedUnits=null, saveTimer=null;
+let curSubject=null, curSeq=[], battle=null;
+
+/* ---- 存檔：本地一律存；登入了就同步雲端 ---- */
+function save(){
+  localStorage.setItem("kg_cleared",JSON.stringify([...cleared]));
+  localStorage.setItem("kg_mats",JSON.stringify(mats));
+  if(hero) localStorage.setItem("kg_hero",hero);
+  if(user&&sb){ clearTimeout(saveTimer); saveTimer=setTimeout(cloudSave,700); }
+}
+async function cloudSave(){ try{
+  await sb.from("game_state").upsert({user_id:user.id,data:{hero,cleared:[...cleared],mats},updated_at:new Date().toISOString()},{onConflict:"user_id"});
+}catch(e){ console.warn("[cloudSave]",e.message); } }
+async function loadCloud(){ try{
+  const {data:g}=await sb.from("game_state").select("data").eq("user_id",user.id).maybeSingle();
+  if(g&&g.data){ if(g.data.hero)hero=g.data.hero; if(Array.isArray(g.data.cleared))cleared=new Set(g.data.cleared); if(g.data.mats)mats=g.data.mats; }
+  const {data:s}=await sb.from("settings").select("selected_units").eq("user_id",user.id).maybeSingle();
+  selectedUnits = (s&&Array.isArray(s.selected_units)&&s.selected_units.length) ? new Set(s.selected_units) : null;
+}catch(e){ console.warn("[loadCloud]",e.message); } }
+
+function show(s){["hero","village","dungeon","battle"].forEach(x=>$("screen-"+x).classList.toggle("hidden",x!==s));
+  document.body.style.overflow = s==="battle"?"hidden":"auto";}
+function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),1800);}
+
+async function boot(){
+  try{ const j=await(await fetch("units.json",{cache:"no-store"})).json();
+    UNITS=j.units||[];COURSES=j.courses||[];SUBJECTS=j.subjects||[]; }catch(e){ toast("讀不到 units.json（要在網頁伺服器上開）");return; }
+  if(sb){ try{ const {data:{session}}=await sb.auth.getSession(); user=session?.user||null;
+      sb.auth.onAuthStateChange((_e,ss)=>{ const was=!!user; user=ss?.user||null; if(!!user!==was) refreshCloudUI(); }); }catch(e){} }
+  if(user) await loadCloud();
+  renderMats();
+  if(hero) enterVillage(); else renderHeroPick();
+}
+const unit=id=>UNITS.find(u=>u.id===id);
+const subjMeta=s=>SUBJECTS.find(x=>x.id===s)||{id:s,icon:"📚",color:"#8a857b"};
+const courseFor=s=>COURSES.find(c=>c.subject===s);
+const subjectsWithUnits=()=>SUBJECTS.filter(s=>UNITS.some(u=>u.subject===s.id&&u.ready)).map(s=>s.id);
+const seqFor=sid=>{const c=courseFor(sid);return (c?c.sequence:UNITS.filter(u=>u.subject===sid).map(u=>u.id)).filter(id=>unit(id)&&unit(id).ready);};
+const isLocked=id=> user && selectedUnits ? !selectedUnits.has(id) : false;   // 家長開放的才解鎖；沒登入/沒設定 → 全開
+
+function renderMats(){ $("mWood").textContent=mats.wood;$("mOre").textContent=mats.ore;$("mStar").textContent=mats.star; }
+
+/* 選角 */
+function renderHeroPick(){
+  $("heroGrid").innerHTML=PLAYERS.map(p=>`<div class="heroCard ${p===hero?'pick':''}" onclick="pickHero('${p}')">
+    <img src="${P('players',p)}" alt="${p}"><div class="nm">${p.replace(/_/g,' ')}</div></div>`).join("");
+  show("hero");
+}
+window.pickHero=p=>{hero=p;save();enterVillage();};
+
+/* 村莊 */
+function refreshCloudUI(){
+  if(user){ $("cloudWho").innerHTML=`☁️ 已登入 <b>${user.email}</b> · 進度存雲端`;
+    $("cloudBtn").innerHTML=`<button class="link" onclick="doLogout()">登出</button>`; }
+  else { $("cloudWho").innerHTML=`本機存檔（換裝置會不見）`;
+    $("cloudBtn").innerHTML=`<button class="link" onclick="openLogin()">☁️ 登入雲端存檔</button>`; }
+}
+async function enterVillage(){ if(user&&selectedUnits===null&&sb) await loadCloud();
+  renderMats(); refreshCloudUI();
+  $("villHi").textContent="嗨，"+hero.replace(/_/g,' ')+"，選一個副本進去攻略";
+  $("subjList").innerHTML=subjectsWithUnits().map(sid=>{ const m=subjMeta(sid),c=courseFor(sid),seq=seqFor(sid);
+    const open=seq.filter(id=>!isLocked(id)),done=open.filter(id=>cleared.has(id)).length,pct=open.length?Math.round(done/open.length*100):0;
+    return `<div class="subj" onclick="enterDungeon('${sid}')">
+      <div class="ic" style="background:${m.color}1a;color:${m.color}">${m.icon}</div>
+      <div class="tt"><div class="n">${sid} 副本</div><div class="m">${open.length} 層開放 · 已攻略 ${done}</div>
+        <div class="prog"><i style="width:${pct}%"></i></div></div><div class="chev">›</div></div>`;}).join("");
+  show("village");
+}
+$("reHero").onclick=renderHeroPick;
+
+/* 副本 */
+window.enterDungeon=sid=>{ curSubject=sid; const c=courseFor(sid); curSeq=seqFor(sid);
+  $("dgTitle").textContent=sid+" 副本"; $("dgSub").textContent=(c?c.title+"版 · ":"")+"一層一層往下攻略";
+  $("floorList").innerHTML=curSeq.map((id,i)=>{ const u=unit(id),isBoss=i===curSeq.length-1,done=cleared.has(id),lock=isLocked(id);
+    const mon=isBoss?bossFor(sid):monFor(sid,i);
+    return `<div class="floor ${isBoss?'boss':''} ${lock?'locked':''}" onclick="${lock?`lockedMsg()`:`startBattle('${id}',${i})`}">
+      <div class="lv">${isBoss?'王':'B'+(i+1)}</div>
+      <img src="${P(isBoss?'bosses':'monsters',mon)}" alt="">
+      <div class="info"><div class="n">${u.title}</div>
+        <div class="s ${isBoss?'boss':''}">${lock?'老師還沒開放':(isBoss?'魔王守關 · 綜合':(u.tag||u.subject)+' · '+nm(mon))}</div></div>
+      ${done?'<div class="stamp">優</div>':(lock?'<div class="lock">🔒</div>':'')}</div>`;}).join("");
+  show("dungeon");
+};
+$("dgBack").onclick=enterVillage;
+window.lockedMsg=()=>toast("這一關老師還沒開放～家長可到「📖 聯絡簿 › 單元」打開它");
+const monFor=(sid,i)=>MONSTERS[(hash(sid)+i*7)%MONSTERS.length];
+const bossFor=sid=>BOSSES[hash(sid)%BOSSES.length];
+
+/* 戰鬥 */
+window.startBattle=(id,i)=>{ const u=unit(id); if(!u||!u.ready)return;
+  const isBoss=i===curSeq.length-1, mon=isBoss?bossFor(curSubject):monFor(curSubject,i);
+  battle={id,i,isBoss,mon,maxHP:isBoss?8:4,hp:isBoss?8:4,maxPHP:5,php:5,combo:0};
+  $("btFloor").innerHTML=`${curSubject} · ${isBoss?'魔王':'第 '+(i+1)+' 層'} <small>${u.title}</small>`;
+  $("monImg").src=P(isBoss?'bosses':'monsters',mon); $("monName").textContent=nm(mon);
+  $("monLv").textContent=isBoss?'BOSS':'Lv.'+(i+1); $("heroImg").src=P('players',hero);
+  const w=$("monWrap"); w.className='monWrap bob'; w.style.opacity='';
+  const bg=bgFor(curSubject,isBoss), st=$("stage");   // 每場隨機取景（縮放+位移）
+  st.style.backgroundImage=`url('assets/bg/${bg}.jpg')`;
+  st.style.backgroundSize=(150+Math.floor(Math.random()*45))+'%';
+  st.style.backgroundPosition=Math.floor(Math.random()*100)+'% '+Math.floor(Math.random()*100)+'%';
+  renderBattleHP(); renderCombo(); $("ovRoot").innerHTML='';
+  $("frame").src=u.file+"?level="+(isBoss?'mix':'basic'); show("battle");
+};
+$("btBack").onclick=()=>{ $("frame").src="about:blank"; enterDungeon(curSubject); };
+function renderBattleHP(){ let m='';for(let i=0;i<battle.maxHP;i++)m+=HEART(i<battle.hp?'#c1352b':''); $("monHP").innerHTML=m;
+  let p='';for(let i=0;i<battle.maxPHP;i++)p+=HEART(i<battle.php?'#3f7d4e':''); $("pHP").innerHTML=p; }
+function renderCombo(){ $("comboN").textContent=battle.combo; $("combo").classList.toggle('on',battle.combo>=2); }
+function floatDmg(t){ const d=document.createElement('div');d.className='dmg';d.textContent=t;
+  d.style.left=(30+Math.random()*60)+'px';d.style.top='50px';$("floatL").appendChild(d);setTimeout(()=>d.remove(),800); }
+function monFX(c){ const w=$("monWrap");w.classList.remove('bob');w.classList.add(c);
+  setTimeout(()=>{w.classList.remove(c);if(c!=='die')w.classList.add('bob');},c==='die'?500:420); }
+function heroLunge(){ const h=$("heroImg");h.classList.add('lunge');setTimeout(()=>h.classList.remove('lunge'),200); }
+function shake(){ $("screen-battle").classList.add('shake');setTimeout(()=>$("screen-battle").classList.remove('shake'),300); }
+
+/* 順手回寫聯絡簿（登入時）：做題數 / 錯題本 */
+function feedContact(d){ if(!user||!sb||!battle) return;
+  if(d.type==="unit-progress"){ sb.rpc("log_activity",{p_day:todayStr(),p_unit:battle.id,p_done:d.unitDone||1,p_correct:d.unitCorrect?1:0}).then(r=>{},e=>{}); }
+  else if(d.type==="unit-mistake"){ sb.rpc("log_mistake",{p_unit:battle.id,p_q:d.q||"",p_ans:d.ans||"",p_given:d.given||"",p_explain:d.steps||"",p_tip:d.tip||"",p_choices:d.choices||null}).then(r=>{},e=>{}); }
+}
+
+window.addEventListener("message",ev=>{ const d=ev.data; if(!d||!battle||$("screen-battle").classList.contains("hidden"))return;
+  if(d.type==="unit-mistake"){ feedContact(d); return; }
+  if(d.type!=="unit-progress")return;
+  feedContact(d);
+  if(d.unitCorrect){ battle.combo++; renderCombo(); heroLunge(); battle.hp--; renderBattleHP(); monFX('hit'); floatDmg('−1');
+    if(battle.hp<=0){ monFX('die'); setTimeout(victory,600); } }
+  else { battle.combo=0; renderCombo(); battle.php--; renderBattleHP(); monFX('atk'); shake();
+    if(battle.php<=0) setTimeout(retreat,700); }
+});
+
+function victory(){ const {id,i,isBoss}=battle; cleared.add(id);
+  mats.wood+=2; mats.ore+=1; const star=isBoss?1:0; mats.star+=star; save(); renderMats();
+  const next=i<curSeq.length-1 && !isLocked(curSeq[i+1]) ? i+1 : null;
+  $("ovRoot").innerHTML=`<div class="overlay"><div class="ocard">
+    <img src="${P(isBoss?'bosses':'monsters',battle.mon)}"><div class="big win">⚔ 擊倒！</div>
+    <div class="sub">獲得 🪵×2 ⛏×1${star?' ✦×1':''}${isBoss?'<br>魔王倒下，這個副本你征服了！':''}</div>
+    <div class="btns">${next!==null?`<button class="primary" onclick="startBattle('${curSeq[next]}',${next})">下一層 ▸</button>`:''}
+      <button class="ghost" onclick="afterBattle()">返回副本</button></div></div></div>`;
+}
+function retreat(){ $("ovRoot").innerHTML=`<div class="overlay"><div class="ocard">
+    <div class="big lose">你撤退了</div><div class="sub">別灰心，素材都還在。<br>回聯絡簿多練幾題再來挑戰！</div>
+    <div class="btns"><button class="primary" onclick="startBattle('${battle.id}',${battle.i})">再挑戰 ▸</button>
+      <button class="ghost" onclick="afterBattle()">返回副本</button></div></div></div>`;
+}
+window.afterBattle=()=>{ $("frame").src="about:blank"; enterDungeon(curSubject); };
+
+/* 登入 */
+window.openLogin=()=>{ if(!sb){toast("這台沒載入到 Supabase");return;}
+  $("sheetRoot").innerHTML=`<div class="sbg" onclick="closeSheet(event)"><div class="sheet" onclick="event.stopPropagation()">
+    <h3>登入雲端存檔</h3><p class="ssub">用跟「聯絡簿」一樣的帳號登入，進度就跟著帳號跑、換手機也不會不見。</p>
+    <div class="msg" id="lgMsg"></div>
+    <input id="lgEmail" type="email" placeholder="電子郵件" autocomplete="username">
+    <input id="lgPass" type="password" placeholder="密碼（至少 6 字）" autocomplete="current-password">
+    <button class="primary" onclick="doAuth('login')">登入</button>
+    <button class="ghost2" onclick="doAuth('signup')">第一次？建立帳號</button>
+    <button class="closebtn" onclick="closeSheet()">關閉</button></div></div>`;
+};
+window.doAuth=async(mode)=>{ const email=($("lgEmail").value||"").trim(),pass=$("lgPass").value,m=$("lgMsg");
+  if(!email||!pass){m.textContent="請輸入帳號和密碼";return;} m.style.color="var(--muted)";m.textContent="處理中…";
+  try{ const {error}= mode==='signup'? await sb.auth.signUp({email,password:pass}) : await sb.auth.signInWithPassword({email,password:pass});
+    if(error){ m.style.color="var(--seal)"; m.textContent=/Invalid login/.test(error.message)?"帳號或密碼不對":error.message; return; }
+    const {data:{user:u}}=await sb.auth.getUser();
+    if(!u){ m.style.color="var(--ok)"; m.textContent="帳號已建立，若需信箱驗證請去收信點確認再回來登入。"; return; }
+    user=u; await loadCloud(); closeSheet(); renderMats(); enterVillage(); toast("已登入，進度已同步雲端 ☁️");
+  }catch(e){ m.style.color="var(--seal)"; m.textContent=e.message; }
+};
+window.doLogout=async()=>{ if(sb) await sb.auth.signOut(); user=null; selectedUnits=null; refreshCloudUI(); enterVillage(); toast("已登出，改用本機存檔"); };
+window.closeSheet=(e)=>{ if(e&&e.target.closest(".sheet"))return; $("sheetRoot").innerHTML=""; };
+
+boot();
+</script>
+</body>
+</html>
