@@ -98,6 +98,27 @@
   <div class="sec">開放課程 · 打開孩子可以練/可以打的單元,設每日題數</div>
   <div id="subjList"></div>
   <div class="save-hint" id="saveHint"></div>
+
+  <div class="sec">基本設定</div>
+  <div class="card">
+    <div class="field"><label>孩子的顯示名稱</label><input id="pName" type="text" placeholder="孩子的名字"></div>
+    <div class="field"><label>完成獎勵訊息（當天全部達標時，孩子端會跳出）</label><input id="pReward" type="text" placeholder="例如：今天全部完成，可以看 30 分鐘卡通！"></div>
+    <button class="primary" id="pSaveBasic">儲存</button>
+    <div class="save-hint" id="basicHint"></div>
+  </div>
+
+  <div class="sec">休息日 · 這幾天不排任務,也不會中斷連續紀錄</div>
+  <div class="card"><div id="restDays" style="display:flex;gap:8px"></div></div>
+
+  <div class="sec">段考複習組 · 框好段考範圍,孩子端就能考一次綜合測驗</div>
+  <div class="card" id="examCard"></div>
+
+  <div class="sec">帳號</div>
+  <div class="card">
+    <div class="field"><label>修改登入密碼</label><input id="pNewPw" type="password" autocomplete="new-password" placeholder="新密碼（至少 6 個字）"></div>
+    <button class="primary" id="pSavePw">更新密碼</button>
+    <div class="save-hint" id="pwHint"></div>
+  </div>
 </div>
 
 <script>
@@ -110,7 +131,8 @@ const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Stri
 const todayStr=()=>fmt(new Date());
 
 let UNITS=[],COURSES=[],SUBJECTS=[],collapsed={};
-let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:null};
+let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:null,exam_groups:[]};
+let egEdit=null;
 let user=null;
 
 const unit=id=>UNITS.find(u=>u.id===id)||{title:id};
@@ -136,14 +158,59 @@ $("logout").onclick=async()=>{ await sb.auth.signOut(); };
 async function enter(){
   $("view-auth").classList.add("hidden"); $("view-main").classList.remove("hidden");
   $("whoLine").textContent=user.email;
-  await loadSettings(); await loadOverview(); renderSubjects();
+  await loadSettings(); await loadOverview(); renderSubjects(); renderBasic(); renderRest(); renderExam();
 }
+function renderBasic(){ $("pName").value=settings.display_name||""; $("pReward").value=settings.reward_msg||""; }
+$("pSaveBasic").onclick=async()=>{ settings.display_name=$("pName").value.trim(); settings.reward_msg=$("pReward").value.trim();
+  await saveSettings(); const h=$("basicHint"); h.style.color="var(--ok)"; h.textContent="已儲存 ✓"; setTimeout(()=>h.textContent="",1200); };
+function renderRest(){ $("restDays").innerHTML=WD.map((w,i)=>{ const on=(settings.rest_days||[]).includes(i);
+  return `<button onclick="toggleRest(${i})" style="flex:1;padding:10px 0;border-radius:9px;border:1.5px solid ${on?'var(--seal)':'var(--line)'};background:${on?'#fbeeec':'#fff'};color:${on?'var(--seal)':'var(--muted)'};font-weight:${on?'600':'400'}">${w}</button>`; }).join(""); }
+window.toggleRest=async i=>{ const a=settings.rest_days||[]; const p=a.indexOf(i); if(p>=0)a.splice(p,1); else a.push(i); settings.rest_days=a; renderRest(); await saveSettings(); };
+$("pSavePw").onclick=async()=>{ const pw=$("pNewPw").value, h=$("pwHint");
+  if(!pw||pw.length<6){ h.style.color="var(--seal)"; h.textContent="密碼至少 6 個字"; return; }
+  const {error}=await sb.auth.updateUser({password:pw});
+  if(error){ h.style.color="var(--seal)"; h.textContent=error.message; }
+  else { $("pNewPw").value=""; h.style.color="var(--ok)"; h.textContent="密碼已更新 ✓"; setTimeout(()=>h.textContent="",1500); } };
+
+/* 段考複習組 */
+function examUnitsOf(g){ return (g.unit_ids||[]).filter(id=>{ const u=UNITS.find(x=>x.id===id); return u&&u.ready; }); }
+function renderExam(){ const card=$("examCard"); const groups=settings.exam_groups||[], opened=(settings.selected_units||[]).map(id=>unit(id)).filter(u=>u&&u.ready);
+  if(opened.length===0){ card.innerHTML=`<div style="color:var(--muted);font-size:13px">先在上面「開放課程」打開單元,才能框段考範圍。</div>`; return; }
+  let html="";
+  if(groups.length) html+=groups.map(g=>{ const cnt=examUnitsOf(g).length, off=g.active===false;
+    return `<div class="task"><div class="nm"><div class="t">${g.name||'未命名'}${off?' <span style="color:var(--muted);font-size:12px">(已停用)</span>':''}</div><div class="s">${cnt} 個單元${g.subject?' · '+g.subject:''}</div></div>
+      <div style="display:flex;gap:6px"><button class="chip" onclick="egOpen('${g.id}')">編輯</button><button class="chip" onclick="egToggle('${g.id}')">${off?'啟用':'停用'}</button><button class="chip" style="color:var(--seal)" onclick="egDel('${g.id}')">刪</button></div></div>`; }).join("");
+  else html+=`<div style="color:var(--muted);font-size:13px;margin-bottom:8px">還沒有複習組。</div>`;
+  html+=`<button class="primary" style="margin-top:10px" onclick="egOpen()">＋ 新增一組</button><div id="egForm"></div>`;
+  card.innerHTML=html;
+}
+window.egCancel=()=>{ egEdit=null; const f=$("egForm"); if(f) f.innerHTML=""; };
+window.egOpen=id=>{ const g=id?(settings.exam_groups||[]).find(x=>x.id===id):null;
+  egEdit={ id:g?g.id:('g'+Date.now()), name:g?g.name:'', units:new Set(g?(g.unit_ids||[]):[]) };
+  const opened=(settings.selected_units||[]).map(x=>unit(x)).filter(u=>u&&u.ready), bySub={}; opened.forEach(u=>{(bySub[u.subject]=bySub[u.subject]||[]).push(u);});
+  let chips=""; Object.keys(bySub).forEach(s=>{ chips+=`<div style="font-size:12px;color:var(--muted);margin:10px 0 4px">${s}</div><div style="display:flex;flex-wrap:wrap;gap:7px">`+
+    bySub[s].map(u=>`<button class="chip" onclick="egPick('${u.id}',this)" style="${egEdit.units.has(u.id)?'background:#fbeeec;color:var(--seal)':''}">${u.title}</button>`).join("")+`</div>`; });
+  $("egForm").innerHTML=`<div class="card" style="margin-top:10px;background:#faf8f1">
+    <div class="field"><label>名稱</label><input id="egName" type="text" value="${(egEdit.name||'').replace(/"/g,'&quot;')}" placeholder="例如：第二次段考複習"></div>
+    ${chips}
+    <button class="primary" style="margin-top:12px" onclick="egSave()">儲存</button>
+    <button class="chip" style="width:100%;margin-top:8px;text-align:center" onclick="egCancel()">取消</button></div>`;
+};
+window.egPick=(id,el)=>{ if(egEdit.units.has(id)){ egEdit.units.delete(id); el.style.background=''; el.style.color=''; } else { egEdit.units.add(id); el.style.background='#fbeeec'; el.style.color='var(--seal)'; } };
+window.egSave=async()=>{ const name=($("egName").value||'').trim()||'段考複習組', ids=[...egEdit.units]; if(!ids.length){ alert('請至少選一個單元'); return; }
+  const subs={}; ids.forEach(id=>{const u=unit(id); if(u&&u.subject)subs[u.subject]=(subs[u.subject]||0)+1;}); const subject=Object.keys(subs).sort((a,b)=>subs[b]-subs[a])[0]||"";
+  const groups=settings.exam_groups||[], ex=groups.find(g=>g.id===egEdit.id), obj={id:egEdit.id,name,unit_ids:ids,subject,active:ex?ex.active!==false:true};
+  if(ex)Object.assign(ex,obj); else groups.push(obj); settings.exam_groups=groups; egEdit=null; renderExam(); await saveSettings(); };
+window.egDel=async id=>{ if(!confirm('確定刪除這個複習組？'))return; settings.exam_groups=(settings.exam_groups||[]).filter(g=>g.id!==id); renderExam(); await saveSettings(); };
+window.egToggle=async id=>{ const g=(settings.exam_groups||[]).find(x=>x.id===id); if(!g)return; g.active=(g.active===false); renderExam(); await saveSettings(); };
 async function loadSettings(){
   const {data}=await sb.from("settings").select("*").eq("user_id",user.id).maybeSingle();
-  if(data) settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||{},reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],parent_pin:data.parent_pin||null};
+  if(data) settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||{},reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],parent_pin:data.parent_pin||null,exam_groups:data.exam_groups||[]};
 }
 async function saveSettings(){
-  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,parent_pin:settings.parent_pin,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  const base={user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,parent_pin:settings.parent_pin,updated_at:new Date().toISOString()};
+  let {error}=await sb.from("settings").upsert({...base,exam_groups:settings.exam_groups||[]},{onConflict:"user_id"});
+  if(error && /exam_groups/.test(error.message||"")){ ({error}=await sb.from("settings").upsert(base,{onConflict:"user_id"})); }
   const h=$("saveHint"); if(error){h.style.color="var(--seal)";h.textContent="存檔失敗:"+error.message;} else {h.style.color="var(--ok)";h.textContent="已儲存 ✓";setTimeout(()=>h.textContent="",1200);}
 }
 
@@ -195,7 +262,7 @@ window.toggleSubj=s=>{collapsed[s]=!collapsed[s];renderSubjects();};
 window.toggleUnit=async uid=>{ const i=settings.selected_units.indexOf(uid);
   if(i>=0){settings.selected_units.splice(i,1);delete settings.daily_goals[uid];}
   else{settings.selected_units.push(uid);if(settings.daily_goals[uid]==null)settings.daily_goals[uid]={target:10,mode:"attempts",level:"mix"};}
-  renderSubjects(); await saveSettings(); await loadOverview(); };
+  renderSubjects(); renderExam(); await saveSettings(); await loadOverview(); };
 function writeCfg(uid,p){settings.daily_goals[uid]={...cfg(uid),...p};}
 window.setGoal=async(uid,v)=>{writeCfg(uid,{target:Math.max(1,parseInt(v)||1)});await saveSettings();await loadOverview();};
 window.setLevel=async(uid,l)=>{writeCfg(uid,{level:l});renderSubjects();await saveSettings();};

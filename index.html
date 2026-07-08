@@ -184,34 +184,18 @@
   </section>
 
   <section id="tab-units" class="hidden">
-    <div class="sec-label">單元 · 打開老師教過的，設每天題數；各科可各自選版本</div>
+    <div class="sec-label">單元 · 選學期、點「練習」就能開始（開放哪些、每日題數由家長後台設定）</div>
     <div id="unit-list"></div>
   </section>
 
   <section id="tab-me" class="hidden">
-    <div class="card" id="me-lockcard"></div>
-    <div id="me-body">
-      <div class="card">
-        <div class="field"><label>顯示名稱</label><input id="me-name" type="text" placeholder="孩子的名字"></div>
-        <div class="field"><label>完成獎勵訊息（當天全部做完時跳出）</label><textarea class="reward-in" id="me-reward" placeholder="例如：今天全部完成，可以看 30 分鐘卡通！"></textarea></div>
-        <button class="primary" id="me-save">儲存</button>
-      </div>
-      <div class="card">
-        <div class="sec-label" style="margin:0 0 10px">休息日（這幾天不排任務，也不會中斷連續紀錄）</div>
-        <div class="restdays" id="restdays"></div>
-      </div>
-      <div class="card" id="me-exam-card"></div>
-      <div class="card" id="me-pin-card"></div>
-      <div class="card">
-        <div class="sec-label" style="margin:0 0 10px">修改登入密碼</div>
-        <div class="field"><input id="me-newpw" type="password" autocomplete="new-password" placeholder="新密碼（至少 6 個字）"></div>
-        <button class="primary" id="me-pw-save">更新密碼</button>
-        <div id="me-pw-msg" class="msg" style="margin-top:10px;display:none;"></div>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div id="me-email" style="color:var(--muted);font-size:13px;margin-bottom:14px;"></div>
-        <button class="back" id="me-logout" style="display:inline-block;">登出</button>
-      </div>
+    <div class="card" style="text-align:center;">
+      <div id="me-hello" style="font-size:17px;font-weight:600;margin-bottom:4px;"></div>
+      <div id="me-email" style="color:var(--muted);font-size:12px;margin-bottom:16px;"></div>
+      <a class="primary" href="game.html" style="display:block;box-sizing:border-box;text-align:center;text-decoration:none;background:var(--blue);margin-bottom:18px;">⚔️ 進入遊戲・去打怪 →</a>
+      <div style="color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:18px;">要調整開放的單元、每日題數、休息日、段考範圍等設定，請家長使用<b>家長後台</b>。</div>
+      <a class="primary" href="parent.html" style="display:block;box-sizing:border-box;text-align:center;text-decoration:none;">前往家長後台 →</a>
+      <button class="back" id="me-logout" style="display:inline-block;margin-top:14px;">登出</button>
     </div>
   </section>
 </div>
@@ -327,7 +311,7 @@ async function enterApp(){
   await loadSettings(); await loadToday();
   const {data:{user}}=await sb.auth.getUser();
   $("me-email").textContent=user?.email||""; $("me-name").value=settings.display_name||""; $("me-reward").value=settings.reward_msg||"";
-  renderRestDays(); renderMe(); renderUnits(); await renderToday(); switchTab("today");
+  renderMe(); renderUnits(); await renderToday(); switchTab("today");
 }
 async function loadSettings(){
   const {data:{user}}=await sb.auth.getUser();
@@ -525,15 +509,10 @@ async function setSubjectCourse(s,cid){ settings.course_by_subject=settings.cour
 
 function subjMeta(id){ return SUBJECTS.find(s=>s.id===id)||{id,icon:"📚",color:"#8a857b"}; }
 function toggleSubj(id){ collapsedSubj[id]=!collapsedSubj[id]; renderUnits(); }
-function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id),locked=parentLocked();
-  if(!u.ready){ return `<div class="unit"><div class="unit-head"><div class="toggle off-disabled"><i></i></div><div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||""}</div></div><span class="badge">準備中</span></div></div>`; }
-  const toggle=locked?`<div class="toggle ${on?'on':''} ro"><i></i></div>`:`<div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div>`;
-  return `<div class="unit"><div class="unit-head">${toggle}<div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||u.subject||""} · ${u.grade||""}${u.term||""}</div></div><button class="start" style="padding:8px 14px;font-size:13px;" onclick="practice('${u.id}')">練習</button></div>
-    ${(on&&!locked)?`<div class="cfg">
-      <div class="cfg-row"><span class="lbl">每天目標</span><input class="goal-in num" type="number" min="1" value="${c.target}" onchange="setGoal('${u.id}',this.value)"></div>
-      <div class="cfg-row"><span class="lbl">計算方式</span><div class="seg"><button class="${c.mode==='attempts'?'on':''}" onclick="setMode('${u.id}','attempts')">做題數</button><button class="${c.mode==='correct'?'on':''}" onclick="setMode('${u.id}','correct')">答對數</button></div></div>
-      <div class="cfg-row"><span class="lbl">難度</span><div class="seg"><button class="${c.level==='basic'?'on':''}" onclick="setLevel('${u.id}','basic')">基礎</button><button class="${c.level==='adv'?'on':''}" onclick="setLevel('${u.id}','adv')">進階</button><button class="${c.level==='mix'?'on':''}" onclick="setLevel('${u.id}','mix')">混合</button></div></div>
-    </div>`:``}</div>`;
+function unitRow(u){
+  if(!u.ready){ return `<div class="unit"><div class="unit-head"><div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||""}</div></div><span class="badge">準備中</span></div></div>`; }
+  const on=settings.selected_units.includes(u.id);
+  return `<div class="unit"><div class="unit-head"><div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||u.subject||""} · ${u.grade||""}${u.term||""}${on?' · <span style="color:var(--ok)">已排入任務</span>':''}</div></div><button class="start" style="padding:8px 14px;font-size:13px;" onclick="practice('${u.id}')">練習</button></div></div>`;
 }
 /* 年級·學期切換：單元頁只顯示所選學期，撐得住之後的國二國三 */
 function termKey(u){ return (u.grade||"國一")+(u.term||"上"); }
@@ -542,29 +521,25 @@ function availableTerms(){ return [...new Set(UNITS.map(termKey))].sort((a,b)=>t
 function setTerm(t){ curTerm=t; try{ localStorage.setItem("curTerm",t); }catch(e){} renderUnits(); }
 function renderUnits(){
   const box=$("unit-list"); if(UNITS.length===0){ box.innerHTML=`<div class="card"><div class="empty">找不到單元清單（units.json）。</div></div>`; return; }
-  const locked=parentLocked();
   const terms=availableTerms();
   if(curTerm===null){ try{ curTerm=localStorage.getItem("curTerm"); }catch(e){} }
   if(!terms.includes(curTerm)) curTerm=terms[0]||"國一上";
   const termbar=`<div class="termbar">${terms.map(t=>`<button class="tpill ${t===curTerm?'on':''}" onclick="setTerm('${t}')">${t}</button>`).join("")}</div>`;
-  const lockbar=locked?`<div class="lockbar">🔒 家長設定已鎖定 · 到「我」分頁輸入 PIN 才能改單元／題數（練習不受影響）</div>`:``;
   const groups={}; UNITS.filter(u=>termKey(u)===curTerm).forEach(u=>{ const s=u.subject||"其他"; (groups[s]=groups[s]||[]).push(u); });
   const order=Object.keys(groups).sort((a,b)=>subjIndex(a)-subjIndex(b));
   const body = order.length ? order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
     const list=groups[s].slice().sort((a,b)=>seqIndex(a.id,s)-seqIndex(b.id,s));
     const total=list.length, onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length, prep=list.filter(u=>!u.ready).length;
     const meta=`共 <span class="n">${total}</span> 單元`+(onCnt?`<span class="subj-dot" style="background:${m.color}"></span>${onCnt} 個排了任務`:``)+(prep?`<span class="subj-dot" style="background:${m.color}"></span>${prep} 個準備中`:``);
-    const courses=coursesForSubject(s), cur=(settings.course_by_subject||{})[s]||"";
-    const verBar=(!locked&&courses.length)?`<div class="subj-ver"><span class="vl">版本</span><select onchange="setSubjectCourse('${s}',this.value)"><option value="">預設順序</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:``;
     return `<div class="subj ${open?'open':''}">
       <div class="subj-head" onclick="toggleSubj('${s}')">
         <div class="subj-ic" style="background:${m.color}1a;color:${m.color}">${m.icon}</div>
         <div class="subj-tt"><div class="nm">${s}</div><div class="mt">${meta}</div></div>
         <div class="subj-chev">▼</div>
       </div>
-      <div class="subj-body">${verBar}${list.map(unitRow).join("")}</div>
+      <div class="subj-body">${list.map(unitRow).join("")}</div>
     </div>`; }).join("") : `<div class="card"><div class="empty">這個學期還沒有單元。</div></div>`;
-  box.innerHTML=termbar+lockbar+body;
+  box.innerHTML=termbar+body;
 }
 async function toggleUnit(uid){ if(parentLocked()) return; const i=settings.selected_units.indexOf(uid);
   if(i>=0){ settings.selected_units.splice(i,1); delete settings.daily_goals[uid]; }
@@ -595,7 +570,12 @@ async function pinSet(lockAfter){ const el=$("me-pin-new"); if(!el) return; cons
   if(lockAfter) alert("PIN 已設定並鎖定。要改設定時，輸入這組 PIN 解鎖即可。"); }
 async function pinRemove(){ if(!confirm("確定要移除家長 PIN 嗎？移除後孩子就能自由修改所有設定。")) return;
   settings.parent_pin=""; parentUnlocked=false; await saveSettings(); renderMe(); renderUnits(); }
-function renderMe(){ const hasPin=!!settings.parent_pin, locked=parentLocked();
+function renderMe(){
+  if($("me-hello")) $("me-hello").textContent = settings.display_name?("嗨，"+settings.display_name+" 👋"):"嗨 👋";
+  if($("me-email")&&sb) sb.auth.getUser().then(({data})=>{ if($("me-email")&&data&&data.user) $("me-email").textContent=data.user.email; }).catch(()=>{});
+  return;   // 設定已移至 parent.html；index 的「我」分頁只保留招呼＋家長後台連結＋登出
+}
+function renderMe_old(){ const hasPin=!!settings.parent_pin, locked=parentLocked();
   // 上方「家長鎖」卡片：一個鎖定/解鎖開關
   if(!hasPin){
     $("me-lockcard").innerHTML=`
@@ -654,14 +634,7 @@ function renderMe(){ const hasPin=!!settings.parent_pin, locked=parentLocked();
 /* 我 / 休息日 */
 function renderRestDays(){ $("restdays").innerHTML=WD.map((w,i)=>`<div class="rd ${(settings.rest_days||[]).includes(i)?'on':''}" onclick="toggleRest(${i})">${w}</div>`).join(""); }
 async function toggleRest(i){ if(parentLocked()) return; const arr=settings.rest_days||[]; const p=arr.indexOf(i); if(p>=0) arr.splice(p,1); else arr.push(i); settings.rest_days=arr; await saveSettings(); renderRestDays(); await renderToday(); }
-$("me-save").onclick=async()=>{ if(parentLocked()) return; settings.display_name=$("me-name").value.trim(); settings.reward_msg=$("me-reward").value.trim(); await saveSettings(); await renderToday(); $("me-save").textContent="已儲存"; setTimeout(()=>$("me-save").textContent="儲存",1200); };
 $("me-logout").onclick=async()=>{ await sb.auth.signOut(); };
-// 登入後修改密碼（解鎖狀態下才顯示這張卡）
-$("me-pw-save").onclick=async()=>{ const p=$("me-newpw").value, msg=$("me-pw-msg");
-  if(!p||p.length<6){ msg.textContent="新密碼至少 6 個字"; msg.className="msg err"; msg.style.display="block"; return; }
-  const {error}=await sb.auth.updateUser({password:p});
-  if(error){ msg.textContent="更新失敗："+error.message; msg.className="msg err"; msg.style.display="block"; return; }
-  $("me-newpw").value=""; msg.textContent="密碼已更新，下次用新密碼登入"; msg.className="msg ok"; msg.style.display="block"; };
 
 /* ===== 段考複習組（綜合測驗）===== */
 function examUnitsOf(g){ return (g.unit_ids||[]).filter(id=>{ const u=unit(id); return u&&u.ready; }); }
