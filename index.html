@@ -120,7 +120,23 @@
   .nav-inner{max-width:460px;margin:0 auto;display:flex;} .nav button{flex:1;background:none;padding:10px 0 14px;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;}
   .nav button .ic{font-size:20px;line-height:1;} .nav button.on{color:var(--ink);}
   .sheet-bg{position:fixed;inset:0;background:rgba(30,26,18,.4);display:flex;align-items:flex-end;z-index:20;}
-  .sheet{background:var(--card);width:100%;max-width:460px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 18px 30px;}
+  .sheet{background:var(--card);width:100%;max-width:460px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 18px 30px;max-height:88vh;overflow:auto;}
+  /* 綜合測驗 */
+  .exam-prog{height:7px;background:var(--line);border-radius:5px;overflow:hidden;margin:0 0 8px;}
+  .exam-prog i{display:block;height:100%;width:0;background:var(--seal);transition:width .3s;}
+  .exam-foot{position:fixed;left:0;right:0;bottom:0;max-width:460px;margin:0 auto;padding:14px 16px 20px;background:linear-gradient(transparent,var(--bg) 45%);}
+  .exam-result{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;z-index:10;}
+  .exam-card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);}
+  .eg-row{display:flex;align-items:center;gap:10px;}
+  .eg-name{font-weight:600;font-size:15px;} .eg-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+  .eg-start{background:var(--seal);color:#fff;border-radius:12px;padding:10px 18px;font-size:15px;font-weight:600;flex:none;}
+  .eg-pick{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .eg-chip{border:1.5px solid var(--line);border-radius:10px;padding:7px 11px;font-size:13px;cursor:pointer;background:#fbfcfe;}
+  .eg-chip.on{border-color:var(--seal);background:#fbeeec;color:var(--seal);font-weight:600;}
+  /* 年級·學期切換 */
+  .termbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .tpill{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:8px 18px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:.12s;}
+  .tpill.on{background:var(--ink);color:#fff;border-color:var(--ink);}
   .sheet h3{font-family:'Lexend',sans-serif;font-size:16px;margin-bottom:4px;} .sheet .s-date{color:var(--muted);font-size:13px;margin-bottom:14px;}
   .sheet .s-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;} .sheet .s-row:last-child{border-bottom:none;} .sheet .s-row .n{font-family:'Lexend',sans-serif;color:var(--muted);}
   .sheet .close{margin-top:16px;width:100%;background:#eceadf;padding:12px;border-radius:12px;font-size:15px;color:var(--ink);}
@@ -154,6 +170,7 @@
     <div class="sec-label" id="who"></div>
     <div class="sec-label">今日任務</div>
     <div class="card" id="today-tasks"></div>
+    <div id="exam-slot"></div>
   </section>
 
   <section id="tab-cal" class="hidden">
@@ -183,6 +200,7 @@
         <div class="sec-label" style="margin:0 0 10px">休息日（這幾天不排任務，也不會中斷連續紀錄）</div>
         <div class="restdays" id="restdays"></div>
       </div>
+      <div class="card" id="me-exam-card"></div>
       <div class="card" id="me-pin-card"></div>
       <div class="card">
         <div class="sec-label" style="margin:0 0 10px">修改登入密碼</div>
@@ -201,6 +219,14 @@
 <div id="view-play" class="app hidden">
   <div class="play-bar"><button class="back" id="play-back">‹ 返回</button><div class="p-title" id="play-title"></div><div class="p-live num" id="play-live"></div></div>
   <iframe id="play-frame" class="frame"></iframe>
+</div>
+
+<div id="view-exam" class="app hidden">
+  <div class="play-bar"><button class="back" id="exam-back">‹ 結束</button><div class="p-title" id="exam-title"></div><div class="p-live num" id="exam-live"></div></div>
+  <div class="exam-prog"><i id="exam-progbar"></i></div>
+  <iframe id="exam-frame" class="frame"></iframe>
+  <div id="exam-foot" class="exam-foot hidden"><button class="primary" id="exam-next">下一題 →</button></div>
+  <div id="exam-result" class="exam-result hidden"></div>
 </div>
 
 <nav class="nav hidden" id="nav"><div class="nav-inner">
@@ -228,8 +254,8 @@ const todayStr=()=>fmtDate(new Date());
 const escapeHtml=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
 let UNITS=[], COURSES=[], MISTAKES=[], SUBJECTS=[], collapsedSubj={};
-let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:""};
-let todayAct={}, calMonth=new Date(), playUnit=null, playLevel="mix", playPractice=false, parentUnlocked=false;
+let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:"",exam_groups:[]};
+let todayAct={}, calMonth=new Date(), playUnit=null, playLevel="mix", playPractice=false, parentUnlocked=false, examState=null, egEdit=null, curTerm=null;
 
 function cfg(uid){ let g=settings.daily_goals[uid];
   if(g==null) return {target:10,mode:"attempts",level:"mix"};
@@ -307,12 +333,17 @@ async function loadSettings(){
   const {data:{user}}=await sb.auth.getUser();
   const q=sb.from("settings").select("*");
   const {data}=await (user? q.eq("user_id",user.id).maybeSingle() : q.maybeSingle());
-  if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||(data.course_id?{"數學":data.course_id}:{}),reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],parent_pin:data.parent_pin||""}; }
-  else { settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:""}; await saveSettings(); }
+  if(data){ settings={display_name:data.display_name||"",course_id:data.course_id||"",course_by_subject:data.course_by_subject||(data.course_id?{"數學":data.course_id}:{}),reward_msg:data.reward_msg||"",selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],parent_pin:data.parent_pin||"",exam_groups:data.exam_groups||[]}; }
+  else { settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:"",exam_groups:[]}; await saveSettings(); }
 }
 async function saveSettings(){
   const {data:{user}}=await sb.auth.getUser(); if(!user) return;
-  const {error}=await sb.from("settings").upsert({user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,parent_pin:settings.parent_pin,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  const base={user_id:user.id,display_name:settings.display_name,course_id:settings.course_id,course_by_subject:settings.course_by_subject,reward_msg:settings.reward_msg,selected_units:settings.selected_units,daily_goals:settings.daily_goals,rest_days:settings.rest_days,parent_pin:settings.parent_pin,updated_at:new Date().toISOString()};
+  let {error}=await sb.from("settings").upsert({...base,exam_groups:settings.exam_groups||[]},{onConflict:"user_id"});
+  if(error && /exam_groups/.test(error.message||"")){   // 尚未跑 sql/exam-groups.sql：先存其餘欄位，段考組暫存本機
+    ({error}=await sb.from("settings").upsert(base,{onConflict:"user_id"}));
+    if(!error) console.warn("[settings.save] exam_groups 欄位不存在，請於 Supabase 執行 sql/exam-groups.sql");
+  }
   if(error) console.warn("[settings.save] 失敗：",error.message);
 }
 async function loadToday(){ todayAct={}; const {data}=await sb.from("activity").select("*").eq("day",todayStr()); (data||[]).forEach(r=> todayAct[r.unit_id]={done:r.done,correct:r.correct}); }
@@ -327,7 +358,7 @@ async function renderToday(){
   $("td-day").textContent=now.getDate(); $("td-my").textContent=`${now.getFullYear()}·${now.getMonth()+1}月`; $("td-wd").textContent="星期"+WD[now.getDay()];
   $("who").textContent=settings.display_name?("嗨，"+settings.display_name):"";
   $("rest-slot").innerHTML = isRestDay(now) ? `<div class="rest-banner">😌 今天是休息日，好好放鬆。想練習也可以，都算加分。</div>` : "";
-  await renderReviewBar();
+  await renderReviewBar(); renderExamCards();
 
   const en=orderUnits(enabledUnits()), box=$("today-tasks");
   if(en.length===0){ box.innerHTML=`<div class="empty">還沒有設定任務。<br>到下方 <b>單元</b> 打開想練的單元、設好每天題數，這裡就會出現。</div>`; $("reward-slot").innerHTML=""; await refreshStreak(); return; }
@@ -368,7 +399,7 @@ function practice(uid){ play(uid,true); }
 function updateLive(){ const c=cfg(playUnit),done=val(playUnit,todayAct[playUnit]||{}),t=c.mode==="correct"?"答對":"做";
   $("play-live").textContent = playPractice ? `自由練習 · 今日已${t} ${done}` : `今日${t} ${done}${c.target?" / "+c.target:""}`; }
 $("play-back").onclick=async()=>{ $("play-frame").src="about:blank"; $("view-play").classList.add("hidden"); $("view-main").classList.remove("hidden"); $("nav").classList.remove("hidden"); await renderToday(); if(!$("tab-wrong").classList.contains("hidden")) await loadMistakes(); };
-window.addEventListener("message",async ev=>{ const d=ev.data; if(!d||!playUnit) return;
+window.addEventListener("message",async ev=>{ const d=ev.data; if(!d||!playUnit||examState) return;
   if(d.type==="unit-progress"){ const inc=d.unitDone||0,cor=d.unitCorrect||0,cur=todayAct[playUnit]||{done:0,correct:0}; cur.done+=inc; cur.correct+=cor; todayAct[playUnit]=cur; updateLive();
     try{ const {error}=await sb.rpc("log_activity",{p_day:todayStr(),p_unit:playUnit,p_done:inc,p_correct:cor}); if(error) console.warn("[log_activity] 記錄失敗：",error.message); }catch(e){ console.warn("[log_activity] 例外：",e.message); } }
   else if(d.type==="unit-mistake"){ await logMistake({unit:playUnit,q:d.q||"",ans:d.ans||"",given:d.given||"",explain:d.steps||"",tip:d.tip||"",choices:d.choices||null}); }
@@ -478,6 +509,7 @@ async function mkDone(i){ const r=MISTAKES[i]; if(!r) return; const btn=$("mkdon
   const box=$("mistake-list");
   if(!box.querySelector('.mk[data-uid="'+uid+'"]')){ const h=box.querySelector('[data-grp="'+uid+'"]'); if(h) h.remove(); }
   if(!box.querySelector('.mk')){ renderMistakes(); }   // 今天複習完 → 顯示「今天沒有要複習」或空狀態
+  renderReviewBar();   // 同步刷新「今日」的複習提示，避免清完仍顯示「要複習」
 }
 
 /* 單元 / 版本（每個科目各自選版本） */
@@ -496,20 +528,29 @@ function toggleSubj(id){ collapsedSubj[id]=!collapsedSubj[id]; renderUnits(); }
 function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id),locked=parentLocked();
   if(!u.ready){ return `<div class="unit"><div class="unit-head"><div class="toggle off-disabled"><i></i></div><div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||""}</div></div><span class="badge">準備中</span></div></div>`; }
   const toggle=locked?`<div class="toggle ${on?'on':''} ro"><i></i></div>`:`<div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div>`;
-  return `<div class="unit"><div class="unit-head">${toggle}<div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||u.subject||""} ${u.grade||""}</div></div><button class="start" style="padding:8px 14px;font-size:13px;" onclick="practice('${u.id}')">練習</button></div>
+  return `<div class="unit"><div class="unit-head">${toggle}<div class="u-info"><div class="u-name">${u.title}</div><div class="u-sub">${u.tag||u.subject||""} · ${u.grade||""}${u.term||""}</div></div><button class="start" style="padding:8px 14px;font-size:13px;" onclick="practice('${u.id}')">練習</button></div>
     ${(on&&!locked)?`<div class="cfg">
       <div class="cfg-row"><span class="lbl">每天目標</span><input class="goal-in num" type="number" min="1" value="${c.target}" onchange="setGoal('${u.id}',this.value)"></div>
       <div class="cfg-row"><span class="lbl">計算方式</span><div class="seg"><button class="${c.mode==='attempts'?'on':''}" onclick="setMode('${u.id}','attempts')">做題數</button><button class="${c.mode==='correct'?'on':''}" onclick="setMode('${u.id}','correct')">答對數</button></div></div>
       <div class="cfg-row"><span class="lbl">難度</span><div class="seg"><button class="${c.level==='basic'?'on':''}" onclick="setLevel('${u.id}','basic')">基礎</button><button class="${c.level==='adv'?'on':''}" onclick="setLevel('${u.id}','adv')">進階</button><button class="${c.level==='mix'?'on':''}" onclick="setLevel('${u.id}','mix')">混合</button></div></div>
     </div>`:``}</div>`;
 }
+/* 年級·學期切換：單元頁只顯示所選學期，撐得住之後的國二國三 */
+function termKey(u){ return (u.grade||"國一")+(u.term||"上"); }
+function termSortVal(k){ const g={"國一":1,"國二":2,"國三":3}; return (g[k.slice(0,2)]||9)*10 + (k.slice(2)==="下"?2:1); }
+function availableTerms(){ return [...new Set(UNITS.map(termKey))].sort((a,b)=>termSortVal(a)-termSortVal(b)); }
+function setTerm(t){ curTerm=t; try{ localStorage.setItem("curTerm",t); }catch(e){} renderUnits(); }
 function renderUnits(){
   const box=$("unit-list"); if(UNITS.length===0){ box.innerHTML=`<div class="card"><div class="empty">找不到單元清單（units.json）。</div></div>`; return; }
   const locked=parentLocked();
+  const terms=availableTerms();
+  if(curTerm===null){ try{ curTerm=localStorage.getItem("curTerm"); }catch(e){} }
+  if(!terms.includes(curTerm)) curTerm=terms[0]||"國一上";
+  const termbar=`<div class="termbar">${terms.map(t=>`<button class="tpill ${t===curTerm?'on':''}" onclick="setTerm('${t}')">${t}</button>`).join("")}</div>`;
   const lockbar=locked?`<div class="lockbar">🔒 家長設定已鎖定 · 到「我」分頁輸入 PIN 才能改單元／題數（練習不受影響）</div>`:``;
-  const groups={}; UNITS.forEach(u=>{ const s=u.subject||"其他"; (groups[s]=groups[s]||[]).push(u); });
+  const groups={}; UNITS.filter(u=>termKey(u)===curTerm).forEach(u=>{ const s=u.subject||"其他"; (groups[s]=groups[s]||[]).push(u); });
   const order=Object.keys(groups).sort((a,b)=>subjIndex(a)-subjIndex(b));
-  box.innerHTML=lockbar+order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
+  const body = order.length ? order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
     const list=groups[s].slice().sort((a,b)=>seqIndex(a.id,s)-seqIndex(b.id,s));
     const total=list.length, onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length, prep=list.filter(u=>!u.ready).length;
     const meta=`共 <span class="n">${total}</span> 單元`+(onCnt?`<span class="subj-dot" style="background:${m.color}"></span>${onCnt} 個排了任務`:``)+(prep?`<span class="subj-dot" style="background:${m.color}"></span>${prep} 個準備中`:``);
@@ -522,7 +563,8 @@ function renderUnits(){
         <div class="subj-chev">▼</div>
       </div>
       <div class="subj-body">${verBar}${list.map(unitRow).join("")}</div>
-    </div>`; }).join("");
+    </div>`; }).join("") : `<div class="card"><div class="empty">這個學期還沒有單元。</div></div>`;
+  box.innerHTML=termbar+lockbar+body;
 }
 async function toggleUnit(uid){ if(parentLocked()) return; const i=settings.selected_units.indexOf(uid);
   if(i>=0){ settings.selected_units.splice(i,1); delete settings.daily_goals[uid]; }
@@ -607,6 +649,7 @@ function renderMe(){ const hasPin=!!settings.parent_pin, locked=parentLocked();
     $("me-pin-remove").onclick=pinRemove;
     $("me-pin-save2").onclick=()=>pinSet(false);
   } else { $("me-pin-card").innerHTML=""; }
+  renderExamGroups();
 }
 /* 我 / 休息日 */
 function renderRestDays(){ $("restdays").innerHTML=WD.map((w,i)=>`<div class="rd ${(settings.rest_days||[]).includes(i)?'on':''}" onclick="toggleRest(${i})">${w}</div>`).join(""); }
@@ -620,10 +663,113 @@ $("me-pw-save").onclick=async()=>{ const p=$("me-newpw").value, msg=$("me-pw-msg
   if(error){ msg.textContent="更新失敗："+error.message; msg.className="msg err"; msg.style.display="block"; return; }
   $("me-newpw").value=""; msg.textContent="密碼已更新，下次用新密碼登入"; msg.className="msg ok"; msg.style.display="block"; };
 
+/* ===== 段考複習組（綜合測驗）===== */
+function examUnitsOf(g){ return (g.unit_ids||[]).filter(id=>{ const u=unit(id); return u&&u.ready; }); }
+
+/* 家長端：管理複習組（在「我」分頁，PIN 後才顯示，因為 me-body 上鎖時整個隱藏） */
+function renderExamGroups(){ const card=$("me-exam-card"); if(!card) return;
+  const groups=settings.exam_groups||[], opened=(settings.selected_units||[]).map(id=>unit(id)).filter(u=>u&&u.ready);
+  let html=`<div class="sec-label" style="margin:0 0 6px">段考複習組 · 把段考範圍框成一組，孩子就能考一次綜合測驗</div>`;
+  if(opened.length===0) html+=`<div class="empty" style="padding:14px;">先到「單元」打開要考的單元，這裡才能把它們框成一組。</div>`;
+  else {
+    if(groups.length===0) html+=`<div style="color:var(--muted);font-size:13px;margin:6px 0 4px;">還沒有任何複習組。</div>`;
+    else html+=groups.map(g=>{ const cnt=examUnitsOf(g).length, off=g.active===false;
+      return `<div class="eg-row" style="padding:10px 0;border-top:1px solid var(--line);">
+        <div style="flex:1;min-width:0;"><div class="eg-name">${escapeHtml(g.name||'未命名')}${off?' <span style="font-size:12px;color:var(--muted)">（已停用）</span>':''}</div>
+          <div class="eg-meta">${cnt} 個單元${g.subject?' · '+escapeHtml(g.subject):''}</div></div>
+        <button class="back" style="padding:7px 10px;" onclick="editExamGroup('${g.id}')">編輯</button>
+        <button class="back" style="padding:7px 10px;" onclick="toggleExamGroup('${g.id}')">${off?'啟用':'停用'}</button>
+        <button class="back" style="padding:7px 10px;color:var(--seal);" onclick="removeExamGroup('${g.id}')">刪</button>
+      </div>`; }).join('');
+    html+=`<button class="primary" style="margin-top:12px;" onclick="editExamGroup()">＋ 新增一組</button>`;
+  }
+  card.innerHTML=html;
+}
+function editExamGroup(id){ const g=id?(settings.exam_groups||[]).find(x=>x.id===id):null;
+  egEdit={ id:g?g.id:('g'+Date.now()), name:g?g.name:'', units:new Set(g?(g.unit_ids||[]):[]) }; openExamSheet(); }
+function openExamSheet(){ const opened=(settings.selected_units||[]).map(id=>unit(id)).filter(u=>u&&u.ready);
+  const bySub={}; opened.forEach(u=>{ (bySub[u.subject]=bySub[u.subject]||[]).push(u); });
+  let chips=''; Object.keys(bySub).forEach(s=>{ chips+=`<div style="font-size:12px;color:var(--muted);margin:12px 0 2px;">${escapeHtml(s)}</div><div class="eg-pick">`+
+    bySub[s].map(u=>`<div class="eg-chip ${egEdit.units.has(u.id)?'on':''}" onclick="egToggleUnit('${u.id}',this)">${escapeHtml(u.title)}</div>`).join('')+`</div>`; });
+  if(!chips) chips=`<div class="empty">先到「單元」打開單元。</div>`;
+  $("sheet-root").innerHTML=`<div class="sheet-bg" onclick="closeSheet(event)"><div class="sheet" onclick="event.stopPropagation()">
+    <h3>段考複習組</h3>
+    <div class="field"><label>名稱</label><input id="eg-name" type="text" placeholder="例如：第二次段考複習" value="${escapeHtml(egEdit.name||'')}"></div>
+    <div class="sec-label" style="margin:8px 0 0">勾選要納入的單元</div>${chips}
+    <button class="primary" style="margin-top:16px;" onclick="saveExamGroup()">儲存</button>
+    <button class="back" style="width:100%;margin-top:8px;" onclick="closeSheet()">取消</button>
+  </div></div>`; }
+function egToggleUnit(id,el){ if(egEdit.units.has(id)){ egEdit.units.delete(id); el.classList.remove('on'); } else { egEdit.units.add(id); el.classList.add('on'); } }
+async function saveExamGroup(){ const name=(($("eg-name").value||'').trim())||'段考複習組', ids=[...egEdit.units];
+  if(ids.length===0){ alert('請至少勾選一個單元'); return; }
+  const subs={}; ids.forEach(id=>{ const u=unit(id); if(u&&u.subject) subs[u.subject]=(subs[u.subject]||0)+1; });
+  const subject=Object.keys(subs).sort((a,b)=>subs[b]-subs[a])[0]||'';
+  const groups=settings.exam_groups||[], ex=groups.find(g=>g.id===egEdit.id);
+  const obj={ id:egEdit.id, name, unit_ids:ids, subject, active:ex?ex.active!==false:true };
+  if(ex) Object.assign(ex,obj); else groups.push(obj);
+  settings.exam_groups=groups; closeSheet(); renderExamGroups(); renderExamCards(); await saveSettings(); }
+async function removeExamGroup(id){ if(!confirm('確定刪除這個複習組？')) return;
+  settings.exam_groups=(settings.exam_groups||[]).filter(g=>g.id!==id); await saveSettings(); renderExamGroups(); }
+async function toggleExamGroup(id){ const g=(settings.exam_groups||[]).find(x=>x.id===id); if(!g) return;
+  g.active=(g.active===false); await saveSettings(); renderExamGroups(); }
+
+/* 孩子端：今日分頁列出可考的複習組 */
+function renderExamCards(){ const slot=$("exam-slot"); if(!slot) return;
+  const groups=(settings.exam_groups||[]).filter(g=>g.active!==false && examUnitsOf(g).length>0);
+  if(groups.length===0){ slot.innerHTML=''; return; }
+  slot.innerHTML=`<div class="sec-label" style="margin-top:18px;">綜合測驗 · 段考範圍混合練習</div>`+
+    groups.map(g=>`<div class="exam-card"><div class="eg-row"><div style="flex:1;min-width:0;">
+      <div class="eg-name">🔀 ${escapeHtml(g.name||'綜合測驗')}</div>
+      <div class="eg-meta">${examUnitsOf(g).length} 個單元 · 逐題交錯</div></div>
+      <button class="eg-start" onclick="startExam('${g.id}')">開始</button></div></div>`).join('');
+}
+
+/* 綜合測驗 runner：逐題隨機換單元載入，沿用各單元原生作答與 unit-progress/unit-mistake 記錄 */
+function startExam(id){ const g=(settings.exam_groups||[]).find(x=>x.id===id); if(!g) return;
+  const valid=examUnitsOf(g); if(valid.length===0){ alert('這組沒有可用的單元'); return; }
+  const total=Math.min(30,Math.max(10,valid.length*5)), sched=[]; let last=null;
+  for(let k=0;k<total;k++){ const pool=valid.length>1?valid.filter(x=>x!==last):valid; const uid=pool[Math.floor(Math.random()*pool.length)]; sched.push(uid); last=uid; }
+  examState={ groupId:id, name:g.name||'綜合測驗', sched, idx:0, total, done:0, correct:0, curUnit:null, answered:false };
+  $("view-main").classList.add("hidden"); $("view-play").classList.add("hidden"); $("nav").classList.add("hidden");
+  $("view-exam").classList.remove("hidden"); $("exam-result").classList.add("hidden"); $("exam-title").textContent=examState.name;
+  loadExamQ(); }
+function loadExamQ(){ const es=examState; if(!es) return; es.answered=false; es.curUnit=es.sched[es.idx];
+  $("exam-foot").classList.add("hidden");
+  $("exam-live").textContent=`第 ${es.idx+1}/${es.total} 題 · 答對 ${es.correct}`;
+  $("exam-progbar").style.width=Math.round(es.idx/es.total*100)+'%';
+  $("exam-frame").src=unit(es.curUnit).file+'?level=mix&exam=1&n='+es.idx+'_'+Date.now(); }
+function examNext(){ const es=examState; if(!es) return; es.idx++; if(es.idx>=es.total) finishExam(); else loadExamQ(); }
+function finishExam(){ const es=examState; if(!es) return; const pct=es.done?Math.round(es.correct/es.done*100):0;
+  $("exam-progbar").style.width='100%'; $("exam-foot").classList.add("hidden");
+  const msg=pct>=90?'太強了！段考穩了 🎉':pct>=70?'不錯喔，把錯的複習一下就更好 💪':'多練幾次會更好，錯題本已幫你收好 📝';
+  $("exam-result").innerHTML=`<div style="text-align:center;max-width:340px;">
+    <div style="font-size:15px;color:var(--muted);">${escapeHtml(es.name)}</div>
+    <div style="font-size:52px;font-weight:700;font-family:'Lexend',sans-serif;margin:8px 0;color:var(--seal);">${es.correct}<span style="font-size:24px;color:var(--muted);"> / ${es.done}</span></div>
+    <div style="font-size:16px;margin-bottom:4px;">答對率 ${pct}%</div>
+    <div style="color:var(--muted);font-size:14px;margin-bottom:22px;line-height:1.6;">${msg}</div>
+    <button class="primary" onclick="startExam('${es.groupId}')">再考一次</button>
+    <button class="back" style="width:100%;margin-top:10px;" onclick="exitExam()">返回</button></div>`;
+  $("exam-result").classList.remove("hidden"); }
+function exitExam(){ $("exam-frame").src="about:blank"; examState=null;
+  $("view-exam").classList.add("hidden"); $("exam-result").classList.add("hidden");
+  $("view-main").classList.remove("hidden"); $("nav").classList.remove("hidden"); renderToday(); }
+$("exam-back").onclick=exitExam; $("exam-next").onclick=examNext;
+/* 綜合測驗專用訊息處理：只在 examState 時作用；練習分頁的 handler 已用 examState 擋掉 */
+window.addEventListener("message",async ev=>{ const d=ev.data; if(!d||!examState) return;
+  if(d.type==="unit-progress"){ if(examState.answered) return; examState.answered=true;
+    const cor=d.unitCorrect||0, inc=d.unitDone||1, uid=examState.curUnit;
+    examState.done++; if(cor) examState.correct++;
+    const cur=todayAct[uid]||{done:0,correct:0}; cur.done+=inc; cur.correct+=cor; todayAct[uid]=cur;
+    try{ await sb.rpc("log_activity",{p_day:todayStr(),p_unit:uid,p_done:inc,p_correct:cor}); }catch(e){}
+    $("exam-live").textContent=`第 ${examState.idx+1}/${examState.total} 題 · 答對 ${examState.correct}`;
+    $("exam-foot").classList.remove("hidden");
+  } else if(d.type==="unit-mistake"){ await logMistake({unit:examState.curUnit,q:d.q||"",ans:d.ans||"",given:d.given||"",explain:d.steps||"",tip:d.tip||"",choices:d.choices||null}); }
+});
+
 /* 分頁 */
 function switchTab(tab){ ["today","cal","wrong","units","me"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==tab));
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
-  if(tab==="cal") renderCal(); if(tab==="wrong") loadMistakes(); if(tab==="me") renderMe(); if(tab==="units") renderUnits(); }
+  if(tab==="today") renderToday(); if(tab==="cal") renderCal(); if(tab==="wrong") loadMistakes(); if(tab==="me") renderMe(); if(tab==="units") renderUnits(); }
 document.querySelectorAll(".nav button").forEach(b=> b.onclick=()=>switchTab(b.dataset.tab));
 
 boot();

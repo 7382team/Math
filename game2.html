@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>靈焰之洞 · 原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Noto+Sans+TC:wght@500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--ink:#eaf1f5;--paper:#fffdf8;--card-ink:#2b2b28;--line:#e5e2d8;--seal:#c1352b;
+    --blue:#2563eb;--orange:#ea580c;--flame:#22d3ee;--gold:#f5c542;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;font-family:'Noto Sans TC',system-ui,sans-serif;}
+  body{background:#0e1418;color:var(--ink);overflow:hidden;}
+  .num{font-family:'Lexend',sans-serif;font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+
+  .flames{display:flex;gap:4px;justify-content:center;}
+  .flame{width:22px;height:26px;transition:.3s;}
+  .flame.out{opacity:.26;filter:grayscale(1);}
+  .flame.low{animation:flick .5s infinite alternate;}
+  @keyframes flick{from{transform:translateY(0) scale(1)}to{transform:translateY(-2px) scale(1.1)}}
+  .flame svg{width:100%;height:100%;filter:drop-shadow(0 0 4px rgba(34,211,238,.8));}
+
+  #village{position:fixed;inset:0;max-width:480px;margin:0 auto;background-size:cover;background-position:center;display:flex;flex-direction:column;overflow:hidden;}
+  #village::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,20,.12),transparent 28%,rgba(10,16,20,.28));}
+  .vhud{position:relative;z-index:3;padding:14px 16px 4px;display:flex;justify-content:space-between;align-items:center;}
+  .vttl{font-family:'Noto Serif TC',serif;font-size:18px;letter-spacing:1px;text-shadow:0 2px 8px #000;}
+  .vmats{display:flex;gap:12px;font-size:13px;text-shadow:0 1px 4px #000;} .vmats b{font-family:'Lexend';}
+  .vstage{position:relative;flex:1;z-index:2;}
+  .oval{position:absolute;left:8%;right:8%;bottom:5%;height:28%;border-radius:50%;border:2px dashed rgba(255,255,255,.3);background:rgba(140,200,255,.06);}
+  .vbar{position:relative;z-index:3;display:flex;gap:8px;padding:4px 14px 8px;}
+  .vbar button{flex:1;background:rgba(28,36,46,.72);border:1.5px solid rgba(255,255,255,.22);border-bottom:5px solid rgba(0,0,0,.5);border-radius:14px;padding:9px 4px 7px;color:#eaf1f5;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;backdrop-filter:blur(4px);transition:transform .07s,border-bottom-width .07s;}
+  .vbar button .i{font-size:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));} .vbar button:active{transform:translateY(3px);border-bottom-width:2px;}
+  .vbar button.main{background:rgba(201,118,42,.92);border-color:rgba(255,220,170,.55);border-bottom-color:#6e3d12;box-shadow:0 0 16px -3px rgba(240,150,60,.8);}
+  #vhero{position:absolute;transform:translate(-50%,-82%);z-index:3;width:56px;height:56px;transition:left .6s cubic-bezier(.4,0,.2,1),top .6s cubic-bezier(.4,0,.2,1);}
+  #vhero img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.6));}
+  #vhero.walk img{animation:bob .4s infinite alternate;}
+  .vhint{position:relative;z-index:3;text-align:center;font-size:12px;color:#e6f6ff;opacity:.8;padding:0 0 16px;text-shadow:0 1px 4px #000;}
+  .vcloud{position:relative;z-index:3;text-align:center;font-size:12px;color:#e6f6ff;padding:2px 14px 2px;text-shadow:0 1px 3px #000;}
+  .vcloud b{color:#7ef29a;}
+  .vlogin,.vlogout{border:none;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:700;margin-left:6px;}
+  .vlogin{background:rgba(34,211,238,.9);color:#08323a;} .vlogout{background:rgba(255,255,255,.25);color:#fff;}
+  .loginSheet{position:fixed;inset:0;z-index:60;background:rgba(8,14,18,.72);display:none;align-items:flex-end;}
+  .loginSheet.on{display:flex;}
+  .loginCard{background:var(--paper);color:var(--card-ink);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 18px 26px;}
+  .loginCard h3{margin:0 0 4px;font-size:17px;} .loginCard p{color:#8a857b;font-size:13px;margin:0 0 14px;line-height:1.5;}
+  .loginCard input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;margin-bottom:10px;background:#fff;}
+  .loginCard .lgP{width:100%;background:var(--card-ink);color:#fff;padding:13px;border-radius:12px;font-size:16px;font-weight:600;}
+  .loginCard .lgG{width:100%;background:none;color:var(--blue);padding:12px;font-size:14px;}
+  .loginCard .lgC{width:100%;background:#eceadf;color:var(--card-ink);padding:11px;border-radius:11px;font-size:14px;}
+  .loginCard .lgMsg{font-size:13px;color:var(--seal);min-height:16px;margin-bottom:8px;}
+  /* 通用面板(每日/商店/圖鑑/系統塔 共用)*/
+  .sheetBg{position:fixed;inset:0;z-index:55;background:rgba(8,14,18,.72);display:none;align-items:flex-end;}
+  .sheetBg.on{display:flex;}
+  .sheetCard{background:var(--paper);color:var(--card-ink);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:18px 18px 24px;max-height:82vh;overflow-y:auto;}
+  .sheetCard .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .sheetCard .sh h3{margin:0;font-size:17px;} .sheetCard .sh .x{background:#eceadf;border-radius:10px;padding:6px 12px;font-size:14px;color:var(--card-ink);}
+  .ph{color:#8a857b;font-size:14px;line-height:1.6;padding:8px 2px;} .ph .dLogin{background:var(--card-ink);color:#fff;border-radius:11px;padding:10px 18px;font-size:15px;margin-top:8px;}
+  .dtop{background:#fbeeec;border:1px solid #f0d5d1;border-radius:12px;padding:10px 12px;font-size:14px;color:var(--seal);margin-bottom:10px;} .dtop b{font-family:'Lexend';}
+  /* 魔物圖鑑 */
+  .cdxgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .cdx{position:relative;background:#faf8f1;border:1.5px solid var(--line);border-radius:12px;padding:8px 4px 6px;text-align:center;overflow:hidden;}
+  .cdx.tame{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);}
+  .cdx .cdxi{height:52px;display:flex;align-items:center;justify-content:center;}
+  .cdx .cdxi img{max-width:48px;max-height:48px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+  .cdx.lock .cdxi img{filter:brightness(0);opacity:.32;}
+  .cdx .cdxn{font-size:12px;font-weight:700;color:var(--card-ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cdx.lock .cdxn{color:#b9bdc9;} .cdx .cdxc{font-size:10px;color:#8a857b;margin-top:1px;}
+  .cdx .cdxbadge{position:absolute;top:4px;right:4px;background:var(--seal);color:#fff;font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;letter-spacing:1px;}
+  .drow{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);} .drow:last-child{border-bottom:none;}
+  .drow .di{flex:1;min-width:0;} .drow .dn{font-weight:600;font-size:15px;} .drow .ds{font-size:12px;color:#8a857b;margin-top:2px;}
+  .drow .dgo{background:var(--flame);color:#08323a;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;} .drow .dsoon{font-size:12px;color:#b9bdc9;}
+  /* 遊戲風選單按鈕(副本/單元/綜合)*/
+  .gsel{display:flex;flex-direction:column;gap:10px;padding:2px 0 4px;}
+  .gbtn{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border-radius:15px;border:none;position:relative;transition:transform .08s,border-bottom-width .08s;}
+  .gbtn:not(:disabled):active{transform:translateY(3px);}
+  .gbtn .gth{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px;overflow:hidden;}
+  .gbtn .gth img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45));}
+  .gbtn .gmid{flex:1;min-width:0;} .gbtn .gname{font-size:15px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .gbtn .gsub{font-size:12px;margin-top:2px;opacity:.9;} .gbtn .gstars{font-size:12px;letter-spacing:2px;color:#ffd24a;margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .gbtn .ggo{font-size:13px;font-weight:700;flex-shrink:0;opacity:.92;}
+  .backbar{background:#eceadf;border-radius:10px;padding:7px 13px;font-size:14px;color:var(--card-ink);font-weight:600;margin-bottom:12px;}
+  .termtabs{display:flex;gap:8px;margin-bottom:12px;}
+  .termtabs .tt{flex:1;padding:9px 4px;border-radius:11px;background:#efeae0;color:#8a857b;font-size:14px;font-weight:700;border:1.5px solid transparent;}
+  .termtabs .tt.on{background:var(--card-ink);color:#fff;}
+  /* 村莊傳送門(走到門口進副本)*/
+  .portal{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
+  .portal .ring{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;border:2.5px solid rgba(255,255,255,.5);background:rgba(16,22,28,.42);backdrop-filter:blur(2px);animation:pfloat 3s ease-in-out infinite;}
+  .portal .pl{margin-top:6px;font-size:12px;font-weight:700;color:#eaf1f5;text-shadow:0 1px 4px #000;background:rgba(10,16,20,.55);padding:2px 10px;border-radius:20px;white-space:nowrap;}
+  .portal.soon .ring{filter:grayscale(.75);border-color:rgba(255,255,255,.22);animation:none;} .portal.soon .pl{opacity:.7;}
+  .portal:not(.soon):active{transform:translate(-50%,-50%) scale(.94);}
+  @keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .mapback{position:absolute;right:16px;top:14px;z-index:5;background:rgba(20,26,30,.6);border:1px solid rgba(255,255,255,.4);color:#eaf1f5;border-radius:10px;padding:7px 12px;font-size:13px;}
+  #map{position:fixed;inset:0;max-width:480px;margin:0 auto;background-size:cover;background-position:center;display:none;flex-direction:column;}
+  #map::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,20,.5),rgba(10,16,20,.12) 30%,rgba(10,16,20,.5));}
+  .hud{position:relative;z-index:3;padding:14px 16px 6px;}
+  .hud .ttl{font-family:'Noto Serif TC',serif;font-size:17px;letter-spacing:1px;text-shadow:0 2px 8px #000;}
+  .hud .ttl small{display:block;font-size:11px;opacity:.85;font-weight:400;letter-spacing:0;}
+
+  .stage{position:relative;flex:1;z-index:2;}
+  .trail{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;}
+  .node{position:absolute;transform:translate(-50%,-50%);z-index:2;}
+  .node .disc{width:58px;height:58px;border-radius:50%;background:rgba(20,26,30,.5);border:2px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+  .node.t-boss .disc{width:74px;height:74px;border-color:var(--seal);box-shadow:0 0 18px -2px rgba(193,53,43,.85);}
+  .node.t-machine .disc{width:64px;height:64px;border-color:var(--gold);box-shadow:0 0 20px -2px rgba(245,197,66,.9);}
+  .node.done .disc{border-color:var(--flame);box-shadow:0 0 14px -2px rgba(34,211,238,.8);}
+  .node img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5));}
+  .node.t-boss img{width:58px;height:58px;}
+  .node .lbl{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 4px #000,0 0 4px #000;white-space:nowrap;}
+  .node .stamp{position:absolute;top:-6px;right:-6px;font-family:'Noto Serif TC',serif;color:var(--flame);font-size:18px;text-shadow:0 0 8px #000;transform:rotate(12deg);}
+  .machineIcon{font-size:28px;}
+
+  #hero{position:absolute;transform:translate(-50%,-82%);z-index:4;display:flex;flex-direction:column;align-items:center;transition:left .7s cubic-bezier(.4,0,.2,1),top .7s cubic-bezier(.4,0,.2,1);}
+  #hero .carry{margin-bottom:2px;transform:scale(.85);}
+  #hero img{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.6));}
+  #hero.walk img{animation:bob .4s infinite alternate;}
+  @keyframes bob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+
+  .go{position:relative;z-index:3;margin:0 16px 20px;height:56px;border-radius:16px;background:var(--flame);color:#08323a;font-size:17px;font-weight:700;letter-spacing:1px;box-shadow:0 10px 26px -10px rgba(34,211,238,.7);}
+  .go small{font-weight:500;opacity:.7;font-size:12px;letter-spacing:0;} .go:disabled{opacity:.4;} .go.reach{background:var(--gold);color:#5a4405;}
+
+  #battle{position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:20;background-size:cover;background-position:center;display:none;flex-direction:column;}
+  #battle.on{display:flex;}
+  #battle::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,20,.42),rgba(10,16,20,.7));}
+  .btop{position:relative;z-index:2;padding:12px 16px 0;font-weight:600;text-shadow:0 1px 6px #000;}
+  .bstage{position:relative;z-index:2;flex:1;min-height:0;}
+  .mon{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:132px;height:132px;}
+  .mon img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.55));}
+  .mon.bob img{animation:mbob 2.4s ease-in-out infinite;} @keyframes mbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .mon.hit img{animation:mhit .4s;} @keyframes mhit{0%{transform:scale(1)}25%{transform:scale(1.15,.85) rotate(-5deg);filter:brightness(2)}55%{transform:translateX(-8px)}100%{transform:scale(1)}}
+  .mon.atk img{animation:matk .45s;} @keyframes matk{0%{transform:scale(1)}45%{transform:scale(1.25) translateY(8px)}100%{transform:scale(1)}}
+  .mon.die img{animation:mdie .6s forwards;} @keyframes mdie{to{transform:scale(.2) rotate(20deg);opacity:0}}
+  .monHP{position:absolute;top:-4px;left:50%;transform:translateX(-50%);display:flex;gap:4px;}
+  .pip{width:12px;height:12px;border-radius:50%;background:#5a2b2b;border:1px solid rgba(255,255,255,.4);}
+  .pip.on{background:var(--seal);box-shadow:0 0 6px rgba(193,53,43,.8);}
+  .bubble{position:absolute;top:150px;left:50%;transform:translateX(-50%);background:var(--paper);color:var(--card-ink);border:2px solid #1b1d26;border-radius:16px;padding:13px 22px;min-width:200px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+  .bubble::before{content:"";position:absolute;top:-15px;left:calc(50% - 9px);width:0;height:0;border:9px solid transparent;border-bottom-color:#1b1d26;}
+  .bubble::after{content:"";position:absolute;top:-11px;left:calc(50% - 7px);width:0;height:0;border:7px solid transparent;border-bottom-color:var(--paper);}
+  .bubble .eq{font-family:'Lexend','Noto Sans TC';font-size:25px;font-weight:600;letter-spacing:1px;}
+  .bubble .eq .neg{color:var(--orange);font-weight:700;} .bubble .eq .pos{color:var(--blue);font-weight:700;} .bubble .eq .qm{color:#9aa;}
+  .heroBox{position:absolute;left:14px;bottom:10px;display:flex;flex-direction:column;align-items:center;}
+  .heroBox .carry{margin-bottom:3px;}
+  .heroBox img{width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 5px 6px rgba(0,0,0,.6));transition:.15s;}
+  .heroBox img.lunge{transform:translateX(30px) scale(1.06);}
+  .heroBox img.cast{animation:cast .55s;}
+  @keyframes cast{0%{transform:scale(1)}25%{transform:scale(1.22);filter:brightness(2.3) drop-shadow(0 0 16px var(--gold))}55%{transform:scale(.95)}100%{transform:scale(1)}}
+  .shieldBadge{position:absolute;left:16px;bottom:118px;z-index:5;background:rgba(37,99,235,.92);color:#fff;border-radius:99px;padding:4px 11px;font-size:14px;font-weight:700;display:none;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .shieldBadge.on{display:block;}
+  .hintpop{position:absolute;left:14px;right:14px;bottom:8px;z-index:6;background:rgba(8,80,100,.96);color:#e6fbff;border:1.5px solid #22d3ee;border-radius:13px;padding:12px 14px;font-size:14px;line-height:1.5;box-shadow:0 6px 24px rgba(0,0,0,.5);display:none;}
+  .hintpop.on{display:block;animation:popin .25s;}
+  @keyframes popin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .floatL{position:absolute;inset:0;pointer-events:none;z-index:3;}
+  .dmg{position:absolute;font-family:'Lexend';font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 6px #000;animation:up .8s forwards;}
+  .dmg.out{color:var(--flame);} @keyframes up{0%{opacity:1}30%{transform:translateY(-12px) scale(1.3)}100%{opacity:0;transform:translateY(-56px)}}
+
+  .panel{position:relative;z-index:2;background:var(--paper);color:var(--card-ink);border-radius:20px 20px 0 0;padding:12px 16px 16px;}
+  .skbtn{width:100%;height:42px;border-radius:12px;background:linear-gradient(90deg,#22d3ee,#3b82f6);color:#fff;font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:9px;box-shadow:0 6px 16px -8px rgba(34,211,238,.7);}
+  .skbtn:disabled{opacity:.4;box-shadow:none;}
+  .box{height:44px;border:2px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Lexend';font-size:23px;color:#b9bdc9;background:#fbfcfe;}
+  .box.filled{color:var(--card-ink);} .box.ok{border-color:#16a34a;color:#16a34a;background:#f0fdf4;} .box.no{border-color:var(--seal);color:var(--seal);background:#fff1f4;}
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px;}
+  .pad.dim{opacity:.4;pointer-events:none;}
+  .k{height:40px;border:1px solid var(--line);border-radius:11px;background:#f1efe8;font-family:'Lexend';font-size:18px;color:var(--card-ink);}
+  .k:active{background:#e3e0d4;transform:scale(.96);} .k.sign{color:var(--orange);font-weight:700;} .k.del{color:#8a857b;}
+  .explain{margin-top:9px;background:#faf8f1;border:1.5px solid var(--line);border-radius:12px;padding:11px;display:none;}
+  .explain.show{display:block;}
+  .explain .lab{font-size:11px;color:#8a857b;letter-spacing:2px;margin-bottom:6px;}
+  .steps{font-family:'Lexend','Noto Sans TC';font-size:15px;line-height:1.85;}
+  .steps .pos{color:var(--blue);font-weight:700;} .steps .neg{color:var(--orange);font-weight:700;} .steps .res{color:#16a34a;font-weight:800;}
+  .tip{margin-top:6px;font-size:12px;color:#8a857b;}
+  .act{margin-top:9px;width:100%;height:50px;border-radius:14px;background:var(--seal);color:#fff;font-size:16px;font-weight:700;letter-spacing:2px;}
+  .act small{font-weight:500;opacity:.75;font-size:12px;letter-spacing:0;} .act.go2{background:var(--blue);}
+
+  /* 技能選單 */
+  .skmenu{position:absolute;left:12px;right:12px;bottom:12px;z-index:8;background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 -10px 34px rgba(0,0,0,.5);display:none;}
+  .skmenu.on{display:block;animation:popin .2s;}
+  .skmenu h4{margin:0 0 9px;font-size:13px;color:#8a857b;letter-spacing:2px;}
+  .skitem{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:12px;background:#eef6f8;border:1.5px solid #bce3ea;margin-bottom:8px;text-align:left;}
+  .skitem:disabled{opacity:.4;} .skitem .ic{font-size:22px;}
+  .skitem .nm{flex:1;font-weight:700;color:var(--card-ink);font-size:15px;} .skitem .nm small{display:block;font-weight:400;font-size:12px;color:#8a857b;margin-top:1px;}
+  .skitem .cnt{font-family:'Lexend';font-weight:700;color:#0e7490;font-size:16px;}
+  .skmenu .cancel{width:100%;padding:10px;border-radius:11px;background:#eceadf;color:var(--card-ink);font-size:14px;}
+
+  .toast{position:fixed;left:50%;top:34%;transform:translate(-50%,-50%);z-index:40;background:rgba(8,20,24,.94);color:var(--flame);padding:12px 20px;border-radius:14px;font-size:16px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;text-align:center;}
+  .toast.on{opacity:1;}
+
+  #ending{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 50% 40%,#12324a,#0a0f14);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+  #ending.on{display:flex;}
+  #ending h1{font-family:'Noto Serif TC',serif;font-size:29px;margin:0 0 6px;color:#fff;text-shadow:0 0 20px var(--gold);z-index:2;}
+  #ending .sub{color:#cfe3ee;font-size:15px;margin-bottom:22px;z-index:2;line-height:1.6;padding:0 24px;}
+  #ending .again{z-index:2;background:var(--flame);color:#08323a;padding:14px 26px;border-radius:14px;font-size:16px;font-weight:700;}
+  .spark{position:absolute;width:8px;height:8px;border-radius:50%;opacity:0;}
+  @keyframes boom{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}
+</style>
+</head>
+<body>
+
+<div id="village">
+  <div class="vhud"><div class="vttl">🔥 靈焰村</div><div class="vmats"><span>🪵 <b id="vWood">0</b></span><span>✦ <b id="vStar">0</b></span></div></div>
+  <div class="vbar">
+    <button class="main" onclick="villageAction('dungeon')"><span class="i">⚔️</span>副本</button>
+    <button onclick="villageAction('daily')"><span class="i">📅</span>每日任務</button>
+    <button onclick="villageAction('shop')"><span class="i">🏪</span>商店</button>
+    <button onclick="villageAction('tower')"><span class="i">🗼</span>系統塔</button>
+    <button onclick="villageAction('codex')"><span class="i">📖</span>圖鑑</button>
+  </div>
+  <div class="vcloud" id="vcloud"></div>
+  <div class="vstage" id="vstage">
+    <div class="oval"></div>
+    <div id="vhero"><img src="assets/sprites/players/paladin.png" alt="英雄"></div>
+  </div>
+  <div class="vhint">🌀 點傳送門進副本 · 👆 上面也有功能 · 點地面走走</div>
+</div>
+
+<div id="map">
+  <button class="mapback" id="mapBack">‹ 回村莊</button>
+  <div class="hud"><div class="ttl">靈焰之洞<small id="dgSub">正負數的乘除 · 第 1 章</small></div></div>
+  <div class="stage" id="stage">
+    <svg class="trail" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline id="trailLine" fill="none" stroke="rgba(34,211,238,.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2.6 2.6"/></svg>
+    <div id="nodes"></div>
+    <div id="hero"><div class="carry flames" id="flamesMap"></div><img src="assets/sprites/players/paladin.png" alt="英雄"></div>
+  </div>
+  <button class="go" id="go">前進 ▸ <small>(Enter / 空白)</small></button>
+</div>
+
+<div id="battle">
+  <div class="btop" id="bTitle"></div>
+  <div class="bstage">
+    <div class="mon bob" id="mon"><div class="monHP" id="monHP"></div><img id="monImg" alt="魔物"></div>
+    <div class="bubble" id="bubble"><div class="eq" id="eq"></div></div>
+    <div class="heroBox"><div class="carry flames" id="flamesBattle"></div><img id="bHero" src="assets/sprites/players/paladin.png" alt=""></div>
+    <div class="shieldBadge" id="shieldBadge">🛡</div>
+    <div class="hintpop" id="hintPop"></div>
+    <div class="floatL" id="floatL"></div>
+  </div>
+  <div class="panel">
+    <button class="skbtn" id="skBtn">🪄 施放技能</button>
+    <div class="box" id="box">?</div>
+    <div class="explain" id="explain"><div class="lab">靈焰的低語 · 詳解</div><div class="steps" id="steps"></div><div class="tip" id="tip"></div></div>
+    <div class="pad" id="pad">
+      <button class="k" data-k="7">7</button><button class="k" data-k="8">8</button><button class="k" data-k="9">9</button>
+      <button class="k" data-k="4">4</button><button class="k" data-k="5">5</button><button class="k" data-k="6">6</button>
+      <button class="k" data-k="1">1</button><button class="k" data-k="2">2</button><button class="k" data-k="3">3</button>
+      <button class="k sign" data-k="sign">±</button><button class="k" data-k="0">0</button><button class="k del" data-k="del">⌫</button>
+    </div>
+    <button class="act" id="act">⚔ 攻 擊 <small>(Enter)</small></button>
+  </div>
+  <div class="skmenu" id="skMenu"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="sheetBg" id="sheet"><div class="sheetCard"><div class="sh"><h3 id="sheetHead"></h3><button class="x" onclick="closeSheet()">關閉</button></div><div id="sheetBody"></div></div></div>
+<div class="loginSheet" id="loginSheet"><div class="loginCard">
+  <h3>登入雲端 · 讓打怪算進聯絡簿</h3>
+  <p>用跟聯絡簿一樣的帳號登入,遊戲裡答的題就會進每日進度、月曆、錯題本。</p>
+  <div class="lgMsg" id="lgMsg"></div>
+  <input id="lgEmail" type="email" placeholder="電子郵件" autocomplete="username">
+  <input id="lgPass" type="password" placeholder="密碼" autocomplete="current-password">
+  <button class="lgP" onclick="doAuth('login')">登入</button>
+  <button class="lgG" onclick="doAuth('signup')">第一次?建立帳號</button>
+  <button class="lgC" onclick="closeLogin()">關閉</button>
+</div></div>
+<div id="ending"><h1 id="endTitle"></h1><div class="sub" id="endSub"></div><button class="again" id="again">回村莊 ▸</button></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const P=(c,n)=>`assets/sprites/${c}/${n}.png`;
+const MAXF=3; let flames=MAXF;
+const SKILLS={ hint:{ic:'💡',name:'提示',desc:'顯示解題方法,不給答案',n:2}, reroll:{ic:'🎲',name:'重骰',desc:'換一題同類型的',n:1} };
+let shields=2;   // 防風罩:常駐持有,答錯自動擋、不用施放
+function resetSkills(){ SKILLS.hint.n=2; SKILLS.reroll.n=1; shields=2; }
+function renderShields(){ $('shieldBadge').textContent='🛡 ×'+shields; $('shieldBadge').classList.toggle('on',shields>0); }
+
+/* ===== 接線:打怪=練習(寫回聯絡簿)、素材、雲端存檔 ===== */
+const SB_URL="https://xmkenwcqxbjeqyzigdoj.supabase.co";
+const SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta2Vud2NxeGJqZXF5emlnZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODYxMjEsImV4cCI6MjA5ODg2MjEyMX0.2Imp7H39wt5m4tZ4V3W0y0lyPqYu61a2liWnlytZzLc";
+const sb = window.supabase ? supabase.createClient(SB_URL,SB_ANON) : null;
+let user=null, saveTimer=null;
+let mats=JSON.parse(localStorage.getItem('kg2_mats')||'{"wood":0,"star":0}');
+let codex=JSON.parse(localStorage.getItem('kg2_codex')||'{}');   // 魔物圖鑑:{ mon_id: 擊敗次數 }
+const DUNGEON_UNIT='signed-muldiv';   // 這個副本對應的真單元 id
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function renderMats(){ $('vWood').textContent=mats.wood; $('vStar').textContent=mats.star; }
+function saveState(){ localStorage.setItem('kg2_mats',JSON.stringify(mats)); localStorage.setItem('kg2_codex',JSON.stringify(codex));
+  if(user&&sb){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ sb.from('game_state').upsert({user_id:user.id,data:{mats,codex},updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(r=>{},e=>{}); },700); } }
+async function loadCloud(){ try{ const {data}=await sb.from('game_state').select('data').eq('user_id',user.id).maybeSingle(); if(data&&data.data){ if(data.data.mats) mats=data.data.mats; if(data.data.codex) codex=data.data.codex; } }catch(e){} }
+const pterm=t=>'('+(t.s<0?'−':'+')+t.v+')';
+function qTextOf(p){ return p.kind==='single'?pterm(p.a)+' '+p.op+' '+pterm(p.b)+' =':pterm(p.first)+p.steps.map(s=>' '+s.op+' '+pterm(s.f)).join('')+' ='; }
+function feedLog(correct,p,given){ if(!user||!sb) return;      // 登入才寫回;訪客只在本機
+  const t=(TOPIC&&TOPIC.id==='mix'&&p&&p._t)?TOPICS[p._t]:TOPIC;   // 綜合題記到它真正的來源單元
+  const uid=(t&&t.unit_id)||DUNGEON_UNIT;
+  sb.rpc('log_activity',{p_day:todayStr(),p_unit:uid,p_done:1,p_correct:correct?1:0}).then(r=>{},e=>{});
+  if(!correct){ sb.rpc('log_mistake',{p_unit:uid,p_q:t.qtext(p),p_ans:String(p.answer),p_given:given,p_explain:'',p_tip:t.tip(p),p_choices:null}).then(r=>{},e=>{}); } }
+function renderCloud(){ const el=$('vcloud'); if(!el) return;
+  el.innerHTML = user ? `☁️ <b>${user.email}</b> · 打怪已算進聯絡簿 <button class="vlogout" onclick="doLogout()">登出</button>`
+    : `📴 本機存檔(打怪還沒算進聯絡簿) <button class="vlogin" onclick="openLogin()">☁️ 登入</button>`; }
+window.openLogin=()=>{ if(!sb){ toast('這台沒載入到 Supabase(Artifact 沙盒會擋外部,請在你的網站開)'); return; } $('loginSheet').classList.add('on'); };
+window.closeLogin=()=>$('loginSheet').classList.remove('on');
+window.doAuth=async(mode)=>{ const email=($('lgEmail').value||'').trim(),pass=$('lgPass').value,m=$('lgMsg');
+  if(!email||!pass){ m.textContent='請輸入帳號密碼'; return; } m.style.color='#8a857b'; m.textContent='處理中…';
+  try{ const {error}= mode==='signup'? await sb.auth.signUp({email,password:pass}) : await sb.auth.signInWithPassword({email,password:pass});
+    if(error){ m.style.color='var(--seal)'; m.textContent=/Invalid login/.test(error.message)?'帳號或密碼不對':error.message; return; }
+    const {data:{user:u}}=await sb.auth.getUser(); if(!u){ m.style.color='var(--ok)'; m.textContent='帳號已建立,若需信箱驗證請收信後再登入'; return; }
+    user=u; await loadCloud(); renderMats(); renderCloud(); closeLogin(); toast('已登入,打怪會算進聯絡簿 ☁️');
+  }catch(e){ m.style.color='var(--seal)'; m.textContent=e.message; } };
+window.doLogout=async()=>{ if(sb) await sb.auth.signOut(); user=null; renderCloud(); toast('已登出,改用本機存檔'); };
+async function loadSettings(){ if(!user||!sb){ settings=null; return; }
+  try{ const {data}=await sb.from('settings').select('selected_units,daily_goals,rest_days,exam_groups').eq('user_id',user.id).maybeSingle();
+    settings=data?{selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],exam_groups:data.exam_groups||[]}:{selected_units:[],daily_goals:{},rest_days:[],exam_groups:[]}; }catch(e){} }
+async function boot(){ await loadCatalog(); renderPortals();   // 讀單元目錄(含年級/學期),再依目錄重畫傳送門
+  if(sb){ try{ const {data:{session}}=await sb.auth.getSession(); user=session?.user||null;
+      sb.auth.onAuthStateChange((_e,s)=>{ user=s?.user||null; renderCloud(); }); }catch(e){} }
+  if(user){ await loadCloud(); await loadSettings(); } renderMats(); renderCloud(); }
+
+/* 出題 */
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a, sgn=()=>Math.random()<.5?1:-1;
+function divs(n){const r=[];for(let d=2;d<=9;d++)if(n%d===0)r.push(d);return r;}
+function genSingle(){const op=Math.random()<.5?'×':'÷';let a,b;
+  if(op==='×'){a={s:sgn(),v:rand(2,12)};b={s:sgn(),v:rand(2,12)};}
+  else{const q=rand(2,9),d=rand(2,9);a={s:sgn(),v:d*q};b={s:sgn(),v:d};}
+  return{kind:'single',a,b,op,answer:op==='×'?a.s*a.v*b.s*b.v:(a.s*a.v)/(b.s*b.v)};}
+function genChain(){const first={s:sgn(),v:rand(2,9)};let val=first.s*first.v;const steps=[];
+  for(let i=0;i<2;i++){let op=Math.random()<.5?'×':'÷';if(op==='÷'&&!divs(Math.abs(val)).length)op='×';let f;
+    if(op==='×'){f={s:sgn(),v:rand(2,6)};val*=f.s*f.v;}else{const ds=divs(Math.abs(val));f={s:sgn(),v:ds[rand(0,ds.length-1)]};val/=f.s*f.v;}
+    steps.push({op,f});}return{kind:'chain',first,steps,answer:val};}
+const term=t=>`(<span class="${t.s<0?'neg':'pos'}">${t.s<0?'−':'+'}${t.v}</span>)`;
+const fmt=n=>n<0?`<span class="neg">−${Math.abs(n)}</span>`:`<span class="pos">${n}</span>`;
+function eqHTML(p){let h=p.kind==='single'?term(p.a)+' <span>'+p.op+'</span> '+term(p.b):term(p.first)+p.steps.map(s=>' <span>'+s.op+'</span> '+term(s.f)).join('');
+  return h+' <span>=</span> <span class="qm">?</span>';}
+function buildSteps(p){if(p.kind==='single'){const same=p.a.s*p.b.s>0;
+    return `<div>符號：${same?'同號 → 得正':'異號 → 得負'}</div><div>${p.a.v} ${p.op} ${p.b.v} = ${Math.abs(p.answer)}</div><div>= <span class="res">${fmt(p.answer)}</span></div>`;}
+  let acc=p.first.s*p.first.v,out='';p.steps.forEach((s,i)=>{const pr=acc;acc=s.op==='×'?acc*s.f.s*s.f.v:acc/(s.f.s*s.f.v);
+    out+=`<div>${fmt(pr)} ${s.op} ${term(s.f)} = ${i===p.steps.length-1?`<span class="res">${fmt(acc)}</span>`:fmt(acc)}</div>`;});return out;}
+const tipOf=p=>p.kind==='single'?'先看符號:同號得正、異號得負,再把數字直接乘或除。':'由左到右一步一步算,每一步都看同號得正、異號得負。';
+const opS=o=>'<span>'+o+'</span>';
+/* 正負數加減 */
+function genAdd(hard){ const n=hard?4:2; const terms=[{s:sgn(),v:rand(2,20)}],ops=[];
+  for(let i=1;i<n;i++){ ops.push(Math.random()<.5?'＋':'－'); terms.push({s:sgn(),v:rand(2,15)}); }
+  let val=terms[0].s*terms[0].v; ops.forEach((o,i)=>{ const t=terms[i+1].s*terms[i+1].v; val+= o==='＋'?t:-t; });
+  return {kind:'add',terms,ops,answer:val}; }
+function renderAdd(p){ let h=term(p.terms[0]); p.ops.forEach((o,i)=>h+=' '+opS(o)+' '+term(p.terms[i+1])); return h+' '+opS('=')+' <span class="qm">?</span>'; }
+function stepsAdd(p){ let acc=p.terms[0].s*p.terms[0].v,out=''; p.ops.forEach((o,i)=>{ const prev=acc,t=p.terms[i+1].s*p.terms[i+1].v; acc+= o==='＋'?t:-t;
+  out+='<div>'+fmt(prev)+' '+opS(o)+' '+term(p.terms[i+1])+' '+opS('=')+' '+(i===p.ops.length-1?'<span class="res">'+fmt(acc)+'</span>':fmt(acc))+'</div>'; }); return out; }
+function qtextAdd(p){ let s=pterm(p.terms[0]); p.ops.forEach((o,i)=>s+=' '+o+' '+pterm(p.terms[i+1])); return s+' ='; }
+/* 一元一次方程式 */
+function sgnStr(v){ return v<0?'－ '+Math.abs(v):'＋ '+v; }
+function genEq(hard){ const x=sgn()*rand(2,12),a=rand(2,9),b=sgn()*rand(1,20);
+  if(!hard) return {kind:'eq',a,b,c:a*x+b,x,answer:x};
+  const c=rand(1,a-1),d=(a-c)*x+b; return {kind:'eq2',a,b,c,d,x,answer:x}; }
+function renderEq(p){ if(p.kind==='eq') return `<span class="pos">${p.a}</span>x ${sgnStr(p.b)} ${opS('=')} ${p.c}${opS('，')} x ${opS('=')} <span class="qm">?</span>`;
+  return `<span class="pos">${p.a}</span>x ${sgnStr(p.b)} ${opS('=')} <span class="pos">${p.c}</span>x ${sgnStr(p.d)}${opS('，')} x ${opS('=')} <span class="qm">?</span>`; }
+function stepsEq(p){ if(p.kind==='eq'){ const r=p.c-p.b; return `<div>移項:${p.a}x ${opS('=')} ${p.c} ${p.b<0?'＋':'－'} ${Math.abs(p.b)} ${opS('=')} ${r}</div><div>x ${opS('=')} ${r} ÷ ${p.a} ${opS('=')} <span class="res">${p.x}</span></div>`; }
+  const lc=p.a-p.c,rc=p.d-p.b; return `<div>把 x 移同邊:(${p.a}−${p.c})x ${opS('=')} ${rc}</div><div>${lc}x ${opS('=')} ${rc} → x ${opS('=')} <span class="res">${p.x}</span></div>`; }
+function qtextEq(p){ return p.kind==='eq'?`${p.a}x ${sgnStr(p.b)} = ${p.c}, x=`:`${p.a}x ${sgnStr(p.b)} = ${p.c}x ${sgnStr(p.d)}, x=`; }
+/* 副本主題註冊表 —— 插入口:加一個主題 = 加一個副本(之後接真題庫就往這裡塞) */
+const TOPICS={
+  muldiv:{ id:'muldiv', unit_id:'signed-muldiv', name:'正負數乘除', biome:'volcano', diff:2, face:['monsters','dragon_fire'], gen:genSingle, boss:genChain, render:eqHTML, steps:buildSteps, tip:tipOf, qtext:qTextOf },
+  add:{ id:'add', unit_id:'signed-numbers', name:'正負數加減', biome:'cave', diff:1, face:['monsters','slime_green'], gen:()=>genAdd(false), boss:()=>genAdd(true), render:renderAdd, steps:stepsAdd, tip:()=>'正負數加減:減負數=加正數、加負數=減正數;可想成在數線上移動。', qtext:qtextAdd },
+  eq:{ id:'eq', unit_id:'linear-eq', name:'一元一次方程式', biome:'temple', diff:3, face:['monsters','mummy'], gen:()=>genEq(false), boss:()=>genEq(true), render:renderEq, steps:stepsEq, tip:()=>'解方程式:常數移到另一邊(移項變號),合併後兩邊除以 x 的係數。', qtext:qtextEq },
+};
+let TOPIC=TOPICS.muldiv;
+/* 綜合副本:把 mixPool 裡的題型混著出(段考複習=交錯練習)。每題記到它真正的來源單元 */
+let mixPool=['muldiv','add','eq'];
+function genMix(){ const t=mixPool[rand(0,mixPool.length-1)]; const p=TOPICS[t].gen(); p._t=t; return p; }
+function genMixBoss(){ const t=mixPool[rand(0,mixPool.length-1)]; const p=(TOPICS[t].boss||TOPICS[t].gen)(); p._t=t; return p; }
+TOPICS.mix={ id:'mix', unit_id:'signed-muldiv', name:'綜合 · 段考複習', biome:'night', diff:3, face:null, gen:genMix, boss:genMixBoss,
+  render:p=>TOPICS[p._t].render(p), steps:p=>TOPICS[p._t].steps(p), tip:p=>TOPICS[p._t].tip(p), qtext:p=>TOPICS[p._t].qtext(p) };
+/* 科目表 —— 插入口:某科有了對應主題就填進 topics,選單自動出 */
+const SUBJECTS=[{id:'數學',icon:'📐',topics:['muldiv','add','eq']},{id:'生物',icon:'🧬',topics:[]},{id:'國文',icon:'📖',topics:[]}];
+/* 每科配色(遊戲按鈕/傳送門用)*/
+const BTN={ '數學':{bg:'#2f56b8',lip:'#1b3576',th:'#1b3576'}, '生物':{bg:'#2f9e6b',lip:'#1a6544',th:'#1a6544'}, '國文':{bg:'#b3742b',lip:'#7a4d16',th:'#7a4d16'} };
+const starStr=d=>'★★★☆☆☆'.slice(3-d,6-d);
+const faceImg=f=>f?`<img src="${P(f[0],f[1])}" alt="">`:'🔀';
+/* biome:每個副本的場景背景 + 怪物池 + BOSS 池(每次進副本隨機抽,所以同單元每次都不一樣)*/
+const BIOMES={
+  volcano:{bg:'volcano',mons:[['dragon_fire','火龍'],['dragon_red','赤焰龍'],['imp_purple','小惡魔'],['lizard_green','火蜥蜴'],['scorpion','火蠍'],['gargoyle','石魔像']],boss:[['dragon_twohead','雙頭魔龍'],['demon_king','熔岩魔王']]},
+  cave:{bg:'cave',mons:[['slime_green','綠史萊姆'],['bat','暗影蝙蝠'],['spider','洞穴蜘蛛'],['goblin','哥布林'],['mushroom_trio','蕈菇怪'],['slime_mustache','鬍子史萊姆']],boss:[['spider_queen','蜘蛛女王'],['dark_knight','洞窟守衛']]},
+  temple:{bg:'temple',mons:[['mummy','木乃伊'],['gargoyle_stone','石像鬼'],['ghost','幽靈'],['cursed_mirror','詛咒之鏡'],['skeleton','骷髏兵'],['mimic_chest','寶箱怪']],boss:[['reaper','死神'],['vampire','吸血鬼'],['dark_knight','黑騎士']]},
+  forest:{bg:'forest',mons:[['wolf','惡狼'],['fox','妖狐'],['mushroom_red','紅蘑菇'],['tree_sapling','樹妖苗'],['swamp_beast','沼澤獸'],['naga','娜迦']],boss:[['treant','古樹妖'],['hydra','九頭蛇']]},
+  snow:{bg:'snow',mons:[['golem_ice','冰魔像'],['ice_cube','冰塊怪'],['ice_wraith','冰魂'],['snowman','雪人'],['wolf','雪狼']],boss:[['hydra','寒霜巨獸'],['dragon_twohead','霜龍']]},
+  night:{bg:'night',mons:[['ghost_skull','骷髏幽魂'],['devil_small','小魔'],['imp_purple','紫惡魔'],['eye_monster','眼魔'],['gargoyle_gray','灰石魔'],['spider_purple','紫蜘蛛']],boss:[['reaper','夜之死神'],['demon_king','魔王']]},
+};
+function shuffled(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rand(0,i); const t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function genPOS(n){ const p=[]; for(let i=0;i<n;i++){ const t=n>1?i/(n-1):0; const x=Math.round(12+t*79); const y=Math.round(84-t*30+(i%2?-9:6)); p.push([x,y]); } return p; }
+function buildDungeon(topic){ const b=BIOMES[(topic&&topic.biome)]||BIOMES.cave;
+  const nMon=rand(3,4); const chosen=shuffled(b.mons).slice(0,nMon); const boss=b.boss[rand(0,b.boss.length-1)];
+  const nodes=[{t:'start'}];
+  chosen.forEach(m=>nodes.push({t:'mon',cat:'monsters',mon:m[0],hp:3,name:m[1]}));
+  nodes.push({t:'boss',cat:'bosses',mon:boss[0],hp:5,name:boss[1]}); nodes.push({t:'machine'});
+  return {nodes,bg:b.bg}; }
+
+/* ===== 單元目錄(units.json)+ 學期分層(國一上/國一下…),與網頁「國一上/國一下」對標 ===== */
+let CATALOG={units:[],subjects:[]};
+let curTerm=localStorage.getItem('kg2_term')||'';   // 遊戲各記各的(localStorage),不與網頁共用
+let curSelect=null;
+const termOf=u=>(u.grade||'')+(u.term||'');
+const termVal=k=>({'國一':1,'國二':2,'國三':3}[k.slice(0,2)]||9)*10+(k.slice(2)==='下'?2:1);
+function catUnits(){ if(CATALOG.units&&CATALOG.units.length) return CATALOG.units;   // 後備:目錄還沒載入就用內建三題型
+  return Object.values(TOPICS).filter(t=>t.unit_id&&t.id!=='mix').map(t=>({id:t.unit_id,title:t.name,subject:'數學',grade:'國一',term:'上',ready:true})); }
+function allTerms(){ return [...new Set(catUnits().map(termOf))].filter(Boolean).sort((a,b)=>termVal(a)-termVal(b)); }   // 有內容的學期才出現
+function subjMeta(id){ return (CATALOG.subjects||[]).find(x=>x.id===id) || {id,icon:((SUBJECTS.find(z=>z.id===id)||{}).icon)||'📘',color:'#5a6472'}; }
+function darken(hex,f){ if(!/^#[0-9a-f]{6}$/i.test(hex)) return '#333'; const n=parseInt(hex.slice(1),16); const r=Math.round(((n>>16)&255)*(1-f)),g=Math.round(((n>>8)&255)*(1-f)),b=Math.round((n&255)*(1-f)); return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+function subjColor(id){ if(BTN[id]) return BTN[id]; const col=subjMeta(id).color||'#5a6472'; const d=darken(col,.42); return {bg:col,lip:d,th:d}; }
+function unitPlayable(u){ const d=UNIT_DUNGEON[u.id]; return d&&d.ready?d.topic:null; }   // 能玩=有內建題型
+async function loadCatalog(){ try{ if(window.UNITS_JSON) CATALOG=window.UNITS_JSON; else { const r=await fetch('units.json'); CATALOG=await r.json(); } }catch(e){}
+  const ts=allTerms(); if(!curTerm||!ts.includes(curTerm)) curTerm=ts[0]||'國一上'; }
+function termTabs(){ const ts=allTerms(); if(ts.length<=1) return '';
+  return '<div class="termtabs">'+ts.map(t=>`<button class="tt${t===curTerm?' on':''}" onclick="setTerm('${t}')">${t}</button>`).join('')+'</div>'; }
+window.setTerm=(t)=>{ curTerm=t; localStorage.setItem('kg2_term',t); if(curSelect) curSelect(); };
+
+/* 靈焰 */
+const FLAME='<svg viewBox="0 0 24 28"><path d="M12 1 C17 8 21 12 12 27 C3 12 7 8 12 1 Z" fill="#22d3ee" stroke="#0891b2" stroke-width="1.2"/><path d="M12 10 C14.5 14 16 16 12 23 C8 16 9.5 14 12 10 Z" fill="#a5f3fc"/></svg>';
+function renderFlames(){const html=[...Array(MAXF)].map((_,i)=>{const on=i<flames;return `<div class="flame ${on?'':'out'} ${on&&flames===1?'low':''}">${FLAME}</div>`;}).join('');
+  $('flamesMap').innerHTML=html; $('flamesBattle').innerHTML=html;}
+
+/* 技能:一鍵開選單 → 選 → 施放動畫 → 效果 */
+$('skBtn').onclick=()=>{ if(busy||$('act').classList.contains('go2'))return;
+  $('skMenu').innerHTML='<h4>選擇要施放的技能</h4>'+Object.entries(SKILLS).map(([k,s])=>
+    `<button class="skitem" ${s.n<=0?'disabled':''} onclick="castSkill('${k}')">
+      <span class="ic">${s.ic}</span><span class="nm">${s.name}<small>${s.desc}</small></span><span class="cnt">×${s.n}</span></button>`).join('')
+    +'<button class="cancel" onclick="closeSkMenu()">取消</button>';
+  $('skMenu').classList.add('on'); };
+window.closeSkMenu=()=>$('skMenu').classList.remove('on');
+window.castSkill=(k)=>{ const s=SKILLS[k]; if(!s||s.n<=0)return; s.n--; closeSkMenu();
+  const h=$('bHero'); h.classList.add('cast'); setTimeout(()=>h.classList.remove('cast'),550);
+  setTimeout(()=>fireSkill(k),360); };
+function fireSkill(k){
+  if(k==='hint'){ $('hintPop').innerHTML='💡 '+TOPIC.tip(problem); $('hintPop').classList.add('on');
+    clearTimeout(fireSkill._t); fireSkill._t=setTimeout(()=>$('hintPop').classList.remove('on'),6000); }
+  if(k==='reroll'){ problem = battle.node.t==='boss' && TOPIC.boss ? TOPIC.boss() : TOPIC.gen(); $('eq').innerHTML=TOPIC.render(problem); entry=''; showEntry(); toast('🎲 換了一題!'); } }
+
+/* 地圖 */
+let NODES=[{t:'start'},{t:'mon',cat:'monsters',mon:'slime_green',hp:3,name:'綠史萊姆'},{t:'mon',cat:'monsters',mon:'bat',hp:3,name:'暗影蝙蝠'},
+  {t:'mon',cat:'monsters',mon:'mushroom_trio',hp:3,name:'蕈菇怪'},{t:'boss',cat:'bosses',mon:'spider_queen',hp:5,name:'蜘蛛女王'},{t:'machine'}];
+let POS=[[12,86],[30,64],[50,78],[68,54],[83,66],[91,38]];
+let cur=0, battle=null;
+
+function layout(){
+  $('trailLine').setAttribute('points',POS.map(p=>p.join(',')).join(' '));
+  $('nodes').innerHTML=NODES.map((n,i)=>{const done=i<=cur&&n.t!=='start'&&n.t!=='machine';
+    let inner=n.t==='machine'?'<span class="machineIcon">⚙️</span>':n.t==='start'?'<span style="font-size:22px">🏁</span>':`<img src="${P(n.cat,n.mon)}" alt="">`;
+    let lbl=n.t==='machine'?'靈焰機關':n.t==='start'?'入口':(n.t==='boss'?'守關 · ':'')+(n.name||'');
+    return `<div class="node t-${n.t} ${done?'done':''}" style="left:${POS[i][0]}%;top:${POS[i][1]}%">
+      <div class="disc">${inner}</div><div class="lbl">${lbl}</div>${done?'<div class="stamp">淨</div>':''}</div>`;}).join('');
+  moveHero();
+}
+function moveHero(){$('hero').style.left=POS[cur][0]+'%';$('hero').style.top=POS[cur][1]+'%';}
+function toast(t,ms=1400){const el=$('toast');el.innerHTML=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),ms);}
+
+$('go').onclick=()=>{ if($('go').disabled||cur>=NODES.length-1) return;
+  const next=cur+1, node=NODES[next];
+  $('go').disabled=true; $('hero').classList.add('walk'); cur=next; moveHero();
+  setTimeout(()=>{ $('hero').classList.remove('walk'); node.t==='machine'?ending():startBattle(node); },760);
+};
+function refreshGo(){ if(cur>=NODES.length-1){ $('go').style.display='none'; return; }
+  $('go').style.display=''; $('go').disabled=false; const next=NODES[cur+1];
+  $('go').innerHTML=(next&&next.t==='machine'?'啟動機關 ✦':'前進 ▸')+' <small>(Enter / 空白)</small>';
+  $('go').classList.toggle('reach', next&&next.t==='machine'); }
+
+/* 戰鬥 */
+let problem,entry='',busy=false,pending=null;
+function startBattle(node){ battle={node,hp:node.hp,max:node.hp}; renderShields();
+  $('bTitle').textContent=(node.t==='boss'?'守關 · ':'')+node.name;
+  $('monImg').src=P(node.cat,node.mon); $('mon').className='mon bob'; renderMonHP(); renderFlames();
+  $('battle').classList.add('on'); askQ();
+}
+function renderMonHP(){let h='';for(let i=0;i<battle.max;i++)h+=`<span class="pip ${i<battle.hp?'on':''}"></span>`;$('monHP').innerHTML=h;}
+function askQ(){ problem = battle.node.t==='boss' && TOPIC.boss ? TOPIC.boss() : TOPIC.gen();
+  $('eq').innerHTML=TOPIC.render(problem); entry=''; showEntry(); $('explain').classList.remove('show'); $('hintPop').classList.remove('on');
+  $('pad').classList.remove('dim'); $('pad').style.display=''; $('skBtn').style.display=''; $('skBtn').disabled=false; $('act').innerHTML='⚔ 攻 擊 <small>(Enter)</small>'; $('act').className='act'; busy=false; }
+function showEntry(){const b=$('box');
+  if(entry===''||entry==='-'){b.textContent=entry==='-'?'−':'?';b.className='box';}
+  else{b.textContent=entry.replace('-','−');b.className='box filled';}}
+function floatDmg(t,out){const d=document.createElement('div');d.className='dmg'+(out?' out':'');d.textContent=t;
+  d.style.left=(38+Math.random()*30)+'%';d.style.top='24%';$('floatL').appendChild(d);setTimeout(()=>d.remove(),800);}
+function monFX(c){const m=$('mon');m.classList.remove('bob');m.classList.add(c);setTimeout(()=>{m.classList.remove(c);if(c!=='die')m.classList.add('bob');},c==='die'?600:450);}
+function heroLunge(){const h=$('bHero');h.classList.add('lunge');setTimeout(()=>h.classList.remove('lunge'),200);}
+
+function submit(){ if(busy)return; if(entry===''||entry==='-')return;
+  busy=true; $('pad').classList.add('dim'); $('skBtn').disabled=true;
+  const correct=parseInt(entry,10)===problem.answer;
+  feedLog(correct, problem, entry.replace('-','−'));   // 打怪 = 練習:寫回聯絡簿(登入才寫)
+  const b=$('box'); b.className='box '+(correct?'ok':'no'); b.textContent=entry.replace('-','−');
+  if(correct){ heroLunge(); battle.hp--; renderMonHP(); monFX('hit'); floatDmg('−1');
+    if(battle.hp<=0){ monFX('die'); setTimeout(winBattle,650);} else setTimeout(askQ,650);
+  } else {
+    if(shields>0){ shields--; renderShields(); floatDmg('🛡 擋下',true); toast('🛡 防風罩自動擋下!靈焰未熄'); }
+    else if(flames>0){ flames--; renderFlames(); floatDmg('靈焰 −1',true); }
+    monFX('atk');
+    $('pad').style.display='none'; $('skBtn').style.display='none';
+    $('steps').innerHTML=TOPIC.steps(problem); $('tip').textContent=TOPIC.tip(problem); $('explain').classList.add('show');
+    $('act').innerHTML='了解,再出招 ▸'; $('act').className='act go2'; pending=askQ;
+  }
+}
+$('act').onclick=()=>{ if($('act').classList.contains('go2')){ const f=pending;pending=null; $('explain').classList.remove('show'); if(f)f(); return;} submit(); };
+function winBattle(){ mats.wood+=2;
+  const mon=battle.node.mon; let dex='';   // 圖鑑登錄:打倒就 +1,首次登錄 / 第 3 次收服 各給提示
+  if(mon){ const was=codex[mon]||0; codex[mon]=was+1; dex = was===0?' · 圖鑑+1 📖' : (codex[mon]===3?' · ⭐收服 '+battle.node.name:''); }
+  renderMats(); saveState();
+  if(flames<MAXF){ flames++; renderFlames(); toast('淨化成功!靈焰 +1 · 🪵+2'+dex); } else toast('淨化成功!🪵+2'+dex);
+  setTimeout(()=>{ $('battle').classList.remove('on'); layout(); refreshGo(); },900); }
+
+/* 鍵盤 */
+$('pad').addEventListener('click',e=>{const b=e.target.closest('.k');if(!b||busy)return;typeKey(b.dataset.k);});
+function typeKey(k){ if(k==='del')entry=entry.slice(0,-1); else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else if(entry.replace('-','').length<4)entry+=k; showEntry(); }
+document.addEventListener('keydown',e=>{
+  const inBattle=$('battle').classList.contains('on'), inEnd=$('ending').classList.contains('on');
+  if(inEnd){ if(e.key==='Enter'||e.key===' '){e.preventDefault();$('again').click();} return; }
+  if(!inBattle){ if((e.key==='Enter'||e.key===' ')&&$('go').style.display!=='none'&&!$('go').disabled){e.preventDefault();$('go').click();} return; }
+  if($('skMenu').classList.contains('on')){ if(e.key==='Escape')closeSkMenu(); return; }
+  if(e.key==='Enter'){e.preventDefault();$('act').click();return;} if(busy)return;
+  if(/^[0-9]$/.test(e.key))typeKey(e.key); else if(e.key==='-')typeKey('sign'); else if(e.key==='Backspace')typeKey('del'); });
+
+/* 結局 */
+function ending(){ const el=$('ending'); const tier=flames, big=tier>=3, mid=tier>=1;
+  mats.wood+=3; if(big) mats.star+=1; renderMats(); saveState();   // 通關掉素材,一次全對加星塵
+  $('endTitle').textContent=big?'🎆 滿級靈焰煙火!':mid?'🎇 靈焰煙火':'⚙️ 機關啟動';
+  $('endSub').innerHTML=big?'零失手!你點亮了整座洞穴,獲得<b style="color:#f5c542">稀有掉落 + 完美稱號</b>。'
+    :mid?`帶著 ${tier} 朵靈焰抵達,煙火升空,獲得好掉落。`
+    :'靈焰全滅,但你仍完成了任務——機關運轉,只是沒有煙火。<br>下次守住靈焰,天空會更美。';
+  el.classList.add('on');
+  const n=big?70:mid?36:0, colors=['#f5c542','#22d3ee','#ff6b9d','#7ef29a','#ff9a3c'];
+  for(let i=0;i<n;i++){ const s=document.createElement('div'); s.className='spark'; s.style.left='50%'; s.style.top='40%'; s.style.background=colors[i%colors.length];
+    const ang=(i/n)*6.283, dist=120+((i*37)%160);
+    s.style.setProperty('--dx',Math.cos(ang)*dist+'px'); s.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    s.style.animation=`boom ${1+((i*13)%80)/100}s ease-out ${((i*7)%50)/100}s forwards`; el.appendChild(s); }
+}
+$('again').onclick=()=>{ $('ending').classList.remove('on'); $('ending').querySelectorAll('.spark').forEach(s=>s.remove()); showScreen('village'); };
+
+/* 村莊 hub */
+function clampOval(x,y){ const cx=50,cy=80,rx=40,ry=12; let dx=(x-cx)/rx,dy=(y-cy)/ry; const d=Math.hypot(dx,dy); if(d>1){dx/=d;dy/=d;} return [cx+dx*rx,cy+dy*ry]; }
+function moveVHero(x,y){ $('vhero').style.left=x+'%'; $('vhero').style.top=y+'%'; $('vhero').classList.add('walk'); clearTimeout(moveVHero._t); moveVHero._t=setTimeout(()=>$('vhero').classList.remove('walk'),620); }
+$('vstage').addEventListener('click',e=>{ const r=$('vstage').getBoundingClientRect();
+  const [x,y]=clampOval((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100); moveVHero(x,y); });
+/* 傳送門:走到門口=進該科副本(空間化選科)。SUBJECTS 有幾科就長幾個門 */
+let portalTimer=null;
+function renderPortals(){ const stage=$('vstage'); if(!stage) return; stage.querySelectorAll('.portal').forEach(e=>e.remove());
+  const n=SUBJECTS.length;
+  SUBJECTS.forEach((s,i)=>{ const x=Math.round(18+(n>1?i/(n-1):0)*64), y=52, active=catUnits().some(u=>u.subject===s.id&&unitPlayable(u)), c=subjColor(s.id);
+    const d=document.createElement('div'); d.className='portal'+(active?'':' soon'); d.style.left=x+'%'; d.style.top=y+'%';
+    d.innerHTML=`<div class="ring"${active?` style="border-color:${c.bg};box-shadow:0 0 22px -2px ${c.bg}"`:''}>${s.icon}</div><div class="pl">${s.id}</div>`;
+    d.addEventListener('click',e=>{ e.stopPropagation();
+      const hy=80-12*Math.sqrt(Math.max(0,1-((x-50)/40)**2)); moveVHero(x,hy);   // 走到門正下方的橢圓上緣(x 對齊門)
+      clearTimeout(portalTimer); portalTimer=setTimeout(()=>openUnitSelect(s.id),460); });   // 先走過去再開;460ms 內開別的面板就取消
+    stage.appendChild(d); }); }
+/* ===== 村莊功能 dispatcher + 插入口(未來功能:這裡加一個 case + 一個 open 函式即可)===== */
+let settings=null;
+const UNIT_DUNGEON = {   // 插入口:單元 id → 對應的副本主題。接真題庫時每個 unit 加一筆,每日板就會出「進副本」
+  'signed-muldiv': { topic:'muldiv', ready:true },
+  'signed-numbers': { topic:'add', ready:true },
+  'linear-eq': { topic:'eq', ready:true },
+  // TODO 插入口: 'bio-cell': {topic:'bioCell', ready:true} …
+};
+window.villageAction=(key)=>{
+  if(key==='dungeon') return openSubjectSelect();     // 選科目 → 選單元(讀 SUBJECTS + 家長開放的 selected_units)
+  if(key==='daily')   return openDaily();
+  if(key==='shop')    return openSheet('🏪 商店','<div class="ph">用素材/金幣換技能次數、裝備、抽卡。<br><br>插入口已備好:<b>openSheet()</b> + 素材 <b>mats</b> + 存檔 <b>game_state.data</b>,之後把商品清單接進來即可。</div>');
+  if(key==='tower')   return openSheet('🗼 系統塔','<div class="ph">設定年級/學期/科目/開放到第幾章,接家長後台。<br><br>插入口:之後讀寫 <b>settings.selected_units / course_by_subject</b>(可 PIN 保護)。</div>');
+  if(key==='codex')   return openCodex();
+};
+/* 通用面板(每日/商店/圖鑑/系統塔 都用這個 → 加功能不用再刻 UI)*/
+function openSheet(title, html){ clearTimeout(portalTimer); $('sheetHead').textContent=title; $('sheetBody').innerHTML=html; $('sheet').classList.add('on'); }
+window.closeSheet=()=>$('sheet').classList.remove('on');
+
+/* 每日任務板:讀聯絡簿現成的 settings.daily_goals + activity + streak */
+const fmtD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function cfgOf(uid){ const g=settings&&settings.daily_goals[uid]; if(g==null)return null; if(typeof g==='number')return{target:g,mode:'attempts'}; return{target:g.target||10,mode:g.mode||'attempts'}; }
+async function openDaily(){
+  if(!user||!sb){ openSheet('📅 今日任務','<div class="ph">登入後,這裡會顯示家長設定的今日目標、🔥連續達標天數,並一鍵進對應副本。<br><br>目前打怪已經會存本機素材,登入後才會算進聯絡簿。<br><button class="dLogin" onclick="closeSheet();openLogin()">☁️ 登入</button></div>'); return; }
+  openSheet('📅 今日任務','<div class="ph">讀取中…</div>');
+  try{
+    const {data:st}=await sb.from('settings').select('selected_units,daily_goals,rest_days,exam_groups').eq('user_id',user.id).maybeSingle();
+    settings = st ? {selected_units:st.selected_units||[],daily_goals:st.daily_goals||{},rest_days:st.rest_days||[],exam_groups:st.exam_groups||[]} : {selected_units:[],daily_goals:{},rest_days:[],exam_groups:[]};
+    const from=new Date(); from.setDate(from.getDate()-45);
+    const {data:act}=await sb.from('activity').select('*').gte('day',fmtD(from));
+    const byDay={}; (act||[]).forEach(r=>{(byDay[r.day]=byDay[r.day]||{})[r.unit_id]={done:r.done,correct:r.correct};});
+    const enabled=settings.selected_units.filter(u=>settings.daily_goals[u]!=null);
+    const dayComplete=m=>{ if(!enabled.length)return false; return enabled.every(u=>{const c=cfgOf(u),a=m[u],v=c.mode==='correct'?(a?.correct||0):(a?.done||0);return a&&v>=c.target;}); };
+    let streak=0,d=new Date(),rest=settings.rest_days||[];
+    for(let i=0;i<60;i++){ const ds=fmtD(d);
+      if(rest.includes(d.getDay())){ d.setDate(d.getDate()-1); continue; }
+      const comp=dayComplete(byDay[ds]||{});
+      if(ds===fmtD(new Date())&&!comp){ d.setDate(d.getDate()-1); continue; }
+      if(comp){ streak++; d.setDate(d.getDate()-1); } else break; }
+    const today=byDay[fmtD(new Date())]||{}; let met=0;
+    const rows=enabled.map(uid=>{ const c=cfgOf(uid),a=today[uid]||{},v=c.mode==='correct'?(a.correct||0):(a.done||0),ok=v>=c.target; if(ok)met++;
+      const dg=UNIT_DUNGEON[uid];
+      return `<div class="drow"><div class="di"><div class="dn">${uid}</div><div class="ds">${v} / ${c.target} 題${ok?' · ✓ 達標':''}</div></div>${dg&&dg.ready?`<button class="dgo" onclick="closeSheet();startDungeon('${dg.topic}')">進副本</button>`:'<span class="dsoon">副本準備中</span>'}</div>`; }).join('');
+    openSheet('📅 今日任務', `<div class="dtop">🔥 連續達標 <b>${streak}</b> 天 · 今日 <b>${met}/${enabled.length}</b> 達標</div>` + (enabled.length? rows : '<div class="ph">家長還沒開放單元。請到聯絡簿設定要練的單元與每日題數。</div>'));
+  }catch(e){ openSheet('📅 今日任務','<div class="ph">讀取失敗:'+e.message+'</div>'); }
+}
+function showScreen(s){ $('village').style.display=s==='village'?'flex':'none'; $('map').style.display=s==='map'?'flex':'none'; }
+function startDungeon(topicId){ if(topicId&&TOPICS[topicId]) TOPIC=TOPICS[topicId];
+  const dg=buildDungeon(TOPIC); NODES=dg.nodes; POS=genPOS(NODES.length);   // 每次進副本:隨機場景+怪物
+  const url=`url('assets/bg/${dg.bg}.jpg')`; $('map').style.backgroundImage=url; $('battle').style.backgroundImage=url;
+  $('dgSub').textContent=TOPIC.name+' · 第 1 章';
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
+/* 副本:學期(國一上/下…)→ 科目 → 單元。目錄讀 units.json,playable 用內建題型、其餘準備中 */
+function openSubjectSelect(){ curSelect=openSubjectSelect;
+  const units=catUnits().filter(u=>termOf(u)===curTerm);
+  const order=(CATALOG.subjects||[]).map(s=>s.id);
+  const subs=[...new Set(units.map(u=>u.subject))].sort((a,b)=>((order.indexOf(a)+1)||99)-((order.indexOf(b)+1)||99));
+  const rows=subs.map(id=>{ const c=subjColor(id), un=units.filter(u=>u.subject===id), play=un.filter(unitPlayable).length;
+    return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="openUnitSelect('${id}')"><span class="gth" style="background:${c.th}">${subjMeta(id).icon}</span><span class="gmid"><span class="gname">${id}副本</span><span class="gsub">${un.length} 單元${play?' · '+play+' 可玩':' · 準備中'}</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
+  openSheet('⚔️ 選擇科目', termTabs()+`<div class="gsel">${rows||'<div class="ph">這個學期還沒有單元</div>'}</div>`); }
+window.openUnitSelect=(subjId)=>{ curSelect=()=>openUnitSelect(subjId);
+  const c=subjColor(subjId);
+  const opened=(user&&settings&&settings.selected_units&&settings.selected_units.length)?new Set(settings.selected_units):null;   // 登入且有設定 → 只開放家長勾的
+  const units=catUnits().filter(u=>u.subject===subjId&&termOf(u)===curTerm);
+  const playTopics=[];
+  const rows=units.map(u=>{ const topic=unitPlayable(u), t=topic?TOPICS[topic]:null, isOpen=!opened||opened.has(u.id);
+    if(!topic) return `<button class="gbtn" disabled style="background:#eceae2;border-bottom:4px solid #d6d3c8"><span class="gth" style="background:#d3d0c5">🚧</span><span class="gmid"><span class="gname" style="color:#6b6862">${u.title}</span><span class="gsub" style="color:#8a857b">準備中(遊戲還沒接這單元)</span></span></button>`;
+    if(!isOpen) return `<button class="gbtn" disabled style="background:#e7e4da;border-bottom:4px solid #cfccc0"><span class="gth" style="background:#d3d0c5">🔒</span><span class="gmid"><span class="gname" style="color:#6b6862">${u.title}</span><span class="gsub" style="color:#8a857b">老師還沒開放</span></span></button>`;
+    playTopics.push(topic);
+    return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="closeSheet();startDungeon('${topic}')"><span class="gth" style="background:${c.th}">${faceImg(t.face)}</span><span class="gmid"><span class="gname">${u.title}</span><span class="gstars">${starStr(t.diff||2)}</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
+  const mixBtn=playTopics.length>=2?`<button class="gbtn" style="background:#c99a2a;border-bottom:4px solid #86671b;color:#3a2c06" onclick="closeSheet();startMix('${playTopics.join(',')}')"><span class="gth" style="background:#86671b;color:#ffe6a0">🔀</span><span class="gmid"><span class="gname">綜合 · 段考複習</span><span class="gsub" style="color:#5a4408">把這學期可玩的題型混著考(交錯練習,最有效)</span></span><span class="ggo">進入 ›</span></button>`:'';
+  const examSection=renderExamGroups(subjId);   // 家長在網頁圈的段考組(settings.exam_groups)
+  openSheet('⚔️ '+subjId+' · '+curTerm, `<button class="backbar" onclick="openSubjectSelect()">‹ 換科目</button>`+termTabs()+(opened?'':'<div class="ph" style="padding:0 2px 8px">（登入後只顯示家長開放的單元）</div>')+`<div class="gsel">${rows||'<div class="ph">這學期這科還沒有單元</div>'}${mixBtn}</div>`+examSection); };
+/* 家長段考組:把 exam_groups 的 unit_ids 對映到遊戲題型(跳過還沒接的),列成紫色段考入口 */
+function groupTopics(g){ const out=[]; ((g&&g.unit_ids)||[]).forEach(uid=>{ const d=UNIT_DUNGEON[uid]; if(d&&d.ready&&TOPICS[d.topic]&&!out.includes(d.topic)) out.push(d.topic); }); return out; }
+function renderExamGroups(subjId){
+  const groups=((settings&&settings.exam_groups)||[]).filter(g=>g&&g.active!==false&&(g.subject||'數學')===subjId);
+  if(!groups.length) return '';
+  const btns=groups.map(g=>{ const tp=groupTopics(g);
+    if(!tp.length) return `<button class="gbtn" disabled style="background:#e7e4da;border-bottom:4px solid #cfccc0"><span class="gth" style="background:#d3d0c5">📋</span><span class="gmid"><span class="gname" style="color:#6b6862">段考 · ${g.name}</span><span class="gsub" style="color:#8a857b">這組的單元遊戲還沒接</span></span></button>`;
+    return `<button class="gbtn" style="background:#7a3fb0;border-bottom:4px solid #4e2775;color:#fff" onclick="closeSheet();startMix('${tp.join(',')}')"><span class="gth" style="background:#4e2775;color:#ffe6a0">📋</span><span class="gmid"><span class="gname">段考 · ${g.name}</span><span class="gsub">家長圈的範圍 · ${tp.length} 個題型混考</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
+  return `<div style="font-size:12px;color:#8a857b;margin:14px 2px 6px;letter-spacing:1px">📋 家長設定的段考組</div><div class="gsel">${btns}</div>`; }
+window.startMix=(csv)=>{ mixPool=csv.split(','); startDungeon('mix'); };
+/* 魔物圖鑑:蒐集=打怪。所有 biome 的怪+BOSS 去重,打倒才顯形,擊敗 3 次=收服 ⭐ */
+const TAME=3;
+function allCreatures(){ const seen=new Set(), list=[];
+  Object.values(BIOMES).forEach(b=>{ b.mons.forEach(m=>{ if(!seen.has(m[0])){seen.add(m[0]); list.push({cat:'monsters',mon:m[0],name:m[1]});} });
+    b.boss.forEach(m=>{ if(!seen.has(m[0])){seen.add(m[0]); list.push({cat:'bosses',mon:m[0],name:m[1],boss:true});} }); });
+  return list; }
+function openCodex(){ const list=allCreatures();
+  const found=list.filter(c=>(codex[c.mon]||0)>0).length, tamed=list.filter(c=>(codex[c.mon]||0)>=TAME).length;
+  const cells=list.map(c=>{ const n=codex[c.mon]||0, disc=n>0, tame=n>=TAME;
+    return `<div class="cdx${disc?'':' lock'}${tame?' tame':''}">${c.boss?'<div class="cdxbadge">BOSS</div>':''}<div class="cdxi"><img src="${P(c.cat,c.mon)}" alt=""></div><div class="cdxn">${disc?c.name:'？？？'}</div><div class="cdxc">${disc?'擊敗 ×'+n+(tame?' ⭐':''):'未發現'}</div></div>`; }).join('');
+  openSheet('📖 魔物圖鑑', `<div class="dtop" style="background:#eef6f8;border:1px solid #bce3ea;color:#0e7490">🏆 已收服 <b>${tamed}</b>/${list.length} · 已發現 <b>${found}</b><br><span style="font-size:12px;color:#6b8b93">打怪就登錄;同一隻擊敗 ${TAME} 次=收服 ⭐</span></div><div class="cdxgrid">${cells}</div>`); }
+$('mapBack').onclick=()=>showScreen('village');
+
+/* init */
+$('village').style.backgroundImage="url('assets/bg/village.jpg')";
+$('map').style.backgroundImage="url('assets/bg/cave.jpg')"; $('battle').style.backgroundImage="url('assets/bg/cave.jpg')";
+$('vhero').style.left='50%'; $('vhero').style.top='80%';
+renderFlames(); renderMats(); renderPortals(); showScreen('village'); boot(); window.addEventListener('resize',layout);
+</script>
+</body>
+</html>
