@@ -12,6 +12,8 @@
     {"id":"linear-eq","title":"一元一次方程式","subject":"數學","grade":"國一","tag":"方程式","file":"linear-eq.html","ready":true,"term":"上"},
     {"id":"linear-eq-app","title":"一元一次方程式的應用","subject":"數學","grade":"國一","tag":"方程式","file":"linear-eq-app.html","ready":true,"term":"上"},
     {"id":"symmetry-views","title":"線對稱與三視圖（翰林）","subject":"數學","grade":"國一","tag":"幾何","file":"symmetry-views.html","ready":true,"term":"上"},
+    {"id":"ratio","title":"比與比例式","subject":"數學","grade":"國一","tag":"比例","file":"ratio.html","ready":true,"term":"下"},
+    {"id":"inequality","title":"一元一次不等式","subject":"數學","grade":"國一","tag":"不等式","file":"inequality.html","ready":true,"term":"下"},
     {"id":"bio-cell","title":"細胞與生物體的組成","subject":"生物","grade":"國一","tag":"細胞","file":"bio-cell.html","ready":true,"term":"上"},
     {"id":"bio-diffusion","title":"物質進出細胞（擴散與滲透）","subject":"生物","grade":"國一","tag":"擴散滲透","file":"bio-diffusion.html","ready":true,"term":"上"},
     {"id":"bio-nutrition","title":"生物體的營養（養分與光合作用）","subject":"生物","grade":"國一","tag":"營養","file":"bio-nutrition.html","ready":true,"term":"上"},

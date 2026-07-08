@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>比與比例式 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1b1d26;--ink-soft:#5b606f;--pos:#2563eb;--neg:#ea580c;--right:#16a34a;--wrong:#e11d48;
+    --line:#e6e8ef;--card:#ffffff;--key:#f3f5f9;--key-press:#e3e7f0;--bg:#f7f8fb;--subj:#2563eb;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;text-align:center;
+      font-size:22px;font-weight:500;line-height:1.55;letter-spacing:.3px;min-height:46px;}
+  .eq .tag{display:inline-block;font-size:11px;color:var(--subj);background:#eaf0fb;border-radius:6px;padding:2px 8px;margin-bottom:10px;letter-spacing:1px;}
+  .eq .rt{font-size:27px;font-weight:600;letter-spacing:2px;}
+  .eq .q{color:var(--pos);font-weight:700;}
+  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
+       font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;transition:.15s;background:#fbfcfe;}
+  .ans.empty{color:#b7bccb;}
+  .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
+  .ans.no{border-color:var(--wrong);color:var(--wrong);background:#fff1f4;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:16px;display:none;}
+  .explain.show{display:block;}
+  .steps{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;font-size:16px;line-height:1.95;color:var(--ink);}
+  .steps .lead{color:var(--ink-soft);font-family:'Noto Sans TC';font-size:13px;margin-right:6px;}
+  .steps .res{color:var(--right);font-weight:700;}
+  .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;border-radius:10px;padding:9px 12px;line-height:1.6;}
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key:active{background:var(--key-press);transform:scale(.96);}
+  .key.sign{color:var(--neg);font-weight:600;} .key.del{color:var(--ink-soft);font-size:22px;}
+  .go{border:none;border-radius:16px;height:58px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go.next{background:var(--pos);} .go:disabled{opacity:.4;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "ratio",
+  "title": "比與比例式",
+  "subject": "數學",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 1,
+  "tag": "比例",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>比與比例式</h1><div class="sub">隨機出題 · 逐步解說</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="eq" id="eq"></div>
+    <div class="ans empty" id="ans">?</div>
+    <div class="explain" id="explain"><div class="steps" id="steps"></div><div class="tip" id="tip"></div></div>
+  </div>
+  <div class="pad" id="pad">
+    <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+    <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+    <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+    <button class="key sign" data-k="sign">±</button><button class="key" data-k="0">0</button><button class="key del" data-k="del">⌫</button>
+  </div>
+  <button class="go" id="go">檢查</button>
+</div>
+
+<script>
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t;}return a||1;}
+let level='basic', problem=null, entry='', answered=false, streak=0;
+
+function genProp(){ let p=rand(2,7),q=rand(2,7); while(q===p) q=rand(2,7); const g=gcd(p,q); p/=g; q/=g;
+  const m=rand(2,6), n=rand(2,6); const terms=[p*m,q*m,p*n,q*n]; const hide=rand(0,3);
+  return {kind:'prop', terms, hide, answer:terms[hide]}; }
+function genSimplify(){ let p=rand(2,9),q=rand(2,9); while(q===p) q=rand(2,9); const g0=gcd(p,q); p/=g0; q/=g0;
+  const g=rand(2,6), a=p*g, b=q*g, hide=Math.random()<0.5?0:1;
+  return {kind:'simplify', a, b, sp:p, sq:q, hide, answer:hide===0?p:q}; }
+function genDirect(){ const k=rand(2,9), x1=rand(2,9); let x2=rand(2,9); while(x2===x1) x2=rand(2,9);
+  return {kind:'direct', x1, y1:k*x1, x2, answer:k*x2}; }
+function genInverse(){ const x1=rand(2,9), y1=rand(2,9), P=x1*y1, divs=[];
+  for(let d=2;d<=P;d++) if(P%d===0 && d!==x1) divs.push(d);
+  if(!divs.length) return genInverse(); const x2=divs[rand(0,divs.length-1)];
+  return {kind:'inverse', x1, y1, x2, answer:P/x2}; }
+function makeProblem(lv){
+  const pool = lv==='basic' ? ['prop','simplify'] : lv==='adv' ? ['direct','inverse','prop'] : ['prop','simplify','direct','inverse'];
+  const t = pool[rand(0,pool.length-1)];
+  return t==='prop'?genProp():t==='simplify'?genSimplify():t==='direct'?genDirect():genInverse();
+}
+
+function qText(){ const p=problem;
+  if(p.kind==='prop'){ const t=p.terms.map((v,i)=>i===p.hide?'?':v); return '求未知數：'+t[0]+' : '+t[1]+' ＝ '+t[2]+' : '+t[3]; }
+  if(p.kind==='simplify'){ return p.a+' : '+p.b+' 化簡成最簡整數比 ＝ '+(p.hide===0?'? : '+p.sq:p.sp+' : ?'); }
+  if(p.kind==='direct'){ return 'y 與 x 成正比。x='+p.x1+' 時 y='+p.y1+'，求 x='+p.x2+' 時 y=?'; }
+  return 'y 與 x 成反比。x='+p.x1+' 時 y='+p.y1+'，求 x='+p.x2+' 時 y=?';
+}
+function eqHTML(){ const p=problem; const tag='<span class="tag">'+(p.kind==='prop'?'比例式':p.kind==='simplify'?'化簡比':p.kind==='direct'?'正比':'反比')+'</span>';
+  let mid;
+  if(p.kind==='prop'){ const t=p.terms.map((v,i)=>i===p.hide?'<span class="q">?</span>':v);
+    mid='<span class="rt">'+t[0]+' : '+t[1]+' ＝ '+t[2]+' : '+t[3]+'</span>'; }
+  else if(p.kind==='simplify'){ mid='<span class="rt">'+p.a+' : '+p.b+'</span><br><span style="font-size:15px;color:var(--ink-soft)">化簡成最簡整數比</span><br><span class="rt">＝ '+(p.hide===0?'<span class="q">?</span> : '+p.sq:p.sp+' : <span class="q">?</span>')+'</span>'; }
+  else { const sign=p.kind==='direct'?'正比':'反比';
+    mid='y 與 x 成<b style="color:var(--subj)">'+sign+'</b><br>x='+p.x1+' 時 y='+p.y1+'<br>求 x='+p.x2+' 時 <span class="q">y=?</span>'; }
+  return tag+'<div>'+mid+'</div>';
+}
+function render(){ document.getElementById('eq').innerHTML=eqHTML(); entry=''; answered=false;
+  const ans=document.getElementById('ans'); ans.textContent='?'; ans.className='ans empty';
+  document.getElementById('explain').className='explain';
+  const go=document.getElementById('go'); go.textContent='檢查'; go.className='go'; go.disabled=false; }
+function showEntry(){ const ans=document.getElementById('ans');
+  if(entry===''||entry==='-'){ ans.textContent = entry==='-'?'−':'?'; ans.className='ans empty'; return; }
+  ans.textContent=entry.replace('-','−'); ans.className='ans'; }
+
+function buildSteps(){ const p=problem;
+  if(p.kind==='prop'){ const t=p.terms; // a:b=c:d → a*d=b*c
+    return `<div><span class="lead">交叉相乘</span>外項相乘 ＝ 內項相乘</div>`+
+      `<div>${t[0]} × ${t[3]} ＝ ${t[1]} × ${t[2]}</div>`+
+      `<div>缺項 ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='simplify'){ const g=gcd(p.a,p.b);
+    return `<div><span class="lead">同除以最大公因數</span>gcd(${p.a}, ${p.b}) ＝ ${g}</div>`+
+      `<div>${p.a}÷${g} : ${p.b}÷${g} ＝ ${p.sp} : ${p.sq}</div>`+
+      `<div>缺項 ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='direct'){ const k=p.y1/p.x1;
+    return `<div><span class="lead">正比</span>比值 y/x 固定 ＝ ${p.y1}/${p.x1} ＝ ${k}</div>`+
+      `<div>y ＝ ${k} × ${p.x2} ＝ <span class="res">${p.answer}</span></div>`; }
+  const P=p.x1*p.y1;
+  return `<div><span class="lead">反比</span>乘積 x×y 固定 ＝ ${p.x1}×${p.y1} ＝ ${P}</div>`+
+    `<div>y ＝ ${P} ÷ ${p.x2} ＝ <span class="res">${p.answer}</span></div>`;
+}
+function buildTip(){ const p=problem;
+  if(p.kind==='prop') return '比例式 a:b＝c:d，外項乘積 a×d 等於內項乘積 b×c（交叉相乘）。';
+  if(p.kind==='simplify') return '化簡比：把前後項同除以它們的最大公因數。';
+  if(p.kind==='direct') return '正比：兩量的比值 y/x 保持固定。';
+  return '反比：兩量的乘積 x×y 保持固定。';
+}
+
+function check(){ if(entry===''||entry==='-') return; answered=true;
+  const val=parseInt(entry,10); const ans=document.getElementById('ans'); const correct=val===problem.answer;
+  ans.className='ans '+(correct?'ok':'no'); ans.textContent=entry.replace('-','−');
+  if(!correct){ ans.classList.add('shake'); setTimeout(()=>ans.classList.remove('shake'),400); }
+  streak=correct?streak+1:0; document.getElementById('streak').textContent=streak;
+  if(window.parent!==window){ window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:buildSteps(),tip:buildTip()},'*'); } }
+  document.getElementById('steps').innerHTML=buildSteps();
+  document.getElementById('tip').textContent=buildTip();
+  document.getElementById('explain').className='explain show';
+  const go=document.getElementById('go'); go.textContent='下一題'; go.className='go next';
+}
+function next(){ problem=makeProblem(level); render(); }
+
+document.getElementById('pad').addEventListener('click',e=>{ const b=e.target.closest('.key'); if(!b||answered) return; const k=b.dataset.k;
+  if(k==='del') entry=entry.slice(0,-1);
+  else if(k==='sign') entry = entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else { if(entry.replace('-','').length<4) entry+=k; }
+  showEntry(); });
+document.getElementById('go').addEventListener('click',()=> answered?next():check());
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active')); b.classList.add('active'); level=b.dataset.lv; next(); }));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'){ answered?next():check(); return; } if(answered) return;
+  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<4) entry+=e.key; showEntry(); }
+  else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
+  else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); } });
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); } })();
+next();
+</script>
+<script>
+/* ===== 遊戲指令介面：hint（口訣/知識點，不洩答案）===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:10px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var eq=document.getElementById('eq');if(eq&&eq.parentNode){eq.parentNode.insertBefore(h,eq.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(typeof answered!=='undefined'&&answered)return;var t='';try{t=buildTip();}catch(e){}if(!t)return;box().innerHTML='💡 提示：'+t;}
+  function eliminateOne(){showHint();}
+  if(typeof next==='function'){var _n=next;next=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

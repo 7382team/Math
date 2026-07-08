@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>生態系與環境 練習</title>
+<title>詞性、句子與標點符號 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     --pos:#2563eb; --neg:#ea580c;
     --right:#16a34a; --wrong:#e11d48;
     --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
-    --subj:#3f7d4e;   /* 科目主色 */
+    --subj:#c1352b;   /* 科目主色 */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;}
@@ -55,13 +55,13 @@
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "bio-ecology",
-  "title": "生態系與環境",
-  "subject": "生物",
+  "id": "chi-grammar-punct",
+  "title": "詞性、句子與標點符號",
+  "subject": "國文",
   "grade": "國一",
-  "term": "下",
-  "chapter": 4,
-  "tag": "生態",
+  "term": "上",
+  "chapter": 5,
+  "tag": "語法標點",
   "ready": true
 }
 </script>
@@ -69,7 +69,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div><h1>生態系與環境</h1><div class="sub">生物 · 選擇題 · 附詳解</div></div>
+    <div><h1>詞性、句子與標點符號</h1><div class="sub">國文 · 選擇題 · 附詳解</div></div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
   <div class="levels">
@@ -87,7 +87,7 @@
 
 <script>
 /* ===== bank-start ===== 原創題庫：level 難度、topic 知識點、q 題幹、choices 選項、answer 正解索引、explain 詳解 */
-const BANK=[{"level":"basic","topic":"生態系組成","q":"一個生態系是由哪兩大部分組成？","choices":["只有動物","生物因子與非生物因子","只有植物","只有陽光與水"],"answer":1,"explain":"生態系由生物因子（各種生物）與非生物因子（陽光、水、溫度等）組成。"},{"level":"adv","topic":"生產者","q":"生態系中能自己製造養分（行光合作用）的生物，稱為？","choices":["消費者","生產者","分解者","外來種"],"answer":1,"explain":"綠色植物等能自製養分者是生產者。"},{"level":"adv","topic":"消費者","q":"不能自己製造養分、要靠吃其他生物維生的生物是？","choices":["生產者","消費者","分解者","化石"],"answer":1,"explain":"動物等靠攝食其他生物取得養分，是消費者。"},{"level":"adv","topic":"分解者","q":"把動植物遺體與排泄物分解、讓養分回歸環境的生物是？","choices":["生產者","消費者","分解者","病毒"],"answer":2,"explain":"細菌、真菌等分解者把有機物分解，使物質回歸環境循環。"},{"level":"adv","topic":"分解者迷思","q":"香菇會從枯木上長出來。就生態角色而言，香菇（真菌）屬於？","choices":["生產者","分解者","初級消費者","非生物"],"answer":1,"explain":"香菇是真菌，靠分解枯木等有機物維生，屬於分解者，不是行光合的生產者。"},{"level":"adv","topic":"食物鏈方向","q":"食物鏈中的箭頭方向代表什麼？","choices":["被吃者指向捕食者，也是能量流動的方向","捕食者指向獵物","沒有意義","指向陽光"],"answer":0,"explain":"箭頭由被吃者指向吃牠的生物，代表物質與能量的流動方向。"},{"level":"adv","topic":"食物網","q":"許多條食物鏈交織成食物網，和單一食物鏈相比，食物網通常？","choices":["比較不穩定","比較穩定，某一物種變動較不易造成整個崩潰","完全一樣","沒有生產者"],"answer":1,"explain":"食物網關係複雜，緩衝能力較強，比單一食物鏈穩定。"},{"level":"adv","topic":"能量流動","q":"關於生態系中的能量，下列敘述何者正確？","choices":["能量可以不斷循環使用","能量沿食物鏈單向流動，且每經一層就遞減","能量越高階層越多","能量不會消失"],"answer":1,"explain":"能量單向流動、逐層遞減，大部分以熱散失，無法循環。"},{"level":"adv","topic":"數量金字塔","q":"一般而言，食物鏈中越高階的消費者，數量與可用能量會？","choices":["越多","越少","不變","無法比較"],"answer":1,"explain":"能量逐層遞減，故越高階生物能量與數量通常越少，形成金字塔。"},{"level":"adv","topic":"能量來源","q":"生態系中，能量最初的來源是？","choices":["分解者","太陽（經生產者光合作用固定）","消費者","土壤"],"answer":1,"explain":"能量最初來自太陽，由生產者行光合作用把光能固定下來。"},{"level":"adv","topic":"物質循環","q":"碳、水等物質與「能量」最大的不同是？","choices":["物質也會逐層遞減","物質可以在生態系中被循環利用","物質只會單向流動","物質不存在"],"answer":1,"explain":"物質（碳、水等）可循環再利用；能量則單向流動、不循環。"},{"level":"adv","topic":"分解者重要性","q":"如果生態系中沒有分解者，最可能發生什麼？","choices":["能量會變多","遺體與排泄物堆積、養分無法回歸循環","生產者變多","沒有影響"],"answer":1,"explain":"沒有分解者，有機物養分無法回歸環境，物質循環會中斷。"},{"level":"basic","topic":"族群","q":"在同一地區、同一種類生物的所有個體合稱為？","choices":["族群","群集","生態系","個體"],"answer":0,"explain":"同地區、同種生物的總和是族群。"},{"level":"adv","topic":"群集","q":"在同一地區生活的「所有不同種」生物合稱為？","choices":["族群","群集","個體","器官"],"answer":1,"explain":"同地區內各種生物（多個族群）的總和是群集。"},{"level":"adv","topic":"生態平衡","q":"生態系中各種生物的數量能在一定範圍內維持穩定，稱為？","choices":["生態平衡","演化","恆定","滅絕"],"answer":0,"explain":"生物數量維持相對穩定的狀態稱為生態平衡。"},{"level":"adv","topic":"破壞平衡","q":"若某生態系中的青蛙大量減少，最可能的連鎖影響是？","choices":["完全沒有影響","以青蛙為食的生物減少、青蛙所吃的昆蟲增加","所有生物立刻死光","太陽變暗"],"answer":1,"explain":"食物網環環相扣，一個環節變動會連帶影響其上下游生物。"},{"level":"adv","topic":"能量vs物質","q":"比較生態系中的「能量」與「物質」，下列何者正確？","choices":["兩者都會循環","能量單向流動不循環，物質可以循環","兩者都單向不循環","物質單向、能量循環"],"answer":1,"explain":"能量單向流動、逐層遞減；物質（碳水氮等）則可循環利用。"},{"level":"basic","topic":"非生物因子","q":"下列何者屬於生態系中的「非生物因子」？","choices":["青蛙","陽光","細菌","老鷹"],"answer":1,"explain":"陽光、水、溫度、土壤等是非生物因子，陽光同時也是能量來源。"},{"level":"adv","topic":"保育","q":"下列哪個做法最有助於維持生物多樣性與生態平衡？","choices":["大量捕捉野生動物","保護自然棲地、減少污染","隨意引入外來種","砍伐森林開發"],"answer":1,"explain":"保護棲地、減少污染能維護生物多樣性與生態平衡。"},{"level":"adv","topic":"生產者角色","q":"在能量流動中，生產者扮演的關鍵角色是？","choices":["分解遺體","把太陽的光能轉成養分，成為食物鏈的起點","只吃別的生物","製造非生物因子"],"answer":1,"explain":"生產者行光合把光能固定為養分，是能量進入生態系的入口與食物鏈起點。"}];
+const BANK=[{"level":"basic","topic":"名詞","q":"下列何者是「名詞」？","choices":["桌子","奔跑","美麗","快速"],"answer":0,"explain":"名詞是人、事、物的名稱，如「桌子」。"},{"level":"basic","topic":"動詞","q":"「他飛快地跑向終點」中的「跑」，詞性是？","choices":["動詞","名詞","形容詞","副詞"],"answer":0,"explain":"「跑」表示動作，是動詞。"},{"level":"adv","topic":"形容詞","q":"「一朵美麗的花」中，「美麗」的詞性是？","choices":["形容詞","名詞","動詞","量詞"],"answer":0,"explain":"「美麗」用來修飾名詞「花」，是形容詞。"},{"level":"adv","topic":"副詞","q":"「他非常努力」中的「非常」，詞性是？","choices":["副詞","名詞","動詞","連詞"],"answer":0,"explain":"「非常」修飾「努力」的程度，是副詞。"},{"level":"adv","topic":"代名詞","q":"「這是我的書，那是你的。」句中的「你」屬於？","choices":["代名詞","名詞","動詞","量詞"],"answer":0,"explain":"「你」代替人稱，屬代名詞。"},{"level":"basic","topic":"量詞","q":"「一＿＿牛」最適合填入的量詞是？","choices":["頭","張","棵","座"],"answer":0,"explain":"牛的量詞用「頭」；張（紙）、棵（樹）、座（山）各有搭配。"},{"level":"adv","topic":"主語","q":"「小狗追著皮球。」這句話的主語（主詞）是？","choices":["小狗","追","皮球","著"],"answer":0,"explain":"執行動作的「小狗」是主語。"},{"level":"adv","topic":"述語","q":"「弟弟寫功課。」句中表示動作的述語（動詞）是？","choices":["寫","弟弟","功課","。"],"answer":0,"explain":"「寫」是句子的述語（動詞）。"},{"level":"adv","topic":"頓號","q":"並列的詞語之間（如「蘋果、香蕉、橘子」）應使用哪個標點？","choices":["頓號、","句號。","問號？","驚嘆號！"],"answer":0,"explain":"頓號用於句中並列詞語之間。"},{"level":"adv","topic":"書名號","q":"標示書名、篇名時，應使用哪個標點？","choices":["書名號《》","引號「」","括號（）","破折號──"],"answer":0,"explain":"書名、篇名用書名號《》標示。"},{"level":"adv","topic":"引號","q":"直接引用別人說的話，應使用哪個標點？","choices":["引號「」","書名號《》","括號（）","刪節號……"],"answer":0,"explain":"引用語句、對話用引號「」。"},{"level":"basic","topic":"問號","q":"疑問句的句末應使用哪個標點？","choices":["問號？","句號。","逗號，","頓號、"],"answer":0,"explain":"表示疑問的句子，句末用問號。"},{"level":"basic","topic":"驚嘆號","q":"表示強烈的感嘆或命令，句末應使用？","choices":["驚嘆號！","句號。","冒號：","分號；"],"answer":0,"explain":"感嘆、命令、驚呼用驚嘆號。"},{"level":"adv","topic":"冒號","q":"用來提起下文（例如「他說：」之後接說話內容），應使用？","choices":["冒號：","頓號、","破折號──","括號（）"],"answer":0,"explain":"冒號用於提示下文或總起下文。"},{"level":"adv","topic":"破折號","q":"句中表示語意的轉折或補充解釋，可使用哪個標點？","choices":["破折號──","頓號、","書名號《》","引號「」"],"answer":0,"explain":"破折號可表語意轉折、解釋說明或聲音延續。"},{"level":"adv","topic":"刪節號","q":"表示語句尚未說完或有所省略，應使用？","choices":["刪節號……","句號。","驚嘆號！","冒號："],"answer":0,"explain":"刪節號（……）表省略或語意未完。"},{"level":"adv","topic":"病句","q":"下列何者是正確、通順的句子？","choices":["我昨天去了公園。","因為下雨，所以但是取消。","他非常很高興。","這本書很好看嗎。"],"answer":0,"explain":"B關聯詞誤用、C副詞重疊、D疑問句誤用句號；A正確。"},{"level":"adv","topic":"句號","q":"一句話完整說完、語氣停頓最完整時，應使用？","choices":["句號。","逗號，","頓號、","冒號："],"answer":0,"explain":"陳述句說完用句號，表示語意結束。"}];
 /* ===== bank-end ===== */
 
 const AB=['A','B','C','D','E'];

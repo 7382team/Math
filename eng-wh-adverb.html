@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>生態系與環境 練習</title>
+<title>疑問詞、頻率副詞與祈使句 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     --pos:#2563eb; --neg:#ea580c;
     --right:#16a34a; --wrong:#e11d48;
     --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
-    --subj:#3f7d4e;   /* 科目主色 */
+    --subj:#0d9488;   /* 科目主色 */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;}
@@ -55,13 +55,13 @@
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "bio-ecology",
-  "title": "生態系與環境",
-  "subject": "生物",
+  "id": "eng-wh-adverb",
+  "title": "疑問詞、頻率副詞與祈使句",
+  "subject": "英文",
   "grade": "國一",
   "term": "下",
-  "chapter": 4,
-  "tag": "生態",
+  "chapter": 3,
+  "tag": "文法",
   "ready": true
 }
 </script>
@@ -69,7 +69,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div><h1>生態系與環境</h1><div class="sub">生物 · 選擇題 · 附詳解</div></div>
+    <div><h1>疑問詞、頻率副詞與祈使句</h1><div class="sub">英文 · 文法選擇題 · 附詳解</div></div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
   <div class="levels">
@@ -87,7 +87,7 @@
 
 <script>
 /* ===== bank-start ===== 原創題庫：level 難度、topic 知識點、q 題幹、choices 選項、answer 正解索引、explain 詳解 */
-const BANK=[{"level":"basic","topic":"生態系組成","q":"一個生態系是由哪兩大部分組成？","choices":["只有動物","生物因子與非生物因子","只有植物","只有陽光與水"],"answer":1,"explain":"生態系由生物因子（各種生物）與非生物因子（陽光、水、溫度等）組成。"},{"level":"adv","topic":"生產者","q":"生態系中能自己製造養分（行光合作用）的生物，稱為？","choices":["消費者","生產者","分解者","外來種"],"answer":1,"explain":"綠色植物等能自製養分者是生產者。"},{"level":"adv","topic":"消費者","q":"不能自己製造養分、要靠吃其他生物維生的生物是？","choices":["生產者","消費者","分解者","化石"],"answer":1,"explain":"動物等靠攝食其他生物取得養分，是消費者。"},{"level":"adv","topic":"分解者","q":"把動植物遺體與排泄物分解、讓養分回歸環境的生物是？","choices":["生產者","消費者","分解者","病毒"],"answer":2,"explain":"細菌、真菌等分解者把有機物分解，使物質回歸環境循環。"},{"level":"adv","topic":"分解者迷思","q":"香菇會從枯木上長出來。就生態角色而言，香菇（真菌）屬於？","choices":["生產者","分解者","初級消費者","非生物"],"answer":1,"explain":"香菇是真菌，靠分解枯木等有機物維生，屬於分解者，不是行光合的生產者。"},{"level":"adv","topic":"食物鏈方向","q":"食物鏈中的箭頭方向代表什麼？","choices":["被吃者指向捕食者，也是能量流動的方向","捕食者指向獵物","沒有意義","指向陽光"],"answer":0,"explain":"箭頭由被吃者指向吃牠的生物，代表物質與能量的流動方向。"},{"level":"adv","topic":"食物網","q":"許多條食物鏈交織成食物網，和單一食物鏈相比，食物網通常？","choices":["比較不穩定","比較穩定，某一物種變動較不易造成整個崩潰","完全一樣","沒有生產者"],"answer":1,"explain":"食物網關係複雜，緩衝能力較強，比單一食物鏈穩定。"},{"level":"adv","topic":"能量流動","q":"關於生態系中的能量，下列敘述何者正確？","choices":["能量可以不斷循環使用","能量沿食物鏈單向流動，且每經一層就遞減","能量越高階層越多","能量不會消失"],"answer":1,"explain":"能量單向流動、逐層遞減，大部分以熱散失，無法循環。"},{"level":"adv","topic":"數量金字塔","q":"一般而言，食物鏈中越高階的消費者，數量與可用能量會？","choices":["越多","越少","不變","無法比較"],"answer":1,"explain":"能量逐層遞減，故越高階生物能量與數量通常越少，形成金字塔。"},{"level":"adv","topic":"能量來源","q":"生態系中，能量最初的來源是？","choices":["分解者","太陽（經生產者光合作用固定）","消費者","土壤"],"answer":1,"explain":"能量最初來自太陽，由生產者行光合作用把光能固定下來。"},{"level":"adv","topic":"物質循環","q":"碳、水等物質與「能量」最大的不同是？","choices":["物質也會逐層遞減","物質可以在生態系中被循環利用","物質只會單向流動","物質不存在"],"answer":1,"explain":"物質（碳、水等）可循環再利用；能量則單向流動、不循環。"},{"level":"adv","topic":"分解者重要性","q":"如果生態系中沒有分解者，最可能發生什麼？","choices":["能量會變多","遺體與排泄物堆積、養分無法回歸循環","生產者變多","沒有影響"],"answer":1,"explain":"沒有分解者，有機物養分無法回歸環境，物質循環會中斷。"},{"level":"basic","topic":"族群","q":"在同一地區、同一種類生物的所有個體合稱為？","choices":["族群","群集","生態系","個體"],"answer":0,"explain":"同地區、同種生物的總和是族群。"},{"level":"adv","topic":"群集","q":"在同一地區生活的「所有不同種」生物合稱為？","choices":["族群","群集","個體","器官"],"answer":1,"explain":"同地區內各種生物（多個族群）的總和是群集。"},{"level":"adv","topic":"生態平衡","q":"生態系中各種生物的數量能在一定範圍內維持穩定，稱為？","choices":["生態平衡","演化","恆定","滅絕"],"answer":0,"explain":"生物數量維持相對穩定的狀態稱為生態平衡。"},{"level":"adv","topic":"破壞平衡","q":"若某生態系中的青蛙大量減少，最可能的連鎖影響是？","choices":["完全沒有影響","以青蛙為食的生物減少、青蛙所吃的昆蟲增加","所有生物立刻死光","太陽變暗"],"answer":1,"explain":"食物網環環相扣，一個環節變動會連帶影響其上下游生物。"},{"level":"adv","topic":"能量vs物質","q":"比較生態系中的「能量」與「物質」，下列何者正確？","choices":["兩者都會循環","能量單向流動不循環，物質可以循環","兩者都單向不循環","物質單向、能量循環"],"answer":1,"explain":"能量單向流動、逐層遞減；物質（碳水氮等）則可循環利用。"},{"level":"basic","topic":"非生物因子","q":"下列何者屬於生態系中的「非生物因子」？","choices":["青蛙","陽光","細菌","老鷹"],"answer":1,"explain":"陽光、水、溫度、土壤等是非生物因子，陽光同時也是能量來源。"},{"level":"adv","topic":"保育","q":"下列哪個做法最有助於維持生物多樣性與生態平衡？","choices":["大量捕捉野生動物","保護自然棲地、減少污染","隨意引入外來種","砍伐森林開發"],"answer":1,"explain":"保護棲地、減少污染能維護生物多樣性與生態平衡。"},{"level":"adv","topic":"生產者角色","q":"在能量流動中，生產者扮演的關鍵角色是？","choices":["分解遺體","把太陽的光能轉成養分，成為食物鏈的起點","只吃別的生物","製造非生物因子"],"answer":1,"explain":"生產者行光合把光能固定為養分，是能量進入生態系的入口與食物鏈起點。"}];
+const BANK=[{"level":"basic","topic":"wh-what","q":"\"___ is your name?\" \"My name is Amy.\"","choices":["What","Who","Where","When"],"answer":0,"explain":"問「什麼」用 What。"},{"level":"adv","topic":"wh-who","q":"\"___ is that boy?\" \"He is my brother.\"","choices":["What","Who","Where","How"],"answer":1,"explain":"問「誰」用 Who。"},{"level":"adv","topic":"wh-where","q":"\"___ do you live?\" \"I live in Taipei.\"","choices":["When","Where","Why","What"],"answer":1,"explain":"問「哪裡」用 Where。"},{"level":"adv","topic":"wh-when","q":"\"___ is your birthday?\" \"It’s in May.\"","choices":["Where","When","Who","How"],"answer":1,"explain":"問「何時」用 When。"},{"level":"adv","topic":"wh-why","q":"\"___ are you so happy?\" \"Because I passed the test.\"","choices":["What","Why","Where","Who"],"answer":1,"explain":"問「為什麼」用 Why，常用 Because 回答。"},{"level":"adv","topic":"wh-how","q":"\"___ do you go to school?\" \"By bus.\"","choices":["How","What","Who","When"],"answer":0,"explain":"問「怎麼、用什麼方式」用 How。"},{"level":"adv","topic":"how-many","q":"\"___ students are there in your class?\"（可數）","choices":["How many","How much","How old","How long"],"answer":0,"explain":"問「可數名詞的數量」用 How many ＋複數名詞。"},{"level":"adv","topic":"how-much","q":"\"___ water do you drink every day?\"（不可數）","choices":["How many","How much","How old","How far"],"answer":1,"explain":"問「不可數名詞的量」用 How much。"},{"level":"adv","topic":"how-old","q":"\"___ are you?\" \"I’m thirteen years old.\"","choices":["How old","How many","What","Where"],"answer":0,"explain":"問年齡用 How old。"},{"level":"adv","topic":"how-much-price","q":"\"___ is this book?\" \"It’s 200 dollars.\"","choices":["How many","How much","How old","How far"],"answer":1,"explain":"問價錢用 How much。"},{"level":"adv","topic":"whose","q":"\"___ bag is this?\" \"It’s Amy’s.\"","choices":["Who","Whose","What","Where"],"answer":1,"explain":"問「誰的」用 Whose ＋名詞。"},{"level":"basic","topic":"頻率-never","q":"頻率副詞中，表示「從不」的是？","choices":["always","never","usually","often"],"answer":1,"explain":"never＝從不（頻率最低）；always＝總是（最高）。"},{"level":"adv","topic":"頻率-always","q":"下列頻率副詞中，頻率「最高」的是？","choices":["sometimes","often","always","never"],"answer":2,"explain":"always（總是）頻率最高。"},{"level":"adv","topic":"頻率-位置(be後)","q":"頻率副詞（如 always）通常放在 be 動詞的？","choices":["前面","後面","句首","句尾"],"answer":1,"explain":"頻率副詞放 be 動詞「之後」、一般動詞「之前」。例：She is always happy."},{"level":"adv","topic":"頻率-位置(動詞前)","q":"\"He ___ breakfast.\"（總是吃早餐）正確語序是？","choices":["always eats","eats always","always eat","eat always"],"answer":0,"explain":"頻率副詞放一般動詞前 → always eats。"},{"level":"basic","topic":"祈使句","q":"\"___ the door, please.\"（請開門）","choices":["Open","Opens","Opening","To open"],"answer":0,"explain":"祈使句以動詞原形開頭 → Open。"},{"level":"adv","topic":"否定祈使","q":"\"___ run in the classroom!\"（不要在教室奔跑）","choices":["Don’t","Doesn’t","No","Not"],"answer":0,"explain":"否定祈使句用 Don’t ＋原形。"},{"level":"adv","topic":"Let’s","q":"\"___ go to the movies!\"（我們一起去看電影吧）","choices":["Let’s","Let","Lets us","We’s"],"answer":0,"explain":"提議「一起…吧」用 Let’s ＋原形。"}];
 /* ===== bank-end ===== */
 
 const AB=['A','B','C','D','E'];
