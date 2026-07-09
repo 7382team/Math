@@ -200,6 +200,13 @@
   #ending .again{z-index:2;background:var(--flame);color:#08323a;padding:14px 26px;border-radius:14px;font-size:16px;font-weight:700;}
   .spark{position:absolute;width:8px;height:8px;border-radius:50%;opacity:0;}
   @keyframes boom{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}
+  /* iframe 單元戰鬥:把題庫單元頁塞進打怪畫面(答對→魔物扣血)*/
+  #unitWrap{position:relative;z-index:2;background:var(--paper);border-radius:20px 20px 0 0;display:none;flex-direction:column;height:46vh;min-height:300px;overflow:hidden;box-shadow:0 -8px 24px rgba(0,0,0,.4);}
+  #unitWrap.on{display:flex;}
+  .ubar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .ubar .utitle{font-size:13px;font-weight:700;color:var(--card-ink);}
+  .ubar .uhint{background:linear-gradient(90deg,#22d3ee,#3b82f6);color:#fff;border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;}
+  #unitFrame{flex:1;width:100%;border:none;background:#fff;}
 </style>
 </head>
 <body>
@@ -242,7 +249,7 @@
     <div class="hintpop" id="hintPop"></div>
     <div class="floatL" id="floatL"></div>
   </div>
-  <div class="panel">
+  <div class="panel" id="panel">
     <button class="skbtn" id="skBtn">🪄 施放技能</button>
     <div class="box" id="box">?</div>
     <div class="explain" id="explain"><div class="lab">靈焰的低語 · 詳解</div><div class="steps" id="steps"></div><div class="tip" id="tip"></div></div>
@@ -254,6 +261,7 @@
     </div>
     <button class="act" id="act">⚔ 攻 擊 <small>(Enter)</small></button>
   </div>
+  <div id="unitWrap"><div class="ubar"><span class="utitle" id="uTitle"></span><button class="uhint" id="uHint">💡 提示</button></div><iframe id="unitFrame" title="題目" src="about:blank"></iframe></div>
   <div class="skmenu" id="skMenu"></div>
 </div>
 
@@ -415,7 +423,8 @@ function allTerms(){ return [...new Set(catUnits().map(termOf))].filter(Boolean)
 function subjMeta(id){ return (CATALOG.subjects||[]).find(x=>x.id===id) || {id,icon:((SUBJECTS.find(z=>z.id===id)||{}).icon)||'📘',color:'#5a6472'}; }
 function darken(hex,f){ if(!/^#[0-9a-f]{6}$/i.test(hex)) return '#333'; const n=parseInt(hex.slice(1),16); const r=Math.round(((n>>16)&255)*(1-f)),g=Math.round(((n>>8)&255)*(1-f)),b=Math.round((n&255)*(1-f)); return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
 function subjColor(id){ if(BTN[id]) return BTN[id]; const col=subjMeta(id).color||'#5a6472'; const d=darken(col,.42); return {bg:col,lip:d,th:d}; }
-function unitPlayable(u){ const d=UNIT_DUNGEON[u.id]; return d&&d.ready?d.topic:null; }   // 能玩=有內建題型
+function inlineTopic(u){ const d=UNIT_DUNGEON[u.id]; return d&&d.ready?d.topic:null; }   // 有內建題型 → 回 topic id
+function unitPlayable(u){ return !!(inlineTopic(u) || (!window.PACKED && u&&u.file&&u.ready!==false)); }   // 能玩=內建題型 或 可嵌題庫單元頁(打包單機版沒有單元檔,只留內建)
 function coursesFor(subj){ return (CATALOG.courses||[]).filter(c=>c.subject===subj); }   // 該科的課本版本(康軒/南一/翰林)
 function selectedCourse(subj){ const cs=coursesFor(subj); if(!cs.length) return null;
   const cid=settings&&settings.course_by_subject&&settings.course_by_subject[subj];   // 版本由家長後台決定;訪客/未設定=預設(第一個版本)
@@ -481,8 +490,28 @@ let problem,entry='',busy=false,pending=null;
 function startBattle(node){ battle={node,hp:node.hp,max:node.hp}; renderShields();
   $('bTitle').textContent=(node.t==='boss'?'守關 · ':'')+node.name;
   $('monImg').src=P(node.cat,node.mon); $('mon').className='mon bob'; renderMonHP(); renderFlames();
-  $('battle').classList.add('on'); askQ();
+  $('battle').classList.add('on');
+  if(node.unitFile){ startUnitMode(node); } else { setInlineMode(); askQ(); }
 }
+/* iframe 單元戰鬥:題目來自題庫單元頁,答對→魔物扣血,對錯都寫回聯絡簿 */
+let ifBattle=null;
+function setInlineMode(){ ifBattle=null; $('unitWrap').classList.remove('on'); $('unitFrame').src='about:blank'; $('panel').style.display=''; $('bubble').style.display=''; }
+function startUnitMode(node){ ifBattle=node;
+  $('panel').style.display='none'; $('bubble').style.display='none';
+  $('uTitle').textContent=node.unitTitle||''; $('uHint').style.display='none';
+  $('unitFrame').src=node.unitFile+'?level=basic&t='+String(performance.now()).replace('.','');
+  $('unitWrap').classList.add('on'); }
+function onUnitAnswer(correct){ if(!battle||!ifBattle) return;
+  if(user&&sb) sb.rpc('log_activity',{p_day:todayStr(),p_unit:ifBattle.unitId,p_done:1,p_correct:correct?1:0}).then(r=>{},e=>{});   // 寫回聯絡簿
+  if(correct){ heroLunge(); battle.hp--; renderMonHP(); monFX('hit'); floatDmg('−1');
+    if(battle.hp<=0){ monFX('die'); ifBattle=null; setTimeout(winBattle,650); }
+  } else { if(shields>0){ shields--; renderShields(); floatDmg('🛡 擋下',true); toast('🛡 防風罩擋下'); }
+    else if(flames>0){ flames--; renderFlames(); floatDmg('靈焰 −1',true); } monFX('atk'); } }
+window.addEventListener('message',e=>{ const d=e.data; if(!d||!ifBattle) return;
+  if(d.type==='unit-ready'){ $('uHint').style.display=(d.supports&&d.supports.indexOf('hint')>=0)?'':'none'; }
+  else if(d.type==='unit-progress'){ onUnitAnswer(!!d.unitCorrect); }
+  else if(d.type==='unit-mistake'){ if(user&&sb) sb.rpc('log_mistake',{p_unit:ifBattle.unitId,p_q:d.q||'',p_ans:String(d.ans==null?'':d.ans),p_given:String(d.given==null?'':d.given),p_explain:'',p_tip:d.tip||'',p_choices:d.choices||null}).then(r=>{},e=>{}); } });
+if($('uHint')) $('uHint').onclick=()=>{ const f=$('unitFrame'); if(f&&f.contentWindow) f.contentWindow.postMessage({type:'unit-command',cmd:'hint'},'*'); };
 function renderMonHP(){let h='';for(let i=0;i<battle.max;i++)h+=`<span class="pip ${i<battle.hp?'on':''}"></span>`;$('monHP').innerHTML=h;}
 function askQ(){ problem = battle.node.t==='boss' && TOPIC.boss ? TOPIC.boss() : TOPIC.gen();
   $('eq').innerHTML=TOPIC.render(problem); entry=''; showEntry(); $('explain').classList.remove('show'); $('hintPop').classList.remove('on');
@@ -519,7 +548,7 @@ function winBattle(){ mats.wood+=2;
     else if(codex[mon]===3){ mats.star+=1; dex=' · ⭐收服 '+battle.node.name+' ✦+1'; } }
   renderMats(); saveState();
   if(flames<MAXF){ flames++; renderFlames(); toast('淨化成功!靈焰 +1 · 🪵+2'+dex); } else toast('淨化成功!🪵+2'+dex);
-  setTimeout(()=>{ $('battle').classList.remove('on'); layout(); refreshGo(); },900); }
+  setTimeout(()=>{ $('battle').classList.remove('on'); $('unitWrap').classList.remove('on'); $('unitFrame').src='about:blank'; ifBattle=null; layout(); refreshGo(); },900); }
 
 /* 鍵盤 */
 $('pad').addEventListener('click',e=>{const b=e.target.closest('.k');if(!b||busy)return;typeKey(b.dataset.k);});
@@ -639,6 +668,14 @@ function startDungeon(topicId){ if(topicId&&TOPICS[topicId]) TOPIC=TOPICS[topicI
   const url=`url('assets/bg/${dg.bg}.jpg')`; $('map').style.backgroundImage=url; $('battle').style.backgroundImage=url;
   $('dgSub').textContent=(TOPIC.id==='mix'?mixTitle:TOPIC.name)+' · 第 1 章';
   flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
+/* iframe 單元副本:題目來自題庫單元頁(u.file),每隻怪都嵌同一單元;打贏=練那個單元 */
+const SUBJECT_BIOME={'數學':'cave','生物':'forest','國文':'temple','英文':'snow','歷史':'temple','地理':'forest','公民':'night','自然':'volcano','社會':'night'};
+window.startUnitById=(id)=>{ const u=(CATALOG.units||[]).find(x=>x.id===id); if(u) startUnitDungeon(u); };
+function startUnitDungeon(u){ const dg=buildDungeon({biome:SUBJECT_BIOME[u.subject]||'cave'}); NODES=dg.nodes; POS=genPOS(NODES.length);
+  NODES.forEach(n=>{ if(n.t==='mon'||n.t==='boss'){ n.unitFile=u.file; n.unitId=u.id; n.unitTitle=u.title; } });   // 每隻怪都用這個單元出題
+  const url=`url('assets/bg/${dg.bg}.jpg')`; $('map').style.backgroundImage=url; $('battle').style.backgroundImage=url;
+  $('dgSub').textContent=u.title+' · 第 1 章';
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
 /* 副本:學期(國一上/下…)→ 科目 → 單元。目錄讀 units.json,playable 用內建題型、其餘準備中 */
 function openSubjectSelect(){ curSelect=openSubjectSelect;
   const opened=(user&&settings&&settings.selected_units&&settings.selected_units.length)?new Set(settings.selected_units):null;
@@ -656,9 +693,11 @@ window.openUnitSelect=(subjId)=>{ curSelect=()=>openUnitSelect(subjId);
   const course=selectedCourse(subjId);
   let units=catUnits().filter(u=>avail(u)&&termOf(u)===curTerm);
   if(course){ const seq=course.sequence||[]; units=units.slice().sort((a,b)=>{ const ia=seq.indexOf(a.id),ib=seq.indexOf(b.id); return (ia<0?999:ia)-(ib<0?999:ib); }); }   // 照課本版本排序
-  const playTopics=units.map(u=>unitPlayable(u));
-  const rows=units.map(u=>{ const topic=unitPlayable(u), t=TOPICS[topic];
-    return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="closeSheet();startDungeon('${topic}')"><span class="gth" style="background:${c.th}">${faceImg(t.face)}</span><span class="gmid"><span class="gname">${u.title}</span><span class="gstars">${starStr(t.diff||2)}</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
+  const playTopics=units.map(inlineTopic).filter(Boolean);   // 綜合只混內建題型
+  const rows=units.map(u=>{ const topic=inlineTopic(u);
+    if(topic){ const t=TOPICS[topic];
+      return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="closeSheet();startDungeon('${topic}')"><span class="gth" style="background:${c.th}">${faceImg(t.face)}</span><span class="gmid"><span class="gname">${u.title}</span><span class="gstars">${starStr(t.diff||2)}</span></span><span class="ggo">進入 ›</span></button>`; }
+    return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="closeSheet();startUnitById('${u.id}')"><span class="gth" style="background:${c.th}">📜</span><span class="gmid"><span class="gname">${u.title}</span><span class="gsub">題庫出題</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
   const mixBtn=playTopics.length>=2?`<button class="gbtn" style="background:#c99a2a;border-bottom:4px solid #86671b;color:#3a2c06" onclick="closeSheet();startMix('${playTopics.join(',')}')"><span class="gth" style="background:#86671b;color:#ffe6a0">🔀</span><span class="gmid"><span class="gname">綜合 · 段考複習</span><span class="gsub" style="color:#5a4408">把這學期可玩的題型混著考(交錯練習,最有效)</span></span><span class="ggo">進入 ›</span></button>`:'';
   const examSection=renderExamGroups(subjId);   // 家長在網頁圈的段考組(settings.exam_groups)
   openSheet('⚔️ '+subjId+' · '+curTerm+(course?' · '+course.title:''), `<button class="backbar" onclick="openSubjectSelect()">‹ 換科目</button>`+termTabs(subjId)+`<div class="gsel">${rows||'<div class="ph">這科在遊戲裡的副本還在準備中,其他單元可先到聯絡簿練。</div>'}${mixBtn}</div>`+examSection); };
