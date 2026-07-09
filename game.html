@@ -631,7 +631,9 @@ $('vstage').addEventListener('click',e=>{ const r=$('vstage').getBoundingClientR
 /* 傳送門:走到門口=進該科副本(空間化選科)。SUBJECTS 有幾科就長幾個門 */
 let portalTimer=null;
 /* 對標家長後台:傳送門=「家長有開(selected_units) ∩ 遊戲能玩」的科目,不寫死 */
-function openedPlayableSubjects(){ const opened=(user&&settings&&settings.selected_units&&settings.selected_units.length)?new Set(settings.selected_units):null;
+/* 副本開放集合(唯一判定):嚴格照家長設定。有後台但未登入 → 空集合(什麼都不開,要登入);登入 → 只開家長勾的 selected_units;無後台的打包單機 demo → 不設限(展示用) */
+function openedSet(){ if(!sb) return null; if(!user) return new Set(); return new Set((settings&&settings.selected_units)||[]); }
+function openedPlayableSubjects(){ const opened=openedSet();
   const order=(CATALOG.subjects||[]).map(s=>s.id);
   return [...new Set(catUnits().filter(u=>unitPlayable(u)&&(!opened||opened.has(u.id))).map(u=>u.subject))].sort((a,b)=>((order.indexOf(a)+1)||99)-((order.indexOf(b)+1)||99)); }
 function renderEventPortal(){ const stage=$('vstage'); if(!stage||$('evtPortal')) return;   // 事件入口(建一次,常駐村中央)
@@ -644,7 +646,7 @@ function renderReviewBubble(){ const stage=$('vstage'); if(!stage) return; const
   stage.appendChild(d); }
 function renderPortals(){ const stage=$('vstage'); if(!stage) return; stage.querySelectorAll('.portal').forEach(e=>e.remove());
   const subs=openedPlayableSubjects(), hint=$('vhint');
-  if(!subs.length){ if(hint) hint.innerHTML='家長還沒開放遊戲能玩的單元 · 點上面 <b>📒 聯絡簿 → 家長後台</b> 開放'; return; }
+  if(!subs.length){ if(hint) hint.innerHTML=(sb&&!user)?'先<b>☁️ 登入</b>(村莊上方)才會出現副本 · 副本會依<b>家長開放的單元</b>顯示':'家長還沒開放遊戲能玩的單元 · 點上面 <b>📒 聯絡簿 → 家長後台</b> 開放'; return; }
   if(hint) hint.textContent='🌀 點傳送門進副本 · 👆 上面也有功能 · 點地面走走';
   const n=subs.length;
   subs.forEach((id,i)=>{ const x=Math.round(n===1?50:18+(i/(n-1))*64), y=52, c=subjColor(id);
@@ -705,7 +707,7 @@ let questDone=JSON.parse(localStorage.getItem('kg2_quest')||'null')||{date:'',id
 function questDoneToday(id){ return questDone.date===todayStr()&&questDone.ids.indexOf(id)>=0; }
 function markQuestDone(id){ if(questDone.date!==todayStr()) questDone={date:todayStr(),ids:[]}; if(questDone.ids.indexOf(id)<0){ questDone.ids.push(id); localStorage.setItem('kg2_quest',JSON.stringify(questDone)); } }
 const VILLAGERS=['阿旺','阿美','小虎','阿福','小玉','阿明','鐵匠','阿嬤'];
-function openPlayableUnits(){ const opened=(user&&settings&&settings.selected_units&&settings.selected_units.length)?new Set(settings.selected_units):null;
+function openPlayableUnits(){ const opened=openedSet();
   return catUnits().filter(u=>unitPlayable(u)&&(!opened||opened.has(u.id))); }
 const RELICS=[['星辰碎片','💫'],['古老符文','📜'],['龍之鱗片','🐉'],['遺忘之鑰','🗝️'],['月光寶石','🌕'],['勇者徽章','🏅']];   // [名稱, 圖示]:尋物委託的寶物,收進寶物圖鑑
 function todaysQuests(){ const ds=todayStr(), seed=ds.split('-').reduce((a,c)=>a+(+c),0), v=VILLAGERS[seed%VILLAGERS.length], relic=RELICS[seed%RELICS.length][0];
@@ -775,7 +777,8 @@ function startUnitDungeon(u){ curQuest=null; siege=null; const dg=buildDungeon({
   flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
 /* 副本:學期(國一上/下…)→ 科目 → 單元。目錄讀 units.json,playable 用內建題型、其餘準備中 */
 function openSubjectSelect(){ curSelect=openSubjectSelect;
-  const opened=(user&&settings&&settings.selected_units&&settings.selected_units.length)?new Set(settings.selected_units):null;
+  if(sb&&!user){ openSheet('⚔️ 選擇科目','<div class="ph">先登入,副本才會依<b>家長開放的單元</b>出現。<br><br><button class="dLogin" onclick="closeSheet();openLogin()">☁️ 登入</button></div>'); return; }   // 未登入不給進副本(要照家長設定)
+  const opened=openedSet();
   const units=catUnits().filter(u=>termOf(u)===curTerm&&unitPlayable(u)&&(!opened||opened.has(u.id)));   // 只算可玩+家長有開的
   const order=(CATALOG.subjects||[]).map(s=>s.id);
   const subs=[...new Set(units.map(u=>u.subject))].sort((a,b)=>((order.indexOf(a)+1)||99)-((order.indexOf(b)+1)||99));
@@ -783,7 +786,7 @@ function openSubjectSelect(){ curSelect=openSubjectSelect;
     return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="openUnitSelect('${id}')"><span class="gth" style="background:${c.th}">${subjMeta(id).icon}</span><span class="gmid"><span class="gname">${id}副本</span><span class="gsub">${n} 個可玩單元</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
   openSheet('⚔️ 選擇科目', termTabs()+`<div class="gsel">${rows||'<div class="ph">這個學期還沒有可玩的副本(其他單元可到聯絡簿練)。</div>'}</div>`); }
 window.openUnitSelect=(subjId)=>{ curSelect=()=>openUnitSelect(subjId);
-  const opened=(user&&settings&&settings.selected_units&&settings.selected_units.length)?new Set(settings.selected_units):null;   // 登入且有設定 → 只開放家長勾的
+  const opened=openedSet();   // 登入且有設定 → 只開放家長勾的
   const avail=u=>u.subject===subjId&&unitPlayable(u)&&(!opened||opened.has(u.id));   // 只顯示:可玩(遊戲有題型)+ 家長有開的單元
   if(!catUnits().some(u=>avail(u)&&termOf(u)===curTerm)){ const pick=catUnits().find(avail); if(pick){ curTerm=termOf(pick); localStorage.setItem('kg2_term',curTerm); } }   // 這學期這科沒可玩單元 → 跳到有的學期
   const c=subjColor(subjId);
