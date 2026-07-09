@@ -230,11 +230,12 @@
     <button onclick="villageAction('shop')"><span class="i">🏪</span>商店</button>
     <button onclick="villageAction('tower')"><span class="i">📒</span>聯絡簿</button>
     <button onclick="villageAction('codex')"><span class="i">📖</span>圖鑑</button>
+    <button onclick="villageAction('hero')"><span class="i">🧙</span>角色</button>
   </div>
   <div class="vcloud" id="vcloud"></div>
   <div class="vstage" id="vstage">
     <div class="oval"></div>
-    <div id="vhero"><img src="assets/sprites/players/paladin.png" alt="英雄"></div>
+    <div id="vhero" onclick="event.stopPropagation();openChar()"><img src="assets/sprites/players/paladin.png" alt="英雄"></div>
   </div>
   <div class="vhint" id="vhint">🌀 點傳送門進副本 · 👆 上面也有功能 · 點地面走走</div>
 </div>
@@ -690,6 +691,7 @@ window.villageAction=(key)=>{
   if(key==='shop')    return openShop();
   if(key==='tower')   return openTower();
   if(key==='codex')   return openCodex();
+  if(key==='hero')    return openChar();
 };
 /* 通用面板(每日/商店/圖鑑/系統塔 都用這個 → 加功能不用再刻 UI)*/
 function openSheet(title, html){ clearTimeout(portalTimer); $('sheetHead').textContent=title; $('sheetBody').innerHTML=html; $('sheet').classList.add('on'); }
@@ -827,6 +829,31 @@ function openCodex(){ const list=allCreatures();
     return `<div class="cdx${got?'':' lock'}"><div class="cdxi" style="font-size:40px;display:flex;align-items:center;justify-content:center">${got?ic:'❓'}</div><div class="cdxn">${got?nm:'？？？'}</div><div class="cdxc">${got?'已尋回 ✓':'未尋回'}</div></div>`; }).join('');
   openSheet('📖 圖鑑', `<div class="dtop" style="background:#eef6f8;border:1px solid #bce3ea;color:#0e7490">🏆 已收服 <b>${tamed}</b>/${list.length} · 已發現 <b>${found}</b><br><span style="font-size:12px;color:#6b8b93">打怪就登錄;同一隻擊敗 ${TAME} 次=收服 ⭐</span></div><div class="cdxgrid">${cells}</div>`
     +`<div class="shophd">🏆 寶物圖鑑 · ${gotRelics}/${RELICS.length}</div><div class="ph" style="padding:0 2px 8px;font-size:12px;color:#6b8b93">完成村莊的「尋物」委託,把寶物帶回來就會收進這裡</div><div class="cdxgrid">${relicCells}</div>`); }
+/* ===== 角色狀態:把現有的造型/圖鑑/連續達標/守城紀錄集中顯示,等級由「總擊敗數」算(答對才打得贏 → 越練越高,守住學習第一)===== */
+function heroStat(){ const total=Object.values(codex).reduce((a,b)=>a+(+b||0),0);
+  let lvl=1, acc=0, need=6; while(total>=acc+need){ acc+=need; lvl++; need=4+lvl*2; }   // 每級所需遞增:L1→2:6、L2→3:8、L3→4:10…
+  return {total, lvl, into:total-acc, need}; }
+function heroTitle(lvl){ return lvl>=12?'傳說':lvl>=8?'英雄':lvl>=4?'勇者':'見習冒險者'; }
+function statCard(label,val){ return `<div class="cdx" style="padding:10px 6px"><div style="font-size:19px;font-weight:800;color:#0e7490">${val}</div><div style="font-size:11px;color:#6b8b93;margin-top:3px">${label}</div></div>`; }
+function openChar(){ const list=allCreatures();
+  const found=list.filter(c=>(codex[c.mon]||0)>0).length, tamed=list.filter(c=>(codex[c.mon]||0)>=TAME).length, gotRelics=RELICS.filter(([nm])=>relics[nm]).length;
+  const H=heroStat(), title=heroTitle(H.lvl), pct=Math.round(H.into/H.need*100);
+  const name = user? (user.email.split('@')[0]||'勇者').slice(0,16) : '小勇者(未登入)';
+  const skinName=(SKINS.find(([id])=>id===((shop&&shop.skin)||'paladin'))||['','聖騎士'])[1];
+  const mountName= (shop&&shop.mount)? ((MOUNTS.find(([id])=>id===shop.mount)||['','坐騎'])[1]) : '—';
+  const head=`<div style="display:flex;gap:14px;align-items:center;background:#eef6f8;border:1px solid #bce3ea;border-radius:14px;padding:12px">
+    <div style="width:78px;height:78px;flex:0 0 78px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center"><img src="${P('players',(shop&&shop.skin)||'paladin')}" style="width:72px;height:72px;object-fit:contain" alt=""></div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:16px;font-weight:800;color:#0e7490">${name} <span style="font-size:12px;background:#0e7490;color:#fff;padding:1px 8px;border-radius:10px;margin-left:4px">Lv.${H.lvl} ${title}</span></div>
+      <div style="font-size:12px;color:#6b8b93;margin:3px 0 6px">造型 ${skinName} · 坐騎 ${mountName}</div>
+      <div style="height:9px;background:#d5e7ec;border-radius:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#22d3ee,#0e7490)"></div></div>
+      <div style="font-size:11px;color:#6b8b93;margin-top:3px">距下一級還要擊敗 <b>${H.need-H.into}</b> 隻 (${H.into}/${H.need})</div>
+    </div></div>`;
+  const grid=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-top:12px">
+    ${statCard('🪵 木材',mats.wood)}${statCard('✦ 星塵',mats.star)}${statCard('🛡 防風罩',shields)}${statCard('🔥 連續達標',streakN+' 天')}
+    ${statCard('📖 圖鑑發現',found+'/'+list.length)}${statCard('⭐ 已收服',tamed+' 種')}${statCard('🏆 寶物',gotRelics+'/'+RELICS.length)}${statCard('🏰 守城最佳',siegeBest+' 波')}</div>`;
+  const note=`<div class="ph" style="font-size:12px;color:#6b8b93;padding-top:8px">等級來自你「總共擊敗的怪物數」(目前 ${H.total})——答對才打得贏,練越多等級越高。造型/坐騎到 🏪 商店換。</div>`;
+  openSheet('🧙 角色狀態', head+grid+note); }
 /* 商店:素材換造型/坐騎/技能次數(只賣外觀+便利,不賣跳過學習)*/
 const SKINS=[['paladin','聖騎士'],['knight','騎士'],['warrior_axe','斧戰士'],['barbarian','蠻族'],['assassin','刺客'],['ranger','遊俠'],['monk','武僧'],['martial_artist','武術家'],['mage','法師'],['sorcerer','術士'],['witch','女巫'],['druid','德魯伊'],['priest','祭司'],['healer','治療師'],['bard','吟遊詩人'],['alchemist','鍊金術士'],['engineer','工程師'],['gnome','侏儒'],['cat_warrior','貓劍士'],['pirate_dog','海盜狗']];
 const MOUNTS=[['unicorn','獨角獸'],['pegasus','天馬'],['alicorn','聖翼獸']];
