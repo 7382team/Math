@@ -313,11 +313,17 @@ let shop=JSON.parse(localStorage.getItem('kg2_shop')||'null')||{skins:['paladin'
 function normShop(){ shop.skins=shop.skins||['paladin']; shop.mounts=shop.mounts||[]; shop.skin=shop.skin||'paladin'; shop.skill=shop.skill||{hint:0,reroll:0}; if(shop.shields==null)shop.shields=3; if(!shop.skins.includes('paladin'))shop.skins.push('paladin'); }
 normShop(); shields=shop.shields;   // 防風罩=常駐消耗品(用完要去商店買)
 let courseSel=JSON.parse(localStorage.getItem('kg2_course')||'{}');   // 各科選的課本版本 {subject: courseId}(遊戲各記各的)
+let social=JSON.parse(localStorage.getItem('kg2_social')||'null')||{nick:'',group:'',opt:false};   // 班級榜:暱稱/班級碼/是否公開(存本機;公開時 upsert 到 Supabase public_profile)
 const DUNGEON_UNIT='signed-muldiv';   // 這個副本對應的真單元 id
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 function renderMats(){ $('vWood').textContent=mats.wood; $('vStar').textContent=mats.star; const vs=$('vShield'); if(vs) vs.textContent=shields; }
 function saveState(){ localStorage.setItem('kg2_mats',JSON.stringify(mats)); localStorage.setItem('kg2_codex',JSON.stringify(codex)); localStorage.setItem('kg2_relics',JSON.stringify(relics)); localStorage.setItem('kg2_shop',JSON.stringify(shop)); localStorage.setItem('kg2_course',JSON.stringify(courseSel));
-  if(user&&sb){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ if(!user||!sb) return; sb.from('game_state').upsert({user_id:user.id,data:{mats,codex,relics,shop,courseSel},updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(r=>{},e=>{}); },700); } }
+  if(user&&sb){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ if(!user||!sb) return; sb.from('game_state').upsert({user_id:user.id,data:{mats,codex,relics,shop,courseSel},updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(r=>{},e=>{}); if(social&&social.opt) upsertProfile(); },700); } }
+/* 班級榜:公開角色卡(只在 opt-in 時上傳,且只上傳學習向數值)。需先在 Supabase 跑 LEADERBOARD_SETUP.sql */
+function saveSocial(){ localStorage.setItem('kg2_social',JSON.stringify(social)); }
+function boardStats(){ const list=allCreatures(); const found=list.filter(c=>(codex[c.mon]||0)>0).length; const H=heroStat(); return {level:H.lvl, defeats:H.total, codex:found, streak:streakN, skin:(shop&&shop.skin)||'paladin'}; }
+async function upsertProfile(){ if(!user||!sb) return; const s=boardStats();
+  try{ await sb.from('public_profile').upsert({user_id:user.id, nickname:(social.nick||'').slice(0,20), group_code:(social.group||'').slice(0,20), opted_in:!!social.opt, level:s.level, defeats:s.defeats, codex:s.codex, streak:s.streak, skin:s.skin, updated_at:new Date().toISOString()},{onConflict:'user_id'}); }catch(e){} }
 async function loadCloud(){ try{ const {data}=await sb.from('game_state').select('data').eq('user_id',user.id).maybeSingle(); if(data&&data.data){ if(data.data.mats) mats=data.data.mats; if(data.data.codex) codex=data.data.codex; if(data.data.relics) relics=data.data.relics; if(data.data.shop){ shop=data.data.shop; normShop(); shields=shop.shields; } if(data.data.courseSel) courseSel=data.data.courseSel; } }catch(e){} }
 const pterm=t=>'('+(t.s<0?'−':'+')+t.v+')';
 function qTextOf(p){ return p.kind==='single'?pterm(p.a)+' '+p.op+' '+pterm(p.b)+' =':pterm(p.first)+p.steps.map(s=>' '+s.op+' '+pterm(s.f)).join('')+' ='; }
@@ -336,7 +342,7 @@ window.doAuth=async(mode)=>{ const email=($('lgEmail').value||'').trim(),pass=$(
   try{ const {error}= mode==='signup'? await sb.auth.signUp({email,password:pass}) : await sb.auth.signInWithPassword({email,password:pass});
     if(error){ m.style.color='var(--seal)'; m.textContent=/Invalid login/.test(error.message)?'帳號或密碼不對':error.message; return; }
     const {data:{user:u}}=await sb.auth.getUser(); if(!u){ m.style.color='var(--ok)'; m.textContent='帳號已建立,若需信箱驗證請收信後再登入'; return; }
-    user=u; await loadCloud(); await loadSettings(); await loadDaily(); renderMats(); renderCloud(); applySkin(); applyMount(); renderPortals(); renderReviewBubble(); closeLogin(); toast('已登入,打怪會算進聯絡簿 ☁️');
+    user=u; await loadCloud(); await loadSettings(); await loadDaily(); renderMats(); renderCloud(); applySkin(); applyMount(); renderPortals(); renderReviewBubble(); if(social&&social.opt) upsertProfile(); closeLogin(); toast('已登入,打怪會算進聯絡簿 ☁️');
   }catch(e){ m.style.color='var(--seal)'; m.textContent=e.message; } };
 window.doLogout=async()=>{ clearTimeout(saveTimer); if(sb) await sb.auth.signOut(); user=null; settings=null; dueReview={count:0,topics:[]}; todayProg={}; streakN=0; renderCloud(); renderPortals(); renderReviewBubble(); toast('已登出,改用本機存檔'); };   // 登出:清掉登入時的每日/錯題狀態並移除泡泡
 async function loadSettings(){ if(!user||!sb){ settings=null; return; }
@@ -853,7 +859,35 @@ function openChar(){ const list=allCreatures();
     ${statCard('🪵 木材',mats.wood)}${statCard('✦ 星塵',mats.star)}${statCard('🛡 防風罩',shields)}${statCard('🔥 連續達標',streakN+' 天')}
     ${statCard('📖 圖鑑發現',found+'/'+list.length)}${statCard('⭐ 已收服',tamed+' 種')}${statCard('🏆 寶物',gotRelics+'/'+RELICS.length)}${statCard('🏰 守城最佳',siegeBest+' 波')}</div>`;
   const note=`<div class="ph" style="font-size:12px;color:#6b8b93;padding-top:8px">等級來自你「總共擊敗的怪物數」(目前 ${H.total})——答對才打得贏,練越多等級越高。造型/坐騎到 🏪 商店換。</div>`;
-  openSheet('🧙 角色狀態', head+grid+note); }
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  const board = user ? `<div class="shophd">🏅 班級榜(跟同學互看角色卡)</div>
+    <div style="background:#eef6f8;border:1px solid #bce3ea;border-radius:12px;padding:10px">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="bNick" placeholder="暱稱(給同學看)" value="${esc(social.nick)}" maxlength="20" style="flex:1;min-width:0;padding:7px 9px;border:1px solid #bce3ea;border-radius:8px;font-size:13px">
+        <input id="bGroup" placeholder="班級碼" value="${esc(social.group)}" maxlength="20" style="width:100px;padding:7px 9px;border:1px solid #bce3ea;border-radius:8px;font-size:13px">
+      </div>
+      <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#0e7490;cursor:pointer"><input type="checkbox" id="bOpt" ${social.opt?'checked':''}> 公開我的角色卡到「相同班級碼」的同學榜</label>
+      <div style="display:flex;gap:8px;margin-top:9px">
+        <button class="dLogin" style="flex:1" onclick="saveBoardSettings()">💾 儲存</button>
+        <button class="dLogin" style="flex:1;background:#0e7490" onclick="openBoard()">🏅 看同學榜</button>
+      </div>
+      <div style="font-size:11px;color:#6b8b93;margin-top:7px">只公開:暱稱、等級、擊敗數、圖鑑數、連續達標。<b>不會</b>公開 email、錯題、成績。輸入同一個班級碼的同學才看得到彼此。</div>
+    </div>` : `<div class="shophd">🏅 班級榜</div><div class="ph" style="font-size:12px">登入後可以設定暱稱/班級碼,跟同學互看角色卡與排行。</div>`;
+  openSheet('🧙 角色狀態', head+grid+note+board); }
+window.saveBoardSettings=()=>{ social={nick:($('bNick').value||'').trim().slice(0,20), group:($('bGroup').value||'').trim().slice(0,20), opt:$('bOpt').checked}; saveSocial(); upsertProfile(); toast(social.opt?'✅ 已公開到班級榜':'已儲存(目前未公開)'); };
+window.openBoard=async()=>{ if(!user||!sb){ toast('請先登入'); return; }
+  const grp=($('bGroup')?($('bGroup').value||'').trim():social.group)||social.group;
+  if(grp!==social.group||($('bNick')&&$('bNick').value.trim()!==social.nick)){ if($('bNick')&&$('bGroup')){ social={nick:$('bNick').value.trim().slice(0,20),group:$('bGroup').value.trim().slice(0,20),opt:($('bOpt')?$('bOpt').checked:social.opt)}; saveSocial(); } }
+  if(!social.group){ toast('先輸入班級碼並儲存'); return; }
+  openSheet('🏅 同學榜 · 班級 '+social.group,'<div class="ph">讀取中…</div>');
+  await upsertProfile();   // 先把自己最新數值送上去,才會出現在榜上
+  let rows=[];
+  try{ const {data,error}=await sb.rpc('get_class_board',{p_group:social.group}); if(error) throw error; rows=data||[]; }
+  catch(e){ openSheet('🏅 同學榜','<div class="ph">班級榜功能還沒開通。<br>請先到 Supabase 的 SQL Editor 跑一次 <b>LEADERBOARD_SETUP.sql</b>,再回來看。<br><br><span style="font-size:12px;color:#8a857b">('+((e&&e.message)||e)+')</span></div>'); return; }
+  if(!rows.length){ openSheet('🏅 同學榜 · 班級 '+social.group,'<div class="ph">這個班級碼還沒有人公開角色卡。<br>把班級碼給同學,大家都在角色頁打開「公開」就會出現在這裡。</div>'); return; }
+  const cells=rows.map((r,i)=>{ const me=(r.nickname===social.nick);
+    return `<button class="gbtn" style="background:${me?'#0e7490':'#5f7a5a'};border-bottom:4px solid ${me?'#0a5560':'#3f5539'};color:#fff"><span class="gth" style="background:${me?'#0a5560':'#3f5539'}"><img src="${P('players',r.skin||'paladin')}" alt=""></span><span class="gmid"><span class="gname">#${i+1} ${r.nickname||'無名'}${me?' (你)':''}</span><span class="gsub">Lv.${r.level} · 擊敗 ${r.defeats} · 圖鑑 ${r.codex} · 🔥${r.streak}</span></span></button>`; }).join('');
+  openSheet('🏅 同學榜 · 班級 '+social.group, `<div class="ph" style="font-size:12px;padding:0 2px 8px">依 等級 → 擊敗數 排序 · 只顯示有公開的同學</div><div class="gsel">${cells}</div>`); }
 /* 商店:素材換造型/坐騎/技能次數(只賣外觀+便利,不賣跳過學習)*/
 const SKINS=[['paladin','聖騎士'],['knight','騎士'],['warrior_axe','斧戰士'],['barbarian','蠻族'],['assassin','刺客'],['ranger','遊俠'],['monk','武僧'],['martial_artist','武術家'],['mage','法師'],['sorcerer','術士'],['witch','女巫'],['druid','德魯伊'],['priest','祭司'],['healer','治療師'],['bard','吟遊詩人'],['alchemist','鍊金術士'],['engineer','工程師'],['gnome','侏儒'],['cat_warrior','貓劍士'],['pirate_dog','海盜狗']];
 const MOUNTS=[['unicorn','獨角獸'],['pegasus','天馬'],['alicorn','聖翼獸']];
