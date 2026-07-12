@@ -104,7 +104,8 @@
   "subject": "數學",
   "grade": "國一",
   "term": "上",
-  "chapter": 2,
+  "chapter": 1,
+  "ch": "第1章 整數的運算",
   "tag": "整數運算",
   "ready": true
 }
@@ -260,6 +261,13 @@ function buildTip(){
   if(hasMinusNeg) return '重點：－（－）＝＋，減去一個負數，等於加上正數。';
   if(hasFlip) return '重點：運算符和數的符號相異時（＋負、－正），該項就是減。';
   return '把括號拿掉後，由左到右一步一步算，符號跟著數字走。';
+}
+
+// 詳解：去括號 + 由左到右逐步（供錯題本與遊戲顯示；先前漏了這個函式，導致 unit-mistake 的 steps 為空）
+function buildSteps(){
+  let h = `<div><span class="lead">去括號</span>${simplifiedLine()}</div>`;
+  runningSteps().forEach(line=>{ h += `<div>${line}</div>`; });
+  return h;
 }
 
 function drawNumberLine(){

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>比與比例式 練習</title>
+<title>統計圖表與資料整理 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,20 +17,24 @@
     display:flex;justify-content:center;padding:14px;}
   .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
   header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
-  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header h1{font-size:18px;font-weight:700;margin:0;letter-spacing:.5px;}
   header .sub{font-size:12px;color:var(--ink-soft);}
   .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
   .levels{display:flex;gap:8px;}
   .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
       background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
   .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
-  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;text-align:center;
-      font-size:22px;font-weight:500;line-height:1.55;letter-spacing:.3px;min-height:46px;}
-  .eq .tag{display:inline-block;font-size:11px;color:var(--subj);background:#eaf0fb;border-radius:6px;padding:2px 8px;margin-bottom:10px;letter-spacing:1px;}
-  .eq .rt{font-size:27px;font-weight:600;letter-spacing:2px;}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:20px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .eq{text-align:center;min-height:44px;}
+  .eq .tag{display:inline-block;font-size:11px;color:var(--subj);background:#eaf0fb;border-radius:6px;padding:2px 8px;margin-bottom:10px;letter-spacing:1px;font-weight:500;}
+  .eq .data{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;letter-spacing:1px;line-height:1.5;word-spacing:2px;}
+  .eq .ask{font-size:15px;color:var(--ink-soft);margin-top:10px;}
   .eq .q{color:var(--pos);font-weight:700;}
-  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
+  table.freq{margin:6px auto 0;border-collapse:collapse;font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;}
+  table.freq th,table.freq td{border:1.5px solid var(--line);padding:6px 12px;font-size:15px;}
+  table.freq th{background:#f3f5f9;color:var(--ink-soft);font-weight:500;font-size:13px;}
+  table.freq td.hi{color:var(--pos);font-weight:700;}
+  .ans{margin-top:16px;height:56px;border-radius:14px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
        font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;transition:.15s;background:#fbfcfe;}
   .ans.empty{color:#b7bccb;}
   .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
@@ -44,22 +48,22 @@
   .steps .res{color:var(--right);font-weight:700;}
   .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;border-radius:10px;padding:9px 12px;line-height:1.6;}
   .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;height:56px;cursor:pointer;transition:.08s;user-select:none;}
   .key:active{background:var(--key-press);transform:scale(.96);}
   .key.sign{color:var(--neg);font-weight:600;} .key.del{color:var(--ink-soft);font-size:22px;}
-  .go{border:none;border-radius:16px;height:58px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
   .go:active{transform:scale(.98);} .go.next{background:var(--pos);} .go:disabled{opacity:.4;}
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "ratio",
-  "title": "比與比例式",
+  "id": "statistics",
+  "title": "統計圖表與資料整理",
   "subject": "數學",
   "grade": "國一",
   "term": "下",
-  "chapter": 3,
-  "ch": "第3章 比與比例式",
-  "tag": "比例",
+  "chapter": 5,
+  "ch": "第5章 統計圖表與資料整理",
+  "tag": "統計",
   "ready": true
 }
 </script>
@@ -67,7 +71,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div><h1>比與比例式</h1><div class="sub">隨機出題 · 逐步解說</div></div>
+    <div><h1>統計圖表與資料整理</h1><div class="sub">隨機出題 · 逐步解說</div></div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
   <div class="levels">
@@ -91,41 +95,56 @@
 
 <script>
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t;}return a||1;}
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rand(0,i); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 let level='basic', problem=null, entry='', answered=false, streak=0;
 
-function genProp(){ let p=rand(2,7),q=rand(2,7); while(q===p) q=rand(2,7); const g=gcd(p,q); p/=g; q/=g;
-  const m=rand(2,6), n=rand(2,6); const terms=[p*m,q*m,p*n,q*n]; const hide=rand(0,3);
-  return {kind:'prop', terms, hide, answer:terms[hide]}; }
-function genSimplify(){ let p=rand(2,9),q=rand(2,9); while(q===p) q=rand(2,9); const g0=gcd(p,q); p/=g0; q/=g0;
-  const g=rand(2,6), a=p*g, b=q*g, hide=Math.random()<0.5?0:1;
-  return {kind:'simplify', a, b, sp:p, sq:q, hide, answer:hide===0?p:q}; }
-function genDirect(){ const k=rand(2,9), x1=rand(2,9); let x2=rand(2,9); while(x2===x1) x2=rand(2,9);
-  return {kind:'direct', x1, y1:k*x1, x2, answer:k*x2}; }
-function genInverse(){ const x1=rand(2,9), y1=rand(2,9), P=x1*y1, divs=[];
-  for(let d=2;d<=P;d++) if(P%d===0 && d!==x1) divs.push(d);
-  if(!divs.length) return genInverse(); const x2=divs[rand(0,divs.length-1)];
-  return {kind:'inverse', x1, y1, x2, answer:P/x2}; }
+function genMode(){ const mv=rand(2,9); const used=new Set([mv]); const others=[]; const nOther=rand(3,4);
+  for(let i=0;i<nOther;i++){ let x; do{ x=rand(2,9); }while(used.has(x)); used.add(x); others.push(x); }
+  let data=[mv,mv,mv].concat(others);
+  return {kind:'mode', data:shuffle(data), answer:mv}; }
+function genRange(){ const data=[]; for(let i=0;i<5;i++) data.push(rand(3,30));
+  const mx=Math.max.apply(null,data), mn=Math.min.apply(null,data); if(mx===mn) return genRange();
+  return {kind:'range', data, answer:mx-mn}; }
+function genMean(){ const n=rand(4,5), m=rand(5,14); const data=[]; let sum=0;
+  for(let i=0;i<n-1;i++){ const v=rand(1,20); data.push(v); sum+=v; }
+  const last=n*m-sum; if(last<1||last>25) return genMean(); data.push(last);
+  return {kind:'mean', data:shuffle(data), answer:m}; }
+function genMedian(){ const n=Math.random()<0.5?5:7; const data=[]; for(let i=0;i<n;i++) data.push(rand(2,30));
+  const sorted=data.slice().sort((a,b)=>a-b); return {kind:'median', data, answer:sorted[(n-1)/2]}; }
+function genFreqTotal(){ const classes=['0~9','10~19','20~29','30~39']; const freqs=classes.map(()=>rand(2,12));
+  return {kind:'freqTotal', classes, freqs, answer:freqs.reduce((s,x)=>s+x,0)}; }
+function genFreqMissing(){ const classes=['甲','乙','丙','丁']; const freqs=classes.map(()=>rand(3,12));
+  const total=freqs.reduce((s,x)=>s+x,0), hide=rand(0,classes.length-1);
+  return {kind:'freqMissing', classes, freqs, hide, total, answer:freqs[hide]}; }
 function makeProblem(lv){
-  const pool = lv==='basic' ? ['prop','simplify'] : lv==='adv' ? ['direct','inverse','prop'] : ['prop','simplify','direct','inverse'];
-  const t = pool[rand(0,pool.length-1)];
-  return t==='prop'?genProp():t==='simplify'?genSimplify():t==='direct'?genDirect():genInverse();
+  const pool = lv==='basic' ? ['mode','range','freqTotal']
+            : lv==='adv'   ? ['mean','median','freqMissing']
+            : ['mode','range','mean','median','freqTotal','freqMissing'];
+  const t=pool[rand(0,pool.length-1)];
+  return t==='mode'?genMode():t==='range'?genRange():t==='mean'?genMean()
+       : t==='median'?genMedian():t==='freqTotal'?genFreqTotal():genFreqMissing();
 }
 
-function qText(){ const p=problem;
-  if(p.kind==='prop'){ const t=p.terms.map((v,i)=>i===p.hide?'?':v); return '求未知數：'+t[0]+' : '+t[1]+' ＝ '+t[2]+' : '+t[3]; }
-  if(p.kind==='simplify'){ return p.a+' : '+p.b+' 化簡成最簡整數比 ＝ '+(p.hide===0?'? : '+p.sq:p.sp+' : ?'); }
-  if(p.kind==='direct'){ return 'y 與 x 成正比。x='+p.x1+' 時 y='+p.y1+'，求 x='+p.x2+' 時 y=?'; }
-  return 'y 與 x 成反比。x='+p.x1+' 時 y='+p.y1+'，求 x='+p.x2+' 時 y=?';
+function freqTable(p, hide){
+  let head='<tr><th>組別</th>'+p.classes.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
+  let body='<tr><td>次數</td>'+p.freqs.map((f,i)=>(hide!=null&&i===hide)?'<td class="hi">?</td>':'<td>'+f+'</td>').join('')+'</tr>';
+  return '<table class="freq">'+head+body+'</table>';
 }
-function eqHTML(){ const p=problem; const tag='<span class="tag">'+(p.kind==='prop'?'比例式':p.kind==='simplify'?'化簡比':p.kind==='direct'?'正比':'反比')+'</span>';
-  let mid;
-  if(p.kind==='prop'){ const t=p.terms.map((v,i)=>i===p.hide?'<span class="q">?</span>':v);
-    mid='<span class="rt">'+t[0]+' : '+t[1]+' ＝ '+t[2]+' : '+t[3]+'</span>'; }
-  else if(p.kind==='simplify'){ mid='<span class="rt">'+p.a+' : '+p.b+'</span><br><span style="font-size:15px;color:var(--ink-soft)">化簡成最簡整數比</span><br><span class="rt">＝ '+(p.hide===0?'<span class="q">?</span> : '+p.sq:p.sp+' : <span class="q">?</span>')+'</span>'; }
-  else { const sign=p.kind==='direct'?'正比':'反比';
-    mid='y 與 x 成<b style="color:var(--subj)">'+sign+'</b><br>x='+p.x1+' 時 y='+p.y1+'<br>求 x='+p.x2+' 時 <span class="q">y=?</span>'; }
-  return tag+'<div>'+mid+'</div>';
+function qText(){ const p=problem;
+  if(p.kind==='mode') return '資料：'+p.data.join('、')+'，眾數＝？';
+  if(p.kind==='range') return '資料：'+p.data.join('、')+'，全距＝？';
+  if(p.kind==='mean') return '資料：'+p.data.join('、')+'，平均數＝？';
+  if(p.kind==='median') return '資料：'+p.data.join('、')+'，中位數＝？';
+  if(p.kind==='freqTotal') return '次數分配：'+p.classes.map((c,i)=>c+' 組 '+p.freqs[i]+' 人').join('、')+'，總人數＝？';
+  return '總人數 '+p.total+' 人，'+p.classes.map((c,i)=>c+' 組 '+(i===p.hide?'?':p.freqs[i])+' 人').join('、')+'，求 '+p.classes[p.hide]+' 組人數＝？';
+}
+function eqHTML(){ const p=problem; const tag=t=>'<span class="tag">'+t+'</span>';
+  if(p.kind==='mode') return tag('眾數')+'<div class="data">'+p.data.join('　')+'</div><div class="ask">出現次數<b>最多</b>的數＝<span class="q">?</span></div>';
+  if(p.kind==='range') return tag('全距')+'<div class="data">'+p.data.join('　')+'</div><div class="ask">全距（最大−最小）＝<span class="q">?</span></div>';
+  if(p.kind==='mean') return tag('平均數')+'<div class="data">'+p.data.join('　')+'</div><div class="ask">這 '+p.data.length+' 筆的平均數＝<span class="q">?</span></div>';
+  if(p.kind==='median') return tag('中位數')+'<div class="data">'+p.data.join('　')+'</div><div class="ask">由小到大排序後最中間的數＝<span class="q">?</span></div>';
+  if(p.kind==='freqTotal') return tag('次數分配表')+freqTable(p,null)+'<div class="ask">全部組的<b>總人數</b>＝<span class="q">?</span></div>';
+  return tag('次數分配表')+freqTable(p,p.hide)+'<div class="ask">總人數共 <b>'+p.total+'</b> 人，「'+p.classes[p.hide]+'」組人數＝<span class="q">?</span></div>';
 }
 function render(){ document.getElementById('eq').innerHTML=eqHTML(); entry=''; answered=false;
   const ans=document.getElementById('ans'); ans.textContent='?'; ans.className='ans empty';
@@ -136,30 +155,29 @@ function showEntry(){ const ans=document.getElementById('ans');
   ans.textContent=entry.replace('-','−'); ans.className='ans'; }
 
 function buildSteps(){ const p=problem;
-  if(p.kind==='prop'){ const t=p.terms; // a:b=c:d → a*d=b*c
-    return `<div><span class="lead">交叉相乘</span>外項相乘 ＝ 內項相乘</div>`+
-      `<div>${t[0]} × ${t[3]} ＝ ${t[1]} × ${t[2]}</div>`+
-      `<div>缺項 ＝ <span class="res">${p.answer}</span></div>`; }
-  if(p.kind==='simplify'){ const g=gcd(p.a,p.b);
-    return `<div><span class="lead">同除以最大公因數</span>gcd(${p.a}, ${p.b}) ＝ ${g}</div>`+
-      `<div>${p.a}÷${g} : ${p.b}÷${g} ＝ ${p.sp} : ${p.sq}</div>`+
-      `<div>缺項 ＝ <span class="res">${p.answer}</span></div>`; }
-  if(p.kind==='direct'){ const k=p.y1/p.x1;
-    return `<div><span class="lead">正比</span>比值 y/x 固定 ＝ ${p.y1}/${p.x1} ＝ ${k}</div>`+
-      `<div>y ＝ ${k} × ${p.x2} ＝ <span class="res">${p.answer}</span></div>`; }
-  const P=p.x1*p.y1;
-  return `<div><span class="lead">反比</span>乘積 x×y 固定 ＝ ${p.x1}×${p.y1} ＝ ${P}</div>`+
-    `<div>y ＝ ${P} ÷ ${p.x2} ＝ <span class="res">${p.answer}</span></div>`;
+  if(p.kind==='mode'){ const c={}; p.data.forEach(v=>c[v]=(c[v]||0)+1);
+    return `<div><span class="lead">數次數</span>${p.answer} 出現 ${c[p.answer]} 次，最多</div><div>眾數 ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='range'){ const mx=Math.max.apply(null,p.data), mn=Math.min.apply(null,p.data);
+    return `<div><span class="lead">最大、最小</span>最大 ${mx}、最小 ${mn}</div><div>全距 ＝ ${mx} − ${mn} ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='mean'){ const sum=p.data.reduce((s,x)=>s+x,0);
+    return `<div><span class="lead">總和</span>${p.data.join(' + ')} ＝ ${sum}</div><div>平均 ＝ ${sum} ÷ ${p.data.length} ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='median'){ const sorted=p.data.slice().sort((a,b)=>a-b);
+    return `<div><span class="lead">排序</span>${sorted.join('、')}</div><div>共 ${sorted.length} 筆，最中間 ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='freqTotal'){ return `<div><span class="lead">各組相加</span>${p.freqs.join(' + ')} ＝ <span class="res">${p.answer}</span></div>`; }
+  const others=p.freqs.filter((f,i)=>i!==p.hide);
+  return `<div><span class="lead">其他組相加</span>${others.join(' + ')} ＝ ${others.reduce((s,x)=>s+x,0)}</div><div>缺的組 ＝ ${p.total} − ${others.reduce((s,x)=>s+x,0)} ＝ <span class="res">${p.answer}</span></div>`;
 }
 function buildTip(){ const p=problem;
-  if(p.kind==='prop') return '比例式 a:b＝c:d，外項乘積 a×d 等於內項乘積 b×c（交叉相乘）。';
-  if(p.kind==='simplify') return '化簡比：把前後項同除以它們的最大公因數。';
-  if(p.kind==='direct') return '正比：兩量的比值 y/x 保持固定。';
-  return '反比：兩量的乘積 x×y 保持固定。';
+  if(p.kind==='mode') return '眾數＝出現次數最多的數（可能不只一個）。';
+  if(p.kind==='range') return '全距＝最大值 − 最小值，代表資料分散的範圍。';
+  if(p.kind==='mean') return '平均數＝所有資料的總和 ÷ 資料筆數。';
+  if(p.kind==='median') return '中位數＝資料由小到大排序後，最中間的那一筆。';
+  if(p.kind==='freqTotal') return '總次數（總人數）＝各組次數全部相加。';
+  return '某組次數＝總次數 − 其他各組次數的和。';
 }
 
 function check(){ if(entry===''||entry==='-') return; answered=true;
-  const val=parseInt(entry,10); const ans=document.getElementById('ans'); const correct=val===problem.answer;
+  const val=parseInt(entry,10), ans=document.getElementById('ans'), correct=val===problem.answer;
   ans.className='ans '+(correct?'ok':'no'); ans.textContent=entry.replace('-','−');
   if(!correct){ ans.classList.add('shake'); setTimeout(()=>ans.classList.remove('shake'),400); }
   streak=correct?streak+1:0; document.getElementById('streak').textContent=streak;
@@ -174,22 +192,22 @@ function next(){ problem=makeProblem(level); render(); }
 
 document.getElementById('pad').addEventListener('click',e=>{ const b=e.target.closest('.key'); if(!b||answered) return; const k=b.dataset.k;
   if(k==='del') entry=entry.slice(0,-1);
-  else if(k==='sign') entry = entry.startsWith('-')?entry.slice(1):'-'+entry;
-  else { if(entry.replace('-','').length<4) entry+=k; }
+  else if(k==='sign') entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else { if(entry.replace('-','').length<3) entry+=k; }
   showEntry(); });
 document.getElementById('go').addEventListener('click',()=> answered?next():check());
 document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active')); b.classList.add('active'); level=b.dataset.lv; next(); }));
 document.addEventListener('keydown',e=>{ if(e.key==='Enter'){ answered?next():check(); return; } if(answered) return;
-  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<4) entry+=e.key; showEntry(); }
-  else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
+  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<3) entry+=e.key; showEntry(); }
+  else if(e.key==='-'){ entry=entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
   else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); } });
 (function(){ const lv=new URLSearchParams(location.search).get('level');
   if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); } })();
 next();
 </script>
 <script>
-/* ===== 遊戲指令介面：hint（口訣/知識點，不洩答案）===== */
+/* ===== 遊戲指令介面：hint（口訣，不洩答案）===== */
 (function(){
   function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:10px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var eq=document.getElementById('eq');if(eq&&eq.parentNode){eq.parentNode.insertBefore(h,eq.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
   function showHint(){if(typeof answered!=='undefined'&&answered)return;var t='';try{t=buildTip();}catch(e){}if(!t)return;box().innerHTML='💡 提示：'+t;}

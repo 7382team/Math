@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>比與比例式 練習</title>
+<title>直角坐標與二元一次方程式的圖形 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,20 +17,21 @@
     display:flex;justify-content:center;padding:14px;}
   .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
   header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
-  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header h1{font-size:18px;font-weight:700;margin:0;letter-spacing:.5px;}
   header .sub{font-size:12px;color:var(--ink-soft);}
   .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
   .levels{display:flex;gap:8px;}
   .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
       background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
   .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
-  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;text-align:center;
-      font-size:22px;font-weight:500;line-height:1.55;letter-spacing:.3px;min-height:46px;}
-  .eq .tag{display:inline-block;font-size:11px;color:var(--subj);background:#eaf0fb;border-radius:6px;padding:2px 8px;margin-bottom:10px;letter-spacing:1px;}
-  .eq .rt{font-size:27px;font-weight:600;letter-spacing:2px;}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:20px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .eq{text-align:center;min-height:44px;}
+  .eq .tag{display:inline-block;font-size:11px;color:var(--subj);background:#eaf0fb;border-radius:6px;padding:2px 8px;margin-bottom:10px;letter-spacing:1px;font-weight:500;}
+  .eq .big{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;font-size:26px;font-weight:600;letter-spacing:1px;line-height:1.45;}
+  .eq .ask{font-size:15px;color:var(--ink-soft);margin-top:8px;}
   .eq .q{color:var(--pos);font-weight:700;}
-  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
+  svg{display:block;margin:8px auto 0;}
+  .ans{margin-top:16px;height:56px;border-radius:14px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
        font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;transition:.15s;background:#fbfcfe;}
   .ans.empty{color:#b7bccb;}
   .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
@@ -44,22 +45,22 @@
   .steps .res{color:var(--right);font-weight:700;}
   .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;border-radius:10px;padding:9px 12px;line-height:1.6;}
   .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;height:56px;cursor:pointer;transition:.08s;user-select:none;}
   .key:active{background:var(--key-press);transform:scale(.96);}
   .key.sign{color:var(--neg);font-weight:600;} .key.del{color:var(--ink-soft);font-size:22px;}
-  .go{border:none;border-radius:16px;height:58px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
   .go:active{transform:scale(.98);} .go.next{background:var(--pos);} .go:disabled{opacity:.4;}
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "ratio",
-  "title": "比與比例式",
+  "id": "coordinate",
+  "title": "直角坐標與二元一次方程式的圖形",
   "subject": "數學",
   "grade": "國一",
   "term": "下",
-  "chapter": 3,
-  "ch": "第3章 比與比例式",
-  "tag": "比例",
+  "chapter": 2,
+  "ch": "第2章 直角坐標與二元一次方程式的圖形",
+  "tag": "坐標",
   "ready": true
 }
 </script>
@@ -67,7 +68,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div><h1>比與比例式</h1><div class="sub">隨機出題 · 逐步解說</div></div>
+    <div><h1>直角坐標與圖形</h1><div class="sub">隨機出題 · 逐步解說</div></div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
   <div class="levels">
@@ -91,41 +92,61 @@
 
 <script>
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t;}return a||1;}
+function nzRand(lo,hi){ let v=0; while(v===0) v=rand(lo,hi); return v; }
 let level='basic', problem=null, entry='', answered=false, streak=0;
 
-function genProp(){ let p=rand(2,7),q=rand(2,7); while(q===p) q=rand(2,7); const g=gcd(p,q); p/=g; q/=g;
-  const m=rand(2,6), n=rand(2,6); const terms=[p*m,q*m,p*n,q*n]; const hide=rand(0,3);
-  return {kind:'prop', terms, hide, answer:terms[hide]}; }
-function genSimplify(){ let p=rand(2,9),q=rand(2,9); while(q===p) q=rand(2,9); const g0=gcd(p,q); p/=g0; q/=g0;
-  const g=rand(2,6), a=p*g, b=q*g, hide=Math.random()<0.5?0:1;
-  return {kind:'simplify', a, b, sp:p, sq:q, hide, answer:hide===0?p:q}; }
-function genDirect(){ const k=rand(2,9), x1=rand(2,9); let x2=rand(2,9); while(x2===x1) x2=rand(2,9);
-  return {kind:'direct', x1, y1:k*x1, x2, answer:k*x2}; }
-function genInverse(){ const x1=rand(2,9), y1=rand(2,9), P=x1*y1, divs=[];
-  for(let d=2;d<=P;d++) if(P%d===0 && d!==x1) divs.push(d);
-  if(!divs.length) return genInverse(); const x2=divs[rand(0,divs.length-1)];
-  return {kind:'inverse', x1, y1, x2, answer:P/x2}; }
+function genQuadrant(){ const a=nzRand(-9,9), b=nzRand(-9,9);
+  const q = (a>0&&b>0)?1 : (a<0&&b>0)?2 : (a<0&&b<0)?3 : 4;
+  return {kind:'quadrant', a, b, answer:q}; }
+function genDistX(){ const a=nzRand(-9,9), b=nzRand(-9,9); return {kind:'distX', a, b, answer:Math.abs(b)}; }
+function genDistY(){ const a=nzRand(-9,9), b=nzRand(-9,9); return {kind:'distY', a, b, answer:Math.abs(a)}; }
+function genSub(){ const a=nzRand(-5,5), b=nzRand(-5,5), x0=rand(-6,6), y0=rand(-6,6);
+  return {kind:'sub', a, b, c:a*x0+b*y0, x0, answer:y0}; }
+function genYInt(){ const a=nzRand(-5,5), b=nzRand(-5,5), y0=rand(-6,6);
+  return {kind:'yInt', a, b, c:b*y0, answer:y0}; }
+function genXInt(){ const a=nzRand(-5,5), b=nzRand(-5,5), x0=rand(-6,6);
+  return {kind:'xInt', a, b, c:a*x0, answer:x0}; }
 function makeProblem(lv){
-  const pool = lv==='basic' ? ['prop','simplify'] : lv==='adv' ? ['direct','inverse','prop'] : ['prop','simplify','direct','inverse'];
-  const t = pool[rand(0,pool.length-1)];
-  return t==='prop'?genProp():t==='simplify'?genSimplify():t==='direct'?genDirect():genInverse();
+  const pool = lv==='basic' ? ['quadrant','distX','distY']
+            : lv==='adv'   ? ['sub','yInt','xInt']
+            : ['quadrant','distX','distY','sub','yInt','xInt'];
+  const t=pool[rand(0,pool.length-1)];
+  return t==='quadrant'?genQuadrant():t==='distX'?genDistX():t==='distY'?genDistY()
+       : t==='sub'?genSub():t==='yInt'?genYInt():genXInt();
 }
 
-function qText(){ const p=problem;
-  if(p.kind==='prop'){ const t=p.terms.map((v,i)=>i===p.hide?'?':v); return '求未知數：'+t[0]+' : '+t[1]+' ＝ '+t[2]+' : '+t[3]; }
-  if(p.kind==='simplify'){ return p.a+' : '+p.b+' 化簡成最簡整數比 ＝ '+(p.hide===0?'? : '+p.sq:p.sp+' : ?'); }
-  if(p.kind==='direct'){ return 'y 與 x 成正比。x='+p.x1+' 時 y='+p.y1+'，求 x='+p.x2+' 時 y=?'; }
-  return 'y 與 x 成反比。x='+p.x1+' 時 y='+p.y1+'，求 x='+p.x2+' 時 y=?';
+function numStr(n){ return n<0?'−'+(-n):''+n; }
+function fmtEq(a,b,c){
+  let s = a===1?'x':a===-1?'−x':numStr(a)+'x';
+  s += b>0?' + '+(b===1?'':b)+'y':' − '+(b===-1?'':(-b))+'y';
+  return s+' = '+numStr(c);
 }
-function eqHTML(){ const p=problem; const tag='<span class="tag">'+(p.kind==='prop'?'比例式':p.kind==='simplify'?'化簡比':p.kind==='direct'?'正比':'反比')+'</span>';
-  let mid;
-  if(p.kind==='prop'){ const t=p.terms.map((v,i)=>i===p.hide?'<span class="q">?</span>':v);
-    mid='<span class="rt">'+t[0]+' : '+t[1]+' ＝ '+t[2]+' : '+t[3]+'</span>'; }
-  else if(p.kind==='simplify'){ mid='<span class="rt">'+p.a+' : '+p.b+'</span><br><span style="font-size:15px;color:var(--ink-soft)">化簡成最簡整數比</span><br><span class="rt">＝ '+(p.hide===0?'<span class="q">?</span> : '+p.sq:p.sp+' : <span class="q">?</span>')+'</span>'; }
-  else { const sign=p.kind==='direct'?'正比':'反比';
-    mid='y 與 x 成<b style="color:var(--subj)">'+sign+'</b><br>x='+p.x1+' 時 y='+p.y1+'<br>求 x='+p.x2+' 時 <span class="q">y=?</span>'; }
-  return tag+'<div>'+mid+'</div>';
+function planeSVG(a,b){
+  return '<svg viewBox="-112 -112 224 224" style="width:180px;height:180px">'
+    +'<line x1="-100" y1="0" x2="100" y2="0" stroke="#c9cede" stroke-width="2"/>'
+    +'<line x1="0" y1="-100" x2="0" y2="100" stroke="#c9cede" stroke-width="2"/>'
+    +'<text x="92" y="-8" font-size="12" fill="#8a90a2">x</text>'
+    +'<text x="8" y="-92" font-size="12" fill="#8a90a2">y</text>'
+    +'<circle cx="'+(a*10)+'" cy="'+(-b*10)+'" r="5" fill="#2563eb"/>'
+    +'<text x="'+(a*10+(a<0?-52:8))+'" y="'+(-b*10+(b<0?18:-8))+'" font-size="13" fill="#2563eb">('+numStr(a)+', '+numStr(b)+')</text>'
+    +'</svg>';
+}
+function qText(){ const p=problem;
+  if(p.kind==='quadrant') return '點 ('+numStr(p.a)+', '+numStr(p.b)+') 在第幾象限？';
+  if(p.kind==='distX') return '點 ('+numStr(p.a)+', '+numStr(p.b)+') 到 x 軸的距離＝？';
+  if(p.kind==='distY') return '點 ('+numStr(p.a)+', '+numStr(p.b)+') 到 y 軸的距離＝？';
+  if(p.kind==='sub') return fmtEq(p.a,p.b,p.c)+'，當 x = '+numStr(p.x0)+' 時 y＝？';
+  if(p.kind==='yInt') return fmtEq(p.a,p.b,p.c)+' 的圖形與 y 軸交點的 y 座標＝？';
+  return fmtEq(p.a,p.b,p.c)+' 的圖形與 x 軸交點的 x 座標＝？';
+}
+function eqHTML(){ const p=problem;
+  const tag=t=>'<span class="tag">'+t+'</span>';
+  if(p.kind==='quadrant') return tag('象限')+planeSVG(p.a,p.b)+'<div class="ask">點 ('+numStr(p.a)+', '+numStr(p.b)+') 在<span class="q">第幾象限</span>？</div>';
+  if(p.kind==='distX') return tag('點到軸的距離')+planeSVG(p.a,p.b)+'<div class="ask">此點到 <b>x 軸</b>的距離＝<span class="q">?</span></div>';
+  if(p.kind==='distY') return tag('點到軸的距離')+planeSVG(p.a,p.b)+'<div class="ask">此點到 <b>y 軸</b>的距離＝<span class="q">?</span></div>';
+  if(p.kind==='sub') return tag('代入求值')+'<div class="big">'+fmtEq(p.a,p.b,p.c)+'</div><div class="ask">當 x = '+numStr(p.x0)+' 時，y＝<span class="q">?</span></div>';
+  if(p.kind==='yInt') return tag('y 截距')+'<div class="big">'+fmtEq(p.a,p.b,p.c)+'</div><div class="ask">圖形與 <b>y 軸</b>交點的 y 座標＝<span class="q">?</span></div>';
+  return tag('x 截距')+'<div class="big">'+fmtEq(p.a,p.b,p.c)+'</div><div class="ask">圖形與 <b>x 軸</b>交點的 x 座標＝<span class="q">?</span></div>';
 }
 function render(){ document.getElementById('eq').innerHTML=eqHTML(); entry=''; answered=false;
   const ans=document.getElementById('ans'); ans.textContent='?'; ans.className='ans empty';
@@ -136,30 +157,28 @@ function showEntry(){ const ans=document.getElementById('ans');
   ans.textContent=entry.replace('-','−'); ans.className='ans'; }
 
 function buildSteps(){ const p=problem;
-  if(p.kind==='prop'){ const t=p.terms; // a:b=c:d → a*d=b*c
-    return `<div><span class="lead">交叉相乘</span>外項相乘 ＝ 內項相乘</div>`+
-      `<div>${t[0]} × ${t[3]} ＝ ${t[1]} × ${t[2]}</div>`+
-      `<div>缺項 ＝ <span class="res">${p.answer}</span></div>`; }
-  if(p.kind==='simplify'){ const g=gcd(p.a,p.b);
-    return `<div><span class="lead">同除以最大公因數</span>gcd(${p.a}, ${p.b}) ＝ ${g}</div>`+
-      `<div>${p.a}÷${g} : ${p.b}÷${g} ＝ ${p.sp} : ${p.sq}</div>`+
-      `<div>缺項 ＝ <span class="res">${p.answer}</span></div>`; }
-  if(p.kind==='direct'){ const k=p.y1/p.x1;
-    return `<div><span class="lead">正比</span>比值 y/x 固定 ＝ ${p.y1}/${p.x1} ＝ ${k}</div>`+
-      `<div>y ＝ ${k} × ${p.x2} ＝ <span class="res">${p.answer}</span></div>`; }
-  const P=p.x1*p.y1;
-  return `<div><span class="lead">反比</span>乘積 x×y 固定 ＝ ${p.x1}×${p.y1} ＝ ${P}</div>`+
-    `<div>y ＝ ${P} ÷ ${p.x2} ＝ <span class="res">${p.answer}</span></div>`;
+  if(p.kind==='quadrant'){ const sx=p.a>0?'正':'負', sy=p.b>0?'正':'負';
+    return `<div><span class="lead">看正負號</span>x ＝ ${numStr(p.a)}（${sx}）、y ＝ ${numStr(p.b)}（${sy}）</div>`+
+      `<div><span class="lead">對應</span>(＋,＋)第一、(−,＋)第二、(−,−)第三、(＋,−)第四</div>`+
+      `<div>∴ 第 <span class="res">${p.answer}</span> 象限</div>`; }
+  if(p.kind==='distX') return `<div><span class="lead">到 x 軸距離</span>看 y 座標的絕對值</div><div>|${numStr(p.b)}| ＝ <span class="res">${p.answer}</span></div>`;
+  if(p.kind==='distY') return `<div><span class="lead">到 y 軸距離</span>看 x 座標的絕對值</div><div>|${numStr(p.a)}| ＝ <span class="res">${p.answer}</span></div>`;
+  if(p.kind==='sub'){ const ax=p.a*p.x0;
+    return `<div><span class="lead">代入 x</span>${numStr(p.a)}×(${numStr(p.x0)}) ${p.b>0?'+':'−'} ${Math.abs(p.b)}y ＝ ${numStr(p.c)}</div>`+
+      `<div>${numStr(ax)} ${p.b>0?'+':'−'} ${Math.abs(p.b)}y ＝ ${numStr(p.c)}</div>`+
+      `<div>${numStr(p.b)}y ＝ ${numStr(p.c-ax)} → y ＝ <span class="res">${p.answer}</span></div>`; }
+  if(p.kind==='yInt') return `<div><span class="lead">與 y 軸相交</span>此時 x ＝ 0，代入</div><div>${numStr(p.b)}y ＝ ${numStr(p.c)} → y ＝ <span class="res">${p.answer}</span></div>`;
+  return `<div><span class="lead">與 x 軸相交</span>此時 y ＝ 0，代入</div><div>${numStr(p.a)}x ＝ ${numStr(p.c)} → x ＝ <span class="res">${p.answer}</span></div>`;
 }
 function buildTip(){ const p=problem;
-  if(p.kind==='prop') return '比例式 a:b＝c:d，外項乘積 a×d 等於內項乘積 b×c（交叉相乘）。';
-  if(p.kind==='simplify') return '化簡比：把前後項同除以它們的最大公因數。';
-  if(p.kind==='direct') return '正比：兩量的比值 y/x 保持固定。';
-  return '反比：兩量的乘積 x×y 保持固定。';
+  if(p.kind==='quadrant') return '象限逆時針數：(＋,＋)第一、(−,＋)第二、(−,−)第三、(＋,−)第四。';
+  if(p.kind==='distX'||p.kind==='distY') return '點到 x 軸的距離看 y 座標的絕對值；到 y 軸的距離看 x 座標的絕對值。';
+  if(p.kind==='sub') return '把已知的 x 代進方程式，再解出 y。';
+  return '與 y 軸交點令 x＝0；與 x 軸交點令 y＝0。';
 }
 
 function check(){ if(entry===''||entry==='-') return; answered=true;
-  const val=parseInt(entry,10); const ans=document.getElementById('ans'); const correct=val===problem.answer;
+  const val=parseInt(entry,10), ans=document.getElementById('ans'), correct=val===problem.answer;
   ans.className='ans '+(correct?'ok':'no'); ans.textContent=entry.replace('-','−');
   if(!correct){ ans.classList.add('shake'); setTimeout(()=>ans.classList.remove('shake'),400); }
   streak=correct?streak+1:0; document.getElementById('streak').textContent=streak;
@@ -174,22 +193,22 @@ function next(){ problem=makeProblem(level); render(); }
 
 document.getElementById('pad').addEventListener('click',e=>{ const b=e.target.closest('.key'); if(!b||answered) return; const k=b.dataset.k;
   if(k==='del') entry=entry.slice(0,-1);
-  else if(k==='sign') entry = entry.startsWith('-')?entry.slice(1):'-'+entry;
-  else { if(entry.replace('-','').length<4) entry+=k; }
+  else if(k==='sign') entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else { if(entry.replace('-','').length<3) entry+=k; }
   showEntry(); });
 document.getElementById('go').addEventListener('click',()=> answered?next():check());
 document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active')); b.classList.add('active'); level=b.dataset.lv; next(); }));
 document.addEventListener('keydown',e=>{ if(e.key==='Enter'){ answered?next():check(); return; } if(answered) return;
-  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<4) entry+=e.key; showEntry(); }
-  else if(e.key==='-'){ entry = entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
+  if(/^[0-9]$/.test(e.key)){ if(entry.replace('-','').length<3) entry+=e.key; showEntry(); }
+  else if(e.key==='-'){ entry=entry.startsWith('-')?entry.slice(1):'-'+entry; showEntry(); }
   else if(e.key==='Backspace'){ entry=entry.slice(0,-1); showEntry(); } });
 (function(){ const lv=new URLSearchParams(location.search).get('level');
   if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); } })();
 next();
 </script>
 <script>
-/* ===== 遊戲指令介面：hint（口訣/知識點，不洩答案）===== */
+/* ===== 遊戲指令介面：hint（口訣，不洩答案）===== */
 (function(){
   function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:10px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var eq=document.getElementById('eq');if(eq&&eq.parentNode){eq.parentNode.insertBefore(h,eq.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
   function showHint(){if(typeof answered!=='undefined'&&answered)return;var t='';try{t=buildTip();}catch(e){}if(!t)return;box().innerHTML='💡 提示：'+t;}

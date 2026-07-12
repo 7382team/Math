@@ -68,6 +68,7 @@
   .subj:not(.open) .subj-chev{transform:rotate(-90deg);}
   .subj-body{background:var(--card);border:1.5px solid var(--line);border-top:none;border-radius:0 0 16px 16px;padding:2px 16px 6px;box-shadow:0 6px 20px -16px rgba(60,50,20,.4);}
   .subj:not(.open) .subj-body{display:none;}
+  .chap{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin:12px 0 4px;padding:5px 10px;background:#faf8f1;border-radius:8px;}
   .subj-ver{display:flex;align-items:center;gap:10px;padding:12px 0 10px;border-bottom:1px dashed var(--line);margin-bottom:2px;}
   .subj-ver .vl{font-size:12px;color:var(--muted);letter-spacing:1px;}
   .subj-ver select{flex:1;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-family:inherit;font-size:14px;color:var(--ink);}
@@ -310,7 +311,7 @@ async function enterApp(){
   $("view-auth").classList.add("hidden"); $("view-main").classList.remove("hidden"); $("nav").classList.remove("hidden");
   await loadSettings(); await loadToday();
   const {data:{user}}=await sb.auth.getUser();
-  $("me-email").textContent=user?.email||""; $("me-name").value=settings.display_name||""; $("me-reward").value=settings.reward_msg||"";
+  if($("me-email")) $("me-email").textContent=user?.email||"";
   renderMe(); renderUnits(); await renderToday(); switchTab("today");
 }
 async function loadSettings(){
@@ -519,6 +520,11 @@ function termKey(u){ return (u.grade||"國一")+(u.term||"上"); }
 function termSortVal(k){ const g={"國一":1,"國二":2,"國三":3}; return (g[k.slice(0,2)]||9)*10 + (k.slice(2)==="下"?2:1); }
 function availableTerms(){ return [...new Set(UNITS.map(termKey))].sort((a,b)=>termSortVal(a)-termSortVal(b)); }
 function setTerm(t){ curTerm=t; try{ localStorage.setItem("curTerm",t); }catch(e){} renderUnits(); }
+function chNum(ch){ const m=(ch||"").match(/第(\d+)/); return m?+m[1]:99; }
+function chapterHTML(list){
+  const chs=[...new Set(list.map(u=>u.ch||"其他"))].sort((a,b)=>chNum(a)-chNum(b));
+  return chs.map(ch=>`<div class="chap">${ch}</div>`+list.filter(u=>(u.ch||"其他")===ch).map(unitRow).join("")).join("");
+}
 function renderUnits(){
   const box=$("unit-list"); if(UNITS.length===0){ box.innerHTML=`<div class="card"><div class="empty">找不到單元清單（units.json）。</div></div>`; return; }
   const terms=availableTerms();
@@ -528,7 +534,7 @@ function renderUnits(){
   const groups={}; UNITS.filter(u=>termKey(u)===curTerm).forEach(u=>{ const s=u.subject||"其他"; (groups[s]=groups[s]||[]).push(u); });
   const order=Object.keys(groups).sort((a,b)=>subjIndex(a)-subjIndex(b));
   const body = order.length ? order.map(s=>{ const m=subjMeta(s), open=!collapsedSubj[s];
-    const list=groups[s].slice().sort((a,b)=>seqIndex(a.id,s)-seqIndex(b.id,s));
+    const list=groups[s].slice();
     const total=list.length, onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length, prep=list.filter(u=>!u.ready).length;
     const meta=`共 <span class="n">${total}</span> 單元`+(onCnt?`<span class="subj-dot" style="background:${m.color}"></span>${onCnt} 個排了任務`:``)+(prep?`<span class="subj-dot" style="background:${m.color}"></span>${prep} 個準備中`:``);
     return `<div class="subj ${open?'open':''}">
@@ -537,7 +543,7 @@ function renderUnits(){
         <div class="subj-tt"><div class="nm">${s}</div><div class="mt">${meta}</div></div>
         <div class="subj-chev">▼</div>
       </div>
-      <div class="subj-body">${list.map(unitRow).join("")}</div>
+      <div class="subj-body">${chapterHTML(list)}</div>
     </div>`; }).join("") : `<div class="card"><div class="empty">這個學期還沒有單元。</div></div>`;
   box.innerHTML=termbar+body;
 }
