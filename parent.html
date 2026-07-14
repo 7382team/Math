@@ -45,6 +45,21 @@
   .subj-h .nm{flex:1;font-family:'Noto Serif TC',serif;font-weight:700;font-size:16px;letter-spacing:1px;}
   .subj-h .cnt{font-size:12px;color:var(--muted);} .subj-h .cv{font-size:12px;color:var(--muted);}
   .subj-b{padding:2px 15px 8px;border-top:1px dashed var(--line);}
+  .term-h{font-size:13px;font-weight:700;color:var(--seal);margin:14px 0 4px;letter-spacing:1px;}
+  .chap{font-size:12px;font-weight:600;color:var(--muted);margin:8px 0 4px;padding:5px 10px;background:#faf8f1;border-radius:8px;}
+  /* 大章樹（照出版社目次：大章可整章勾、展開選小節） */
+  .chapblk{border:1px solid var(--line);border-radius:12px;margin:9px 0;overflow:hidden;background:#fff;}
+  .chaprow{display:flex;align-items:center;gap:11px;padding:12px;}
+  .cbox{width:23px;height:23px;border-radius:6px;border:2px solid #cbc8bd;flex:none;cursor:pointer;background:#fff;position:relative;}
+  .cbox.all{border-color:var(--ok);background:var(--ok);}
+  .cbox.all::after{content:"✓";color:#fff;font-size:14px;font-weight:700;position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);}
+  .cbox.some{border-color:var(--orange);background:var(--orange);}
+  .cbox.some::after{content:"−";color:#fff;font-size:16px;font-weight:700;position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);}
+  .cbox.dis{opacity:.4;cursor:default;}
+  .cname{flex:1;font-weight:600;font-size:14.5px;cursor:pointer;min-width:0;}
+  .ccnt{font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+  .caret{font-size:11px;color:var(--muted);width:12px;text-align:center;}
+  .chapunits{padding:0 12px 4px;border-top:1px dashed var(--line);background:#fdfcf8;}
   .verrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);}
   .verrow .l{font-size:12px;color:var(--muted);} .verrow select{flex:1;padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-size:13px;}
   .unit{padding:11px 0;border-bottom:1px solid var(--line);} .unit:last-child{border-bottom:none;}
@@ -113,6 +128,18 @@
   <div class="sec">段考複習組 · 框好段考範圍,孩子端就能考一次綜合測驗</div>
   <div class="card" id="examCard"></div>
 
+  <div class="sec">班級排行榜 · 讓孩子和同班同學比學習進度(預設不公開)</div>
+  <div class="card">
+    <div class="field"><label>綽號(會顯示在排行榜上,請用綽號、<b style="color:var(--seal)">不要用真名</b>)</label><input id="bNick" type="text" placeholder="例如:小老虎"></div>
+    <div class="field"><label>班級碼(老師/家長給的一組碼,只有同碼的同學會互相看到)</label><input id="bCode" type="text" placeholder="例如:tiger7A"></div>
+    <div class="cfg" style="justify-content:space-between;margin-top:0">
+      <span class="l" style="font-size:13px;color:var(--ink)">加入班級排行(關閉＝完全不公開)</span>
+      <div class="toggle" id="bToggle" onclick="toggleOptIn()"><i></i></div>
+    </div>
+    <button class="primary" style="margin-top:12px" id="bSave">儲存</button>
+    <div class="save-hint" id="boardHint"></div>
+  </div>
+
   <div class="sec">帳號</div>
   <div class="card">
     <div class="field"><label>修改登入密碼</label><input id="pNewPw" type="password" autocomplete="new-password" placeholder="新密碼（至少 6 個字）"></div>
@@ -130,9 +157,10 @@ const WD=["日","一","二","三","四","五","六"];
 const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const todayStr=()=>fmt(new Date());
 
-let UNITS=[],COURSES=[],SUBJECTS=[],collapsed={};
+let UNITS=[],COURSES=[],SUBJECTS=[],collapsed={},chapExpanded={};
 let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:null,exam_groups:[]};
 let egEdit=null;
+let board={nickname:"",group_code:"",opted_in:false};
 let user=null;
 
 const unit=id=>UNITS.find(u=>u.id===id)||{title:id};
@@ -159,6 +187,7 @@ async function enter(){
   $("view-auth").classList.add("hidden"); $("view-main").classList.remove("hidden");
   $("whoLine").textContent=user.email;
   await loadSettings(); await loadOverview(); renderSubjects(); renderBasic(); renderRest(); renderExam();
+  await loadBoard(); renderBoard();
 }
 function renderBasic(){ $("pName").value=settings.display_name||""; $("pReward").value=settings.reward_msg||""; }
 $("pSaveBasic").onclick=async()=>{ settings.display_name=$("pName").value.trim(); settings.reward_msg=$("pReward").value.trim();
@@ -171,6 +200,29 @@ $("pSavePw").onclick=async()=>{ const pw=$("pNewPw").value, h=$("pwHint");
   const {error}=await sb.auth.updateUser({password:pw});
   if(error){ h.style.color="var(--seal)"; h.textContent=error.message; }
   else { $("pNewPw").value=""; h.style.color="var(--ok)"; h.textContent="密碼已更新 ✓"; setTimeout(()=>h.textContent="",1500); } };
+
+/* 班級排行榜 · 只寫自己那列的 nickname/group_code/opted_in（等級等數值由遊戲端寫，不在這動）*/
+async function loadBoard(){
+  try{ const {data,error}=await sb.from("public_profile").select("nickname,group_code,opted_in").eq("user_id",user.id).maybeSingle();
+    if(error) throw error;
+    if(data) board={nickname:data.nickname||"",group_code:data.group_code||"",opted_in:!!data.opted_in};
+  }catch(e){ /* 表還沒建：欄位留空，存檔時再提示 */ }
+}
+function renderBoard(){ $("bNick").value=board.nickname||""; $("bCode").value=board.group_code||""; $("bToggle").classList.toggle("on",!!board.opted_in); }
+window.toggleOptIn=()=>{
+  if(!board.opted_in && !confirm("開啟後,孩子的綽號與學習數值會顯示給『同一個班級碼』的同學看。確定要公開嗎?")) return;
+  board.opted_in=!board.opted_in; $("bToggle").classList.toggle("on",board.opted_in);
+};
+$("bSave").onclick=async()=>{
+  board.nickname=$("bNick").value.trim(); board.group_code=$("bCode").value.trim();
+  const h=$("boardHint");
+  if(board.opted_in && !board.group_code){ h.style.color="var(--seal)"; h.textContent="要加入排行榜,請先填班級碼"; return; }
+  if(board.opted_in && !board.nickname){ h.style.color="var(--seal)"; h.textContent="要加入排行榜,請先填綽號"; return; }
+  h.style.color="var(--muted)"; h.textContent="儲存中…";
+  const {error}=await sb.from("public_profile").upsert({user_id:user.id,nickname:board.nickname,group_code:board.group_code,opted_in:board.opted_in,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+  if(error){ h.style.color="var(--seal)"; h.textContent=/public_profile|does not exist|schema cache|relation|find the table/.test(error.message||"")?"排行榜還沒在資料庫開啟(請先跑 sql/public-profile.sql)":("存檔失敗:"+error.message); }
+  else { h.style.color="var(--ok)"; h.textContent="已儲存 ✓"; setTimeout(()=>h.textContent="",1500); }
+};
 
 /* 段考複習組 */
 function examUnitsOf(g){ return (g.unit_ids||[]).filter(id=>{ const u=UNITS.find(x=>x.id===id); return u&&u.ready; }); }
@@ -240,6 +292,55 @@ async function loadOverview(){
 }
 
 /* 開放課程控制 */
+function chNum(ch){ const m=(ch||"").match(/第(\d+)/); return m?+m[1]:99; }
+function chaptersFor(list){
+  const key=u=>(u.term==="下"?1:0)*100 + chNum(u.ch);
+  const sorted=list.slice().sort((a,b)=>key(a)-key(b));
+  let html="", lastTerm=null, lastCh=null;
+  sorted.forEach(u=>{
+    if(u.term!==lastTerm){ html+=`<div class="term-h">國一${u.term||"上"}</div>`; lastTerm=u.term; lastCh=null; }
+    if((u.ch||"")!==lastCh){ html+=`<div class="chap">${u.ch||"其他"}</div>`; lastCh=u.ch||""; }
+    html+=unitRow(u);
+  });
+  return html;
+}
+/* 大章樹：依所選版本(出版社)顯示該家 chapters；沒選版本用第一個有章節的版本；沒章節的科目回退舊分組 */
+function courseForSubject(sid){
+  const courses=coursesFor(sid), cur=(settings.course_by_subject||{})[sid]||"";
+  let c = cur ? courses.find(x=>x.id===cur) : null;
+  if(!c) c = courses.find(x=>Array.isArray(x.chapters)&&x.chapters.length);
+  return c||null;
+}
+function chaptersForSubject(sid){ const c=courseForSubject(sid); return (c&&Array.isArray(c.chapters)&&c.chapters.length)?c.chapters:null; }
+function readyIds(ch){ return (ch.units||[]).filter(id=>{const u=unit(id);return u&&u.ready;}); }
+function chapObjs(ch){ return (ch.units||[]).map(id=>unit(id)).filter(u=>u&&UNITS.some(x=>x.id===u.id)); }
+function pendRow(u){ return `<div class="unit" style="opacity:.5"><div class="unit-h"><div class="toggle" style="background:#d8d5c9;cursor:not-allowed"><i></i></div><div class="info"><div class="t">${u.title}${u.author?`（${u.author}）`:''}</div><div class="s">${u.tag||''} · 內容準備中</div></div></div></div>`; }
+function chapterTreeHTML(sid,chapters){
+  let html="",lastTerm=null;
+  chapters.forEach((ch,idx)=>{
+    const objs=chapObjs(ch); if(!objs.length) return;
+    const rids=objs.filter(u=>u.ready!==false).map(u=>u.id);
+    if(ch.term!==lastTerm){ html+=`<div class="term-h">國一${ch.term||"上"}</div>`; lastTerm=ch.term; }
+    const onCnt=rids.filter(id=>settings.selected_units.includes(id)).length, total=rids.length, pend=objs.length-total;
+    const state=total&&onCnt===total?"all":(onCnt>0?"some":"none");
+    const exp=!!chapExpanded[sid+"|"+idx];
+    html+=`<div class="chapblk"><div class="chaprow">
+      <div class="cbox ${state} ${total?'':'dis'}" ${total?`onclick="toggleChap('${sid}',${idx})"`:''}></div>
+      <div class="cname" onclick="toggleChapExpand('${sid}',${idx})">${ch.ch}</div>
+      <div class="ccnt" onclick="toggleChapExpand('${sid}',${idx})">${onCnt}/${total}${pend?` ·${pend}準備中`:''}<span class="caret">${exp?'▾':'▸'}</span></div>
+      </div>${exp?`<div class="chapunits">${objs.map(u=>u.ready!==false?unitRow(u):pendRow(u)).join("")}</div>`:""}</div>`;
+  });
+  return html;
+}
+window.toggleChapExpand=(sid,idx)=>{ const k=sid+"|"+idx; chapExpanded[k]=!chapExpanded[k]; renderSubjects(); };
+window.toggleChap=async(sid,idx)=>{
+  const chs=chaptersForSubject(sid); if(!chs||!chs[idx])return;
+  const ids=readyIds(chs[idx]); if(!ids.length)return;
+  const allOn=ids.every(id=>settings.selected_units.includes(id));
+  if(allOn){ ids.forEach(id=>{ const i=settings.selected_units.indexOf(id); if(i>=0)settings.selected_units.splice(i,1); delete settings.daily_goals[id]; }); }
+  else { ids.forEach(id=>{ if(!settings.selected_units.includes(id))settings.selected_units.push(id); if(settings.daily_goals[id]==null)settings.daily_goals[id]={target:10,mode:"attempts",level:"mix"}; }); chapExpanded[sid+"|"+idx]=true; }
+  renderSubjects(); renderExam(); await saveSettings(); await loadOverview();
+};
 function renderSubjects(){
   const subs=SUBJECTS.filter(s=>UNITS.some(u=>u.subject===s.id&&u.ready)).map(s=>s.id);
   $("subjList").innerHTML=subs.map(sid=>{ const m=subjMeta(sid),open=!collapsed[sid];
@@ -247,14 +348,15 @@ function renderSubjects(){
     const onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length;
     const courses=coursesFor(sid),cur=(settings.course_by_subject||{})[sid]||"";
     const ver=courses.length?`<div class="verrow"><span class="l">版本</span><select onchange="setVer('${sid}',this.value)"><option value="">預設</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:"";
+    const chapters=chaptersForSubject(sid);
     return `<div class="subj">
       <div class="subj-h" onclick="toggleSubj('${sid}')"><div class="ic" style="background:${m.color}1a;color:${m.color}">${m.icon}</div>
         <div class="nm">${sid}</div><div class="cnt">${onCnt}/${list.length} 開放</div></div>
-      ${open?`<div class="subj-b">${ver}${list.map(u=>unitRow(u)).join("")}</div>`:""}</div>`; }).join("");
+      ${open?`<div class="subj-b">${ver}${chapters?chapterTreeHTML(sid,chapters):chaptersFor(list)}</div>`:""}</div>`; }).join("");
 }
 function unitRow(u){ const on=settings.selected_units.includes(u.id),c=cfg(u.id);
   return `<div class="unit"><div class="unit-h"><div class="toggle ${on?'on':''}" onclick="toggleUnit('${u.id}')"><i></i></div>
-    <div class="info"><div class="t">${u.title}</div><div class="s">${u.tag||u.subject||""}</div></div></div>
+    <div class="info"><div class="t">${u.title}${u.author?`（${u.author}）`:''}</div><div class="s">${u.tag||u.subject||""}</div></div></div>
     ${on?`<div class="cfg"><span class="l">每日題數</span><input class="goal" type="number" min="1" value="${c.target}" onchange="setGoal('${u.id}',this.value)">
       <div class="seg"><button class="${c.level==='basic'?'on':''}" onclick="setLevel('${u.id}','basic')">基礎</button><button class="${c.level==='adv'?'on':''}" onclick="setLevel('${u.id}','adv')">進階</button><button class="${c.level==='mix'?'on':''}" onclick="setLevel('${u.id}','mix')">混合</button></div></div>`:""}</div>`;
 }
@@ -266,7 +368,7 @@ window.toggleUnit=async uid=>{ const i=settings.selected_units.indexOf(uid);
 function writeCfg(uid,p){settings.daily_goals[uid]={...cfg(uid),...p};}
 window.setGoal=async(uid,v)=>{writeCfg(uid,{target:Math.max(1,parseInt(v)||1)});await saveSettings();await loadOverview();};
 window.setLevel=async(uid,l)=>{writeCfg(uid,{level:l});renderSubjects();await saveSettings();};
-window.setVer=async(s,c)=>{settings.course_by_subject=settings.course_by_subject||{};if(c)settings.course_by_subject[s]=c;else delete settings.course_by_subject[s];await saveSettings();};
+window.setVer=async(s,c)=>{settings.course_by_subject=settings.course_by_subject||{};if(c)settings.course_by_subject[s]=c;else delete settings.course_by_subject[s];chapExpanded={};renderSubjects();await saveSettings();};
 
 boot();
 </script>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>夏夜 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-xiaye",
+  "title": "夏夜",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "楊喚"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>夏夜</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識","q":"〈夏夜〉的作者楊喚，在台灣文學史上最主要的地位是下列何者？","choices":["台灣兒童詩（童詩）的先驅之一","台灣鄉土小說的代表作家","現代散文的開創者","古典詞曲的集大成者"],"answer":0,"explain":"楊喚以純真的詩心創作童詩與童話，被譽為台灣兒童文學（兒童詩）的先驅。他的兒童詩雖僅二十首，卻篇篇膾炙人口，〈夏夜〉即為代表作。"},{"level":"basic","topic":"文學常識","q":"關於作者楊喚的生平，下列敘述何者正確？","choices":["本名楊森，隨軍來台，後因闖越平交道遭火車輾斃、英年早逝","本名徐志摩，晚年在中國安享天年","為清代著名的填詞名家","是日治時期出生、活到八十歲的本土小說家"],"answer":0,"explain":"楊喚（西元一九三○～一九五四），本名楊森，遼寧省興城縣人，一九四九年隨軍來台。一九五四年在台北西門町附近闖越鐵路平交道時，不慎遭火車輾斃，英年早逝，作品雖少卻影響深遠。"},{"level":"basic","topic":"文體常識","q":"〈夏夜〉一課的文體屬於下列何者？","choices":["白話文的現代詩（新詩、童詩）","文言文的近體律詩","駢四儷六的駢文","語錄體的說理散文"],"answer":0,"explain":"〈夏夜〉是以白話文寫成的現代詩（新詩），且是為兒童而作的童詩，形式自由、不受格律限制，沒有固定的字數與押韻規定。"},{"level":"basic","topic":"主旨大意","q":"〈夏夜〉全詩的主旨，最接近下列何者？","choices":["描寫鄉村夏夜的寧靜、溫馨與自然界的勃勃生機","抒發思念故鄉、盼望還鄉而不得的悲愁","感嘆年華老去、人生無常的沉重","控訴戰爭使家園殘破的憤慨"],"answer":0,"explain":"本詩以兒童純真的眼光觀察鄉村的夏夜，寫出夜晚的寧靜與溫馨，並在萬物入睡後點出仍充滿活力的景物，展現大自然的勃勃生機。"},{"level":"basic","topic":"字詞讀音","q":"「朦朧地，山巒靜靜地睡了」中「山巒」的「巒」，讀音為下列何者？","choices":["ㄌㄨㄢˊ","ㄌㄨㄢˋ","ㄌㄩˋ","ㄨㄢ"],"answer":0,"explain":"「巒」讀作ㄌㄨㄢˊ，指連綿起伏的山峰。「山巒」即連綿的群山。"},{"level":"basic","topic":"字詞義","q":"「從椰子樹梢上輕輕地爬下來了」中「梢」字的意思是？","choices":["樹枝的末端","樹木的根部","樹幹的中段","樹木的果實"],"answer":0,"explain":"「梢」讀ㄕㄠ，指樹枝的末端。「椰子樹梢」即椰子樹最高、最頂端的枝葉處，寫夜色由高處慢慢降下。"},{"level":"basic","topic":"字詞義","q":"「朦朧」一詞在文中的意思是？","choices":["模糊不清、看不分明的樣子","光線刺眼、明亮耀眼的樣子","吵雜喧鬧、聲響不斷的樣子","乾燥炎熱、暑氣逼人的樣子"],"answer":0,"explain":"「朦朧」讀ㄇㄥˊ ㄌㄨㄥˊ，形容模糊、不清楚的樣子。此處寫夜色深了，山巒、田野在夜幕中變得朦朧而安靜。"},{"level":"basic","topic":"字詞義","q":"「小雞和小鴨們關在欄裡睡了」中「欄」的意思，最接近下列何者？","choices":["圈養家禽、家畜的柵欄或欄圈","可供書寫的欄位、格子","阻擋去路的關卡","河邊的欄杆扶手"],"answer":0,"explain":"此處「欄」指圈養雞、鴨等家禽的柵欄（欄圈）。詩句寫小雞小鴨被關進欄裡安睡，呈現農村入夜後的安寧。"},{"level":"basic","topic":"名句賞析","q":"「撒了滿天的珍珠和一枚又大又亮的銀幣」中，「珍珠」與「銀幣」分別用來比喻什麼？","choices":["珍珠喻星星，銀幣喻月亮","珍珠喻月亮，銀幣喻星星","珍珠喻露水，銀幣喻太陽","珍珠喻螢火蟲，銀幣喻街燈"],"answer":0,"explain":"這是本詩名句，以「滿天的珍珠」比喻繁星、以「又大又亮的銀幣」比喻明月，藉譬喻寫出夏夜星月交輝、富麗動人的景象。"},{"level":"basic","topic":"內容理解","q":"詩的開頭，夏夜還沒真正來臨前，先描寫了哪些景象？","choices":["蝴蝶蜜蜂帶蜜回來、羊群牛群回家、太陽下山、街燈亮起","農夫收割稻穀、孩子放學回家、下起大雨","漁船出海捕魚、商店打烊、路人趕路","雪花飄落、爐火升起、大家圍爐"],"answer":0,"explain":"詩人先寫蝴蝶蜜蜂帶著花蜜回來、羊隊牛群告別田野回家、火紅的太陽也回家、街燈亮起向村莊道晚安，層層鋪陳，帶出「夏天的夜就輕輕地來了」。"},{"level":"basic","topic":"寫作視角","q":"整首〈夏夜〉主要是透過什麼角度來觀察與描寫夏夜？","choices":["兒童純真的眼光與豐富的想像","史官客觀記事的角度","隱士看破紅塵的角度","旅人漂泊思鄉的角度"],"answer":0,"explain":"楊喚以童詩聞名，本詩正是透過兒童天真的眼睛與耳朵去感受夏夜，並以豐富想像賦予萬物生命，因此全篇洋溢活潑可愛的童趣。"},{"level":"basic","topic":"內容理解","q":"詩中寫小弟弟、小妹妹「闔上眼睛走向夢鄉」後，夢見了什麼？","choices":["小妹妹夢見變成蝴蝶在花園裡飛，小弟弟夢見變成魚在大海裡游","兩人都夢見考試得了滿分","兩人都夢見在雪地裡堆雪人","小妹妹夢見變成小鳥，小弟弟夢見變成老虎"],"answer":0,"explain":"詩中寫小妹妹夢見自己變做蝴蝶在大花園裡忽東忽西地飛，小弟弟夢見自己變做一條魚在藍色的大海裡游水，以童趣的夢境呼應全詩天真爛漫的基調。"},{"level":"adv","topic":"修辭辨析","q":"「夏天的夜就輕輕地……從山坡上輕輕地爬下來了」主要運用了什麼修辭？","choices":["轉化（擬人）","設問","誇飾","對偶"],"answer":0,"explain":"把「夜」寫成會「輕輕地爬下來」，賦予無生命的夜以人的動作，是轉化中的擬人（把物擬作人），也是本詩最核心的修辭手法。"},{"level":"adv","topic":"修辭辨析","q":"「當街燈亮起來向村莊道過晚安」一句，運用的修辭與其效果，何者說明正確？","choices":["擬人；把街燈當作人，親切地向村莊道晚安，寫出夜晚的溫馨","誇飾；刻意誇大街燈的亮度","設問；提出問題引人深思","對偶；上下兩句字數詞性相對"],"answer":0,"explain":"街燈本無情，卻能「向村莊道過晚安」，是把物擬作人的擬人法，營造出夜幕低垂時安詳、溫馨的氛圍。"},{"level":"adv","topic":"修辭辨析","q":"「撒了滿天的珍珠和一枚又大又亮的銀幣」所運用的主要修辭是？","choices":["譬喻","類疊","設問","排比"],"answer":0,"explain":"此句以珍珠喻星、以銀幣喻月，句中沒有出現「星星」「月亮」等本體，也沒有「像」「如」等喻詞，直接用喻體代替本體，屬於譬喻中的「借喻」。"},{"level":"adv","topic":"修辭辨析","q":"「來了！來了！」與「睡了，都睡了！」這類反覆出現的句子，主要運用什麼修辭？","choices":["類疊","譬喻","轉化","映襯"],"answer":0,"explain":"同樣的字詞、句子接連或間隔地重複出現，是「類疊」修辭。反覆詠嘆能加強語氣、營造節奏感，讓夏夜降臨與萬物安睡的過程更為生動。"},{"level":"adv","topic":"修辭辨析","q":"「火紅的太陽也滾著火輪子回家了」一句，包含了哪些修辭？","choices":["譬喻與轉化（擬人）","設問與反問","排比與對偶","雙關與押韻"],"answer":0,"explain":"以「火輪子」比喻圓而火紅的太陽，是譬喻；又說太陽「回家」，把太陽擬作人，是轉化（擬人）。一句之中兼用兩種修辭，畫面鮮活。"},{"level":"adv","topic":"修辭辨析","q":"下列詩句，何者「不是」以轉化（擬人）為主要修辭？","choices":["撒了滿天的珍珠和一枚又大又亮的銀幣","只有窗外瓜架上的南瓜還醒著，伸長了藤蔓往屋頂上爬","只有綠色的小河還醒著，低聲地唱歌著溜過彎彎的小橋","當街燈亮起來向村莊道過晚安"],"answer":0,"explain":"「珍珠」「銀幣」是以喻體代本體，屬於譬喻（借喻）。其餘各句分別讓南瓜「醒著、爬」、小河「醒著、唱歌」、街燈「道晚安」，都是把物擬作人的擬人法。"},{"level":"adv","topic":"文意理解","q":"全詩在萬物「都睡了」之後，仍寫南瓜、小河、夜風「還醒著」，這樣安排的用意是？","choices":["在靜謐中點出夏夜仍充滿活力，以動襯靜、動靜交織","說明鄉下人半夜都不睡覺","批評南瓜、小河吵得別人無法入睡","暗示天快要亮了，夜就要結束"],"answer":0,"explain":"前段寫小雞小鴨、山巒、田野都靜靜睡了，末段卻寫南瓜、小河、夜風「還醒著」，一靜一動相互映襯，讓夏夜在寧靜中仍洋溢蓬勃的生機。"},{"level":"adv","topic":"文意理解","q":"「小妹妹夢見她變做蝴蝶……小弟弟夢見他變做一條魚」這兩句，最能表現的是？","choices":["兒童天真爛漫的想像與甜美的夢境","農村生活的艱苦與辛勞","對自然生態的科學觀察","對未來前途的焦慮不安"],"answer":0,"explain":"孩子在夢中化為蝴蝶飛舞、化為魚兒游水，充滿童趣與自由的想像，正呼應本詩以兒童視角寫成、天真可愛的風格。"},{"level":"adv","topic":"摹寫辨析","q":"「火紅的太陽」「綠色的小河」「滿天的珍珠」等描寫，主要訴諸讀者的哪一種感官？","choices":["視覺","聽覺","嗅覺","味覺"],"answer":0,"explain":"這些句子藉由顏色與光亮（火紅、綠色、珍珠般的星光）呈現畫面，屬於視覺摹寫，使夏夜的景象在讀者眼前鮮明浮現。"},{"level":"adv","topic":"修辭辨析","q":"「跟著提燈的螢火蟲，在美麗的夏夜裡愉快地旅行」中，「提燈」與「旅行」所用的修辭是？","choices":["轉化（擬人）","誇飾","設問","對偶"],"answer":0,"explain":"螢火蟲會「提燈」、夜風能「愉快地旅行」，都是把物擬作人的擬人法，讓夏夜的尾聲顯得靈動而富有情味。"},{"level":"adv","topic":"文意理解","q":"就全詩的鋪排來看，下列說明何者最恰當？","choices":["先寫黃昏各物『回家』與夜的降臨，再寫萬物『睡了』，最後寫仍『醒著』的景物，動靜交織","從頭到尾只寫景物入睡，毫無變化","全詩都在描寫白天的農忙景象","主要在講述一段完整的故事情節"],"answer":0,"explain":"全詩先以蝴蝶、羊牛、太陽『回家』引出夜的來臨，接著寫小雞小鴨、山巒田野『睡了』，末段再以南瓜、小河、夜風『還醒著』收束，動靜之間層次分明，充分展現夏夜的靜謐與生機。"},{"level":"adv","topic":"文意理解","q":"詩中一再使用「輕輕地」（夜輕輕地來、輕輕地爬下來、南瓜輕輕地往屋頂上爬），主要營造出什麼效果？","choices":["寫出夜的降臨與萬物活動的輕柔、緩慢與寧靜","強調動作粗魯、聲勢浩大","表現天氣悶熱、令人煩躁","凸顯時間緊迫、爭分奪秒"],"answer":0,"explain":"反覆出現的疊字「輕輕地」帶出柔和舒緩的節奏，使夜的降臨與景物的活動都顯得輕盈寧靜，強化了全詩溫馨、恬適的氛圍。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

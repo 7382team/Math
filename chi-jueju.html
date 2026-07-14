@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>絕句選 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-jueju",
+  "title": "絕句選",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>絕句選</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識·詩體","q":"課文「絕句選」所選的三首詩，就詩體而言都屬於下列何者？","choices":["古體詩","近體詩中的絕句","漢代樂府詩","宋詞"],"answer":1,"explain":"絕句是唐代成熟的「近體詩」（今體詩）之一，每首四句。本課〈登鸛雀樓〉、〈黃鶴樓送孟浩然之廣陵〉、〈楓橋夜泊〉皆為唐人絕句。古體詩格律自由、樂府多為漢魏歌詩、詞盛於宋，皆與絕句不同。"},{"level":"basic","topic":"作者","q":"〈登鸛雀樓〉的作者是下列何人？","choices":["李白","王之渙","張繼","孟浩然"],"answer":1,"explain":"〈登鸛雀樓〉為盛唐詩人王之渙（字季凌）所作。李白作〈黃鶴樓送孟浩然之廣陵〉，張繼作〈楓橋夜泊〉，孟浩然則是李白詩中送別的友人。"},{"level":"basic","topic":"作者·文學常識","q":"李白自號「青蓮居士」，後世又尊稱他為下列何者？","choices":["詩聖","詩仙","詩佛","詩鬼"],"answer":1,"explain":"李白字太白，號青蓮居士，詩風飄逸豪放，後世尊稱為「詩仙」。詩聖指杜甫、詩佛指王維、詩鬼指李賀。"},{"level":"basic","topic":"作者","q":"〈楓橋夜泊〉一詩使蘇州「寒山寺」聞名千古，其作者是下列何人？","choices":["王之渙","杜甫","張繼","王維"],"answer":2,"explain":"〈楓橋夜泊〉為中唐詩人張繼（字懿孫）所作，因這首詩，楓橋與寒山寺聲名遠播。"},{"level":"basic","topic":"詩體常識·字數","q":"一首「五言絕句」全篇共有多少字？","choices":["二十字","二十八字","四十字","五十六字"],"answer":0,"explain":"絕句共四句；五言絕句每句五字，四句合計二十字。七言絕句四句二十八字；五言律詩四十字、七言律詩五十六字。"},{"level":"basic","topic":"詩體常識·辨體","q":"〈黃鶴樓送孟浩然之廣陵〉與〈楓橋夜泊〉都是每句七字、每首四句，屬於下列哪一種詩體？","choices":["五言絕句","七言絕句","五言律詩","七言律詩"],"answer":1,"explain":"兩首皆每句七字、每首四句，為「七言絕句」。〈登鸛雀樓〉則為五言絕句；律詩則有八句。"},{"level":"basic","topic":"字詞義","q":"「欲窮千里目」的「窮」意思是下列何者？","choices":["貧困","窮盡、看盡","追究責任","走投無路"],"answer":1,"explain":"「窮」在此為「窮盡、看盡」之意，「欲窮千里目」即想看盡千里之外的景色，並非貧窮。"},{"level":"basic","topic":"字詞義","q":"「故人西辭黃鶴樓」的「故人」指的是下列何者？","choices":["過世的人","老朋友","偶然相遇的旅客","家鄉的親人"],"answer":1,"explain":"「故人」指老朋友，此處即李白要送別的孟浩然，並非亡者。"},{"level":"basic","topic":"字詞義·地理常識","q":"「姑蘇城外寒山寺」的「姑蘇」是哪座城市的別稱？","choices":["揚州","蘇州","杭州","洛陽"],"answer":1,"explain":"姑蘇是蘇州的別稱，因城西南有姑蘇山、姑蘇臺而得名；寒山寺即位於蘇州城外。"},{"level":"basic","topic":"主旨","q":"〈登鸛雀樓〉全詩主要表達的旨趣是下列何者？","choices":["思念故鄉的愁緒","登高望遠、積極進取的胸襟","送別友人的依依不捨","感嘆人生的短暫無常"],"answer":1,"explain":"〈登鸛雀樓〉藉登樓所見蒼山落日、大河奔流的壯闊景象，帶出「站得高才能看得遠」、積極進取向上的精神，並非鄉愁或送別主題。"},{"level":"basic","topic":"主旨","q":"〈楓橋夜泊〉全詩流露的主要情感是下列何者？","choices":["及第登科的喜悅","羈旅孤寂的思鄉之愁","隱居山林的閒適自得","報國殺敵的豪情壯志"],"answer":1,"explain":"詩人夜泊楓橋，藉月落、烏啼、霜天、漁火、鐘聲等景，寫出旅途中孤寂憂愁、思念家鄉的心情。"},{"level":"basic","topic":"主旨","q":"〈黃鶴樓送孟浩然之廣陵〉一詩的主題是下列何者？","choices":["邊塞征戰","送別友人","詠史懷古","田園歸隱"],"answer":1,"explain":"此詩寫李白在黃鶴樓送孟浩然乘船東下揚州，抒發對友人依依不捨的送別之情。"},{"level":"adv","topic":"修辭辨析","q":"「白日依山盡，黃河入海流」兩句主要運用了何種修辭？","choices":["設問","對偶","譬喻","頂真"],"answer":1,"explain":"這兩句字數相等、詞性相對（白日對黃河、依山對入海、盡對流），平仄相對，是工整的「對偶」（對仗）。"},{"level":"adv","topic":"文言字義","q":"「白日依山盡」的「依」意思最接近下列何者？","choices":["依照","依傍、緊靠","依然、仍舊","依賴他人"],"answer":1,"explain":"「依」在此指落日依傍、緊靠著山，「白日依山盡」寫夕陽沿著山邊沉落，一個「依」字寫出落日依依難捨的姿態。"},{"level":"adv","topic":"文言字義","q":"「更上一層樓」的「更」意思是下列何者？","choices":["更加深刻","更改、變動","再、又","更換位置"],"answer":2,"explain":"「更」此處作副詞，是「再、又」之意，「更上一層樓」即再往上登一層樓，才能望得更遠。"},{"level":"adv","topic":"文言字義·文意","q":"「煙花三月下揚州」的「煙花」形容的是下列何者？","choices":["夜空施放的煙火","繁花似錦、如煙似霧的春景","江面瀰漫的水氣","女子豔麗的妝容"],"answer":1,"explain":"「煙花」形容暮春三月繁花盛開、柳絮如煙、花霧迷濛的明媚春光，寫出江南春日的繁華，並非煙火。"},{"level":"adv","topic":"修辭·表現手法","q":"「孤帆遠影碧空盡，唯見長江天際流」主要運用的表現手法是下列何者？","choices":["直接議論說理","借景抒情（以景寫情）","設問自答","層層排比"],"answer":1,"explain":"詩人目送孤帆消失於碧空盡頭，只見長江水滔滔流向天際，藉眼前江景寄託對友人的無限依戀，是「借景抒情、以景結情」，情景交融。"},{"level":"adv","topic":"文言字義","q":"「唯見長江天際流」的「唯」意思是下列何者？","choices":["只、僅","雖然","答應","思考"],"answer":0,"explain":"「唯」在此為「只、僅」之意，「唯見長江天際流」即船帆遠去後只看見長江向天邊流去，愈顯詩人佇望不捨之情。"},{"level":"adv","topic":"文意理解","q":"「江楓漁火對愁眠」的「愁」，主要指的是下列何種愁緒？","choices":["科場落榜的失意","羈旅思鄉的客愁","生離死別的哀痛","憂國憂民的悲憤"],"answer":1,"explain":"詩人客居舟中，面對江楓、漁火難以成眠，這份「愁」是旅途孤寂、思念家鄉的客愁。"},{"level":"adv","topic":"修辭辨析","q":"〈楓橋夜泊〉「月落烏啼霜滿天」一句兼寫所見與所聞，這種摹繪聲色景象的手法稱為？","choices":["摹寫","借代","轉化","映襯"],"answer":0,"explain":"詩句同時描寫視覺（月落、霜滿天）與聽覺（烏啼）等具體感官印象，把景物如實呈現於讀者眼前耳邊，屬於「摹寫」修辭。"},{"level":"adv","topic":"修辭·文意","q":"「夜半鐘聲到客船」以悠遠的鐘聲來突顯夜的靜謐，這種手法屬於下列何者？","choices":["以動（聲）襯靜","開門見山","前後呼應","誇飾渲染"],"answer":0,"explain":"萬籟俱寂的夜半，一聲聲鐘聲反而更襯托出四周的寂靜與詩人的孤清，是「以動襯靜、以聲襯靜」的映襯手法。"},{"level":"adv","topic":"文言字義·文意","q":"「故人西辭黃鶴樓」的「西辭」意思是下列何者？","choices":["向西方遠去","從西邊的黃鶴樓辭別（往東而去）","辭去西邊的官職","向西方的親友告別"],"answer":1,"explain":"黃鶴樓在西、揚州在東，孟浩然自西邊的黃鶴樓辭別，順江東下前往揚州，故說「西辭」，是往東行而非往西去。"},{"level":"adv","topic":"詩體常識·押韻","q":"關於絕句（近體詩）的押韻規則，下列敘述何者正確？","choices":["每一句句尾都要押韻","偶數句須押韻且一韻到底","只有第一、三句押韻","可依需要隨意換韻"],"answer":1,"explain":"近體詩的絕句於偶數句（第二、四句）押韻，一韻到底、不可換韻；首句可押可不押，其餘單數句則不押韻。"},{"level":"adv","topic":"文意理解·哲理","q":"「欲窮千里目，更上一層樓」除了寫登樓所見，還蘊含什麼道理？","choices":["遊山玩水應盡情享樂","想成就更高遠的目標，就須不斷努力提升","登高有危險，凡事應謹慎","知足常樂，不必強求"],"answer":1,"explain":"這兩句由「登得更高、看得更遠」引申出人生哲理：想要有更開闊的眼界與更高的成就，就必須不斷努力、力求上進，因而成為千古傳誦的名句。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>論語選 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-lunyu",
+  "title": "論語選",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>論語選</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[
+{"level":"basic","topic":"論語常識","q":"《論語》這部書主要記錄誰的言行？","choices":["孔子和他弟子的言行","老子的思想","屈原的詩歌","司馬遷記的史事"],"answer":0,"explain":"《論語》是記錄孔子及其弟子言行的語錄體散文。"},
+{"level":"basic","topic":"國學-四書","q":"下列哪一部與《論語》同屬「四書」？","choices":["《孟子》","《詩經》","《史記》","《莊子》"],"answer":0,"explain":"四書指《論語》《孟子》《大學》《中庸》。"},
+{"level":"basic","topic":"字詞義-說","q":"「學而時習之，不亦『說』乎」的「說」意思是？","choices":["喜悅（同「悅」）","說話","勸說","解釋"],"answer":0,"explain":"「說」通「悅」，喜悅之意。"},
+{"level":"basic","topic":"字詞義-慍","q":"「人不知而不『慍』」的「慍」意思是？","choices":["怨恨、生氣","高興","疲倦","懷疑"],"answer":0,"explain":"慍，含怒、怨恨；別人不了解自己也不生氣，才是君子。"},
+{"level":"basic","topic":"文意-三人行","q":"「三人行，必有我師焉」告訴我們的道理是？","choices":["要虛心向他人學習","三個人才算一組","老師只能有一位","走路要結伴"],"answer":0,"explain":"同行的人都有值得學習之處，勉人虛心求教。"},
+{"level":"basic","topic":"文意-擇善","q":"「擇其善者而從之，其不善者而改之」的意思是？","choices":["學別人的優點，並改正自己相同的缺點","只跟好人來往","選好走的路","挑好聽的話說"],"answer":0,"explain":"見善則學習，見不善則反省改正。"},
+{"level":"basic","topic":"字詞義-故","q":"「溫故而知新」的「故」指的是？","choices":["舊的、學過的知識","故事","緣故","老朋友"],"answer":0,"explain":"溫習舊知識而能領悟新道理。"},
+{"level":"basic","topic":"論語常識-學派","q":"孔子是哪一個學派的創始人？","choices":["儒家","道家","墨家","法家"],"answer":0,"explain":"孔子是儒家學派的創始人。"},
+{"level":"basic","topic":"文意-有朋","q":"「有朋自遠方來，不亦樂乎」的「朋」在文中指？","choices":["志同道合的朋友","家人","商人","鄰居"],"answer":0,"explain":"「朋」指志同道合者。"},
+{"level":"basic","topic":"論語常識-尊稱","q":"後世尊稱孔子為？","choices":["至聖先師","亞聖","詩聖","醫聖"],"answer":0,"explain":"孔子稱「至聖先師」；亞聖是孟子。"},
+{"level":"basic","topic":"字詞義-罔","q":"「學而不思則『罔』」的「罔」意思較接近？","choices":["迷惘、無所得","富有","快樂","生病"],"answer":0,"explain":"只學不思，便迷惘而無所收穫。"},
+{"level":"basic","topic":"文意-溫故","q":"「溫故而知新，可以為師矣」勉勵我們？","choices":["常溫習舊學並體會新知","只要記得舊的就好","當老師很容易","不必再學新東西"],"answer":0,"explain":"能溫習舊知並領悟新義，才足以為人師。"},
+{"level":"basic","topic":"論語常識-編者","q":"《論語》一書主要是由誰記錄編纂而成？","choices":["孔子的弟子及再傳弟子","孔子親自撰寫","漢代司馬遷","秦始皇"],"answer":0,"explain":"由孔子弟子與再傳弟子記錄言行、編纂成書。"},
+{"level":"adv","topic":"文意-學思並重","q":"「學而不思則罔，思而不學則殆」這句話強調？","choices":["學習與思考要並重","讀書比思考重要","思考比讀書重要","讀書沒有用"],"answer":0,"explain":"學與思相輔相成，偏廢一方都不行。"},
+{"level":"adv","topic":"字詞義-殆","q":"「思而不學則『殆』」的「殆」意思是？","choices":["疑惑不安","快樂","勤勞","富足"],"answer":0,"explain":"殆，疑惑（一說精神疲怠）；只空想不學習，就疑惑而無所得。"},
+{"level":"adv","topic":"字詞義-知(智)","q":"「知之為知之，不知為不知，是『知』也」最後一個「知」通？","choices":["智（智慧）","主持","記住","知道"],"answer":0,"explain":"末「知」通「智」，指誠實面對所知所不知，才是明智。"},
+{"level":"adv","topic":"字詞義-簣","q":"「譬如為山，未成一『簣』」的「簣」是指？","choices":["盛土的竹器（一筐土）","一座小山","工具箱","一擔水"],"answer":0,"explain":"簣，盛土的竹筐；堆山只差最後一筐土。"},
+{"level":"adv","topic":"文意-為山","q":"「譬如為山，未成一簣，止，吾止也」主要說明？","choices":["做事貴在持之以恆，半途而廢是自己放棄","堆山很困難","要多找人幫忙","做事要求快"],"answer":0,"explain":"成敗在於自己是否堅持，勉人有恆。"},
+{"level":"adv","topic":"成語-功虧一簣","q":"成語「功虧一簣」即出自此章，意思是？","choices":["只差最後一點卻失敗","一次就成功","毫無成果","積少成多"],"answer":0,"explain":"事情只差最後一步卻功敗垂成。"},
+{"level":"adv","topic":"字詞義-齊","q":"「見賢思齊焉」的「齊」意思是？","choices":["看齊、向他看齊","整齊","一起","快速"],"answer":0,"explain":"見到賢者就想向他看齊、努力達到相同水準。"},
+{"level":"adv","topic":"思想-恕","q":"「己所不欲，勿施於人」體現孔子哪一種思想？","choices":["恕（推己及人）","勇","儉","禮"],"answer":0,"explain":"自己不願承受的，不要加給別人，即「恕」道。"},
+{"level":"adv","topic":"文意-歲寒松柏","q":"「歲寒，然後知松柏之後凋也」用松柏來比喻？","choices":["君子在困境中仍堅守節操","冬天草木都枯萎","松柏長得很慢","要及時行樂"],"answer":0,"explain":"天寒才見松柏最後凋零，喻君子處逆境更見志節。"},
+{"level":"adv","topic":"論語常識-字","q":"孔子名丘，字？","choices":["仲尼","子淵","子輿","子路"],"answer":0,"explain":"孔子名丘，字仲尼，春秋魯國人。"},
+{"level":"adv","topic":"國學-體裁","q":"《論語》全書的文章體裁屬於？","choices":["語錄體","編年體","紀傳體","章回體"],"answer":0,"explain":"以簡短對話、格言記言行，屬語錄體散文。"},
+{"level":"adv","topic":"文意-君子","q":"「人不知而不慍，不亦君子乎」說明君子重視？","choices":["內在修養，不因不被了解而動怒","追求名聲","結交權貴","能言善道"],"answer":0,"explain":"不被了解仍不慍，正是有修養的君子。"},
+{"level":"adv","topic":"字詞義-焉","q":"「三人行，必有我師焉」的「焉」相當於？","choices":["於此（在其中）","怎麼","嗎","於是"],"answer":0,"explain":"焉＝於此，指「在這些人之中」。"}
+];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

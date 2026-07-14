@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>資料檢索與閱讀策略 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-ziliao-nani",
+  "title": "資料檢索與閱讀策略",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "國學常識",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>資料檢索與閱讀策略</h1><div class="sub">國文 · 國學常識 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"閱讀策略－略讀","q":"下列關於「略讀」這種閱讀策略的說明，何者正確？","choices":["逐字逐句仔細研讀，力求完全理解","快速瀏覽全文，掌握大致內容與主旨","只為尋找特定資料而快速搜尋","反覆背誦全文以便默寫"],"answer":1,"explain":"略讀（skimming）是快速瀏覽標題、首尾段與關鍵句，以掌握文章大意與主旨，不需逐字細讀。逐字研讀是「精讀」；為找特定資料而快速搜尋是「掃讀」。"},{"level":"basic","topic":"閱讀策略－精讀","q":"想深入理解一篇課文的內容、修辭與作者情感，最適合採用的閱讀策略是？","choices":["略讀","掃讀","精讀","預測"],"answer":2,"explain":"精讀是逐字逐句、反覆細讀，深入分析文章的內容、結構、修辭與情感，適合用於重要或需深究的文本。"},{"level":"basic","topic":"閱讀策略－掃讀","q":"在一篇長文中，想快速找出「某個年代」或「某個人名」，最有效率的閱讀方式是？","choices":["精讀","掃讀（尋讀）","朗讀","默讀全文"],"answer":1,"explain":"掃讀（又稱尋讀，scanning）是為了尋找特定資訊，視線快速掃過文字，一旦找到目標即停留，其餘略過，效率最高。"},{"level":"basic","topic":"閱讀策略－摘要","q":"下列關於「摘要」的敘述，何者最恰當？","choices":["把文章一字不漏地抄寫下來","加入大量個人感想與評論","用簡明的文字寫出文章的重點與大意","只抄錄文章的第一句話"],"answer":2,"explain":"摘要是擷取文章重點、刪去次要細節，用精簡的話重新表達大意，須忠於原文，不宜加入過多個人意見。"},{"level":"basic","topic":"閱讀策略－預測","q":"閱讀前先看「標題」和「插圖」，猜想文章可能寫些什麼，這種閱讀策略稱為？","choices":["摘要","預測","做筆記","校對"],"answer":1,"explain":"預測是在閱讀前或閱讀中，根據標題、圖片、已知線索推想後續內容，能提高專注力與理解力，讀後再驗證是否符合。"},{"level":"basic","topic":"閱讀策略－做筆記","q":"關於「做筆記」在閱讀中的功用，下列何者「不正確」？","choices":["幫助整理與記憶重點","便於日後複習查找","能將思路與架構視覺化","抄得越多越好，最好全文照抄"],"answer":3,"explain":"做筆記重在擷取重點、標記關鍵、整理架構，而非全文照抄；照抄反而失去筆記整理與思考的意義。"},{"level":"basic","topic":"資料檢索－關鍵字","q":"使用網路搜尋引擎查資料時，「關鍵字」指的是？","choices":["文章中最長的句子","能代表查詢主題核心的重要字詞","隨意輸入的任何文字","網頁最下方的版權說明"],"answer":1,"explain":"關鍵字是最能代表所要查詢主題的核心字詞，選對關鍵字能更快、更準地找到相關資料。"},{"level":"basic","topic":"資料檢索－來源可信度","q":"上網查找報告資料時，下列哪一種來源通常「可信度較高」？","choices":["匿名網友在論壇的隨手留言","政府機關或學術機構的官方網站","來源不明的轉貼貼文","廣告置入的宣傳頁面"],"answer":1,"explain":"判斷資料可信度要看來源。政府機關、學術機構、正式出版品具查證與責任歸屬，較為可信；匿名留言、來源不明的轉貼則需存疑查證。"},{"level":"basic","topic":"工具書－目錄","q":"想快速得知一本書「各章節的名稱與所在頁碼」，應該查閱書中的？","choices":["目錄","版權頁","序言","附錄"],"answer":0,"explain":"目錄依全書順序列出各章節標題與頁碼，可迅速掌握全書架構並找到所需章節的位置。"},{"level":"basic","topic":"工具書－索引","q":"書末依「注音或筆畫」排列，列出重要名詞及其出現頁碼，方便查找的部分稱為？","choices":["目錄","索引","前言","註釋"],"answer":1,"explain":"索引通常置於書末，將書中重要的字詞、人名、主題依一定順序（如筆畫、注音）排列並標出頁碼，便於精確查找特定資料。"},{"level":"basic","topic":"工具書－查字典","q":"遇到一個「不會念、也不知道意思」的生字，最適合用哪一種方法查字典？","choices":["注音查字法","部首查字法","直接問同學","略過不查"],"answer":1,"explain":"不知道讀音時無法用注音查字法，可先判斷部首、數算筆畫，用「部首檢字法」查得該字，再得知其讀音與字義。"},{"level":"basic","topic":"閱讀策略－摘要要領","q":"為一段文字寫摘要時，下列做法何者最恰當？","choices":["保留舉例的每一個細節","找出段落的主題句，刪去重複與次要內容","把所有形容詞都留下","依自己的想像另外編寫內容"],"answer":1,"explain":"摘要應抓住主題句與關鍵訊息，刪去重複、舉例等次要細節，且須忠於原文，不可憑空杜撰。"},{"level":"adv","topic":"閱讀策略－情境應用","q":"小明到圖書館，想在半小時內判斷十本書中哪幾本和「臺灣候鳥」有關，最適合先採用的方式是？","choices":["每本都從頭到尾精讀","快速略讀書名、目錄與封底簡介","把每本書都做詳細筆記","逐字抄寫每本書的第一章"],"answer":1,"explain":"時間有限而要判斷書籍是否相關，應先「略讀」書名、目錄、封底簡介快速篩選；確定相關後再對選定的書精讀，才有效率。"},{"level":"adv","topic":"閱讀策略－概念辨析","q":"「略讀」與「掃讀」最主要的差別在於？","choices":["略讀求快、掃讀求慢","略讀為掌握全文大意，掃讀為尋找特定資訊","兩者完全相同，只是名稱不同","略讀用眼睛，掃讀用嘴巴"],"answer":1,"explain":"兩者都講求快速，但目的不同：略讀（skimming）為掌握整篇大意與主旨；掃讀／尋讀（scanning）則為在文中找到某項特定資訊。"},{"level":"adv","topic":"資料檢索－可信度判斷","q":"阿華在網路上找到四則關於「地震成因」的資料，若要選最可信的一則，下列判斷何者最恰當？","choices":["選按讚數最多的那一則","選標題最聳動、字最大的那一則","選由氣象或地質研究機構發布、並註明出處的那一則","選網頁顏色最漂亮的那一則"],"answer":2,"explain":"判斷可信度應看「作者或機構是否專業」「有無註明出處與證據」，而非按讚數、標題聳動程度或版面美觀。專業研究機構且註明來源者最可信。"},{"level":"adv","topic":"資料檢索－關鍵字選擇","q":"想查「臺灣黑熊的保育現況」，下列哪一組關鍵字最能精準找到所需資料？","choices":["「動物」","「熊」","「臺灣黑熊 保育」","「現況」"],"answer":2,"explain":"關鍵字太廣（如「動物」「熊」）會找到大量無關資料，太空泛（如「現況」）也難聚焦；結合主題核心詞「臺灣黑熊」與面向「保育」，最能精準命中。"},{"level":"adv","topic":"閱讀策略－預測的運用","q":"閱讀時「預測」策略的完整運用，除了讀前推想內容外，還應包括？","choices":["讀完後就把預測忘掉","一邊讀一邊驗證預測是否正確，並隨新線索修正","堅持原本的猜測，不管內容如何","只在考試時才使用"],"answer":1,"explain":"預測不是隨口猜測，而要在閱讀過程中不斷以文本內容驗證、修正自己的推想，如此才能加深理解、保持專注。"},{"level":"adv","topic":"閱讀策略－做筆記方法","q":"想把一課的內容「架構與層次」一目了然地整理出來，最適合的筆記方式是？","choices":["心智圖（概念構圖）","把課文從頭抄到尾","只在課本上畫滿螢光筆","背下每一個標點符號"],"answer":0,"explain":"心智圖／概念構圖以中心主題向外延伸分支，能清楚呈現概念之間的層次與關聯，最適合整理內容架構；全文照抄或只畫線都難以顯示層次。"},{"level":"adv","topic":"閱讀策略－精讀時機","q":"下列哪一種情況「最需要」用到精讀？","choices":["早晨快速翻閱報紙標題","在車站看板上找往臺北的月台號碼","準備段考，深入理解一篇文言文的字義與文意","在書店隨手翻看新書封面"],"answer":2,"explain":"精讀適用於需深入理解、分析的重要文本，如準備考試研讀文言文；瀏覽報紙標題屬略讀，找月台號碼屬掃讀。"},{"level":"adv","topic":"閱讀策略－整合順序","q":"面對一篇陌生的長篇文章，較有效率的閱讀順序通常是？","choices":["先精讀每一句，再看標題","先略讀掌握大意，再針對重點精讀","先背下全文，再理解","先隨手抄寫，再翻譯"],"answer":1,"explain":"有效率的閱讀常是「由粗而細」：先略讀建立整體概念與架構，再對重要或不懂的部分精讀深究，最後可做摘要或筆記統整。"},{"level":"adv","topic":"閱讀策略－摘要判斷","q":"下列哪一項「不」適合出現在一篇客觀的內容摘要中？","choices":["文章的主要論點","各段的重點大意","「我覺得作者寫得很爛」這類個人情緒評論","重要的結論"],"answer":2,"explain":"摘要應客觀呈現原文的重點、論點與結論，不宜加入強烈的個人情緒或主觀評價；「寫得很爛」屬個人評論，不屬摘要內容。"},{"level":"adv","topic":"資料檢索－工具選擇","q":"想查一個成語的「正確寫法、讀音與典故出處」，下列哪一種工具最適合？","choices":["世界地圖","成語辭典","電話簿","火車時刻表"],"answer":1,"explain":"查成語的字形、讀音、意義與典故出處，應使用「成語辭典」；地圖、電話簿、時刻表各有其專門用途，皆不適合查成語。"},{"level":"adv","topic":"資料檢索－引用與抄襲","q":"寫報告時引用網路資料，下列做法何者最正確？","choices":["整段複製貼上，當作自己寫的","適度摘要或引用，並註明資料來源","把作者名字改成自己的","只要沒人發現就沒關係"],"answer":1,"explain":"使用他人資料應以自己的話摘要，或加引號適度引用，並確實「註明出處」，才是負責且合乎學術倫理的做法；照抄不註明即為抄襲。"},{"level":"adv","topic":"資料檢索－圖書館找書","q":"到圖書館想找某一本書，若已知書名，最快速的方式是？","choices":["在書架前一本一本翻找","先查館藏目錄（檢索系統）找到索書號，再依號取書","隨機在圖書館裡走動碰運氣","直接問其他讀者有沒有看過"],"answer":1,"explain":"圖書館藏依分類編有「索書號」，可先用館藏檢索系統以書名查得索書號與位置，再循號到架上取書，最有效率。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

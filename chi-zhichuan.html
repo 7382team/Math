@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>紙船印象 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-zhichuan",
+  "title": "紙船印象",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "洪醒夫"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>紙船印象</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識-作者","q":"〈紙船印象〉的作者洪醒夫，本名是什麼？","choices":["洪炎秋","賴和","洪媽從","楊逵"],"answer":2,"explain":"洪醒夫本名「洪媽從」，彰化縣二林鎮人，「洪醒夫」為其筆名。洪炎秋、賴和、楊逵雖同為臺灣文學作家，卻不是洪醒夫的本名。"},{"level":"basic","topic":"文學常識-稱號","q":"洪醒夫因作品多刻畫臺灣農村小人物，反映農業社會的變遷，因而有什麼稱號？","choices":["都市作家","農民作家（田莊作家）","邊塞詩人","田園詩人"],"answer":1,"explain":"洪醒夫出身農家，擅長描寫臺灣中下階層農民在傳統與現代之間的處境，故有「農民作家」（田莊作家）之稱。邊塞詩人、田園詩人是古典詩派，與他不符。"},{"level":"basic","topic":"文學常識-生平","q":"關於作者洪醒夫的敘述，下列何者正確？","choices":["臺北人，出身書香門第，曾任大學教授","高雄人，出身漁村，終身務農","臺南人，出身官宦之家，曾任記者","彰化人，出身農家，曾任小學教師"],"answer":3,"explain":"洪醒夫為彰化縣二林鎮人，農家子弟，臺中師專畢業後曾任小學教師，並從事雜誌編輯與寫作，一生關懷鄉土農村。"},{"level":"basic","topic":"文學常識-文類","q":"洪醒夫在文壇上以哪一種文類最為著稱？","choices":["小說","新詩","戲劇","古典散文"],"answer":0,"explain":"洪醒夫以短篇小說著稱，代表作有《黑面慶仔》、《田莊人》及〈散戲〉（曾獲聯合報小說獎）；〈紙船印象〉則是他少數入選課本的散文。"},{"level":"basic","topic":"文學常識-生平","q":"洪醒夫英年早逝，其去世的主要原因是下列何者？","choices":["病逝","溺水","車禍","戰亂"],"answer":2,"explain":"民國七十一年（西元一九八二年），洪醒夫因所乘計程車在颱風雨天路滑翻覆，肝臟破裂而不治，得年三十三歲，是臺灣文壇的重大損失。"},{"level":"basic","topic":"文體","q":"就文體而言，〈紙船印象〉是一篇：","choices":["短篇小說","抒情散文","新詩","應用文（書信）"],"answer":1,"explain":"〈紙船印象〉為白話抒情散文，藉童年玩紙船的回憶抒發對母愛的感懷。作者雖以小說聞名，但本文屬散文。"},{"level":"basic","topic":"主旨","q":"〈紙船印象〉一文的主旨是：","choices":["藉童年玩紙船的回憶，抒發對母愛的感念","描寫農村四季風光，讚美大自然","記敘造船工藝，說明紙船的摺法","批判社會現實，抒發懷才不遇之情"],"answer":0,"explain":"本文由紙船寫到母親的手，再寫到母愛，抒發作者對母親在困境中仍為孩子付出的感念，並期許自己效法母親，是一篇歌頌母愛的散文。"},{"level":"basic","topic":"字詞義","q":"「有些是過眼雲煙，倏忽即逝」中的「倏忽」意思是：","choices":["緩慢悠長","反覆不定","沉重難忘","極快、一瞬間"],"answer":3,"explain":"「倏忽」指極短的時間、忽然之間，「倏忽即逝」形容事物極快消逝，正與下句「熱鐵烙膚，記憶長存」形成對比。"},{"level":"basic","topic":"詞語義","q":"「過眼雲煙」一詞用來比喻：","choices":["印象深刻、終生難忘的事","短暫易逝、不留痕跡的事物","變化莫測的天氣","美好珍貴的回憶"],"answer":1,"explain":"「過眼雲煙」比喻轉眼即逝、不留痕跡的事物，文中與「倏忽即逝」相呼應，指容易被淡忘的往事。"},{"level":"basic","topic":"詞語義","q":"「一旦思想起，便歷歷如繪」的「歷歷如繪」意思是：","choices":["模糊不清，難以辨認","雜亂無章，毫無頭緒","清清楚楚，彷彿畫在眼前","悲傷感人，令人落淚"],"answer":2,"explain":"「歷歷」是清晰分明的樣子，「歷歷如繪」形容記憶清楚得像圖畫般浮現眼前，說明童年往事雖細碎，一經回想卻十分鮮明。"},{"level":"basic","topic":"詞語義","q":"描寫雨後水道上各式紙船漂流的景象「蔚為壯觀」，「蔚為壯觀」的意思是：","choices":["聚集成盛大可觀的景象","稀少而不起眼","整齊劃一的隊伍","破敗凋零的樣子"],"answer":0,"explain":"「蔚為壯觀」形容事物聚集眾多、景象盛大而值得觀賞，此處寫水道上各式紙船競放、熱鬧繽紛的畫面。"},{"level":"basic","topic":"象徵","q":"文中的「紙船」主要象徵什麼？","choices":["作者的財富","遠大的志向","對故鄉的思念","母親的愛與親情"],"answer":3,"explain":"紙船出自母親粗糙結繭的雙手，承載著母親在困境中對孩子的呵護，因此象徵母愛與溫暖的親情，是全文的核心意象。"},{"level":"adv","topic":"修辭-排比","q":"「有些是過眼雲煙，倏忽即逝；有些是熱鐵烙膚，記憶長存；有些像是飛鳥掠過天邊，漸去漸遠」，在句式上主要運用了何種修辭？","choices":["排比","設問","頂真","誇飾"],"answer":0,"explain":"連用三個結構相似的「有些是（像）……」句子並列鋪陳，屬「排比」；其中「熱鐵烙膚」「飛鳥掠過」等又兼用譬喻，使往事的深淺具體可感。"},{"level":"adv","topic":"修辭-譬喻","q":"「有些是熱鐵烙膚，記憶長存」一句，將「深刻難忘的記憶」比作「熱鐵烙膚」，所使用的修辭是：","choices":["映襯","譬喻","借代","摹寫"],"answer":1,"explain":"以「熱鐵烙膚」（燒紅的鐵燙在皮膚上）比喻記憶深刻、難以磨滅，是譬喻修辭，具體寫出印象之深。"},{"level":"adv","topic":"修辭-排比","q":"「花色斑雜者，形態怪異者，氣派儼然者，甫經下水即遭沉沒者」一連串句子，運用的修辭是：","choices":["對偶","層遞","排比","借代"],"answer":2,"explain":"以四個結構相同的「……者」並列，鋪寫紙船的各種樣貌，屬排比。對偶須兩兩相對、字數相等；層遞須有輕重先後之序，皆不合此句。"},{"level":"adv","topic":"修辭-映襯","q":"文中寫母親內心雖為久雨憂愁煩亂，表面卻仍「平靜和氣」地為孩子摺船，這種把相反情態並列對照的寫法是：","choices":["排比","頂真","誇飾","映襯"],"answer":3,"explain":"把母親「內心憂愁」與「表面平靜」兩種相反情態並列對照，藉以突顯母愛的偉大，屬「映襯」（反襯）修辭。"},{"level":"adv","topic":"字音","q":"「為子女摺出……禁得住風雨的船」中「禁得住」的「禁」，讀音應為：","choices":["ㄐㄧㄣˋ","ㄐㄧㄣ","ㄑㄧㄣ","ㄐㄧㄥ"],"answer":1,"explain":"「禁」表「承受、經得起」時讀陰平ㄐㄧㄣ（如「弱不禁風」）；讀去聲ㄐㄧㄣˋ時是「禁止、拘禁」之意。此處指船經得起風雨，故讀ㄐㄧㄣ。"},{"level":"adv","topic":"字義","q":"「甫經下水即遭沉沒者」中的「甫」，意思是：","choices":["將要","緩緩地","全部","剛、才"],"answer":3,"explain":"「甫」在此作副詞，意為「剛、才」；「甫經下水」即「才一下水」，緊接「即遭沉沒」，寫某些紙船剛下水就沉了。"},{"level":"adv","topic":"文意-象徵","q":"結尾「為子女摺出一艘艘未必漂亮但卻堅強的、禁得住風雨的船」，這句話所要表達的深層含意是：","choices":["期許自己能像母親一樣，給子女足以面對人生風雨的愛與力量","希望將來開一間專門製作紙船的工廠","感嘆自己手藝不佳，摺不出漂亮的紙船","勸人不要在雨天玩紙船，以免危險"],"answer":0,"explain":"「禁得住風雨的船」象徵能承受人生困境的愛與能力，作者藉此期許自己效法母親，給子女堅強的支持，呼應全文對母愛的感念與傳承。"},{"level":"adv","topic":"文意理解","q":"「似無所見，又非視而不見」一句，形容童年往事的特點是：","choices":["從頭到尾都記得一清二楚","平時彷彿遺忘，一經回想又清晰浮現","完全遺忘，再也想不起來","只記得痛苦，忘記快樂"],"answer":1,"explain":"這句承接「不去想，什麼都沒有，一旦思想起，便歷歷如繪」，說明童年細碎往事平時似已淡忘（似無所見），一旦回想卻又清楚浮現（又非視而不見）。"},{"level":"adv","topic":"篇章結構","q":"文章開頭先鋪敘「過眼雲煙、熱鐵烙膚、飛鳥掠過天邊」等各種往事，其主要作用是：","choices":["說明作者記性不好，容易忘事","批評世人只重眼前、不念舊情","由一般往事引出、襯托童年紙船記憶的深刻難忘","描寫四季景物的變化之美"],"answer":2,"explain":"開頭泛寫人生各種深淺不一的往事，再以「而有一些事……童年的許多細碎事物」轉入正題，用以鋪陳、襯托下文紙船與母愛記憶的鮮明深刻。"},{"level":"adv","topic":"文意理解","q":"文中特別描寫母親「那雙粗糙不堪、結著厚繭的手」，其用意是：","choices":["說明母親不懂得保養皮膚","強調母親摺紙船的技術高超","暗示家境富裕、生活優渥","藉由手的辛勞，表現母親為家操勞的付出與母愛"],"answer":3,"explain":"「粗糙不堪、結著厚繭」寫出母親長年勞動的辛苦，紙船正出自這雙手，藉此凸顯母親的操勞與對孩子深厚的愛。"},{"level":"adv","topic":"文意-主旨","q":"作者在結尾說「只盼望自己能以母親的心情，為子女摺出……船」，可看出他的心意是：","choices":["後悔小時候不該貪玩紙船","感念母愛，並期許自己傳承這份愛去照顧子女","埋怨母親沒有給他更好的生活","決心要比母親摺出更漂亮的紙船"],"answer":1,"explain":"作者由感念母親的付出，進而期許自己以同樣的心情養育、關愛子女，使母愛得以延續、傳承，讓文章主旨昇華。"},{"level":"adv","topic":"字義","q":"「氣派儼然者」中的「儼然」，意思是：","choices":["莊重整齊的樣子","破舊不堪的樣子","歪斜傾倒的樣子","五顏六色的樣子"],"answer":0,"explain":"「儼然」指莊重、整齊的樣子。「氣派儼然」形容有些紙船外形工整、頗有氣勢，與「形態怪異者」等並列，寫紙船樣式之多。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

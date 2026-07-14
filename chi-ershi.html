@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>兒時記趣 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-ershi",
+  "title": "兒時記趣",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "沈復"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>兒時記趣</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識（作者）","q":"〈兒時記趣〉的作者沈復是哪一個朝代的人？","choices":["唐代","宋代","明代","清代"],"answer":3,"explain":"沈復，字三白，江蘇蘇州人，為清代文學家，著有自傳體散文《浮生六記》。本課即節選自該書。"},{"level":"basic","topic":"文學常識（出處）","q":"〈兒時記趣〉一文選自沈復的哪一部作品？","choices":["《浮生六記》","《陶庵夢憶》","《聊齋志異》","《世說新語》"],"answer":0,"explain":"本文節選自沈復《浮生六記》卷二〈閒情記趣〉。《陶庵夢憶》為張岱、《聊齋志異》為蒲松齡、《世說新語》為劉義慶所編，皆非本文出處。"},{"level":"basic","topic":"主旨","q":"下列何者是本文的主旨句，總領全文，也是三件趣事的綱領？","choices":["能張目對日，明察秋毫","故時有物外之趣","神遊其中，怡然自得","舌一吐而二蟲盡為所吞"],"answer":1,"explain":"「故時有物外之趣」點出全文主旨，總領下文觀蚊如鶴、神遊草叢、鞭逐蝦蟆三件趣事，說明作者童年常從細微觀察與想像中獲得超乎事物本身的樂趣。"},{"level":"basic","topic":"字詞義","q":"「能張目對日，明察秋毫」的「明察秋毫」在文中形容什麼？","choices":["視力敏銳，連極細微的事物都能看清","做事謹慎，明辨是非","觀察秋天的天氣變化","善於分辨善惡好壞"],"answer":0,"explain":"「秋毫」指鳥獸在秋天新長出的細毛，極為細微；「明察秋毫」形容視力極好，連最細小的東西都看得清楚，文中用以說明作者觀察力敏銳。"},{"level":"basic","topic":"字詞義","q":"「見藐小微物」的「藐」是什麼意思？","choices":["輕視","微小","遙遠","模糊"],"answer":1,"explain":"「藐」在此為微小、渺小之意，「藐小微物」即細小的東西。「藐」雖另有輕視之義（如藐視），但本句中作「微小」解。"},{"level":"basic","topic":"字詞義","q":"「徐噴以煙」的「徐」是什麼意思？","choices":["快速地","慢慢地","用力地","偷偷地"],"answer":1,"explain":"「徐」是慢慢地、緩緩地之意。作者慢慢地用煙噴向蚊子，使牠們在煙中飛鳴，營造出青雲白鶴的景象。"},{"level":"basic","topic":"字詞義","q":"「又留蚊於素帳中」的「素帳」指的是什麼？","choices":["樸素的桌子","白色的蚊帳","素雅的圖畫","乾淨的被子"],"answer":1,"explain":"「素」是白色、未染色之意，「帳」即帳子；「素帳」指白色的蚊帳。作者把蚊子留在白色蚊帳中，慢慢噴煙觀賞。"},{"level":"basic","topic":"字詞義","q":"「蓋一癩蝦蟆也」的「蓋」在此表示什麼語氣？","choices":["遮蓋、覆蓋","大概、也許","原來是","勝過、超過"],"answer":2,"explain":"「蓋」在此為揭示原因、恍然明白的語氣，可解作「原來是」。作者看清那龐然大物，原來只是一隻癩蝦蟆。"},{"level":"basic","topic":"內容理解","q":"文中「拔山倒樹而來」的「龐然大物」，其實是什麼動物？","choices":["一隻蟾蜍（癩蝦蟆）","一條蛇","一隻老鼠","一隻壁虎"],"answer":0,"explain":"「蓋一癩蝦蟆也」點明那龐然大物原來只是一隻癩蝦蟆（蟾蜍）。因作者蹲身平視，蝦蟆便顯得如龐然大物般拔山倒樹而來，這正是想像造成的物外之趣。"},{"level":"basic","topic":"文體","q":"就文體而言，〈兒時記趣〉屬於下列何者？","choices":["文言文的記敘文","白話的抒情詩","韻文的辭賦","文言的議論文"],"answer":0,"explain":"本文以文言（古文）寫成，記述作者童年的三件趣事，屬記敘文。全文並非詩歌、辭賦，也不是說理的議論文。"},{"level":"basic","topic":"字詞義","q":"「神遊其中，怡然自得」的「怡然自得」是什麼意思？","choices":["安適愉快而滿足的樣子","孤獨寂寞的樣子","緊張害怕的樣子","疲累不堪的樣子"],"answer":0,"explain":"「怡然」是愉快安適的樣子，「自得」是自覺滿足；「怡然自得」形容內心安適愉快、自我滿足的神情。"},{"level":"basic","topic":"主旨","q":"作者之所以常能獲得「物外之趣」，主要憑藉下列哪兩種能力？","choices":["敏銳的觀察力與豐富的想像力","過人的記憶力與強健的體力","高超的繪畫力與音樂天分","出眾的口才與領導能力"],"answer":0,"explain":"作者「明察秋毫」「細察其紋理」是觀察力，能把夏蚊想成群鶴、叢草想成樹林則是想像力；正因兼具敏銳觀察與豐富想像，才「時有物外之趣」。"},{"level":"adv","topic":"文言字義","q":"「昂首觀之，項為之強」的「強」，意思最接近下列何者？","choices":["強壯有力","僵硬（通「僵」）","勉強、不情願","強盜"],"answer":1,"explain":"「強」在此通「僵」，指脖子因長時間仰頭觀看而發僵、酸硬。「項」是脖子，「項為之強」即脖子因此僵硬。"},{"level":"adv","topic":"文言字義","q":"「私擬作群鶴舞空」的「擬」是什麼意思？","choices":["打算","模仿","比作","猜測"],"answer":2,"explain":"「擬」在此為「比」、比作之意；「私擬作群鶴舞空」即私下把成群飛蚊比作在空中飛舞的白鶴，是想像力的表現。"},{"level":"adv","topic":"修辭辨析","q":"「夏蚊成雷」一句運用了什麼修辭？","choices":["誇飾","設問","對偶","頂真"],"answer":0,"explain":"作者把夏天蚊子的嗡嗡聲誇大形容成如雷鳴一般，是言過其實以加強印象的「誇飾」修辭。"},{"level":"adv","topic":"修辭辨析","q":"「以叢草為林，以蟲蟻為獸」，把叢草看成樹林、蟲蟻看成野獸，屬於下列哪一種修辭？","choices":["譬喻","誇飾","設問","反問"],"answer":0,"explain":"作者以「甲為乙」的方式，把叢草比作樹林、蟲蟻比作野獸，藉聯想將兩種事物相比，是「譬喻」修辭（省略喻詞的略喻／暗喻形式）。"},{"level":"adv","topic":"修辭辨析","q":"「忽有龐然大物，拔山倒樹而來」中的「拔山倒樹」，其修辭手法與下列何者相同？","choices":["夏蚊成雷","項為之強","怡然自得","細察其紋理"],"answer":0,"explain":"「拔山倒樹」誇大蝦蟆走近的氣勢，與「夏蚊成雷」把蚊聲誇大成雷鳴同為「誇飾」，都是言過其實以強化效果；「項為之強」「怡然自得」「細察其紋理」則非誇飾。"},{"level":"adv","topic":"修辭辨析","q":"「私擬作群鶴舞空」是把哪一種事物比喻成群鶴？","choices":["夏天的蚊子","天上的白雲","飄落的花瓣","池中的游魚"],"answer":0,"explain":"承上文「夏蚊成雷」，作者把成群飛舞的蚊子想像、比擬成在空中飛舞的白鶴，本體是蚊子，喻體是群鶴。"},{"level":"adv","topic":"文意理解","q":"「舌一吐而二蟲盡為所吞」的意思是什麼？","choices":["兩隻蟲子全被（癩蝦蟆）吞掉了","兩隻蟲子把舌頭吞了下去","舌頭被兩隻蟲子咬住","兩隻蟲子一起吐出舌頭"],"answer":0,"explain":"「為所吞」是被動語氣，「為……所……」表示被動；此句指癩蝦蟆舌頭一吐，正在相鬥的兩隻蟲子就全被吞進肚裡。"},{"level":"adv","topic":"文言字義","q":"「余年幼，方出神」的「方」是什麼意思？","choices":["方向","正、正在","方正、端正","方法"],"answer":1,"explain":"「方」在此作「正」、正在解，「方出神」即正看得出神，因而下文才被癩蝦蟆突然吞蟲的舉動嚇了一跳。"},{"level":"adv","topic":"詞語理解","q":"「物外之趣」的意思，下列何者最恰當？","choices":["超乎事物本身之外、由觀察想像而生的樂趣","購物之外多得到的贈品","身體之外的物質享受","不切實際、毫無意義的空想"],"answer":0,"explain":"「物外之趣」指超越事物表象、藉由細緻觀察與想像所體會到的精神樂趣，如把蚊子想成群鶴、叢草想成樹林，皆屬物外之趣，而非事物本身既有的性質。"},{"level":"adv","topic":"文意理解","q":"作者「常蹲其身，使與臺齊」的用意是什麼？","choices":["讓視線與草叢同高，方便把草叢想像成自己神遊的天地","想把花臺搬移到別處","為了躲避夏天的蚊子","為了鍛鍊身體、增強體力"],"answer":0,"explain":"作者蹲低身子，使視線與花臺、草叢齊平，才能以叢草為林、蟲蟻為獸，神遊其中而怡然自得；這正是他發揮想像、獲得物外之趣的方法。"},{"level":"adv","topic":"詞語理解","q":"「果如鶴唳雲端，怡然稱快」中的「怡然稱快」表現作者怎樣的心情？","choices":["愉快滿足而連聲叫好","失望懊惱","驚慌害怕","無聊厭煩"],"answer":0,"explain":"「怡然」是愉悅的樣子，「稱快」是連聲叫好；作者見蚊子在煙中飛鳴，果真像白鶴在雲端鳴叫（「唳」為鳥鳴），因而愉快滿足、拍手叫好。"},{"level":"adv","topic":"文意理解","q":"關於文末「捉蝦蟆，鞭數十，驅之別院」一段，下列敘述何者正確？","choices":["作者由出神觀賞轉為受驚，回神後懲罰並趕走癩蝦蟆","作者因害怕而立刻逃離現場，不敢回頭","作者捨不得傷害癩蝦蟆，將牠放生","這是作者在夢中所見的情景"],"answer":0,"explain":"作者正看二蟲相鬥而出神，忽被癩蝦蟆吞蟲的舉動嚇得「呀然驚恐」；待神定之後，才捉住蝦蟆、鞭打數十下並趕到別的院子。可見其由專注、受驚到回神處置的情緒轉折，也流露童真趣味。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>吃冰的滋味 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-chibing",
+  "title": "吃冰的滋味",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>吃冰的滋味</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識","q":"〈吃冰的滋味〉的作者古蒙仁，本名為何？","choices":["林懷民","楊喚","林日揚","余光中"],"answer":2,"explain":"古蒙仁本名林日揚，一九五一年生於雲林縣虎尾鎮，「古蒙仁」是他的筆名。林懷民為舞蹈家、楊喚為詩人、余光中為詩人兼散文家，皆非其本名。"},{"level":"basic","topic":"文學常識","q":"古蒙仁在現代文壇上，以下列哪一種文類的成就最為著稱？","choices":["武俠小說","報導文學","現代詩","章回小說"],"answer":1,"explain":"古蒙仁早年寫小說，後轉向報導文學，曾以〈黑色的部落〉獲第一屆時報文學獎報導文學推薦獎，是臺灣報導文學的重要作家。"},{"level":"basic","topic":"文體","q":"就文體而言，〈吃冰的滋味〉屬於下列何者？","choices":["文言議論文","新詩","短篇小說","白話散文"],"answer":3,"explain":"本文以白話文寫成，藉回憶童年吃冰抒發情感，屬於抒情、回憶類的白話散文；並非講究格律的新詩，也不是虛構情節的小說。"},{"level":"basic","topic":"主旨","q":"下列何者最能說明〈吃冰的滋味〉一文的主旨？","choices":["說明各種冰品的製作方法與營養成分","藉回憶童年吃冰的種種滋味，抒發對逝去時光的懷念","批評現代食品科技破壞傳統飲食文化","詳細記錄臺糖福利社的經營歷史"],"answer":1,"explain":"作者透過童年吃冰的回憶，寄託對純樸年代與逝去時光的嚮往，主旨在懷舊抒情，而非說明冰品做法、批評科技或記述歷史。"},{"level":"basic","topic":"章法","q":"本文首段即以「夏日吃冰，是人生的一大享受」點出題旨，這種寫作手法稱為？","choices":["卒章顯志","欲揚先抑","開門見山（破題）","借景抒情"],"answer":2,"explain":"文章一開頭就直接點明主題，稱為「開門見山」或「破題」；「卒章顯志」則是到結尾才點明主旨，與此相反。"},{"level":"basic","topic":"字詞義","q":"「臺糖福利社生產製造的冰水和冰棒一向名聞遐邇」句中「名聞遐邇」意思是？","choices":["名不副實","徒有虛名","默默無聞","名聲遠近皆知"],"answer":3,"explain":"「遐」指遠、「邇」指近，「名聞遐邇」即名聲遠近都聽得到，形容非常有名，與「默默無聞」意思相反。"},{"level":"basic","topic":"字詞義","q":"「貨真價實，童叟無欺」中「童叟無欺」的意思是？","choices":["專門欺負老弱婦孺","買賣公道，對小孩老人都不欺騙","只做小孩與老人的生意","童年與老年都不順遂"],"answer":1,"explain":"「叟」指老人，「童叟無欺」指不論對孩童或老人做買賣都誠實公道、不欺瞞，形容商家講信用。"},{"level":"basic","topic":"字詞義","q":"「看得旁邊圍觀的小孩垂涎三尺」的「垂涎三尺」是形容？","choices":["傷心落淚","滿頭大汗","非常貪饞、極想吃或極想得到","昏昏欲睡"],"answer":2,"explain":"「涎」是口水，「垂涎三尺」形容嘴饞得口水都快流下來，比喻十分想吃，或十分羨慕想得到某物。"},{"level":"basic","topic":"字詞義","q":"「比起臺灣早年的冰製品恐怕就遜色了」句中「遜色」的意思是？","choices":["比較差、不如","顏色鮮豔","更勝一籌","褪去顏色"],"answer":0,"explain":"「遜」有不及、差之意，「遜色」指相比之下顯得差、不如對方，並非指顏色，也不是更好。"},{"level":"basic","topic":"課文內容","q":"作者認為人的一生中，最適合吃冰的年紀是哪個階段？","choices":["幼稚園時期","高中到大學","出社會工作後","小學到初中"],"answer":3,"explain":"課文明言「人的一生中，最適合吃冰的年紀，是小學到初中這個階段」，並以暑假吃冰作為童年的代表。"},{"level":"basic","topic":"課文內容","q":"課文中提到，作者所住的臺糖福利社最著名的冰品是？","choices":["火燒冰淇淋","芒果雪花冰","花生冰和紅豆冰","抹茶聖代"],"answer":2,"explain":"課文寫道「最著名的是花生冰和紅豆冰，一枝只要一毛錢」；火燒冰淇淋則是文中用來對比的現代高價冰品。"},{"level":"basic","topic":"字詞義","q":"「小孩對冰的選擇可說是五花八門」中「五花八門」意思最接近？","choices":["稀少難得","種類繁多、花樣眾多","單調乏味","井然有序"],"answer":1,"explain":"「五花八門」形容花樣繁多、變化多端，此處指冰品種類非常多，與「單調乏味」「稀少難得」相反。"},{"level":"adv","topic":"修辭辨析","q":"「那冰屑就像雪花一般，一片一片飛落盤中」主要運用了何種修辭？","choices":["設問","譬喻（明喻）","排比","頂真"],"answer":1,"explain":"句中以「像……一般」為喻詞，把刨下的冰屑（本體）比作雪花（喻體），是典型的明喻，屬譬喻修辭。"},{"level":"adv","topic":"修辭辨析","q":"「一個夏天下來，吃掉的冰恐怕都要多過自己的體重」一句所用的修辭是？","choices":["摹寫","借代","誇飾","對偶"],"answer":2,"explain":"吃掉的冰比自己的體重還重，是刻意誇大鋪張，用以強調小孩吃冰之多，屬於誇飾（誇張）修辭。"},{"level":"adv","topic":"修辭辨析","q":"「串串鈴鐺聲響徹街頭巷尾」一句屬於下列哪一種感官摹寫？","choices":["視覺摹寫","味覺摹寫","嗅覺摹寫","聽覺摹寫"],"answer":3,"explain":"句子描寫鈴鐺的「聲」響遍大街小巷，訴諸耳朵所聞，屬於聽覺摹寫。"},{"level":"adv","topic":"修辭辨析","q":"「或色彩鮮豔、或澄澈剔透、或方塊結晶」連用三個「或……」描寫刨冰添加物的外觀，主要運用了？","choices":["視覺摹寫兼排比","聽覺摹寫兼設問","觸覺摹寫兼對偶","味覺摹寫兼頂真"],"answer":0,"explain":"三句都描寫添加物的顏色、透明與結晶等外觀，訴諸眼睛所見（視覺摹寫）；句式相同並列，又構成排比。"},{"level":"adv","topic":"修辭辨析","q":"「一匙一匙挖入嘴裡，冰花瞬即融化，融入舌尖，那種沁涼暢快的感覺」主要摹寫的是？","choices":["視覺的色彩","聽覺的聲響","味覺與觸覺的感受","嗅覺的氣味"],"answer":2,"explain":"「融入舌尖」「沁涼暢快」寫的是冰在口中入口即化的清涼觸感與滋味，屬味覺、觸覺的摹寫。"},{"level":"adv","topic":"字義","q":"「晚到一步的可能要向隅」句中「向隅」在文中意指？","choices":["排在最前面","買不到而落空、失望","面壁思過","向店家道歉"],"answer":1,"explain":"「向隅」本指面對牆角（哭泣），比喻孤獨失意或得不到機會；此處指晚來的人買不到冰品而失望落空。"},{"level":"adv","topic":"字義","q":"「俄頃堆積成一座小冰山」中「俄頃」的意思是？","choices":["一會兒、片刻","很久以後","每一天","突然大聲"],"answer":0,"explain":"「俄頃」指極短的時間、片刻之間，形容冰屑很快就堆成一座小冰山。"},{"level":"adv","topic":"文言字義","q":"「這些童年吃冰的記憶，如今多已消失殆盡」中「殆」的意思是？","choices":["危險","懶惰","幾乎","開始"],"answer":2,"explain":"「消失殆盡」指幾乎完全消失，「殆」在此作「幾乎、將近」解；「殆」另有危險（危殆）、懈怠等義，但此處取「幾乎」之意。"},{"level":"adv","topic":"字義","q":"「嗜冰如命的小孩子們，更是得其所哉」中「得其所哉」意思是？","choices":["走投無路","得到稱心如意的處境","得不償失","不知所措"],"answer":1,"explain":"「得其所哉」指得到適合自己、稱心滿意的處境；此處形容愛吃冰的孩子逢上冰品眾多的時代，正合其意。"},{"level":"adv","topic":"文意理解","q":"末段「像鄉愁般地隨著現代化的冰淇淋一一嚥下，竟別有一番古老的滋味在心頭」主要抒發作者何種情感？","choices":["對現代冰品的厭惡","對故鄉飲食的批評","對食品科技進步的自豪","對童年往事與純樸年代的懷念"],"answer":3,"explain":"作者藉「鄉愁」「古老的滋味」點出，吃現代冰品時勾起的是對童年與昔日純樸生活的懷念，情感基調是懷舊。"},{"level":"adv","topic":"修辭辨析","q":"「那種沁涼暢快的感覺，足以將豔陽融化掉」中畫線的「足以將豔陽融化掉」運用了什麼修辭？","choices":["誇飾","設問","引用","排比"],"answer":0,"explain":"涼快的感覺並不能真的融化太陽，這是刻意誇大，用以強調冰品的沁涼暢快，屬誇飾修辭。"},{"level":"adv","topic":"文意理解","q":"綜觀全文，作者敘述童年冰品時，最主要運用下列哪一種寫作手法貫串情感？","choices":["層層設問","先抑後揚的翻案","今昔對比（映襯）","純粹的說明論證"],"answer":2,"explain":"全文一再將現代冰品與童年早期冰品相互對照，藉今昔對比（映襯）凸顯對過往的懷念，是本文重要的章法特色。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

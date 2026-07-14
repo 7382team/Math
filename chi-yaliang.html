@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>雅量 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-yaliang",
+  "title": "雅量",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "宋晶宜"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>雅量</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識","q":"〈雅量〉一文的作者是誰？","choices":["琦君","宋晶宜","張曉風","徐志摩"],"answer":1,"explain":"〈雅量〉作者為宋晶宜，是臺灣知名的女記者、編輯與散文作家。琦君、張曉風同為著名散文家，徐志摩為新詩詩人，皆非本文作者。"},{"level":"basic","topic":"文學常識","q":"〈雅量〉一文選自宋晶宜的哪一本散文集？","choices":["《背影》","《城南舊事》","《看星斗的夜晚》","《雅舍小品》"],"answer":2,"explain":"本文選自宋晶宜的散文集《看星斗的夜晚》。《背影》是朱自清作品，《城南舊事》為林海音所作，《雅舍小品》則是梁實秋的散文集，皆與本文無關。"},{"level":"basic","topic":"文學常識","q":"關於作者宋晶宜，下列敘述何者正確？","choices":["曾任報社編輯、記者，以清新自然的散文著稱","是唐代著名的邊塞詩人","以創作章回小說聞名","是宋代的婉約派詞人"],"answer":0,"explain":"宋晶宜為民國時期作家，中國文化大學新聞系畢業，曾任民生報總編輯、北美世界日報舊金山分社社長等職，散文風格清新自然、平易近人。她是現代散文家，並非唐代詩人、宋代詞人或章回小說家。"},{"level":"basic","topic":"字詞義","q":"「雅量」一詞的意思是什麼？","choices":["高雅的容貌","大量的財富","文雅的談吐","寬宏的度量"],"answer":3,"explain":"「雅量」指寬宏、能容人的度量，也就是能包容、尊重別人不同看法的胸襟，是全文的題旨所在。"},{"level":"basic","topic":"字詞義","q":"「走向那扇窗去聆聽鳥鳴」的「聆」字，意思是？","choices":["看","聽","說","唱"],"answer":1,"explain":"「聆」是「聽」的意思，「聆聽」即仔細地聽。文中「聆聽鳥鳴」指靜靜地聽鳥叫聲。"},{"level":"basic","topic":"字詞義","q":"「哄堂大笑」的意思是？","choices":["一個人偷偷竊笑","勉強擠出笑容","滿屋子的人同時大笑","笑裡藏刀、別有居心"],"answer":2,"explain":"「哄堂大笑」形容全屋子的人同時放聲大笑，「哄」讀作ㄏㄨㄥ。其餘選項皆非其意。"},{"level":"basic","topic":"字詞義","q":"文中「人與人偶有摩擦」的「摩擦」，是指什麼？","choices":["物體互相接觸生熱","彼此的爭執或意見不合","皮膚受傷發炎","金錢上的往來"],"answer":1,"explain":"「摩擦」本指物體相接觸所產生的阻力，文中借以比喻人與人之間的爭執、衝突或意見不合。"},{"level":"basic","topic":"主旨","q":"本文所要闡述的主旨是什麼？","choices":["做人要力求上進、努力不懈","讀萬卷書不如行萬里路","珍惜光陰、把握當下","待人接物要有雅量，尊重、容忍別人不同的看法與喜好"],"answer":3,"explain":"全文藉生活實例說明：人的欣賞角度因性格與環境而異，我們應以寬宏的雅量彼此尊重、包容，以減少摩擦、增進和諧。"},{"level":"basic","topic":"內容大意","q":"作者用什麼生活實例引出「雅量」的道理？","choices":["一塊格子布料，三人各有不同的聯想","一場激烈的球賽","一次難忘的旅行","一封久違的家書"],"answer":0,"explain":"文章開頭以一塊綠底白格子的衣料為例，對圍棋有興趣的同學、作者、外號「大食客」的同學分別把它看成棋盤、稿紙、綠豆糕，藉此帶出「同一事物、各有看法」的主題。"},{"level":"basic","topic":"內容大意","q":"對於同一塊格子衣料，文中三人分別把它比喻成什麼？","choices":["地圖、窗戶、餅乾","圍巾、桌布、蛋糕","棋盤、稿紙、綠豆糕","田地、書本、方糖"],"answer":2,"explain":"三人分別說它像「棋盤」、「稿紙」、「綠豆糕」（其中「稿紙」是作者自己的看法），說明各人因性格與生活經驗不同，對同一事物產生不同的聯想。"},{"level":"basic","topic":"文學常識","q":"就表達方式而言，〈雅量〉一文屬於下列何種文體？","choices":["論說文（借事說理）","公文書信等應用文","講究格律的韻文","長篇章回小說"],"answer":0,"explain":"本文以生活事例引出道理、夾敘夾議、借事說理，屬於論說文（白話散文中的說理散文）；並非書信公文一類的應用文，也非韻文或小說。"},{"level":"basic","topic":"字詞義","q":"文中「你聽你的鳥鳴，他看他的日出，彼此都會有等量的美的感受」，句中「等量」的意思是？","choices":["數量很多","份量相等","等待衡量","高低不同"],"answer":1,"explain":"「等量」指份量、程度相等。此句是說：聆聽鳥鳴與欣賞日出雖是不同的美，卻能帶給人同等份量（相等）的美感，並無高下之別。"},{"level":"adv","topic":"修辭辨析","q":"「這塊衣料好像棋盤似的」一句所使用的修辭法是？","choices":["設問","誇飾","對偶","譬喻（明喻）"],"answer":3,"explain":"句中以「好像……似的」把衣料比成棋盤，具備喻體、喻詞、喻依，屬於譬喻中的「明喻」。"},{"level":"adv","topic":"修辭辨析","q":"「你又何必要他走向那扇窗去聆聽鳥鳴呢？」這句主要運用了何種修辭？","choices":["設問（反問）","排比","頂真","摹聲"],"answer":0,"explain":"此句以問句的形式表達「不必勉強」的肯定意思，答案已隱含在問句之中，屬於設問中的「反問（激問）」。"},{"level":"adv","topic":"文意理解","q":"「如果他能從這扇門望見日出的美景，你又何必要他走向那扇窗去聆聽鳥鳴呢？」這句話的用意是？","choices":["看日出比聽鳥鳴更有價值","門和窗不能同時打開","每個人欣賞的角度不同，應予尊重，不必強求他人和自己一樣","早起的人才能欣賞美景"],"answer":2,"explain":"作者以「望日出」和「聽鳥鳴」比喻不同的欣賞方式，說明各有所好、各得其樂，我們應尊重彼此的差異，而非要求別人與自己相同。"},{"level":"adv","topic":"文意理解","q":"依本文之意，為什麼不同的人對同一件衣料會有不同的感覺？","choices":["因為衣料的顏色會變化","因為每個人的視力好壞不同","因為各人的性格與生活環境（興趣）不同","因為大家故意唱反調"],"answer":2,"explain":"作者指出，欣賞的觀點不盡相同，是與個人的性格、生活環境及興趣有關，並非事物本身或視力的問題。"},{"level":"adv","topic":"修辭辨析","q":"下列文句，何者使用了「譬喻」修辭？","choices":["為了減少摩擦，增進和諧","真像一塊塊綠豆糕","人人的欣賞觀點不盡相同","我們必須努力培養雅量"],"answer":1,"explain":"「真像一塊塊綠豆糕」有喻詞「像」，把格子衣料比成綠豆糕，屬譬喻；其餘三句只是直接敘述或說理，並無比喻。"},{"level":"adv","topic":"文意理解","q":"「人與人偶有摩擦，往往都是由於缺乏那分雅量的緣故。」這句話說明了什麼？","choices":["摩擦是無法避免的自然現象","有雅量的人就不會有任何朋友","爭執反而能使關係更緊密","人際衝突多半來自不能包容、尊重彼此的差異"],"answer":3,"explain":"作者點出人際摩擦的根源在於缺乏雅量——不能容忍、尊重別人不同的看法，因此培養雅量正是化解衝突之道。"},{"level":"adv","topic":"文言字義","q":"「又何嘗不是如此」的「何嘗」，在文中所表達的語氣與意思是？","choices":["以反問語氣表示「並非、未曾」","表示「經常、時常」","表示「應該、必須」","表示「幸好、還好」"],"answer":0,"explain":"「何嘗」用反問的語氣，實際表達否定的意思，即「並不是、未曾」，語氣婉轉而肯定。"},{"level":"adv","topic":"修辭辨析","q":"「認為他如『天仙』或『白馬王子』般地完美無缺」一句運用了何種修辭？","choices":["對偶","頂真","摹寫","譬喻"],"answer":3,"explain":"句中以「如……般」的喻詞，把心儀的對象比作「天仙」「白馬王子」，屬譬喻修辭，用來形容在對方眼中此人完美無缺。"},{"level":"adv","topic":"篇章結構","q":"本文在寫作結構上最主要的特色是？","choices":["通篇寫景，情景交融","先舉生活事例，再從中歸納出道理（夾敘夾議、借事說理）","逐句押韻，講究格律","以人物對話推動故事情節"],"answer":1,"explain":"全文採「舉例—說明、再舉例—再說明」的歸納方式，夾敘夾議，藉具體事例帶出「培養雅量」的道理，是典型的說理散文結構。"},{"level":"adv","topic":"文意理解","q":"依作者之見，面對別人與自己不同的看法或喜好，我們應抱持什麼態度？","choices":["極力說服對方改變","一笑置之、完全不理","堅持己見、據理力爭","尊重、容忍，接納彼此的差異"],"answer":3,"explain":"作者主張以雅量待人，尊重並容忍別人不同的觀點與喜好。「極力說服」「堅持己見」皆與雅量精神相違，「完全不理」則非真正的尊重與接納。"},{"level":"adv","topic":"篇章結構","q":"「為了減少摩擦，增進和諧，我們必須努力培養雅量。」這句話在全文中的作用是？","choices":["總結全文，點明主旨","開啟話題，引起下文","承上啟下的過渡","純粹只是舉例說明"],"answer":0,"explain":"此句位於文末，收束全文並直接點出中心思想——培養雅量以減少摩擦、增進和諧，屬於「篇末點題」的作用。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

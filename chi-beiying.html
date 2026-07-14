@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>背影 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-beiying",
+  "title": "背影",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "朱自清"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>背影</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識","q":"〈背影〉的作者朱自清，是我國哪一個時期的著名作家？","choices":["先秦時期的思想家","唐代的詩人","宋代的詞人","近代（現代）的散文家"],"answer":3,"explain":"朱自清（西元1898～1948年）是我國近代（五四運動以後的現代）著名散文家、詩人、學者，以樸實真摯的白話散文著稱，〈背影〉、〈匆匆〉、〈荷塘月色〉都是他的名篇。"},{"level":"basic","topic":"文學常識","q":"朱自清的「字」是下列何者？","choices":["佩弦","子瞻","樂天","東坡"],"answer":0,"explain":"朱自清原名自華，字佩弦。「佩弦」取義於古人性情舒緩者佩帶弓弦以自我警惕、提醒自己行事果決。子瞻、東坡為蘇軾的字與號，樂天為白居易的字。"},{"level":"basic","topic":"文學常識","q":"〈背影〉一文選自朱自清的哪一部作品集？","choices":["《荷塘月色》","新詩集《毀滅》","散文集《背影》","《朱子語類》"],"answer":2,"explain":"〈背影〉創作於西元1925年10月，發表於《文學周報》，後收入西元1928年開明書店出版的散文集《背影》。《毀滅》是朱自清著名的長詩（屬其新詩作品），並非散文集；《朱子語類》是宋代朱熹的著作，與朱自清無關。"},{"level":"basic","topic":"文體","q":"就文體而言，〈背影〉屬於下列何者？","choices":["文言文的論說文","白話文的抒情記敘散文","近體詩","章回小說"],"answer":1,"explain":"〈背影〉以白話文寫成，藉記敘車站送別之事來抒發父子親情，屬於記敘兼抒情的散文，並非講求格律的韻文，也不是小說。"},{"level":"basic","topic":"主旨","q":"〈背影〉全文所要表達的主旨是什麼？","choices":["描寫火車站的繁忙景象","歌頌祖國山河的壯麗","藉父親買橘子的背影，表現深摯的父愛與作者的感念","勸勉世人努力讀書求取功名"],"answer":2,"explain":"本文透過父親在車站為「我」買橘子、攀爬月台的背影，刻畫父親無言而深沉的愛，並流露作者對父親的感念與愧疚，主旨在於歌詠父子親情。"},{"level":"basic","topic":"文意理解","q":"〈背影〉中，最令作者感動、刻畫也最深刻的一幕是什麼？","choices":["父親在家中讀書寫字","父親替他跟腳夫講價錢","父親送他到學校門口","父親穿過鐵道、攀爬月台為他買橘子"],"answer":3,"explain":"全文最動人的一幕，是父親戴著黑布小帽、穿著青布棉袍，蹣跚地穿過鐵道、努力攀爬月台為兒子買橘子的背影，作者見此情景「淚很快地流下來了」。"},{"level":"basic","topic":"字詞義","q":"「父親的差使也交卸了」句中的「差使」是指什麼？","choices":["差勁的僕人","官場中的職務、公職","出差的旅費","差錯、過失"],"answer":1,"explain":"「差使」指舊時官場中所擔任的職務、公職。此句說父親也失去了職務，與祖母去世同時發生，正是「禍不單行」。"},{"level":"basic","topic":"字詞義","q":"「看見滿院狼藉的東西」句中「狼藉」的意思是？","choices":["雜亂不堪的樣子","兇狠可怕","貴重稀有","陰暗潮濕"],"answer":0,"explain":"「狼藉」形容散亂、雜亂不堪的樣子。「滿院狼藉」寫出家中因喪事與變故而一片零亂的景況，也牽動作者的傷感。"},{"level":"basic","topic":"字詞義","q":"「蹣跚地走到鐵道邊」句中「蹣跚」形容什麼？","choices":["走路緩慢、腳步不穩的樣子","動作輕快敏捷","躡手躡腳、悄悄地","昂首闊步、神氣的樣子"],"answer":0,"explain":"「蹣跚」形容年老或身體肥胖者走路緩慢、搖擺不穩的樣子。用來寫父親，更襯托他年歲已高、行動不便，卻仍為兒子買橘子的辛勞。"},{"level":"basic","topic":"字詞義","q":"「不禁簌簌地流下眼淚」句中「簌簌」是形容？","choices":["笑聲不斷","風聲呼嘯","眼淚紛紛落下的樣子","腳步雜沓"],"answer":2,"explain":"「簌簌」在此形容眼淚紛紛落下的樣子。（「簌簌」原本也可用來形容枝葉、花瓣紛紛掉落。）"},{"level":"basic","topic":"字詞義","q":"「一半為了父親賦閒」句中「賦閒」的意思是？","choices":["在家吟詩作賦","悠閒地遊山玩水","被派去外地任職","失業、沒有工作而在家閒居"],"answer":3,"explain":"「賦閒」指失業、沒有職務而在家閒居。典出晉代潘岳作〈閒居賦〉，後人遂以「賦閒」稱失業居家。此句正承接父親「差使交卸」而來。"},{"level":"basic","topic":"寫作背景","q":"〈背影〉開頭寫那年冬天「正是禍不單行的日子」，指的是哪兩件事同時發生？","choices":["作者生病又落榜","祖母去世與父親失業（差使交卸）","家中失火又遭竊","父親生病又欠債"],"answer":1,"explain":"「禍不單行」指祖母過世、父親又同時失去職務（差使交卸），兩件不幸接連而來，家境慘澹，這也是全文哀傷氛圍的背景。"},{"level":"adv","topic":"修辭辨析","q":"作者描寫父親買橘子的背影時，只以樸實的文字勾勒外貌與動作，不加華麗辭藻的鋪陳修飾，這種寫作手法稱為？","choices":["白描","誇飾","排比","設問"],"answer":0,"explain":"「白描」是不加渲染鋪陳，以簡樸文字直接描摹人事物的手法。作者只用「黑布小帽」「青布棉袍」及「攀」「縮」「傾」等動作，便真切再現父親背影，是白描的典範。"},{"level":"adv","topic":"寫作手法","q":"「這時我看見他的背影，我的淚很快地流下來了」一句，作者不直接稱讚父親偉大，而以自己「流淚」來表現感動，這運用了什麼手法？","choices":["開門見山直接議論","側面烘托（襯托）","前後矛盾","誇大其詞"],"answer":1,"explain":"作者藉「我」流淚的反應，從側面烘托父親攀爬月台的艱難與父愛之深，使情感表達更含蓄動人，屬於側面烘托（襯托）的手法。"},{"level":"adv","topic":"文意理解","q":"「背影」一詞在全文中多次出現，關於其作用，下列敘述何者最恰當？","choices":["只在買橘子時出現一次，與結構無關","只是隨意提及，沒有特別用意","反覆出現並首尾呼應，成為貫串全文、象徵父愛的主軸","用來描寫火車頭的外形"],"answer":2,"explain":"「背影」在開頭點題、買橘子時細寫、父親離去混入人群、結尾淚光中再現，反覆出現且首尾呼應，成為貫串全文、象徵父愛的核心意象。"},{"level":"adv","topic":"文言字義","q":"「父親的差使也交卸了」句中「交卸」的意思是？","choices":["交出贓物","卸下車上的貨物","卸去職務、移交給接任者","交代遺言"],"answer":2,"explain":"「交卸」指舊時官吏卸去所擔任的職務，把公事移交給接任的人，此處即指父親去職、失業。"},{"level":"adv","topic":"文言字義","q":"父親來信說「大約大去之期不遠矣」，「大去之期」是指什麼？","choices":["遠行外地的日子","退休返鄉的時候","與家人重逢之日","離開人世（去世）的時候"],"answer":3,"explain":"「大去」指與世長辭、離開人世；「大去之期不遠」即父親自知去世之日將近。作者讀信至此落淚，倍增感傷。"},{"level":"adv","topic":"文言字義","q":"「他躊躇了一會，終於決定還是自己送我去」句中「躊躇」是指？","choices":["生氣發怒","猶豫不決","得意自滿","疲倦想睡"],"answer":1,"explain":"「躊躇」指猶豫不決、拿不定主意。父親本已託旅館茶房送行，卻猶豫再三，終究不放心而親自送「我」，可見他對兒子的關愛。"},{"level":"adv","topic":"文言字義","q":"「那知老境卻如此頹唐」句中「頹唐」是指？","choices":["富貴顯達","健康強壯","忙碌奔波","衰頹、淒涼，精神與境況委靡不振"],"answer":3,"explain":"「頹唐」形容衰頹、委靡不振。「老境頹唐」寫父親晚年境況衰敗淒涼，與他年輕時「獨力支持，做了許多大事」形成對比，令人感傷。"},{"level":"adv","topic":"文言字義","q":"「他觸目傷懷，自然情不能自已。情鬱於中，自然要發之於外」句中「情鬱於中」是指？","choices":["感情鬱結、積壓在心裡","心中毫無感覺","情緒外露、大聲喧嘩","心情愉快舒暢"],"answer":0,"explain":"「情鬱於中」指感情鬱結、積壓在心中；「發之於外」則指鬱積的情緒往往形於顏色、發為脾氣。這說明父親晚年因家境衰頹而心情鬱悶。"},{"level":"adv","topic":"文意理解","q":"祖母去世、父親失業之際，父親對「我」說：「事已如此，不必難過，好在天無絕人之路！」這句話最能表現父親什麼樣的心情與態度？","choices":["對兒子漠不關心","埋怨命運不公","強忍悲痛，反過來寬慰、體貼兒子","炫耀自己見多識廣"],"answer":2,"explain":"父親自身正逢喪母、失業的雙重打擊，卻壓下悲傷，反過來安慰兒子「天無絕人之路」，展現他堅忍與體貼兒子的深情。"},{"level":"adv","topic":"文意理解","q":"作者回憶當年嫌父親跟腳夫講價「說話不大漂亮」、暗笑他「迂」，事後卻說自己「那時真是太聰明了」。這樣寫的用意是？","choices":["誇讚自己反應靈敏","以反語自責，懊悔當年不能體會父親的愛","批評父親不會說話","強調自己學問淵博"],"answer":1,"explain":"「太聰明了」是反語（正話反說）。作者藉此自嘲、自責：當年只覺父親迂腐可笑，如今回想才懂得那正是父親細膩的愛，流露深深的懊悔。「迂」指言行守舊、不合時宜。"},{"level":"adv","topic":"文言字義","q":"父親信中「舉箸提筆，諸多不便」的「箸」是指什麼？","choices":["筷子","書本","柺杖","毛筆"],"answer":0,"explain":"「箸」即筷子。「舉箸提筆」指拿筷子吃飯、拿筆寫字等日常動作，父親說這些都「諸多不便」，可見他膀子疼痛、身體大不如前。"},{"level":"adv","topic":"文意理解","q":"全文中作者多次落淚，這些眼淚主要傳達了什麼？","choices":["對前途的恐懼","對家境貧困的怨恨","與父親吵架後的委屈","被父愛感動，以及對父親的感念與不捨"],"answer":3,"explain":"作者見父親攀月台買橘子時落淚、父親離去混入人群時落淚、讀父親來信時又在淚光中見到背影，這些眼淚都源於被父愛深深感動，以及對父親的感念、牽掛與不捨。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>標點符號使用法 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-biandian",
+  "title": "標點符號使用法",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "國學常識",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>標點符號使用法</h1><div class="sub">國文 · 國學常識 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"頓號用法","q":"下列關於「頓號（、）」用法的敘述，何者正確？","choices":["用於一句話結束後的停頓","用於句子中並列的詞語或短語之間","用於引用他人說的話","用於書名和篇名"],"answer":1,"explain":"頓號（、）用於句子內部並列的詞、短語之間，表示較短的停頓，例如「桌上有筆、墨、紙、硯。」句末的停頓用句號，引用用引號，書名用書名號。"},{"level":"basic","topic":"句號用法","q":"一個語意完整、不帶疑問或感嘆語氣的句子結束時，應使用哪一種標點符號？","choices":["句號（。）","問號（？）","驚嘆號（！）","分號（；）"],"answer":0,"explain":"句號（。）用於一句語意完整的敘述句、直述句末尾。疑問句用問號，感嘆句用驚嘆號，並列分句之間才用分號。"},{"level":"basic","topic":"書名號用法","q":"要標示一本書的書名，例如「論語」，依教育部標準應使用下列哪一種標點符號？","choices":["引號「」","夾注號（）","書名號《》","破折號——"],"answer":2,"explain":"書名號分為《》與〈〉。書名、報紙、雜誌名用《》，如《論語》；篇名、單篇文章名用〈〉。引號用於引用、夾注號用於補充說明。"},{"level":"basic","topic":"引號用法","q":"在台灣的標點符號用法中，引用一段話時，最外層通常先使用哪一種引號？","choices":["雙引號『』","單引號「」","括號（）","書名號《》"],"answer":1,"explain":"依教育部《重訂標點符號手冊》，引號分單引號「」與雙引號『』，先用單引號「」，若引號之內還需再引用，才使用雙引號『』。例如：他說：「老師常講『學而時習之』的道理。」"},{"level":"basic","topic":"刪節號用法","q":"下列關於「刪節號（……）」的敘述，何者正確？","choices":["表示疑問的語氣","表示話語的省略、未完或斷斷續續","表示並列詞語的停頓","表示一句話的結束"],"answer":1,"explain":"刪節號（……）用來表示語句的省略、意思未盡、聲音斷續或欲言又止。依台灣標準寫作六個點，佔兩格。並列停頓用頓號，句末用句號。"},{"level":"basic","topic":"分號用法","q":"「分號（；）」最主要的用途是下列何者？","choices":["標示並列複句中各分句之間的停頓","標示疑問句的結束","標示書名或篇名","標示引用的話語"],"answer":0,"explain":"分號（；）用於分隔複句中並列而語意相關的分句，停頓程度大於逗號、小於句號。例如：「白天，他認真工作；晚上，他勤奮讀書。」"},{"level":"basic","topic":"冒號用法","q":"下列哪一種情況最適合使用「冒號（：）」？","choices":["表示驚訝或命令的語氣","並列的兩個名詞之間","總起下文或提示引語、舉例、解釋","表示一段話的省略"],"answer":2,"explain":"冒號（：）用於提示下文，常見於稱呼語之後、舉例、解釋或引出引語之前。例如：「他說：『我明天會來。』」感嘆用驚嘆號，省略用刪節號。"},{"level":"basic","topic":"問號用法","q":"下列哪一個句子的句末應使用「問號（？）」？","choices":["今天的天氣真好","你昨天為什麼沒來上學","請你把窗戶關上","這本書非常好看"],"answer":1,"explain":"問號（？）用於疑問句的句末。「你昨天為什麼沒來上學？」是詢問語氣的疑問句。其餘分別為敘述句、祈使句、敘述句，應用句號。"},{"level":"basic","topic":"驚嘆號用法","q":"下列關於「驚嘆號（！）」用法的敘述，何者正確？","choices":["用於並列詞語之間","用於感嘆、驚訝、命令或祈求等強烈語氣的句末","用於引用他人的話","用於解釋或補充說明"],"answer":1,"explain":"驚嘆號（！）用於表達感嘆、驚訝、讚美、命令、祈求等強烈情感的句末，如「多麼美麗的風景啊！」引用用引號，補充說明用夾注號。"},{"level":"basic","topic":"夾注號用法","q":"若要在句子中插入補充說明或註解的文字，最適合使用下列哪一種標點符號？","choices":["夾注號（）","頓號、","分號；","書名號《》"],"answer":0,"explain":"夾注號用於行文中插入註釋或補充說明，形式有括號（）與破折號——兩種。例如：「國父孫中山先生（本名孫文）領導革命。」"},{"level":"basic","topic":"逗號用法","q":"「逗號（，）」在句子中的主要作用是下列何者？","choices":["表示一句話完全結束","表示句子中間語氣的停頓","專門用來標示書名","專門用來標示對話"],"answer":1,"explain":"逗號（，）表示一句話中間語氣的停頓，用以分隔句中的成分。句子完全結束用句號，書名用書名號，對話用引號。"},{"level":"basic","topic":"篇名號用法","q":"要標示一篇文章的篇名，例如收在課本中的〈背影〉一文，應使用下列哪一種符號？","choices":["書名號《》","篇名號〈〉","引號「」","夾注號（）"],"answer":1,"explain":"單篇文章、詩、篇章的名稱用篇名號〈〉，如〈背影〉；整本書、報刊名稱用書名號《》。二者不可混用。"},{"level":"adv","topic":"標點綜合判斷","q":"下列各句標點符號的使用，何者完全正確？","choices":["他問我：你要不要一起去。","桌上擺著蘋果，香蕉，芭樂等水果。","我最喜歡讀《西遊記》這本書。","你為什麼遲到了。"],"answer":2,"explain":"（三）書名用書名號《西遊記》正確。（一）引語應加引號，且所引為疑問句，末尾應用問號；（二）並列名詞之間應用頓號「蘋果、香蕉、芭樂」；（四）為疑問句，句末應用問號「你為什麼遲到了？」。"},{"level":"adv","topic":"頓號辨析","q":"下列句子中，頓號（、）使用正確的是哪一句？","choices":["我今天很累、想早點休息。","他喜歡打籃球、游泳、跑步。","天氣很好、我們去郊遊吧。","他讀完書、就睡覺了。"],"answer":1,"explain":"頓號只用於並列的詞或短語之間。（二）「籃球、游泳、跑步」是並列詞語，正確。其餘三句是分句之間語氣的停頓，應改用逗號（，）。"},{"level":"adv","topic":"冒號與逗號辨析","q":"「媽媽對我說□明天記得帶傘。」句中方框處最適合填入的標點是？","choices":["逗號，","冒號：","頓號、","分號；"],"answer":1,"explain":"冒號（：）用於提示引語，「說」之後要引出說話的內容，應用冒號並配合引號：「媽媽對我說：『明天記得帶傘。』」逗號無法提示引語。"},{"level":"adv","topic":"分號辨析","q":"下列何者最適合使用分號（；）？","choices":["他買了筆□墨□紙□硯。","知之為知之□不知為不知。","你今天要去哪裡□","這幅畫真美□"],"answer":1,"explain":"分號用於並列複句的分句之間。「知之為知之；不知為不知」前後兩分句結構相對、語意並列，用分號最恰當。（一）並列詞語用頓號，（三）用問號，（四）用驚嘆號或句號。"},{"level":"adv","topic":"破折號用法","q":"下列哪一句的破折號（——）用來表示「聲音的延長」？","choices":["這件事——我早就知道了。","嗚——，火車慢慢進站了。","他是我最好的朋友——小明。","時間——是最好的良藥。"],"answer":1,"explain":"破折號可表示聲音的延續、拉長。（二）「嗚——」摹擬火車鳴笛聲的延長。（一）表語意轉折或補充，（三）（四）表解釋說明。"},{"level":"adv","topic":"刪節號辨析","q":"「他吞吞吐吐地說：『我……我不是故意的……』」句中刪節號主要表達的是？","choices":["列舉未盡的事物","說話者斷斷續續、遲疑難言的語氣","一句話的正常結束","並列詞語的停頓"],"answer":1,"explain":"刪節號在此表示說話者情緒遲疑、語句斷斷續續、欲言又止的樣子，屬於「聲音斷續」的用法，而非單純省略列舉。"},{"level":"adv","topic":"書名號辨析","q":"下列各句書名號、篇名號的使用，何者正確？","choices":["我讀了〈紅樓夢〉這本小說。","課本收錄了《慈烏夜啼》這首詩。","他訂了一份《國語日報》。","老師講解了《背影》這一課。"],"answer":2,"explain":"報紙名稱屬整份刊物，用書名號《國語日報》正確。（一）整本小說應用書名號《紅樓夢》；（二）（四）單篇詩、單課文章應用篇名號〈慈烏夜啼〉、〈背影〉。"},{"level":"adv","topic":"問號誤用辨析","q":"下列句子的句末，何者「不應」使用問號（？）？","choices":["你叫什麼名字","我不知道他到底是誰","難道你不明白嗎","要不要一起去打球"],"answer":1,"explain":"「我不知道他到底是誰」雖含疑問詞「誰」，但整句是敘述「我不知道」的直述句，並非提出疑問，句末應用句號。有疑問詞不代表就是疑問句，須看全句語氣。"},{"level":"adv","topic":"驚嘆號辨析","q":"下列哪一個句子最適合在句末使用驚嘆號（！）？","choices":["請問現在幾點了","他正在教室裡看書","小心，車子來了","我打算明天去圖書館"],"answer":2,"explain":"「小心，車子來了！」帶有警告、急切的強烈語氣，適合用驚嘆號。（一）為疑問句用問號，（二）（四）為平鋪直敘的敘述句用句號。"},{"level":"adv","topic":"夾注號辨析","q":"「這種植物（俗稱含羞草）碰到就會合起葉子。」句中括號的作用是？","choices":["表示語氣的停頓","插入補充說明的註解","表示引用他人的話","表示聲音的延長"],"answer":1,"explain":"括號在此為夾注號，用來插入對「這種植物」的補充說明（俗稱含羞草），屬註釋、補充用法。引用用引號，聲音延長用破折號。"},{"level":"adv","topic":"標點綜合改錯","q":"「哇這片楓葉紅得多美啊」這句話，最適當的標點方式是下列何者？","choices":["哇，這片楓葉紅得多美啊。","哇！這片楓葉紅得多美啊！","哇、這片楓葉紅得多美啊？","哇：這片楓葉紅得多美啊，"],"answer":1,"explain":"「哇」是感嘆詞，後接驚嘆號表強烈情緒；整句是讚嘆語氣，句末也應用驚嘆號，故「哇！這片楓葉紅得多美啊！」最恰當。頓號、冒號、問號在此皆不合語氣。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

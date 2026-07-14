@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>工具書使用法與資料檢索 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-gongju-kang",
+  "title": "工具書使用法與資料檢索",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "國學常識",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>工具書使用法與資料檢索</h1><div class="sub">國文 · 國學常識 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"工具書概念","q":"下列關於「工具書」的敘述，何者最正確？","choices":["工具書是用來查檢資料、解決疑難的書籍，通常不必從頭讀到尾","工具書必須從第一頁依序讀完，才能了解全部內容","工具書只有字典一種，沒有其他類型","工具書是專門收錄小說故事的書籍"],"answer":0,"explain":"工具書（如字典、辭典、百科全書、年鑑等）供人隨時查閱特定資料，依需要檢索即可，不必像一般書籍逐頁閱讀。"},{"level":"basic","topic":"字典與辭典","q":"「字典」與「辭典（詞典）」最主要的差別是什麼？","choices":["字典以解釋單字為主，辭典（詞典）則兼收詞語","字典只收詞語，辭典只收單字","兩者內容完全相同，只是名稱不同","字典是給大人看的，辭典是給小孩看的"],"answer":0,"explain":"字典以說解單字的形、音、義為主（如《康熙字典》）；辭典（詞典）除單字外，還收錄詞語、成語並說明用法（如《國語辭典》）。"},{"level":"basic","topic":"檢字法種類","q":"一般字典、辭典常用的檢字法，不包括下列哪一種？","choices":["顏色檢字法","部首檢字法","筆畫檢字法","注音（音序）檢字法"],"answer":0,"explain":"常見的檢字法有部首檢字法、筆畫檢字法與注音檢字法三種，並沒有「顏色檢字法」。"},{"level":"basic","topic":"部首檢字法","q":"使用「部首檢字法」查字時，首先要做的是什麼？","choices":["判斷這個字的部首","數出這個字的總筆畫","念出這個字的注音","查出這個字的解釋"],"answer":0,"explain":"部首檢字法先辨認字的部首，再依部首筆畫找到該部，最後數「扣除部首後剩下的筆畫」，即可找到目標字。"},{"level":"basic","topic":"注音檢字法","q":"想用「注音檢字法」查一個字，必須先具備什麼條件？","choices":["知道這個字怎麼念","知道這個字的部首","知道這個字的意思","知道這個字出自哪一課"],"answer":0,"explain":"注音檢字法依注音符號（ㄅㄆㄇㄈ…）的順序排列，必須先會念這個字，才能依讀音查到它。"},{"level":"basic","topic":"檢字法選用","q":"遇到一個「不會念、也不確定意思」的生字，最適合先用下列哪種方法查字典？","choices":["部首檢字法","注音檢字法","先隨便猜一個讀音，再用注音檢字法查","直接跳過，不必查字典"],"answer":0,"explain":"不會念就無法用注音檢字法，此時應以部首檢字法（或筆畫檢字法），依字形找到該字，再得知它的音與義；亂猜讀音並不可靠。"},{"level":"basic","topic":"重要字書","q":"東漢許慎所編、首創以「部首」來編排文字的字書是下列哪一部？","choices":["《說文解字》","《康熙字典》","《國語辭典》","《辭海》"],"answer":0,"explain":"《說文解字》為東漢許慎所著，是我國第一部有系統分析字形、說解字義的字典，首創以部首編排，影響後世字典甚鉅。"},{"level":"basic","topic":"工具書用途","q":"想廣泛了解「某一主題的整體知識與相關背景」，最適合查閱下列哪一類工具書？","choices":["百科全書","注音符號表","電話號碼簿","火車時刻表"],"answer":0,"explain":"百科全書分門別類介紹各種知識，內容廣博而有系統，適合對某一主題作全面性的了解。"},{"level":"basic","topic":"圖書分類","q":"在圖書館裡，中文圖書大多依「十大類」來分類，這樣做最主要的目的是什麼？","choices":["方便讀者依類尋找，也利於館方整理書籍","讓書架看起來比較漂亮","限制讀者只能借某一類的書","依照書的價錢高低來排列"],"answer":0,"explain":"圖書分類（如賴永祥中國圖書分類法）將圖書分為十大類並編給索書號，方便讀者依類別快速找到所需書籍，也利於館方管理。"},{"level":"basic","topic":"圖書分類","q":"依中文圖書分類法，《唐詩三百首》這類文學作品應歸於下列哪一大類？","choices":["語文類（800）","哲學類（100）","自然科學類（300）","藝術類（900）"],"answer":0,"explain":"中文圖書分類法中，800 為語文類，收錄語言文字與文學作品，《唐詩三百首》屬中國文學，應歸於此類。"},{"level":"basic","topic":"網路檢索","q":"利用搜尋引擎在網路上查資料時，最重要的第一步通常是什麼？","choices":["選定適當的「關鍵字」來搜尋","先把電腦關機再重開","把整篇文章一字不漏全部打進去","隨手點開跳出的廣告連結"],"answer":0,"explain":"網路檢索須先擬定切題的關鍵字，關鍵字越精準，搜尋結果越能符合需要；輸入整段文字或亂點連結都無助於找到正確資料。"},{"level":"basic","topic":"目錄與索引","q":"一本書「前面」依章節先後列出各篇章名稱與頁碼的部分，通常稱為什麼？","choices":["目錄","索引","附錄","版權頁"],"answer":0,"explain":"目錄置於書前，依內容先後列出篇章名稱及頁碼；索引則多置於書後，依字順或主題列出重要詞語所在的頁碼，兩者作用不同。"},{"level":"adv","topic":"檢字法辨識","q":"小華讀到「饕餮」二字，既不會念、部首也不易判斷，於是決定「數總筆畫」來查字典。他採用的是哪一種檢字法？","choices":["筆畫檢字法","部首檢字法","注音檢字法","目錄檢字法"],"answer":0,"explain":"依「字的總筆畫數」多寡排列來查檢的方法，稱為筆畫檢字法；當不會念、部首又難以判斷時，可用它來查字。部首檢字法須先定部首、注音檢字法須先會念，皆不合題意，而「目錄檢字法」並非查字方法。"},{"level":"adv","topic":"部首判斷","q":"下列各字與其「部首」的配對，何者正確？","choices":["「聞」的部首是「耳」","「聞」的部首是「門」","「街」的部首是「土」","「相」的部首是「木」"],"answer":0,"explain":"「聞」從耳、門聲，部首為「耳」而非外框的「門」；「街」的部首是「行」，「相」的部首是「目」。判斷部首常須顧及字義所屬，不能只看字的外框。"},{"level":"adv","topic":"注音音序","q":"依照注音符號的排列順序（ㄅㄆㄇㄈ…），下列四個字何者應排在「最前面」？","choices":["貓（ㄇㄠ）","兔（ㄊㄨ）","鹿（ㄌㄨ）","狗（ㄍㄡ）"],"answer":0,"explain":"注音符號聲母順序為ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏ…，其中ㄇ排在ㄊ、ㄌ、ㄍ之前，故「貓（ㄇㄠ）」最先。"},{"level":"adv","topic":"筆畫計算","q":"用筆畫檢字法查「明」字時，應把它歸在「幾畫」之下？","choices":["8 畫","6 畫","9 畫","10 畫"],"answer":0,"explain":"「明」由「日」（4畫）與「月」（4畫）組成，總筆畫為 8 畫，故查筆畫檢字時歸於 8 畫之下。"},{"level":"adv","topic":"部首檢字流程","q":"使用部首檢字法查字，正確的步驟順序應是下列何者？","choices":["先定部首→數部首筆畫找到該部→再數剩餘筆畫→找到字","先數總筆畫→再念注音→最後看部首","先查解釋→再定部首→最後數筆畫","先背下所有部首→再一頁一頁隨意翻找"],"answer":0,"explain":"部首檢字法的步驟是：判斷部首→依部首筆畫在部首索引中找到該部→再數「扣除部首後剩下的筆畫」→即可在該部之下找到目標字。"},{"level":"adv","topic":"圖書分類應用","q":"阿明想借《史記》做歷史報告，依中文圖書分類法，他最可能在哪一大類的書架上找到它？","choices":["史地類（600）","語文類（800）","哲學類（100）","自然科學類（300）"],"answer":0,"explain":"《史記》是記載歷史的著作，依內容性質應歸史地類（600，中國史地）；雖文筆優美，但不因此列入語文類。"},{"level":"adv","topic":"圖書分類辨析","q":"下列書籍與其所屬圖書大類的配對，何者「不正確」？","choices":["《論語》→ 語文類（800）","一本介紹天文的書 → 自然科學類（300）","一本介紹佛教的書 → 宗教類（200）","一本介紹世界地理的書 → 史地類（700，世界史地）"],"answer":0,"explain":"《論語》記載孔子思想，屬哲學類（100，儒家）而非語文類；其餘配對皆正確。圖書分類看的是內容性質，不能只憑文字形式判斷。"},{"level":"adv","topic":"布林邏輯","q":"在資料庫或搜尋引擎中，用「AND」把兩個關鍵字連起來搜尋（例如：颱風 AND 防災），效果通常是什麼？","choices":["縮小範圍，只找出「兩者同時出現」的資料","擴大範圍，只要出現任一關鍵字就列出","把含有這些關鍵字的資料全部排除","依關鍵字筆畫多少來排序結果"],"answer":0,"explain":"布林邏輯中，AND 要求資料須同時包含兩個關鍵字，可縮小、聚焦搜尋範圍；OR 是「任一即可」用來擴大範圍；NOT 則用來排除特定關鍵字。"},{"level":"adv","topic":"資料評估","q":"從網路上查到一則資料，想判斷它是否可信，下列做法何者「最恰當」？","choices":["查看作者與來源、發布日期，並和其他可靠資料相互核對","只要點閱人數多、分享數高，就認定它一定正確","只看聳動的標題，不必理會內容與出處","凡是網路上的資料一律照單全收，不需查證"],"answer":0,"explain":"評估網路資料應留意來源、作者、發布時間與內容正確性，並與其他可靠資料交叉查證；點閱數高或標題吸引人，並不代表內容正確。"},{"level":"adv","topic":"工具書選用","q":"想查「一則成語的出處典故與正確用法」，最適合查閱下列哪一種工具書？","choices":["成語辭典","世界地圖集","英漢字典","電話號碼簿"],"answer":0,"explain":"成語辭典專門收錄成語，解釋其意義、典故來源與用法示例，最適合查檢成語的出處與正確用法。"},{"level":"adv","topic":"工具書選用","q":"想查詢「去年某國的人口與經濟統計數字」，下列哪一種工具書最合適？","choices":["年鑑","成語辭典","《說文解字》","唐詩選集"],"answer":0,"explain":"年鑑逐年編纂，彙整某一年度的重要事件與統計資料，最適合查閱最新或特定年度的統計數據。"},{"level":"adv","topic":"檢字法限制","q":"當「同音字」很多時，單用注音檢字法可能遇到什麼困難？","choices":["同音的字會集中排在一起，仍須逐一比對字形才能找到目標字","注音檢字法會完全查不到任何字","同音字會自動消失，不再出現在字典裡","注音檢字法只能查部首，不能查到單字"],"answer":0,"explain":"注音相同的字會排在一起，讀音只能把範圍縮小，仍須就字形逐一比對，才能確定所要找的字；這正是注音檢字法在同音字多時的不便之處。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
