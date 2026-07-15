@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>善用時間的方法 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-shanyong",
+  "title": "善用時間的方法",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>善用時間的方法</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈善用時間的方法〉的作者是誰？","choices":["魯迅","李偉文","金蘭都","姚仁祿"],"answer":1,"explain":"本課作者為李偉文（牙醫師、荒野保護協會榮譽理事長）。魯迅、金蘭都、姚仁祿等人是文中被引用的對象，並非本文作者。"},{"level":"basic","topic":"出處","q":"本課選自作者的哪一本著作？","choices":["《海綿裡的水》","《時間簡史》","《給自己最好的禮物：李偉文最想與你分享的60句話》","《我的荒野生活》"],"answer":2,"explain":"本課節選自李偉文《給自己最好的禮物：李偉文最想與你分享的60句話》（時報出版）。《時間簡史》為霍金著作，其餘為虛設書名。"},{"level":"basic","topic":"文體","q":"就文體而言，〈善用時間的方法〉屬於下列何者？","choices":["文言記敘文","古典詩歌","應用書信","白話說明、議論文"],"answer":3,"explain":"本文以白話文說明並闡述作者對時間管理的看法，兼具說明與議論的性質，屬白話說明議論文（論說文）。"},{"level":"basic","topic":"主旨","q":"依作者之見，真正的時間管理，關鍵在於下列何者？","choices":["買更好的行事曆","熬夜開夜車趕進度","管理自己要做的事","把行程排到最滿"],"answer":2,"explain":"作者強調真正的問題不在「管理時間」，而在「管理自己」──認清並管理自己真正該做的事。"},{"level":"basic","topic":"名句引用","q":"「時間就像海綿裡的水，如果你願意擠，總還是有的。」這句話出自誰？","choices":["魯迅","李偉文","威廉·考柏","金蘭都"],"answer":0,"explain":"此為魯迅的名言，作者引用以說明只要願意想辦法，時間總能擠得出來。"},{"level":"basic","topic":"修辭","q":"「時間就像海綿裡的水」這一句運用了哪一種修辭？","choices":["設問","譬喻","誇飾","排比"],"answer":1,"explain":"以「海綿裡的水」比喻「時間」，本體、喻詞、喻體俱全，屬譬喻（明喻）修辭。"},{"level":"basic","topic":"成語","q":"下列哪一個成語是用來形容「時間過得很快」？","choices":["揠苗助長","守株待兔","光陰似箭","亡羊補牢"],"answer":2,"explain":"光陰似箭形容時光飛逝；揠苗助長喻急於求成、守株待兔喻不知變通、亡羊補牢喻事後補救。"},{"level":"basic","topic":"文意理解","q":"韓國學者金蘭都建議：與其沉迷線上遊戲，不如多做什麼？","choices":["多閱讀","多睡覺","多逛街","多打電動"],"answer":0,"explain":"金蘭都主張放下線上遊戲、多閱讀，把時間投入更有意義的事，以充實自我。"},{"level":"basic","topic":"文章脈絡","q":"本文行文由淺入深，其論述順序最接近下列何者？","choices":["善用時間→擠出時間→浪費時間","擠出時間→開發時間→善用時間","浪費時間→後悔→放棄","賺錢→花錢→存錢"],"answer":1,"explain":"全文脈絡從「擠出時間」談到「開發、善用時間」，層層遞進，條理分明。"},{"level":"basic","topic":"詞義","q":"「稍縱即逝」的意思最接近下列何者？","choices":["慢慢地流逝","永遠不會消失","越來越多","稍一放鬆就消失不見"],"answer":3,"explain":"稍縱即逝指時間或機會稍一放鬆便消失，強調必須及時把握。"},{"level":"basic","topic":"名句引用","q":"文中引用詩人威廉·考柏之語，指出真正快樂的唯一來源是什麼？","choices":["為自己看重的意義而花費時間","賺到很多金錢","擁有很多空閒","得到別人的稱讚"],"answer":0,"explain":"威廉·考柏說：真正快樂的唯一來源，是為了某種我們看重的意義而花費時間、生命。"},{"level":"adv","topic":"寫作手法","q":"作者在文中引用魯迅、金蘭都、威廉·考柏等人的話，主要用意是？","choices":["炫耀自己認識很多名人","湊足文章的字數","表示自己沒有想法","藉名人之言增強說服力，闡明時間觀"],"answer":3,"explain":"引用名言（引用修辭）能佐證論點、增強說服力，使關於時間管理的主張更具信服力。"},{"level":"adv","topic":"寓意","q":"「海綿裡的水，如果你願意擠，總還是有的」一句，最想傳達的道理是？","choices":["海綿的吸水力很強","時間須主動去擠，事在人為","人完全不需要休息","時間是取之不盡、用之不竭的"],"answer":1,"explain":"此句比喻只要願意想辦法，總能擠出時間，強調事在人為、主動運用，而非時間無限。"},{"level":"adv","topic":"文意理解","q":"文中引用建築師姚仁祿的觀點，主張人應如何看待醒著的時間？","choices":["盡量拿來睡覺補眠","全部用來賺錢","順著因緣，把時間轉化為對人有益的資源","什麼都不做以免出錯"],"answer":2,"explain":"姚仁祿主張善用清醒的時間，順著因緣，把時間變成礦產般的資源，適時開採，讓人們得到分享。"},{"level":"adv","topic":"修辭","q":"金蘭都建議「看電視，不如觀賞電影；聊八卦，不如與人深度交談」，這種兩相對照、凸顯高下的表達最接近哪種修辭手法？","choices":["映襯（對比）","頂真","誇飾","摹寫"],"answer":0,"explain":"將兩種做法並列對照、凸顯優劣高下，屬映襯（對比）手法；此為金蘭都原文中的對照句式。"},{"level":"adv","topic":"優先順序","q":"依本文對「善用時間」的看法，下列做法何者最恰當？","choices":["事情不分大小一律照做","先做最輕鬆的事，拖延重要的事","先分辨輕重緩急，捨棄不重要的事","把所有零碎時間都拿來滑手機"],"answer":2,"explain":"作者強調要認清優先順序、捨棄不重要的事，才能把時間留給真正重要的事。"},{"level":"adv","topic":"成語辨析","q":"下列成語中，何者「不是」形容時間過得飛快？","choices":["光陰似箭","度日如年","白駒過隙","日月如梭"],"answer":1,"explain":"度日如年形容時間過得很慢、日子難熬；其餘三者皆形容時光飛逝。"},{"level":"adv","topic":"字形","q":"下列詞語，何者書寫完全正確？","choices":["稍縱既逝","梢縱即逝","消縱即逝","稍縱即逝"],"answer":3,"explain":"正確寫法為「稍縱即逝」；「既」「梢」「消」分別為形近或音近的誤字。"},{"level":"adv","topic":"標點","q":"在文章中直接引用他人說過的原話時，最適合使用哪一種標點符號？","choices":["引號「」","破折號──","刪節號……","書名號《》"],"answer":0,"explain":"引用他人原話時用引號「」標示；書名號用於書名，破折號、刪節號功能各不相同。"},{"level":"adv","topic":"綜合理解","q":"下列敘述，何者最符合本文作者的主張？","choices":["時間不夠就少睡覺硬撐","把完整而集中的時間，投入自己認為真正重要的事","把行程排得越滿就是越善用時間","有空就盡量放空發呆最重要"],"answer":1,"explain":"作者主張以完整、集中的時間去做自己真正重要的事，生活才會覺得有意義。"},{"level":"adv","topic":"字詞","q":"「善用時間的方法」中的「善」字，在此的意思最接近下列何者？","choices":["善良（指人的品性）","慈善、捐助","妥善地、好好地（修飾「用」）","姓氏"],"answer":2,"explain":"「善用」的「善」意為妥善、好好地，用來修飾動詞「用」，作狀語，即好好地運用。"},{"level":"adv","topic":"反面理解","q":"依作者觀點，下列何者最可能是被「不知不覺消耗掉」的時間？","choices":["漫無目的地滑手機、看電視","為重要目標排定計畫","專注閱讀一本好書","與人深度交談、思考"],"answer":0,"explain":"作者指出許多時間常被習慣性、無目的的行為（如漫看電視、上網）悄悄耗掉，難以察覺。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

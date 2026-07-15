@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>孩子的鐘塔 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-zhongta",
+  "title": "孩子的鐘塔",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "李黎"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>孩子的鐘塔</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈孩子的鐘塔〉的作者李黎，其本名為何？","choices":["鮑利黎","潘希珍","張秀亞","余光中"],"answer":0,"explain":"李黎本名鮑利黎，祖籍安徽和縣，民國三十七年（西元一九四八年）生於南京，於臺灣長大，畢業於國立臺灣大學歷史系，後赴美就讀普渡大學政治學研究所，現居美國加州，從事文學創作與翻譯。"},{"level":"basic","topic":"出處","q":"〈孩子的鐘塔〉一文選自作者李黎的哪一部著作？","choices":["《尋找紅氣球》","《城南舊事》","《雅舍小品》","《背影》"],"answer":0,"explain":"本文選自李黎的《尋找紅氣球》。《城南舊事》為林海音作品，《雅舍小品》為梁實秋作品，〈背影〉則為朱自清散文，皆非本文出處。"},{"level":"basic","topic":"文體","q":"本課〈孩子的鐘塔〉的文體屬於下列何者？","choices":["白話文的散文","文言文的論說文","古典格律詩","章回體小說"],"answer":0,"explain":"〈孩子的鐘塔〉以白話文寫成，藉遊歷鐘塔敘事抒懷，屬於散文（記敘兼抒情）。"},{"level":"basic","topic":"字詞義","q":"「鐘塔矗立在寬闊的草地上」，句中「矗立」的意思最接近下列何者？","choices":["高聳直立","傾斜倒塌","並排羅列","隱沒消失"],"answer":0,"explain":"「矗立」指高聳而直立的樣子，用以形容鐘塔高大挺立於草地上的形象。"},{"level":"basic","topic":"字音","q":"「矗立」的「矗」字，正確的讀音為下列何者？","choices":["ㄔㄨˋ","ㄓˊ","ㄗㄨˊ","ㄙㄨˋ"],"answer":0,"explain":"「矗」讀作ㄔㄨˋ，由三個「直」組成，本義即高聳直立，如「矗立」。"},{"level":"basic","topic":"字詞義","q":"「漣漪」一詞在文中指的是什麼？","choices":["水面上細微的波紋","高聳的山峰","濃密的雲霧","轟隆的雷聲"],"answer":0,"explain":"「漣漪」（ㄌㄧㄢˊ ㄧ）指水面上細微的波紋。文中以漣漪一圈圈擴散，比喻格林夫婦的善行影響逐漸擴大。"},{"level":"basic","topic":"內容","q":"「孩子的鐘塔」座落於美國何處？","choices":["舊金山北方的波地佳灣","紐約的曼哈頓島","洛杉磯的市中心","首都華盛頓特區"],"answer":0,"explain":"鐘塔矗立在舊金山北方波地佳灣的寬闊草地上，海風吹動時，大小鐘會發出清脆愉悅的鳴響。"},{"level":"basic","topic":"內容","q":"鐘塔上的一百四十口小鐘，主要來自義大利各地的哪些來源？","choices":["家庭、教會、學校","政府、軍隊、醫院","銀行、商店、工廠","報社、電臺、球隊"],"answer":0,"explain":"這一百四十口小鐘來自義大利各地的家庭、教會、學校，代表眾人的心意匯聚；中間另有一口由名廠特鑄、經教皇祝福的大鐘。"},{"level":"basic","topic":"內容","q":"關於鐘塔中央的那一口大鐘，下列敘述何者正確？","choices":["由名廠特鑄，並經教皇祝福過","為尼可拉斯生前親手鑄造","從古羅馬遺跡中出土","是格林家世代相傳的傳家寶"],"answer":0,"explain":"中央的大鐘由名廠特別鑄造，且曾被教皇祝福過，鐘上鐫刻著尼可拉斯與七名器官受惠者的姓名。"},{"level":"basic","topic":"內容","q":"「尼可拉斯效應」原本指的是什麼現象？","choices":["因格林夫婦的義舉，使器官捐贈風氣大為增加","鐘聲隨海風傳遍全世界","觀光客大量湧入波地佳灣","義大利槍枝犯罪率不斷升高"],"answer":0,"explain":"格林夫婦捐出愛子器官的義舉震撼義大利，使當地器官捐贈的意願成倍增加，媒體稱此現象為「尼可拉斯效應」。"},{"level":"basic","topic":"內容","q":"小男孩尼可拉斯不幸身亡的原因是下列何者？","choices":["隨家人到義大利旅遊時，遭歹徒槍擊","罹患先天性心臟疾病","登山時發生墜谷意外","在海邊戲水時溺水"],"answer":0,"explain":"尼可拉斯是隨家人到義大利旅遊途中，遭歹徒開槍誤擊而身亡。（注意：因先天性心臟疾病去世的是作者李黎的兒子，切勿與尼可拉斯混淆。）"},{"level":"adv","topic":"主旨","q":"綜觀全文，〈孩子的鐘塔〉所要傳達的主旨最接近下列何者？","choices":["化小愛為大愛，讓愛延續與傳揚","描寫異國山水風光之壯麗","抒發久居海外的思鄉之愁","說明鑄造銅鐘的工藝技術"],"answer":0,"explain":"本文透過格林夫婦捐贈亡子器官、建造鐘塔紀念的故事，闡述將喪子的「小愛」化為助人的「大愛」，讓愛得以延續傳揚的可貴。"},{"level":"adv","topic":"修辭","q":"文中以「漣漪」一圈圈擴散，比喻格林夫婦的義舉逐漸影響全世界，這運用了哪一種修辭手法？","choices":["譬喻","設問","誇飾","頂真"],"answer":0,"explain":"以具體的「漣漪」擴散來比方抽象的善行影響力不斷擴大，屬於「譬喻」修辭，能使道理形象鮮明、易於體會。"},{"level":"adv","topic":"修辭","q":"「器官捐贈的意願成倍成倍地增加」，句中「成倍成倍」的寫法屬於哪一種修辭？","choices":["類疊","映襯","轉化","借代"],"answer":0,"explain":"「成倍成倍」重複同一詞語，屬「類疊」修辭中的疊詞（類字）用法，藉反覆強調增加幅度之大、速度之快。"},{"level":"adv","topic":"詞義引申","q":"「尼可拉斯效應」後來被引申、泛指為下列何種意義？","choices":["一個善行義舉，引起無數的共鳴與迴響","一項災難事件，造成連鎖性的破壞","一種流行風潮，帶動龐大的商業利益","一場政治運動，引發激烈的社會對立"],"answer":0,"explain":"「尼可拉斯效應」由格林夫婦的具體事件出發，後來被引申泛指：一個善行義舉能引起無數人的共鳴與迴響，如漣漪般擴散。"},{"level":"adv","topic":"內容理解","q":"中央大鐘上除了尼可拉斯的名字外，還鐫刻了哪些人的姓名？","choices":["接受他器官捐贈而重獲新生的七名受惠者","格林夫婦與其他家族親人","義大利歷任的七位教皇","捐款建塔的七個國家代表"],"answer":0,"explain":"大鐘上鐫刻著尼可拉斯以及因他的器官捐贈而重獲新生的七名受惠者姓名，象徵他的生命在別人身上延續。"},{"level":"adv","topic":"作者與情感","q":"作者李黎能深切體會格林夫婦的心情，與她自身哪一段經歷最有關聯？","choices":["中年痛失愛子，並捐出亡兒的眼角膜遺愛人間","年輕時曾長期旅居義大利","曾親自參與鐘塔的興建工程","以鑄鐘為家族世代的行業"],"answer":0,"explain":"李黎中年時痛失長子，並捐出亡兒的眼角膜遺愛人間，另著有《悲懷書簡》悼念亡子；正因有相似的喪子之痛與大愛之舉，她更能體會格林夫婦化悲痛為大愛的心境。"},{"level":"adv","topic":"作者","q":"下列哪兩部作品是李黎因喪子之痛、為紀念亡兒而寫成的？","choices":["《悲懷書簡》與《晴天筆記》","《尋找紅氣球》與《城南舊事》","《背影》與《荷塘月色》","《雅舍小品》與《下棋》"],"answer":0,"explain":"李黎痛失長子後寫下《悲懷書簡》悼念亡兒，又以《晴天筆記》記錄么子天晴出生成長，並寄託對亡兒的永恆懷念，兩書皆源於喪子之痛。《尋找紅氣球》是本課出處而非紀念亡兒之作；其餘選項分別為朱自清、林海音、梁實秋等人作品。"},{"level":"adv","topic":"字詞義","q":"「鐘上鐫刻著受惠者的姓名」，句中「鐫刻」的意思為何？","choices":["雕刻","熔化","敲擊","拋光"],"answer":0,"explain":"「鐫刻」（ㄐㄩㄢ ㄎㄜˋ）即雕刻之意，指在鐘體上刻上文字。"},{"level":"adv","topic":"字音","q":"「罹難」、「罹患」的「罹」字，正確讀音為何？","choices":["ㄌㄧˊ","ㄌㄨㄛˊ","ㄌㄧˋ","ㄨㄟˊ"],"answer":0,"explain":"「罹」讀作ㄌㄧˊ，有遭受、遭逢之意，如「罹難」（遭遇災難而死）、「罹患」（染上疾病）。"},{"level":"adv","topic":"題旨","q":"本文題目為「孩子的鐘塔」，其中「孩子」主要是指誰？","choices":["因槍擊身亡、被建塔紀念的尼可拉斯","作者李黎本人","格林夫婦收養的孤兒","在鐘塔旁玩耍的觀光客兒童"],"answer":0,"explain":"鐘塔是為紀念尼可拉斯而建，故題目「孩子的鐘塔」中的「孩子」即指這位因遭槍擊而身亡的男孩尼可拉斯。"},{"level":"adv","topic":"象徵","q":"海風吹動鐘塔，發出「清脆愉悅」的鳴響，這樣的聲音在文中主要象徵什麼？","choices":["純真生命的延續，彷彿孩子的歡笑","旅人趕路時的匆忙焦躁","天候即將轉壞的警訊","商船進港時的號令"],"answer":0,"explain":"清脆愉悅、如孩子歡笑般的鐘聲，象徵尼可拉斯純真的生命藉由眾人的愛而延續下去，呼應全文化小愛為大愛、讓愛不息的主旨。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

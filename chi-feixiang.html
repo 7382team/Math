@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>飛翔的舞者 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-feixiang",
+  "title": "飛翔的舞者",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>飛翔的舞者</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"本文〈飛翔的舞者〉的作者是誰？","choices":["張文亮","琦君","張曉風","劉墉"],"answer":0,"explain":"〈飛翔的舞者〉的作者是張文亮，他任教於臺灣大學，長期從事科普與自然生態的寫作。"},{"level":"basic","topic":"作者別號","q":"本文作者張文亮任教於臺灣大學，被學生暱稱為什麼教授？","choices":["河馬教授","大象教授","長頸鹿教授","老虎教授"],"answer":0,"explain":"張文亮人稱「河馬教授」，是臺灣大學生物環境系統工程學系的教授，以推廣科普寫作與自然教育聞名。"},{"level":"basic","topic":"題目寓意","q":"題目「飛翔的舞者」指的是下列何者？","choices":["臺灣欒樹的種子","翩翩起舞的蝴蝶","空中飛翔的鳥兒","隨風飄動的落葉"],"answer":0,"explain":"「飛翔的舞者」是作者以譬喻的方式，形容臺灣欒樹的種子隨風飛翔、如舞者般旋轉飄落的姿態。"},{"level":"basic","topic":"主題植物","q":"本文主要介紹的是哪一種植物？","choices":["臺灣欒樹","臺灣杉","油桐","鳳凰木"],"answer":0,"explain":"全文以臺灣欒樹為主角，介紹它的根、葉、開花結果與種子的特性，兼具知性與感性。"},{"level":"basic","topic":"種子構造","q":"依課文所述，欒樹的種子外面長著什麼，使它能隨風飛翔？","choices":["二片薄膜","一層絨毛","堅硬的外殼","黏黏的液體"],"answer":0,"explain":"課文指出每粒種子外面有二片薄膜，如同飛翔的雙翼，能幫助種子隨風傳播，並減低落地時與地面的碰撞。"},{"level":"basic","topic":"水土保持","q":"課文說臺灣欒樹是「水土保持的好幫手」，主要原因為何？","choices":["根系深且枝葉茂盛，能穩定邊坡並減少雨滴對土壤的撞擊","會分泌肥料使土壤肥沃","能吸收空氣中的水氣","會驅趕土中的害蟲"],"answer":0,"explain":"臺灣欒樹根系很深，具有穩定邊坡的功能；茂盛的葉子也能減少雨滴對脆弱土壤的撞擊，因此有助於水土保持。"},{"level":"basic","topic":"開花時間","q":"依課文，臺灣欒樹在七至九月的颱風期會有什麼表現？","choices":["不開花結果，把養分保留下來","大量開花","落葉進入休眠","加速結出果實"],"answer":0,"explain":"颱風期（七至九月）欒樹不開花、不結果，以保留養分，避免花果被強風吹落而白費，等颱風過後才開始開花結果。"},{"level":"basic","topic":"花果期","q":"依課文，臺灣欒樹開花結果的時期會一直持續到什麼時候？","choices":["隔年二月","當年十月","隔年七月","當年年底"],"answer":0,"explain":"課文提到欒樹在颱風期過後才開花結果，並且會持續到隔年二月，果實長期留在樹上。"},{"level":"basic","topic":"果實作用","q":"欒樹的果實長期留在樹上，對生態最主要的作用是什麼？","choices":["成為鳥類的食物","防止蟲害","幫助其他花朵授粉","淨化空氣"],"answer":0,"explain":"果實長時間留在樹上，成為鳥類終年可得的食物，展現植物與動物之間相互依存的關係。"},{"level":"basic","topic":"修辭","q":"「種子落下時，薄膜如同飛翔的雙翼」這句話使用了哪一種修辭？","choices":["譬喻","設問","誇飾","對偶"],"answer":0,"explain":"句中以「如同」把薄膜比作雙翼，是明顯的譬喻（明喻）修辭，用來突顯種子隨風飛翔的特性。"},{"level":"basic","topic":"字音","q":"「臺灣欒樹」的「欒」字，正確讀音為何？","choices":["ㄌㄨㄢˊ","ㄌㄨㄛˋ","ㄌㄩˋ","ㄌㄢˊ"],"answer":0,"explain":"「欒」讀作ㄌㄨㄢˊ，與「鑾」、「孿」同音，指臺灣欒樹這種植物。"},{"level":"basic","topic":"文體","q":"本課〈飛翔的舞者〉的文體屬於下列何者？","choices":["白話文（散文）","文言文","新詩","劇本"],"answer":0,"explain":"本文以白話文寫成，屬於散文；內容為介紹臺灣欒樹的科普說明，同時融入感性的描寫。"},{"level":"adv","topic":"種子薄膜作用","q":"依課文，種子的薄膜除了幫助飛翔傳播之外，還有什麼作用？","choices":["減少陽光直曬、降低水分蒸發，並緩衝落地時的碰撞","增加種子重量使它快速落地","散發香味吸引昆蟲","釋放毒素驅趕動物"],"answer":0,"explain":"薄膜像雙翼般既能隨風傳播、降低與地面的碰撞，也能減少陽光直曬、減少水分蒸發，讓種子附近保持潮溼，有利於發芽。"},{"level":"adv","topic":"颱風期用意","q":"臺灣欒樹在颱風期選擇不開花結果，最主要的用意是什麼？","choices":["保留養分，避免花果被強風吹落而白費","因為害怕陽光","為了等待冬天到來","純粹為了吸引鳥類"],"answer":0,"explain":"颱風期強風豪雨容易吹落花果，欒樹此時不開花結果，把養分保留下來，等風雨過後再開花結果，是順應環境的生存智慧。"},{"level":"adv","topic":"寫作特色","q":"就寫作性質而言，本文最適合歸為下列哪一類？","choices":["兼具文學性的科普（說明）文章","純粹抒情的散文","以說理辯論為主的議論文","虛構情節的小說"],"answer":0,"explain":"本文既介紹臺灣欒樹的知性資訊（根、葉、花果、種子），又融入感性的描述與人生體悟，屬於兼具文學性的科普說明文章。"},{"level":"adv","topic":"題目修辭","q":"題目「飛翔的舞者」以「舞者」來指稱欒樹的種子，運用了何種修辭？","choices":["譬喻","類疊","映襯","頂真"],"answer":0,"explain":"作者以「舞者」為喻依來借指種子（借喻），以具體形象取代抽象敘述，屬於譬喻修辭，使種子飛落的畫面更生動。"},{"level":"adv","topic":"作者專業","q":"作者張文亮的專業領域，與下列何者關係最密切？","choices":["生物環境與水土保持","天文物理","音樂舞蹈","古典戲曲"],"answer":0,"explain":"張文亮任教於臺灣大學生物環境系統工程學系，專長與生態環境、水土保持相關，因此文中對欒樹護坡、保土的說明特別深入。"},{"level":"adv","topic":"名句寓意","q":"「讓我們的心，仍然可以舉著盼望的雙翼去飛翔」這句話，最主要想傳達什麼？","choices":["面對困境仍要懷抱希望、勇敢向前","勸人及時行樂","客觀描寫欒樹的外形","說明種子的化學成分"],"answer":0,"explain":"作者由種子憑雙翼飛翔，聯想到人生：無論遭遇什麼困難景況，都要像種子一樣舉著盼望的雙翼飛翔，展現積極面對逆境的態度。"},{"level":"adv","topic":"說明方法","q":"課文寫欒樹「七至九月颱風期不開花，颱風過後才開花結果，一直持續到隔年二月」，主要運用哪一種說明方式？","choices":["依時間先後（含月分）說明","由遠到近的空間順序說明","以人物對話呈現","大量引用古人名言"],"answer":0,"explain":"這段以七至九月、隔年二月等具體月分，依時間先後說明欒樹的生長變化，屬於時間（數據）說明的手法。"},{"level":"adv","topic":"特有種","q":"課文提到臺灣欒樹是「臺灣特有種」，這句話的意思最接近下列何者？","choices":["原生且主要分布於臺灣的物種","從國外引進的外來種","人工雜交培育出的新品種","已經完全絕種的植物"],"answer":0,"explain":"「特有種」指原生於某一地區、且分布僅限（或主要限）於該地的物種。臺灣欒樹是臺灣的特有種，具有本土代表性。"},{"level":"adv","topic":"植物分類","q":"臺灣欒樹在植物分類上屬於下列哪一科？","choices":["無患子科","薔薇科","菊科","禾本科"],"answer":0,"explain":"臺灣欒樹是無患子科的落葉喬木，為臺灣特有（亞）種，常見於中、南部丘陵坡地，也常被栽種為行道樹。"},{"level":"adv","topic":"四色變化","q":"臺灣欒樹的葉、花、果隨季節由綠轉黃、再轉紅褐，最後成褐色而掉落，因此又被稱為什麼？","choices":["四色樹","常青樹","彩虹樹","變葉木"],"answer":0,"explain":"臺灣欒樹春夏綠葉、初秋黃花、秋末紅褐色蒴果、冬季轉為褐色乾果，色彩豐富，因而有「四色樹」的美稱，是知名的觀賞行道樹。"},{"level":"adv","topic":"全文主旨","q":"綜觀全文，作者藉臺灣欒樹的種子，最想傳達的人生態度是什麼？","choices":["即使面對困難，也要像種子一樣勇敢飛翔、懷抱盼望","凡事順其自然、不必努力","應努力追求名利與地位","把握當下、及時享樂"],"answer":0,"explain":"作者從欒樹種子憑藉雙翼飛翔、落地生根的生命歷程，寄託對人生的期許：面對逆境仍要懷抱盼望、勇敢飛翔，展現堅韌與希望。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

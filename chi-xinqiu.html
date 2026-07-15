@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>心囚 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-xinqiu",
+  "title": "心囚",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "杏林子"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>心囚</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈心囚〉一文的作者是誰？","choices":["琦君","杏林子","張曉風","林海音"],"answer":1,"explain":"〈心囚〉的作者是杏林子。她以樂觀積極的態度面對疾病與人生，作品充滿對生命的熱愛與正向思考。"},{"level":"basic","topic":"作者","q":"杏林子的本名是什麼？","choices":["劉俠","潘希珍","謝婉瑩","陳懋平"],"answer":0,"explain":"杏林子本名劉俠，「杏林子」是她的筆名。她雖飽受病痛，仍創作不輟，是台灣著名的作家。"},{"level":"basic","topic":"作者","q":"杏林子創立了下列哪一個社會福利機構，為身心障礙者謀福利？","choices":["慈濟基金會","創世基金會","伊甸基金會","陽光基金會"],"answer":2,"explain":"杏林子創立「伊甸基金會」（伊甸社會福利基金會），長期為殘障（身心障礙）同胞爭取權益、謀求福利，展現生命的大勇與大愛。"},{"level":"basic","topic":"作者","q":"杏林子自幼罹患下列哪一種疾病，使身體行動逐漸受到侷限？","choices":["小兒麻痺","類風濕關節炎","肌肉萎縮症","紅斑性狼瘡"],"answer":1,"explain":"杏林子約十二歲（小學六年級）起罹患「類風濕關節炎」，全身關節逐漸損壞，行動不便，幾乎無法執筆，但仍熱愛生命、堅持寫作。"},{"level":"basic","topic":"文體","q":"就文體而言，〈心囚〉屬於下列何者？","choices":["文言文小說","白話文散文","古典詩歌","應用文書信"],"answer":1,"explain":"〈心囚〉是一篇以白話文寫成的散文，作者藉由自身經歷抒發感懷並說理，屬於現代散文。"},{"level":"basic","topic":"出處","q":"〈心囚〉一文選自杏林子的哪一部作品？","choices":["《生之歌》","《杏林小記》","《北極第一家》","《現代寓言》"],"answer":1,"explain":"〈心囚〉選自杏林子的散文集《杏林小記》，內容記錄她面對病痛時的體悟與人生哲思。"},{"level":"basic","topic":"主旨","q":"根據〈心囚〉，作者認為真正能「囚禁」一個人的是什麼？","choices":["身體上的疾病","外在的牢籠","心理上的負面情緒","他人的眼光"],"answer":2,"explain":"作者體會出真正囚禁人的並非身體的病痛，而是失望、悲觀、頹喪、憤怒、憂慮等心理上的負面情緒所築成的「看不見的網」。"},{"level":"basic","topic":"字詞","q":"文中「卻心陷囹圄」的「囹圄」一詞，意思是什麼？","choices":["高牆","牢獄","枷鎖","刑罰"],"answer":1,"explain":"「囹圄」（音ㄌㄧㄥˊ ㄩˇ）指牢獄、監牢。文中「看似自由，卻心陷囹圄」用以形容心靈被束縛、監禁的處境。"},{"level":"basic","topic":"修辭","q":"本文將「身囚」與「心囚」相互對照，主要運用了哪一種寫作技巧？","choices":["映襯（對比）","誇飾","頂真","排比"],"answer":0,"explain":"本文以「身體的囚禁」與「心靈的囚禁」正反對照，屬於映襯（對比）的手法，藉此凸顯心態才是決定自由與否的關鍵。"},{"level":"basic","topic":"作者","q":"杏林子的籍貫是下列何處？","choices":["浙江杭州","陝西扶風","江蘇南京","山東濟南"],"answer":1,"explain":"杏林子（劉俠）籍貫為陝西省扶風縣；她的筆名「杏林子」正取自故鄉扶風縣杏林鎮。"},{"level":"basic","topic":"字詞","q":"文中以「枷鎖」比喻什麼？","choices":["身體的疾病","心靈的束縛","外在的規範","沉重的責任"],"answer":1,"explain":"「枷鎖」本是刑具，文中用來比喻「心靈的束縛」；作者強調人只要能突破心靈的枷鎖，便再也沒有什麼能困住他。"},{"level":"basic","topic":"作者","q":"杏林子大約在什麼時候開始為疾病所苦？","choices":["出生時","小學六年級","大學畢業後","中年以後"],"answer":1,"explain":"杏林子約十二歲（小學六年級）起罹患類風濕關節炎，此後長期與病痛共處，卻仍以樂觀態度面對人生。"},{"level":"adv","topic":"寫作特色","q":"本文開頭以「囚犯」的形象起筆，結尾又以「到底誰更像是囚犯」的思索作結，這種安排屬於什麼寫作技巧？","choices":["伏筆","首尾呼應","倒敘","插敘"],"answer":1,"explain":"本文開頭寫「我看來多麼像是一個囚犯」，結尾又以「比起我，到底誰更像是囚犯呢」收束，前後互相照應，屬於「首尾呼應」，使文章結構完整、主旨鮮明。"},{"level":"adv","topic":"修辭","q":"文末「比起我，到底誰更像是囚犯呢？」一句，主要運用了哪一種修辭？","choices":["設問（反問）","譬喻","轉化","借代"],"answer":0,"explain":"此句以問句作結，明知故問、答案已寓於問中，屬於設問中的「反問（激問）」，引導讀者省思，並加強說服力。"},{"level":"adv","topic":"文意理解","q":"「多的是身體健康，卻心理不健全的人；多的是表面歡樂，卻心中痛苦的人。」這兩句主要在表達什麼？","choices":["身體健康最重要","外在與內在常不一致，心靈才是關鍵","快樂的人並不存在","生病的人比較不快樂"],"answer":1,"explain":"此句以對比手法點出：身體健康未必心理健全，表面歡樂未必內心快樂；真正決定一個人是否自由、快樂的，是內在的心靈狀態。"},{"level":"adv","topic":"文意理解","q":"「真正能夠囚住我的，不是身體上的疾病，而是心理上失望、悲觀、頹喪、憤怒、憂慮，築成了一面看不見的網。」這句話最能說明本文的什麼觀點？","choices":["疾病使人失去自由","心態決定一個人是否被囚禁","人應遠離人群","快樂來自身體健康"],"answer":1,"explain":"作者指出真正的囚禁來自負面情緒而非疾病，說明「心態」才是決定人是否自由的關鍵，呼應全文「心囚」的主旨。"},{"level":"adv","topic":"寫作結構","q":"就內容鋪陳而言，本文先敘述自己被病痛侷限的處境，再由此發抒議論、提出見解。這種寫法最接近下列何者？","choices":["純粹寫景","先敘後議","純粹抒情","層層設問"],"answer":1,"explain":"本文先敘述作者親身與疾病共處的經歷，再據此展開對「身囚」與「心囚」的議論，屬於「先敘後議」的說理散文寫法。"},{"level":"adv","topic":"作者精神","q":"由〈心囚〉一文與杏林子的生平，最能看出她具有下列何種精神？","choices":["消極避世","身殘而心不殘、樂觀進取","追名逐利","多愁善感、鬱鬱寡歡"],"answer":1,"explain":"杏林子雖長年受類風濕關節炎折磨，卻熱愛生命、創作不輟，並創立伊甸基金會助人，展現「身殘而心不殘」、樂觀進取、超越逆境的生命精神。"},{"level":"adv","topic":"名句理解","q":"「一個人只要能突破心靈的枷鎖，這個世界就再也沒有什麼能困住他的了。」這句話給我們的啟示是什麼？","choices":["應努力治好疾病","心靈的自由勝過身體的束縛","世界本來就沒有束縛","人要靠他人才能自由"],"answer":1,"explain":"此句強調只要跨越內心的負面情緒與束縛，外在的困境便無法真正限制人；說明心靈的自由比身體的處境更為重要。"},{"level":"adv","topic":"字詞","q":"「鬱鬱寡歡」用來形容一個人的什麼狀態？","choices":["神采奕奕","悶悶不樂","從容自在","怒不可遏"],"answer":1,"explain":"「鬱鬱寡歡」指心情苦悶、悶悶不樂、缺乏歡笑。在本課語境中，正是「心囚」——被負面情緒困住——的具體表現。"},{"level":"adv","topic":"寫作手法","q":"本文開頭以「在許多人眼裡，我看來多麼像是一個囚犯」起筆，這樣的安排有何作用？","choices":["交代寫作時間","由『身囚』的表象引出下文對『心囚』的思辨","純粹描寫外貌","說明疾病的成因"],"answer":1,"explain":"開篇先呈現世人眼中「被病禁錮」的自己（身囚表象），為後文翻轉出「真正的囚禁在於心」的論點鋪路，形成對比與轉折，引人深思。"},{"level":"adv","topic":"作者","q":"關於杏林子的敘述，下列何者正確？","choices":["生於清末，是文言文作家","生於民國三十一年（西元一九四二年）、卒於民國九十二年（西元二○○三年）","終身健康、未曾生病","以寫作武俠小說聞名"],"answer":1,"explain":"杏林子生於民國三十一年（西元一九四二年），卒於民國九十二年（西元二○○三年）；她本名劉俠，是罹病仍熱愛生命、創作不輟的現代散文作家。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

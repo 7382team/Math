@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Giant Panda Is Very Cute 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-k-u3",
+  "title": "The Giant Panda Is Very Cute",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "指示代名詞·形容詞",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>The Giant Panda Is Very Cute</h1><div class="sub">英文 · 指示代名詞·形容詞 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"指示代名詞 this/that","q":"___ is a panda. It is next to me.","choices":["This","These","Those","They"],"answer":0,"explain":"指近處的單數事物用 This（這個）。句中 It is 為單數，且「next to me」表示在旁邊很近，所以用 This。These/Those 為複數，They 是主格代名詞不符句意。"},{"level":"basic","topic":"指示代名詞 that","q":"___ is a bear over there.","choices":["These","Those","That","They"],"answer":2,"explain":"指遠處（over there）的單數事物用 That（那個）。動詞是 is 為單數，所以不能用複數的 These/Those。"},{"level":"basic","topic":"指示代名詞 these","q":"___ are my books. They are new.","choices":["This","That","These","It"],"answer":2,"explain":"指近處的複數事物用 These（這些）。動詞是 are、名詞 books 為複數，所以用 These。This/That 為單數，It 不能接 are。"},{"level":"basic","topic":"指示代名詞 those","q":"___ are pandas. They are far away.","choices":["Those","This","That","It"],"answer":0,"explain":"指遠處（far away）的複數事物用 Those（那些）。pandas 是複數、動詞 are，所以用 Those。"},{"level":"basic","topic":"指示形容詞 this + 單數名詞","q":"This ___ is very cute.","choices":["panda","pandas","are panda","pandaes"],"answer":0,"explain":"This 後面接單數名詞，panda 為單數正確。pandas 是複數不能配 this；are panda 文法錯誤；pandaes 拼字錯誤（正確複數是 pandas）。"},{"level":"basic","topic":"指示形容詞 these + 複數名詞","q":"These ___ are big.","choices":["animal","animals","is animal","an animal"],"answer":1,"explain":"These 後面接複數名詞，animals 為複數正確。These 是「這些」，一定配複數名詞和動詞 are。"},{"level":"basic","topic":"形容詞修飾名詞","q":"It is a ___ panda.","choices":["cute","cutes","cutely","is cute"],"answer":0,"explain":"形容詞放在名詞前面修飾名詞，且形容詞沒有單複數變化，用 cute。cutes 是錯誤（形容詞不加 s）；cutely 是副詞不能修飾名詞。"},{"level":"basic","topic":"形容詞不隨名詞變複數","q":"They are ___ cats.","choices":["bigs","big","a big","biges"],"answer":1,"explain":"形容詞 big 修飾複數名詞 cats，形容詞本身不加 s，所以用 big。bigs/biges 都是錯誤，形容詞永遠不變複數。"},{"level":"basic","topic":"單複數 be動詞 is/are","q":"This panda ___ black and white.","choices":["are","is","am","be"],"answer":1,"explain":"主詞 This panda 為單數，be動詞用 is。are 用於複數，am 只配 I，be 為原形不能直接當動詞。"},{"level":"basic","topic":"單複數 be動詞 is/are","q":"Those dogs ___ very big.","choices":["is","am","are","be"],"answer":2,"explain":"主詞 Those dogs 為複數，be動詞用 are。is 用於單數，所以用 are。"},{"level":"basic","topic":"名詞單複數","q":"I have two ___.","choices":["cat","cats","cate","cates"],"answer":1,"explain":"two（兩隻）表示複數，名詞要加 s 變複數，所以用 cats。cate/cates 為錯誤拼法。"},{"level":"basic","topic":"指示形容詞 that + 單數名詞","q":"That ___ is my teacher.","choices":["woman","women","womans","are woman"],"answer":0,"explain":"That 後面接單數名詞，且動詞是 is，所以用單數 woman。women 是複數（不規則變化），womans 是錯誤拼法。"},{"level":"adv","topic":"句子改錯：this/these單複數","q":"Which is correct?","choices":["This are my books.","These are my books.","These is my books.","This are my book."],"answer":1,"explain":"books 為複數，要用 These（這些）配 are。This 是單數配 is；These is 動詞用錯；This are my book 主詞動詞不一致。只有 These are my books 正確。"},{"level":"adv","topic":"句子改錯：指示代名詞","q":"Which sentence is correct?","choices":["That are pandas.","Those is pandas.","Those are pandas.","That is pandas."],"answer":2,"explain":"pandas 為複數，要用 Those 配 are。That/Those 中，指複數遠處事物用 Those；動詞複數用 are，所以 Those are pandas 正確。"},{"level":"adv","topic":"情境選填：遠近指示","q":"Your friend points to a dog far away and asks about it. You say: \"___ is a nice dog.\"","choices":["This","These","That","Those"],"answer":2,"explain":"遠處（far away）的單數事物用 That。This 指近處，These/Those 為複數。因為只有一隻狗且在遠方，所以用 That。"},{"level":"adv","topic":"情境選填：近處複數","q":"You are holding some pens in your hand. You say: \"___ are my pens.\"","choices":["This","That","These","It"],"answer":2,"explain":"拿在手上（近處）的複數事物用 These。pens 是複數配 are，且在手中很近，所以用 These。"},{"level":"adv","topic":"混合辨析：單複數一致","q":"Choose the correct sentence.","choices":["These animal are cute.","This animals is cute.","These animals are cute.","This animals are cute."],"answer":2,"explain":"These（這些）配複數名詞 animals 和複數動詞 are，三者都要複數一致，所以 These animals are cute 正確。其他選項單複數不一致。"},{"level":"adv","topic":"情境選填：be動詞單複數","q":"There is one panda. It ___ very cute.","choices":["are","is","am","be"],"answer":1,"explain":"只有一隻熊貓（one panda），主詞 It 為單數，be動詞用 is。are 用於複數，不符「one panda」的情境。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

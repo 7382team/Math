@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>做自己的貴人 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-zuoziji",
+  "title": "做自己的貴人",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "郭騰尹"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>做自己的貴人</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈做自己的貴人〉一文的作者是誰？","choices":["郭騰尹","劉墉","林清玄","侯文詠"],"answer":0,"explain":"本文作者為郭騰尹，是知名的企業講師與勵志作家，文章常以生活故事勉人積極進取。劉墉、林清玄、侯文詠雖同為散文名家，但均非本課作者。"},{"level":"basic","topic":"出處","q":"〈做自己的貴人〉一文選自作者的哪一本著作？","choices":["《做自己的貴人》","《人生的旅程》","《心靈雞湯》","《為自己加油》"],"answer":0,"explain":"本文選自郭騰尹所著的《做自己的貴人》一書，課文標題即取自書名。其餘選項均非本文出處。"},{"level":"basic","topic":"文體","q":"就文體與內容而言，〈做自己的貴人〉屬於下列何者？","choices":["勵志散文（白話文）","抒情詩","文言小說","應用書信"],"answer":0,"explain":"本文以白話文寫成，藉真實故事說理勉人，屬於勵志散文。它不是韻文詩歌，也非文言小說，更不是書信一類的應用文。"},{"level":"basic","topic":"情節-天候","q":"課文中，老夫婦是在什麼樣的天候下走進旅館要求住宿？","choices":["風雨交加的夜晚","大雪紛飛的清晨","烈日當空的正午","濃霧瀰漫的黃昏"],"answer":0,"explain":"故事開頭描寫一個「風雨交加的夜晚」，一對老夫婦走進旅館大廳想求住宿一晚，正因天候惡劣，服務生才不忍讓他們重回風雨中。"},{"level":"basic","topic":"情節-客滿原因","q":"依課文所述，那間旅館當晚為何沒有空房？","choices":["房間被早上來開會的團體訂滿","飯店正在整修","遇上跨年連假","其他旅館都已關閉"],"answer":0,"explain":"夜班服務生說明當天的房間「已經被早上來開會的團體訂滿」，因此無法提供正式客房給老夫婦。"},{"level":"basic","topic":"情節-服務生作為","q":"面對客滿又不忍老夫婦重回風雨中，年輕服務生提出什麼辦法？","choices":["把自己休息的房間讓給老夫婦住","免費升等為總統套房","開車送他們到別的城市","請經理臨時加蓋房間"],"answer":0,"explain":"服務生誠懇地建議老夫婦住進自己的房間，說房間雖不豪華但還算乾淨，展現其熱心體貼；並非升等套房或加蓋房間。"},{"level":"basic","topic":"情節-服務生安排","q":"服務生把房間讓出後，自己打算如何度過那一晚？","choices":["待在辦公室值班，順便處理帳務","回自己家中休息","到另一家旅館借住","在大廳沙發睡覺"],"answer":0,"explain":"服務生表示因為要值班，他可以待在辦公室休息，順便處理有關帳務的問題，顯示他既盡責又善於設想。"},{"level":"basic","topic":"情節-不收費原因","q":"隔天老先生結帳時，服務生為何不收房錢？","choices":["因為那不是飯店的正式客房","因為老先生是飯店會員","因為當天正逢週年慶","因為房間設備故障"],"answer":0,"explain":"服務生親切地說：昨晚所住的房間並不是飯店的客房，所以不會收費，還希望兩位睡得安穩，可見其真誠不計較。"},{"level":"basic","topic":"情節-老先生稱讚","q":"老先生離開前對服務生說了什麼？","choices":["稱讚他是旅館老闆夢寐以求的員工，說改天或許能幫他蓋棟旅館","答應介紹他到大公司上班","送給他一大筆小費","邀他一起投資做生意"],"answer":0,"explain":"老先生點頭稱讚：「你是每個旅館老闆夢寐以求的員工，或許改天我可以幫你蓋棟旅館。」服務生當時只當成一句玩笑話。"},{"level":"basic","topic":"情節-幾年後","q":"幾年後，服務生收到那位老先生寄來的掛號信，信中還附上什麼？","choices":["一張邀請函和一張紐約來回機票","一筆創業基金","一份工作聘書","一張飯店貴賓卡"],"answer":0,"explain":"信中提到那個風雨夜晚的往事，並附上一張邀請函與一張紐約的來回機票，邀請服務生到紐約一遊。"},{"level":"basic","topic":"情節-飯店名稱","q":"課文中，那位老先生後來興建、聞名紐約的飯店是哪一家？","choices":["華爾道夫飯店（Waldorf）","希爾頓飯店","麗池飯店","廣場飯店"],"answer":0,"explain":"故事中矗立在第五街及三十四街路口的華麗大樓，就是紐約最知名的華爾道夫飯店（Waldorf），是紐約尊榮地位的象徵。"},{"level":"basic","topic":"情節-服務生身分","q":"課文結尾指出，當年那位讓房的服務生就是誰？","choices":["喬治‧波特（George Boldt）","威廉‧希爾頓","湯瑪士‧愛迪生","約翰‧洛克斐勒"],"answer":0,"explain":"課文結尾點出，這位服務生就是喬治‧波特（George Boldt），後來成為奠定華爾道夫飯店地位的重要推手。"},{"level":"adv","topic":"主旨","q":"下列何者最切合本文所要傳達的主旨？","choices":["待人熱情、把握每個助人的機會，人人都能成為自己生命的貴人","天下沒有白吃的午餐，凡事都要精打細算","命運早已注定，努力也難以改變","為人處世應明哲保身、少管閒事"],"answer":0,"explain":"本文藉服務生的際遇說明：不要輕忽任何一個人，也不要疏忽任何助人的機會，熱情待人、盡心做事，我們就是自己最重要的貴人，故正解為第一項。"},{"level":"adv","topic":"修辭-排比","q":"「學習對每一個人都熱情以待，學習把每一件事都做到完善，學習對每一個機會都充滿感激」一句，主要運用了什麼修辭？","choices":["排比","設問","誇飾","轉品"],"answer":0,"explain":"三個結構相似、語氣一致的句子並列成串，屬於「排比」，兼有「學習」一詞反覆出現的類疊效果，可強化語勢與說服力。"},{"level":"adv","topic":"字詞-夢寐以求","q":"「每個旅館老闆『夢寐以求』的員工」中，「夢寐以求」的意思是？","choices":["連睡夢中都在追求，形容願望極為迫切","好高騖遠、不切實際","日夜操勞、疲憊不堪","隨遇而安、無所欲求"],"answer":0,"explain":"「寐」指睡覺，「夢寐以求」意為連在睡夢中都在追求，比喻願望非常迫切、渴望得到，此處形容這樣的好員工人人都想擁有。"},{"level":"adv","topic":"字詞-受寵若驚","q":"「服務生覺得有些『受寵若驚』」，「受寵若驚」是指？","choices":["受到過分的寵愛或禮遇而感到驚喜不安","因受責備而驚慌失措","因受驚嚇而不知所措","因得寵而驕傲自滿"],"answer":0,"explain":"「受寵若驚」指因受到超乎預期的寵愛或禮遇，內心又驚又喜、有些不安。服務生對老先生「幫你蓋棟旅館」的話感到受寵若驚，卻只當成玩笑。"},{"level":"adv","topic":"字詞-矗立","q":"「路口正『矗立』著一棟華麗的新大樓」，「矗立」的意思是？","choices":["高聳直立","傾斜歪倒","緩緩移動","隱約浮現"],"answer":0,"explain":"「矗」音ㄔㄨˋ，「矗立」形容高聳而直立的樣子，用來描寫那棟華麗新大樓（華爾道夫飯店）高大挺立的形象。"},{"level":"adv","topic":"字詞-下榻","q":"「各國高層政要造訪紐約『下榻』的首選」，「下榻」在此指？","choices":["住宿、投宿","用餐","開會","觀光遊覽"],"answer":0,"explain":"「下榻」指外出時住宿於某處，典出東漢陳蕃為賢士徐稺特設一榻的故事；此處指各國政要到紐約時多選擇住在華爾道夫飯店。"},{"level":"adv","topic":"字詞-置身","q":"「無法想像你們要再一次『置身』於風雨中」，「置身」的意思是？","choices":["把自己處在某種環境或情境中","挺身而出","抽身離開","現身說法"],"answer":0,"explain":"「置身」意為將自己放置、處於某種環境之中。服務生不忍老夫婦再度置身風雨，才主動讓出房間，凸顯其體貼。"},{"level":"adv","topic":"名句意涵","q":"「我們就是自己最重要的貴人」這句話主要說明什麼道理？","choices":["命運掌握在自己手中，善待他人、盡心做事終將成就自己","遇到困難時要懂得依賴他人","貴人可遇不可求，只能被動等待","做人要懂得攀附權貴"],"answer":0,"explain":"全文以此句作結，強調貴人不必外求：只要積極主動、熱情待人、把每件事做到完善，這份用心終會回饋自身，我們就是自己最重要的貴人。"},{"level":"adv","topic":"人物特質","q":"從服務生讓房、不收房錢等舉動，最能看出他具有什麼特質？","choices":["熱心助人、盡忠職守、體貼設想","精明世故、善於算計","沉默寡言、明哲保身","好大喜功、愛出風頭"],"answer":0,"explain":"服務生主動讓出房間、堅持不收非客房的費用，展現熱心助人、盡忠職守又替人設想的特質，正是本文所要褒揚的處世態度。"},{"level":"adv","topic":"情節-華爾道夫","q":"依課文所述，關於華爾道夫飯店的敘述何者正確？","choices":["是紐約尊榮地位的象徵，各國高層政要造訪紐約多下榻於此","是一間平價的家庭旅館","位於美國西岸的洛杉磯","因經營不善早已歇業"],"answer":0,"explain":"課文提到華爾道夫飯店是紐約極致尊榮的地位象徵，也是各國高層政要造訪紐約下榻的首選，故第一項正確；其餘三項與課文所述不符。"},{"level":"adv","topic":"啟示","q":"本文透過服務生的際遇，最想勉勵讀者的是？","choices":["積極主動、真誠待人，因為今日的付出可能成為日後的機緣","凡事斤斤計較才不吃虧","只要運氣好就能成功","對陌生人要處處防備"],"answer":0,"explain":"人間充滿因緣，每個因緣都可能將人推向另一高峰。作者藉此勉人積極主動、真誠待人，把握每個助人的機會，讓今日的付出成為日後的貴人與機緣。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

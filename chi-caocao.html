@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>曹操掉下去了 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-caocao",
+  "title": "曹操掉下去了",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>曹操掉下去了</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"「曹操掉下去了」一文的作者是誰？","choices":["王文華","王文興","王鼎鈞","琦君"],"answer":0,"explain":"本文作者為王文華，畢業於國立臺東大學兒童文學研究所，長期投入兒童文學創作，曾獲牧笛獎、金鼎獎等獎項。"},{"level":"basic","topic":"繪者","q":"繪本《曹操掉下去了》是由哪一位擔任繪圖？","choices":["幾米","陳狐狸","賴馬","陳致元"],"answer":1,"explain":"《曹操掉下去了》由王文華撰文、陳狐狸繪圖，以生動的插畫呈現剪黏偶掉落的趣味故事。"},{"level":"basic","topic":"文體","q":"「曹操掉下去了」的文體屬於下列何者？","choices":["文言文的傳記","韻文的詩歌","白話文的散文","文言文的論說文"],"answer":2,"explain":"本文以現代白話文寫成，藉故事敘寫剪黏工藝，屬於白話散文（記敘性散文），並非文言文或韻文。"},{"level":"basic","topic":"出處","q":"本課課文改寫、節選自王文華的哪一部作品？","choices":["《曹操掉下去了》","《三國演義》","《西遊記》","《媽祖回家》"],"answer":0,"explain":"課文節選改寫自王文華的繪本《曹操掉下去了》，該書以剪黏偶曹操、張飛從廟頂掉落的情節，介紹傳統工藝之美。"},{"level":"basic","topic":"課文主題工藝","q":"曹操與張飛掉落的意外，引出本文主要介紹的哪一種傳統工藝？","choices":["交趾陶","剪黏","木雕","陶笛"],"answer":1,"explain":"本文藉由廟頂剪黏偶曹操、張飛掉落的故事，主要介紹傳統「剪黏」工藝——以灰泥塑形、再黏貼剪裁瓷片或玻璃片的廟宇裝飾藝術。"},{"level":"basic","topic":"情節","q":"故事中，曹操與張飛是從哪裡掉下去的？","choices":["學校的圍牆","媽祖廟屋頂","城門樓上","戲臺的屋簷"],"answer":1,"explain":"故事中，一場地震加上大風，使媽祖廟屋頂上的剪黏偶曹操、張飛先後從廟頂掉落，因而展開後續情節。"},{"level":"basic","topic":"文學常識","q":"曹操與張飛都是我國哪一個時代的著名人物？","choices":["春秋戰國","三國","唐朝","明朝"],"answer":1,"explain":"曹操、張飛皆為三國時代人物，常見於《三國演義》。曹操為一方梟雄，張飛則是蜀漢名將，兩人分屬敵對陣營，在故事中重逢便少不了鬥嘴。"},{"level":"basic","topic":"剪黏知識","q":"傳統的剪黏工藝，多以什麼材料剪裁後黏貼裝飾？","choices":["碗盤等瓷器的碎片","金箔","竹片","貝殼"],"answer":0,"explain":"傳統剪黏常取彩繪碗盤的瓷片剪裁後黏貼；現今則多改用玻璃材料，較容易加工塑形，色彩也更鮮豔。"},{"level":"basic","topic":"詞語","q":"「慢工出細活」這句話的意思最接近下列何者？","choices":["動作慢的人比較笨拙","花較多時間細心製作，成品才精緻","做事拖延容易誤事","工作要分工合作才有效率"],"answer":1,"explain":"「慢工出細活」指要有耐心、不急躁，細心慢慢地做，才能製作出精緻的成品，正呼應剪黏工匠精雕細琢的態度。"},{"level":"basic","topic":"主旨","q":"下列何者最符合本文的主旨？","choices":["說明地震防災的重要","介紹並讚美傳統剪黏工藝之美與工匠精神","描寫三國英雄的戰爭故事","記述媽祖廟的建廟歷史"],"answer":1,"explain":"本文藉趣味故事介紹剪黏工藝的精巧，讚美工匠慢工出細活的敬業精神，並流露對傳統技藝傳承的關懷，故主旨在介紹並讚美傳統剪黏之美。"},{"level":"basic","topic":"詞語","q":"「天搖地動」一詞在文中用來形容什麼情形？","choices":["打雷閃電","地震劇烈搖晃","狂風暴雨","山崩海嘯"],"answer":1,"explain":"「天搖地動」形容地面劇烈搖動，文中指地震發生，再加上大風，才使廟頂的剪黏偶掉落。"},{"level":"adv","topic":"交趾陶知識","q":"關於「交趾陶」的製作特色，下列敘述何者正確？","choices":["將剪碎的瓷片一片片黏貼而成","以陶土塑形後一體成型，上釉再燒製","用木頭雕刻後彩繪","以金屬鑄造成型"],"answer":1,"explain":"交趾陶是以陶土塑形後一體成型，塗上釉料再入窯燒製而成的低溫彩釉陶，成品為立體陶塑，與剪黏「拼貼碎片」的方式不同。"},{"level":"adv","topic":"剪黏知識","q":"剪黏「先剪後黏」的製作方式是指什麼？","choices":["先燒好陶偶再上色","先以灰泥塑出基型，再黏貼剪裁好的瓷片或玻璃片","先畫好草圖再雕刻","先鑄模再打磨"],"answer":1,"explain":"剪黏顧名思義是「先剪後黏」：工匠先用灰泥塑出人偶或動物的基型，再把剪裁成小片的瓷片、玻璃片一片片黏貼於其上，組合成色彩鮮豔的立體造型。"},{"level":"adv","topic":"剪黏與交趾陶比較","q":"剪黏與交趾陶最主要的差別在於？","choices":["剪黏用於室內、交趾陶用於室外","剪黏是拼貼碎片而成，交趾陶是塑形燒製的整體陶塑","剪黏是現代發明、交趾陶是古代技術","兩者完全相同，只是名稱不同"],"answer":1,"explain":"交趾陶是陶土塑形、上釉燒製的一體陶塑；剪黏則是用剪裁的瓷片或玻璃片黏貼拼組而成。前者「塑燒」，後者「剪黏拼貼」，是兩者最主要的差異。"},{"level":"adv","topic":"主旨深化","q":"本文在介紹剪黏工藝時，也流露出對傳統技藝何種處境的憂心？","choices":["材料過於昂貴","面臨後繼無人、逐漸失傳的危機","被政府禁止製作","樣式太過老舊沒人欣賞"],"answer":1,"explain":"課文在讚美剪黏之美的同時，也點出這門慢工細活的傳統工藝面臨後繼無人、即將失傳的危機，藉此喚起讀者對文化傳承的重視。"},{"level":"adv","topic":"諧音吉祥話","q":"打破東西時常說的「碎碎平安」，其實是哪句吉祥話的諧音？","choices":["歲歲平安","事事如意","碎碎念念","隨遇而安"],"answer":0,"explain":"「碎碎平安」是「歲歲平安」的諧音吉祥話。物品破「碎」時說這句話，取「碎」與「歲」同音，祈求年年平安、化解不祥。"},{"level":"adv","topic":"詞語","q":"「化險為夷」的意思是什麼？","choices":["把平安變成危險","使危險的情況轉為平安","遇到危險就趕快逃走","冒險犯難、勇往直前"],"answer":1,"explain":"「化險為夷」指將危險、艱難的處境轉化為平安順利。「夷」有平坦、平安之意；故事中兩位剪黏將軍歷經意外後終能化險為夷。"},{"level":"adv","topic":"內容理解","q":"課文形容剪黏工匠會把瓷片剪成「火柴棒」般的大小，主要在凸顯什麼？","choices":["剪黏的材料非常便宜","剪黏工序繁細、需要精巧的手工","剪黏偶的體積很小","剪黏很容易學習"],"answer":1,"explain":"把瓷片剪成火柴棒般細小，說明剪黏必須一片片仔細剪裁、黏貼，工序極為繁細，藉此凸顯這是一門講究耐心與技巧的「慢工細活」。"},{"level":"adv","topic":"作者","q":"作者王文華畢業於國立臺東大學的哪一個研究所？","choices":["中國文學研究所","兒童文學研究所","歷史學研究所","美術研究所"],"answer":1,"explain":"王文華畢業於國立臺東大學兒童文學研究所，長期為兒童創作故事，作品富有童趣，本文即以兒童文學的筆法介紹傳統工藝。"},{"level":"adv","topic":"作者","q":"下列何者是作者王文華曾經榮獲的獎項？","choices":["諾貝爾文學獎","金鼎獎","奧斯卡金像獎","普立茲獎"],"answer":1,"explain":"王文華曾獲牧笛獎、陳國政兒童文學獎首獎及金鼎獎等，是臺灣知名的兒童文學作家。"},{"level":"adv","topic":"修辭","q":"本文把曹操、張飛寫成會說話、彼此鬥嘴的角色，主要運用了何種修辭手法？","choices":["誇飾","擬人","排比","對偶"],"answer":1,"explain":"曹操、張飛本是沒有生命的剪黏偶，文中卻讓他們開口說話、互相鬥嘴，賦予人的言語與情感，這是把物當作人來描寫的「擬人」修辭。"},{"level":"adv","topic":"寓意","q":"「有志者事竟成」這句話告訴我們什麼道理？","choices":["只要運氣好就能成功","有決心毅力的人，終能完成想做的事","志向太大容易失敗","做事要順其自然、不必強求"],"answer":1,"explain":"「有志者事竟成」意謂只要立定志向、堅持到底，終究能把事情做成，呼應剪黏工匠不畏繁瑣、堅持傳承技藝的精神。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

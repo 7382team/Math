@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hello, World! 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-h-starter",
+  "title": "Hello, World!",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "打招呼·文具·課堂指令",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Hello, World!</h1><div class="sub">英文 · 打招呼·文具·課堂指令 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"打招呼用語","q":"A: Good morning! B: ___","choices":["Good night!","Good morning!","Good luck!","Goodbye!"],"answer":1,"explain":"早上見面互相問候，對方說 Good morning! 時，應回答同樣的 Good morning!。Good night 是睡前道晚安，不用在早上打招呼。"},{"level":"basic","topic":"打招呼用語","q":"A: How are you? B: I'm fine, ___ you.","choices":["thank","thanks","please","sorry"],"answer":0,"explain":"回答 How are you? 常說 I'm fine, thank you.（我很好，謝謝你）。這裡固定用 thank you，thanks 後面不接 you。"},{"level":"basic","topic":"打招呼用語","q":"A: ___ B: My name is Amy.","choices":["How are you?","What's your name?","How old are you?","Goodbye!"],"answer":1,"explain":"對方回答 My name is Amy.（我的名字是 Amy）是在說自己的名字，所以問句應是 What's your name?（你叫什麼名字？）。"},{"level":"basic","topic":"文具名詞","q":"I write with a ___.","choices":["book","pen","bag","desk"],"answer":1,"explain":"write with 是「用…寫字」。pen（原子筆）是用來寫字的文具。book 是書、bag 是書包、desk 是書桌，都不是拿來寫字的工具。"},{"level":"basic","topic":"文具名詞","q":"This is my pencil ___. I put my pens and pencils in it.","choices":["case","book","ruler","eraser"],"answer":0,"explain":"pencil case 是「鉛筆盒」，用來裝筆。句中說把筆放進去，所以選 case。ruler 是尺、eraser 是橡皮擦。"},{"level":"basic","topic":"文具名詞","q":"I use an ___ to clean up my mistakes.","choices":["ruler","eraser","marker","notebook"],"answer":1,"explain":"eraser 是「橡皮擦」，用來擦掉錯誤（clean up mistakes）。注意 eraser 開頭是母音，前面用 an。ruler 是尺、marker 是麥克筆。"},{"level":"basic","topic":"課堂指令","q":"Teacher: ___ your book, please. (老師要學生翻開書)","choices":["Close","Open","Sit","Stand"],"answer":1,"explain":"Open your book 是「打開你的書」。老師要學生翻開書本，用 Open。Close 是關上、闔上。"},{"level":"basic","topic":"課堂指令","q":"Teacher: Please ___ up. (老師要全班站起來)","choices":["sit","stand","open","listen"],"answer":1,"explain":"stand up 是「站起來」。老師要學生站起來，用 stand up。sit down 才是「坐下」。"},{"level":"basic","topic":"課堂指令","q":"Teacher: ___ to me, please. (老師要學生聽她說)","choices":["Look","Listen","Read","Write"],"answer":1,"explain":"Listen to me 是「聽我說」，用耳朵聽。Look at 是「看」，用眼睛。因為是要學生「聽」，所以選 Listen。"},{"level":"basic","topic":"字母","q":"Which letter comes after D?","choices":["C","E","F","B"],"answer":1,"explain":"字母順序是 A, B, C, D, E, F…。D 後面（after）的字母是 E。C 和 B 在 D 前面，F 在 E 後面。"},{"level":"basic","topic":"字母","q":"How many letters are there in the word \"book\"?","choices":["Three","Four","Five","Two"],"answer":1,"explain":"book 由 b-o-o-k 四個字母組成，所以有 four（四個）字母。這題考數字母的能力。"},{"level":"basic","topic":"字母大小寫","q":"Which one is the small (lowercase) letter of \"B\"?","choices":["b","D","P","d"],"answer":0,"explain":"大寫 B 的小寫（lowercase）是 b。要注意 b、d、p 這幾個小寫字母長得像，容易搞混。"},{"level":"adv","topic":"be動詞單複數","q":"Find the mistake: \"This are my pen.\"","choices":["This","are","my","pen"],"answer":1,"explain":"主詞 This（這個）是單數，be動詞要用 is，不能用 are。正確句子是 This is my pen.。這是常見的單複數混用錯誤。"},{"level":"adv","topic":"打招呼情境","q":"It is 9:00 in the evening. You meet your teacher. You say: ___","choices":["Good morning!","Good afternoon!","Good evening!","Good night!"],"answer":2,"explain":"晚上見面打招呼用 Good evening!（晚上好）。Good night 是道別、睡前才說的（晚安）。題目說是見到老師（meet），所以用 Good evening。"},{"level":"adv","topic":"冠詞 a/an","q":"Choose the correct one: I have ___ eraser and ___ ruler.","choices":["a, a","an, a","a, an","an, an"],"answer":1,"explain":"eraser 開頭是母音發音，用 an；ruler 開頭是子音發音，用 a。所以是 an eraser and a ruler。這是 a/an 的辨析。"},{"level":"adv","topic":"課堂指令情境","q":"The classroom is too noisy. The teacher says: ___","choices":["Stand up.","Be quiet, please.","Open your book.","Good morning."],"answer":1,"explain":"教室太吵（noisy），老師會說 Be quiet, please.（請安靜）。這題考情境判斷，選最符合「太吵」情況的指令。"},{"level":"adv","topic":"be動詞疑問句","q":"Find the mistake: \"Is you a student?\"","choices":["Is","you","a","student"],"answer":0,"explain":"主詞是 you 時，be動詞要用 are，疑問句應為 Are you a student?。you 不能配 Is，這是主詞與be動詞搭配的錯誤。"},{"level":"adv","topic":"打招呼問答","q":"A: Nice to meet you. B: ___","choices":["I'm fine.","Nice to meet you, too.","Good night.","You're welcome."],"answer":1,"explain":"第一次見面說 Nice to meet you.（很高興認識你），對方回答 Nice to meet you, too.（我也是）。too 表示「也」。"},{"level":"adv","topic":"文具名詞辨析","q":"Which one is NOT a school thing (stationery)?","choices":["ruler","marker","apple","notebook"],"answer":2,"explain":"ruler（尺）、marker（麥克筆）、notebook（筆記本）都是文具。apple（蘋果）是水果，不是文具，所以選 apple。這題考 NOT，要選「不是」的那個。"},{"level":"adv","topic":"課堂指令相反詞","q":"\"Sit down\" is the opposite of ___.","choices":["stand up","open the book","be quiet","listen to me"],"answer":0,"explain":"Sit down（坐下）的相反（opposite）是 stand up（站起來）。這兩個是一組相反的動作指令。"},{"level":"adv","topic":"字母順序","q":"Put the letters in order. Which is right?","choices":["F, E, G","E, F, G","G, F, E","E, G, F"],"answer":1,"explain":"字母正確順序（in order）是 E, F, G。從前到後排列，E 在最前、G 在最後。其他選項順序都不對。"},{"level":"adv","topic":"be動詞與名詞單複數","q":"Find the mistake: \"They is my friends.\"","choices":["They","is","my","friends"],"answer":1,"explain":"主詞 They（他們）是複數，be動詞要用 are，不能用 is。正確句子是 They are my friends.。這是複數主詞配錯be動詞的常見錯誤。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

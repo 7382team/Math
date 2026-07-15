@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>畫貓的男孩 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-huamao",
+  "title": "畫貓的男孩",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "小泉八雲"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>畫貓的男孩</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者常識","q":"〈畫貓的男孩〉的作者是下列何人？","choices":["小泉八雲","芥川龍之介","夏目漱石","川端康成"],"answer":0,"explain":"本課作者為小泉八雲（Lafcadio Hearn），他改寫日本民間故事，以英文寫成短篇。芥川龍之介、夏目漱石、川端康成雖同為日本著名文學家，但都不是本課作者。"},{"level":"basic","topic":"作者常識","q":"關於作者小泉八雲的敘述，下列何者正確？","choices":["他原是外國人，後來歸化日本並改名","他是土生土長的日本武士","他終生只用中文寫作","他是清朝來臺的官員"],"answer":0,"explain":"小泉八雲原名 Lafcadio Hearn，出生於希臘萊夫卡達島，具愛爾蘭與希臘血統，一八九○年到日本，後歸化日本並改名為「小泉八雲」。他以英文寫作介紹日本文化，並非日本武士或清朝官員。"},{"level":"basic","topic":"作者常識","q":"小泉八雲最後歸化為哪一個國家的國民？","choices":["日本","英國","希臘","美國"],"answer":0,"explain":"小泉八雲於一八九六年歸化日本，成為日本國民，並取日本名字。他雖出生於希臘、早年曾為英國屬民、也曾旅居美國，但最終落腳並歸化於日本。"},{"level":"basic","topic":"文體與出處","q":"〈畫貓的男孩〉是根據哪一國的民間故事改寫而成？","choices":["日本","中國","印度","希臘"],"answer":0,"explain":"本文是小泉八雲改寫的日本民間故事。他長年蒐集、聆聽日本各地流傳的傳說與怪談，再以文字重新書寫，〈畫貓的男孩〉即是其中一則。"},{"level":"basic","topic":"文體","q":"就文體而言，〈畫貓的男孩〉屬於下列何者？","choices":["白話文的民間故事","文言文的論說文","近體詩","抒情散文的遊記"],"answer":0,"explain":"本課以淺白的白話文敘述一則日本民間故事，情節完整、具有記敘與敘事色彩，屬於白話文的民間故事，並非文言論說、近體詩或遊記。"},{"level":"basic","topic":"課文情節","q":"故事中，男孩被父母送到寺廟去做什麼？","choices":["學做僧侶（當小和尚）","學做木匠","學習經商","學習務農"],"answer":0,"explain":"男孩出身貧苦農家，因聰明伶俐被送到寺廟，跟著老和尚學習、準備成為僧侶。務農是他原本家中的生計，並非他到寺廟學習的內容。"},{"level":"basic","topic":"課文情節","q":"這個男孩最與眾不同的癖好是什麼？","choices":["喜歡到處畫貓","喜歡養狗","喜歡唱歌","喜歡釣魚"],"answer":0,"explain":"男孩雖然聰明用功，卻有個改不掉的習慣——不停地畫貓。他在書頁邊緣、屏風、牆壁、柱子上到處畫貓，這個特點正是全篇故事的關鍵。"},{"level":"basic","topic":"課文情節","q":"老和尚為什麼要男孩離開寺廟？","choices":["認為他當不成好僧侶","因為他偷竊財物","因為他生了重病","因為他年紀太大"],"answer":0,"explain":"男孩總是分心畫貓，屢勸不改。老和尚認為他無法專心修行、成不了好僧侶，因此要他離開，但也看出他在繪畫上的天分。"},{"level":"basic","topic":"課文情節","q":"男孩離開前，老和尚給了他一句忠告，內容是什麼？","choices":["夜裡要避開大的地方，待在小的地方","遇事要多向人請教","凡事要以和為貴","要早睡早起才有精神"],"answer":0,"explain":"老和尚臨別叮嚀：「夜裡要避開大的地方，待在小的地方。」（Avoid large places at night; keep to small!）這句看似難解的話，後來成為救男孩一命的關鍵。"},{"level":"basic","topic":"課文情節","q":"夜裡在寺中被咬死的妖怪是什麼？","choices":["巨大的妖鼠","九尾狐","毒蛇","山中猛虎"],"answer":0,"explain":"夜裡傳出可怕的打鬥聲，天亮後男孩發現一隻大如牛的巨大妖鼠倒在地上死了。這隻妖鼠正是先前佔據寺廟、使人不敢靠近的怪物。"},{"level":"basic","topic":"課文情節","q":"天亮後，男孩發現自己畫的貓有什麼異狀？","choices":["嘴巴都沾滿了血","全都不見了","變成了狗","顏色褪光了"],"answer":0,"explain":"男孩看到屏風上他所畫的貓，每一隻的嘴巴都紅紅溼溼、沾滿了血，這才明白是畫中的貓在夜裡活過來咬死了妖鼠。"},{"level":"basic","topic":"課文情節","q":"故事結尾，這個男孩後來成為什麼樣的人？","choices":["著名的畫家","寺廟的住持","有錢的商人","帶兵的將軍"],"answer":0,"explain":"在小泉八雲的版本裡，男孩後來成為一位非常有名的畫家，據說他所畫的貓至今仍展示給到日本的旅人觀賞。"},{"level":"adv","topic":"課文情節","q":"老和尚雖要男孩離開，卻預言他將來可能成為什麼？","choices":["偉大的畫家","得道的高僧","富有的地主","有名的醫生"],"answer":0,"explain":"老和尚看出男孩雖不適合當僧侶，卻在繪畫上很有天分，於是說他或許能成為一位偉大的畫家。這句預言也在故事結尾應驗。"},{"level":"adv","topic":"課文情節","q":"男孩之所以能躲過妖鼠的攻擊，最直接的原因是什麼？","choices":["想起老和尚的忠告，躲進小櫥櫃裡","手持寶劍與妖鼠搏鬥","念咒語驅走妖怪","半夜就先逃離寺廟"],"answer":0,"explain":"男孩睡前想起老和尚「待在小地方」的叮嚀，於是鑽進一個小小的櫥櫃並關上門睡覺，因而在妖鼠肆虐時得以保全性命。他並未與妖鼠正面搏鬥。"},{"level":"adv","topic":"課文情節","q":"男孩借宿的那座荒廢大寺，先前發生過什麼事？","choices":["被妖怪佔據，前去除妖的人都沒能活著回來","曾遭大火燒毀","是官府用來關押犯人的地方","住著一位得道高僧"],"answer":0,"explain":"那座大寺早已被妖怪佔據，僧人都被嚇跑；曾有勇士夜裡前去除妖，卻沒有一個活著回來。男孩並不知情，才在無意間引出這場除妖之事。"},{"level":"adv","topic":"主旨寓意","q":"老和尚「夜裡要待在小地方」這句忠告，在故事中最主要的作用是？","choices":["是化解危機的伏筆，救了男孩一命","純粹提醒他省點燈油","教他要謙虛做人","暗示他不可貪睡"],"answer":0,"explain":"這句忠告是全篇重要的伏筆：當時看似莫名，後來卻因男孩聽從而躲進小櫥櫃，避開妖鼠而保命，前後呼應，使情節緊密。"},{"level":"adv","topic":"主旨寓意","q":"下列何者最能說明〈畫貓的男孩〉所傳達的寓意？","choices":["順著自己的天賦專長發展，反而可能成就一生","做人要處處聽命於他人","怪力亂神之事不可不信","讀書求功名才是唯一出路"],"answer":0,"explain":"男孩「愛畫貓」本被視為缺點，卻在關鍵時刻救了他，並使他成為名畫家。故事藉此傳達：發掘並順著自己的天賦專長發展，往往能開創出路，而非一味壓抑。"},{"level":"adv","topic":"作者常識","q":"小泉八雲蒐集日本民間故事，很多是從誰口中聽來的？","choices":["他的日本妻子","寺廟裡的和尚","學校的學生","來訪的外國人"],"answer":0,"explain":"小泉八雲的日本妻子小泉節子（出身武士之家）常為他講述日本各地流傳的怪談與民間故事，他再據以改寫成文，這是他創作題材的重要來源。"},{"level":"adv","topic":"作者常識","q":"下列哪一部作品是小泉八雲最著名的代表作，被視為日本近代怪談文學的名著？","choices":["《怪談》（Kwaidan）","《紅樓夢》","《源氏物語》","《西遊記》"],"answer":0,"explain":"《怪談》（Kwaidan）是小泉八雲蒐集改寫日本靈異民間故事的名著，影響深遠，被視為日本近代怪談文學的代表。其餘三者均非小泉八雲之作。"},{"level":"adv","topic":"修辭","q":"形容妖鼠「大得像一頭牛」，這句運用了什麼修辭技巧？","choices":["譬喻（明喻）","設問","對偶","排比"],"answer":0,"explain":"「大得像一頭牛」以喻詞「像」把妖鼠（喻體）比作牛（喻依），屬於譬喻中的明喻，用具體事物形容其龐大，使讀者更能想像妖鼠的驚人體型；並非設問、對偶或排比。"},{"level":"adv","topic":"情節結構","q":"就情節安排來看，男孩「到處畫貓」這個習慣在全文中扮演什麼角色？","choices":["既是他被逐出寺廟的原因，也是他最後脫險的關鍵","只是描寫他個性的閒筆，與結局無關","純粹用來製造喜劇效果","是老和尚教他的功課"],"answer":0,"explain":"「畫貓」貫串全篇：它先使男孩被逐出寺廟，最後畫中的貓卻活過來咬死妖鼠救了他。同一特點既是「禍」也是「福」，前後呼應，是全文結構的核心。"},{"level":"adv","topic":"字詞理解","q":"若說男孩畫貓「屢勸不改」，這個詞語的意思最接近下列何者？","choices":["多次勸告仍不肯改正","一勸就立刻改過","從來沒有人勸過他","改了之後又後悔"],"answer":0,"explain":"「屢」是多次、屢次之意，「屢勸不改」指經過多次勸告仍然不肯改正。用來形容男孩不停畫貓、老和尚勸阻無效的情形十分貼切。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

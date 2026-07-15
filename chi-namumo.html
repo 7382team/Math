@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>那默默的一群 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-namumo",
+  "title": "那默默的一群",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>那默默的一群</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"課文〈那默默的一群〉的作者是誰？","choices":["張騰蛟","琦君","張曉風","陳之藩"],"answer":0,"explain":"本文作者為張騰蛟，筆名魯蛟，是臺灣著名的詩人與散文家。琦君、張曉風、陳之藩雖也是散文名家，但都不是本文作者。"},{"level":"basic","topic":"作者筆名","q":"作者張騰蛟寫作時常用的筆名是什麼？","choices":["魯蛟","蕭蕭","琦君","逯耀東"],"answer":0,"explain":"「魯蛟」是張騰蛟的筆名（另有筆名「魯丁」）：『魯』指山東，『魯蛟』意為山東的蛟龍。蕭蕭、琦君、逯耀東皆為其他作家，並非張騰蛟的筆名。"},{"level":"basic","topic":"出處","q":"〈那默默的一群〉一文選自下列哪一本書？","choices":["《筆花—張騰蛟散文選》","《煙愁》","《背影》","《我們仨》"],"answer":0,"explain":"本文選自《筆花—張騰蛟散文選》，是作者的散文結集。其餘選項分別為琦君、朱自清、楊絳等人的著作。"},{"level":"basic","topic":"文體","q":"就文體而言，〈那默默的一群〉屬於下列何者？","choices":["白話文（散文）","文言文（論說）","古典近體詩","章回小說"],"answer":0,"explain":"本文是以白話寫成的散文，用語淺白、形象鮮活，並非文言文、古典詩或小說。"},{"level":"basic","topic":"描寫對象","q":"本文主要描寫、歌頌的是哪一種工作者？","choices":["道路清潔人員（清道婦）","送信的郵差","指揮交通的警察","救火的消防員"],"answer":0,"explain":"作者以住家附近負責道路清潔的清道婦為例，描寫她們默默清掃街道的身影，藉此歌頌基層清潔人員。"},{"level":"basic","topic":"主旨","q":"下列何者最能說明本文的主旨？","choices":["讚揚默默付出、不求名利的基層勞動者","描寫故鄉四季變化的自然景色","記述一次登山遠足的難忘經歷","抒發對逝去親人的深切思念"],"answer":0,"explain":"全文以清道婦忠實、認真的工作態度為主軸，讚揚這群默默付出、名字不為人知卻值得敬重的基層勞動者。"},{"level":"basic","topic":"標題含意","q":"題目「那默默的一群」指的是下列哪一群人？","choices":["認真清掃街道的清道婦","放學回家的學生","市場裡的攤販","公園散步的老人"],"answer":0,"explain":"「那默默的一群」即指那些不聲不響、認真清掃街道的清道婦（道路清潔人員）。"},{"level":"basic","topic":"作者籍貫","q":"作者張騰蛟的籍貫（原籍）是下列何處？","choices":["山東省高密縣","浙江省永嘉縣","江蘇省南京","廣東省梅縣"],"answer":0,"explain":"張騰蛟為山東省高密縣人，民國十九年生，民國三十八年來臺，曾任行政院新聞局主任秘書。"},{"level":"basic","topic":"字詞","q":"「一絲不苟」這個成語是用來形容什麼樣的態度？","choices":["做事認真細心，一點也不馬虎","粗心大意，隨隨便便","猶豫不決，遲遲不肯行動","斤斤計較，心胸狹窄"],"answer":0,"explain":"「一絲不苟」形容做事認真、細緻，連一絲一毫都不馬虎。文中用來寫清道婦掃地的仔細態度。"},{"level":"basic","topic":"課文內容","q":"作者在文中以住家附近的幾位清道婦為主要描寫的例子？","choices":["五位","兩位","十位","三位"],"answer":0,"explain":"作者舉住家附近的五位（中年）清道婦為例，寫她們每天天未亮便開始清掃街道。"},{"level":"basic","topic":"課文內容","q":"根據課文，清道婦通常在什麼時候就開始清掃街道？","choices":["天還沒亮的清晨","正中午時分","傍晚下班以後","深夜十二點"],"answer":0,"explain":"文中寫五位清道婦每天在天還沒亮的清晨便開始清掃，突顯她們勤勞、盡責。"},{"level":"adv","topic":"修辭","q":"作者把清道婦比作守衛的「兵士」，把她們負責的路段稱為「防區」，把髒亂比作「敵人」。這主要運用了哪一種修辭？","choices":["譬喻（類比）","設問","誇飾","反諷"],"answer":0,"explain":"以兵士守衛防區、抵禦敵人來比擬清道婦護衛街道、清除髒亂，是取兩者相似之處作比，屬譬喻（類比）修辭。"},{"level":"adv","topic":"作者情感","q":"綜觀全文，作者對這群清道婦所抱持的態度是？","choices":["敬重與讚揚","輕視與嘲笑","同情與憐憫","冷漠與疏離"],"answer":0,"explain":"作者細寫清道婦的認真與盡責，並稱她們是有資格被稱為「人物」的一群，字裡行間流露敬重與讚揚之情。"},{"level":"adv","topic":"句意理解","q":"「沒有一寸路面會在她們的掃把底下漏掉」這句話主要表現清道婦？","choices":["掃得非常仔細徹底，一絲不苟","動作雖快卻掃得很粗糙","只掃給人看得到的地方","彼此推卸、互相偷懶"],"answer":0,"explain":"「沒有一寸路面漏掉」強調她們清掃得極為徹底、仔細，呼應「一絲不苟、絕不撿便宜」的敬業態度。"},{"level":"adv","topic":"寫作手法","q":"本文作者採取旁觀者的立場、以寫實的手法記敘所見所聞，這種寫法最接近下列何者？","choices":["記敘（寫實）","考證訓詁","駁論說理","詠物言志的近體詩"],"answer":0,"explain":"作者站在旁觀立場，如實描寫清道婦的工作情形，用語淺白、形象鮮活，屬記敘（寫實）的寫法。"},{"level":"adv","topic":"作者","q":"在文壇上，張騰蛟（魯蛟）兼具下列哪兩種身分？","choices":["詩人與散文家","小說家與劇作家","史學家與翻譯家","畫家與音樂家"],"answer":0,"explain":"張騰蛟被稱為「一位游於藝的詩人和散文家」，其散文常以詩人的情懷與想像描寫自然與社會底層人物。"},{"level":"adv","topic":"名句理解","q":"作者說清道婦「她們的名字不會被人知道，可是……是有資格被稱之為『人物』的一群」，這句話的用意是？","choices":["強調她們雖默默無名，卻因盡責付出而值得敬重","批評社會制度不公，同情她們的遭遇","感嘆人生短暫，功名終將成空","說明清潔工作雖然辛苦，薪水卻很微薄"],"answer":0,"explain":"作者刻意把「沒沒無名」與「人物」對照，點出這群人雖不為人知，卻因忠實盡責而真正值得被尊敬，是全文主旨所在。"},{"level":"adv","topic":"細節寓意","q":"文中寫清道婦為了追一個被風吹走的空塑膠袋而「追出幾十公尺」，這主要表現她們什麼樣的精神？","choices":["積極主動、盡忠職守的敬業精神","貪玩好動、閒不下來的個性","體力過人、身體健康","愛乾淨到近乎潔癖"],"answer":0,"explain":"為了一個小小的空袋子也要追上幾十公尺，正見清道婦積極主動、盡責到底，絕不放過任何髒亂的敬業精神。"},{"level":"adv","topic":"字詞","q":"作者用「敦厚樸實」形容清道婦的風範，這個詞的意思最接近下列何者？","choices":["忠厚老實、不虛華浮誇","精明幹練、能言善道","傲慢自負、目中無人","多愁善感、優柔寡斷"],"answer":0,"explain":"「敦厚樸實」指為人忠厚老實、質樸而不浮誇，用以形容清道婦默默勞動者的可貴風範。"},{"level":"adv","topic":"主題價值","q":"透過本文，作者最希望啟示讀者培養的是下列何者？","choices":["敬業精神與服務的責任心","追求功成名就的企圖心","精打細算的理財觀念","強健體魄與運動習慣"],"answer":0,"explain":"本文藉清道婦忠實的工作態度，啟發讀者重視敬業精神與服務他人的責任心，肯定每一分默默的付出。"},{"level":"adv","topic":"句意理解","q":"文中說清道婦掃地「絕不撿便宜」，這裡「絕不撿便宜」的意思是？","choices":["從不偷懶取巧，該掃的路一段也不馬虎","專挑好走、不髒的路面來掃","喜歡佔別人的便宜","買東西時愛討價還價"],"answer":0,"explain":"「絕不撿便宜」是說她們不偷懶、不取巧，不會挑輕鬆的做，凡是負責的路段都認真掃乾淨，扣緊「一絲不苟」的態度。"},{"level":"adv","topic":"修辭作用","q":"作者將清道婦比喻為守衛疆土的兵士，主要用意是為了突顯她們的什麼特質？","choices":["如兵士守土般，忠實地護衛街道整潔、盡職不懈","曾經受過嚴格的軍事訓練","穿著像軍人一樣的整齊制服","工作時個個表情嚴肅、不苟言笑"],"answer":0,"explain":"把清道婦比作守衛疆土的兵士，是取「盡忠職守、認真護衛」的相似點，藉此突顯她們對街道整潔的忠實與盡責，並非真指其當過兵或穿軍服。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Welcome to English 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-k-starter",
+  "title": "Welcome to English",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "字母·數字·顏色·課堂用語",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Welcome to English</h1><div class="sub">英文 · 字母·數字·顏色·課堂用語 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"字母大小寫","q":"Which one is a capital letter?","choices":["b","d","G","m"],"answer":2,"explain":"大寫字母是 A–Z，小寫字母是 a–z。b、d、m 都是小寫，只有 G 是大寫字母。"},{"level":"basic","topic":"字母大小寫","q":"The small letter of 'D' is ___.","choices":["b","d","p","q"],"answer":1,"explain":"每個字母都有大寫和小寫。大寫 D 的小寫是 d，要小心別跟長得很像的 b、p、q 搞混。"},{"level":"basic","topic":"字母大小寫（大寫 I）","q":"___ am a student.","choices":["i","I","me","my"],"answer":1,"explain":"英文中「我」的主格 I 不論在句子哪個位置都要大寫，加上句首本來就要大寫，所以用 I。"},{"level":"basic","topic":"數字1–20","q":"The number 12 is ___.","choices":["twenty","twelve","two","ten"],"answer":1,"explain":"12 的英文是 twelve；twenty 是 20、two 是 2、ten 是 10。"},{"level":"basic","topic":"數字1–20","q":"What number comes after nineteen?","choices":["eighteen","nine","twenty","twenty-one"],"answer":2,"explain":"數數順序是 …eighteen(18)、nineteen(19)、twenty(20)，所以 nineteen 之後是 twenty。"},{"level":"basic","topic":"數字1–20","q":"eleven = ___","choices":["11","12","7","20"],"answer":0,"explain":"eleven 是 11；twelve 是 12、seven 是 7、twenty 是 20。"},{"level":"basic","topic":"顏色","q":"Grass is ___.","choices":["green","red","black","white"],"answer":0,"explain":"草是綠色 green；red 紅、black 黑、white 白。"},{"level":"basic","topic":"顏色","q":"What color is a banana?","choices":["blue","yellow","purple","brown"],"answer":1,"explain":"香蕉是黃色 yellow；blue 藍、purple 紫、brown 棕。"},{"level":"basic","topic":"顏色（拼寫）","q":"The Chinese word 紅色 is ___ in English.","choices":["read","red","led","ride"],"answer":1,"explain":"紅色的英文是 red。read（讀）發音相近但意思不同，要注意拼字。"},{"level":"basic","topic":"課堂用語","q":"The teacher says, '___ your books.' (打開課本)","choices":["Open","Close","Stand","Sit"],"answer":0,"explain":"「打開」課本用 Open；Close 是關上、Stand 是站起來、Sit 是坐下。"},{"level":"basic","topic":"課堂用語","q":"In the morning, students say to the teacher, '___'","choices":["Good morning.","Good night.","Goodbye.","Sorry."],"answer":0,"explain":"早上問候老師說 Good morning.；Good night 是睡前道晚安、Goodbye 是再見。"},{"level":"adv","topic":"字母大小寫（句子改錯）","q":"Which sentence is correct?","choices":["i am ten.","I am Ten.","I am ten.","i am Ten."],"answer":2,"explain":"句首字母要大寫，「我」用大寫 I，但 ten 是普通字不用大寫，所以正確是 I am ten.。"},{"level":"adv","topic":"字母大小寫（稱謂＋人名）","q":"Your teacher's family name is Wang. You write, '___'","choices":["hello, mr. wang.","Hello, Mr. Wang.","Hello, mr. wang.","hello, Mr. Wang."],"answer":1,"explain":"句首 Hello 要大寫、稱謂 Mr. 要大寫、人名 Wang 也要大寫，所以正確是 Hello, Mr. Wang.。"},{"level":"adv","topic":"數字1–20（情境選填）","q":"A: How old are you? B: I'm ___ years old. (13歲)","choices":["thirty","three","thirteen","thirtteen"],"answer":2,"explain":"13 是 thirteen；thirty 是 30、three 是 3。要分清 -teen（十幾）和 -ty（幾十）的差別。"},{"level":"adv","topic":"數字1–20（辨析）","q":"Which word means 15?","choices":["fifty","fifteen","fivteen","fiveteen"],"answer":1,"explain":"15 是 fifteen（拼字是 fif- 不是 five-）；fifty 是 50，其他兩個是錯誤拼法。"},{"level":"adv","topic":"數字1–20（順序）","q":"eleven, twelve, ___, fourteen","choices":["thirty","thirteen","ten","fifteen"],"answer":1,"explain":"依照順序是 11、12、13、14，空格要填 thirteen(13)。"},{"level":"adv","topic":"顏色（It's ＋ 顏色，情境）","q":"A: What color is your bag? B: ___","choices":["It's red.","It red.","Its a red.","It's a red."],"answer":0,"explain":"回答顏色用 It's（It is）＋ 顏色形容詞，且顏色前不加 a，所以是 It's red.。"},{"level":"adv","topic":"顏色（辨析）","q":"Which word is a color?","choices":["window","yellow","pillow","fellow"],"answer":1,"explain":"只有 yellow 是顏色（黃色）；window 是窗、pillow 是枕頭、fellow 是傢伙，長得像但都不是顏色。"},{"level":"adv","topic":"課堂用語（情境）","q":"You want to go to the toilet. You ask the teacher, '___'","choices":["May I go to the toilet?","Open your book.","Sit down, please.","Thank you."],"answer":0,"explain":"想請求上廁所要用 May I…? 徵求同意，所以說 May I go to the toilet?。"},{"level":"adv","topic":"課堂用語（辨析）","q":"You meet your teacher at 2 p.m. You say, '___'","choices":["Good morning.","Good afternoon.","Good night.","Good evening."],"answer":1,"explain":"下午（中午過後到傍晚）問候用 Good afternoon.；Good morning 是早上、Good night 是睡前。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

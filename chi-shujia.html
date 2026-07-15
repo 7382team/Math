@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>暑假作業 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-shujia",
+  "title": "暑假作業",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>暑假作業</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈暑假作業〉這篇課文的作者是誰？","choices":["琦君","洪醒夫","侯文詠","古蒙仁"],"answer":2,"explain":"〈暑假作業〉的作者是侯文詠，他是台灣的醫師兼作家，本文選自其散文集《頑皮故事集》。琦君（〈桂花雨〉）、洪醒夫（〈紙船印象〉）、古蒙仁（〈吃冰的滋味〉）皆為台灣其他知名作家，可作辨別。"},{"level":"basic","topic":"出處","q":"〈暑假作業〉一文選自侯文詠的哪一本書？","choices":["《頑皮故事集》","《白色巨塔》","《危險心靈》","《大醫院小醫師》"],"answer":0,"explain":"本文選自《頑皮故事集》。這是侯文詠一九九〇年出版的成名作，以頑童的眼光書寫童年趣事，風格幽默溫馨；《白色巨塔》《危險心靈》《大醫院小醫師》則是他其他時期的作品。"},{"level":"basic","topic":"作者身分","q":"侯文詠除了是知名作家，原本的專業是下列何者？","choices":["醫師","律師","建築師","會計師"],"answer":0,"explain":"侯文詠畢業於台北醫學大學，曾任台大醫院、萬芳醫院的麻醉科主治醫師，也擔任過台北醫學大學醫學人文研究所副教授，後來才決定專職寫作。"},{"level":"basic","topic":"文體","q":"〈暑假作業〉的文體屬於下列何者？","choices":["韻文（新詩）","文言文","白話文（記敘文）","應用文（書信）"],"answer":2,"explain":"本文以白話文寫成，透過敘述童年趕寫暑假作業的經過來抒發情趣，屬於記敘文（記敘性的散文），也是課本安排的自學課文。"},{"level":"basic","topic":"內容大意","q":"〈暑假作業〉主要描寫的內容是？","choices":["兄妹倆拖到暑假最後一天才趕寫暑假作業的趣事","一家人到海邊戲水的經過","作者行醫救人的感人故事","描寫故鄉桂花盛開的景象"],"answer":0,"explain":"全文以幽默的筆調，描寫兄妹倆一直到暑假快結束才想起作業還沒寫，於是手忙腳亂、彼此分工趕工的趣事，呈現童年頑皮又天真的一面。"},{"level":"basic","topic":"風格","q":"《頑皮故事集》的整體風格最接近下列何者？","choices":["沉痛哀傷、感時憂國","幽默風趣、活潑溫馨","嚴肅說理、字句艱澀","華麗典雅、堆砌詞藻"],"answer":1,"explain":"《頑皮故事集》以頑童的眼光呈現溫馨、活潑、風趣、動人的世界，讀來令人會心一笑，整體風格幽默風趣、輕鬆溫馨，與沉痛、說理或華麗雕琢的風格都不同。"},{"level":"basic","topic":"文學常識","q":"下列何者是侯文詠著名的長篇小說，並曾改編為電視劇？","choices":["《背影》","《城南舊事》","《白色巨塔》","《紅樓夢》"],"answer":2,"explain":"《白色巨塔》以醫院、醫界的權力生態為背景，是侯文詠的代表作，曾改編為電視劇。《背影》為朱自清散文、《城南舊事》為林海音作品、《紅樓夢》為曹雪芹所著。"},{"level":"basic","topic":"字義","q":"「暑假」的「暑」字，本義與下列何者最相關？","choices":["寒冷","炎熱","風雨","霜雪"],"answer":1,"explain":"「暑」是炎熱的意思，「暑假」即指夏季炎熱時放的假期。與「寒假」的「寒」（寒冷）正好相對。"},{"level":"basic","topic":"字形","q":"「ㄕㄨˇ假作業」中的「ㄕㄨˇ」，正確的寫法是？","choices":["署","曙","暑","薯"],"answer":2,"explain":"正確寫法為「暑」（日部，表炎熱）。「署」指官署、簽署，「曙」指曙光（天亮），「薯」指番薯，皆為與「暑」形近或音近而容易混淆的字。"},{"level":"basic","topic":"敘述人稱","q":"本文回憶童年往事，主要採用第幾人稱敘述？","choices":["第一人稱（我）","第二人稱（你）","第三人稱（他）","無特定人稱"],"answer":0,"explain":"作者以「我」的身分回憶自己童年的親身經歷，屬於第一人稱敘述，讀來親切、真實，也更能表現童年趣事的臨場感。"},{"level":"basic","topic":"內容細節","q":"文中兄妹倆之所以手忙腳亂，最主要的原因是？","choices":["把作業拖到暑假快結束時才動手","作業太難完全不會寫","作業本不小心弄丟了","老師臨時增加作業份量"],"answer":0,"explain":"兄妹倆平時只顧著玩，一直拖到暑假快結束才想起作業還沒寫，只好臨時趕工、彼此幫忙，因而手忙腳亂，這也是全文趣味與幽默的來源。"},{"level":"adv","topic":"作者生平","q":"作者侯文詠出生於台灣哪一個地方？","choices":["台北大稻埕","花蓮鳳林","台南新營","高雄旗山"],"answer":2,"explain":"侯文詠出生於台南市新營區。了解作者的出身背景，有助於理解他作品中對台灣鄉土與童年生活的取材。"},{"level":"adv","topic":"作者生平","q":"侯文詠曾擔任下列哪一科的專科醫師？","choices":["麻醉科","婦產科","皮膚科","急診科"],"answer":0,"explain":"侯文詠具有內科及麻醉科專科醫師資格，曾在台大醫院、萬芳醫院擔任麻醉科主治醫師。他選擇麻醉科，也與希望保有較多寫作時間有關。"},{"level":"adv","topic":"修辭","q":"下列文句何者使用了「誇飾」修辭？","choices":["暑假作業多得三天三夜也寫不完","月亮像一個大圓盤","小狗汪汪地叫著","春風又『綠』江南岸"],"answer":0,"explain":"「三天三夜也寫不完」刻意誇大作業的分量，屬於誇飾。「月亮像大圓盤」以「像」設喻為譬喻；「汪汪」摹擬狗叫聲為摹聲；「綠」由形容詞轉作動詞（使江南岸變綠）為轉品。"},{"level":"adv","topic":"修辭","q":"「暑假作業堆得像一座小山」這句話所使用的修辭法是？","choices":["排比","譬喻","設問","對偶"],"answer":1,"explain":"此句以「像」把成堆的作業比喻為一座小山，透過「喻詞＋喻體」構成明喻，屬於譬喻修辭，可具體強調作業之多。"},{"level":"adv","topic":"成語","q":"形容「事情拖到最後關頭才匆忙應付」，最貼切的成語是？","choices":["臨時抱佛腳","未雨綢繆","按部就班","防患未然"],"answer":0,"explain":"「臨時抱佛腳」比喻平時不準備，事到臨頭才匆忙應付，最能形容兄妹倆趕作業的情況。「未雨綢繆」「按部就班」「防患未然」都指事先準備或依序進行，語意相反。"},{"level":"adv","topic":"成語","q":"與「臨時抱佛腳」意義最相反的成語是？","choices":["臨渴掘井","江郎才盡","未雨綢繆","亡羊補牢"],"answer":2,"explain":"「未雨綢繆」指趁天未下雨先修好門窗，比喻事先準備，與「臨時抱佛腳」正好相反。「臨渴掘井」「亡羊補牢」都是事後才補救，語意相近；「江郎才盡」指才思枯竭，與此無關。"},{"level":"adv","topic":"字義","q":"「暑假作業」的「業」在此指的是？","choices":["職業","功課、學業","事業","罪業"],"answer":1,"explain":"「作業」的「業」在此指功課、學業之事，「暑假作業」即暑假期間須完成的功課。「職業」「事業」「罪業」的「業」為其他引申義，不合此處文意。"},{"level":"adv","topic":"文學常識","q":"侯文詠的小說《白色巨塔》主要以什麼場域作為故事背景？","choices":["醫院","學校","軍營","法院"],"answer":0,"explain":"《白色巨塔》以醫院及醫界的權力生態為背景，取材自侯文詠自身的行醫經驗，是他從幽默小品轉向社會寫實的重要代表作。"},{"level":"adv","topic":"主旨探究","q":"作者透過描寫童年趕作業的趣事，最主要想傳達的是？","choices":["對童年純真頑皮時光的懷念與趣味","對升學制度的沉痛控訴","對大自然景色的讚嘆","對故鄉親人的深切思念"],"answer":0,"explain":"本文以輕鬆幽默的筆調回顧童年趕作業的糗事，字裡行間流露的是對童年純真、頑皮時光的懷念與趣味，而非批判、寫景或思鄉。"},{"level":"adv","topic":"字義辨析","q":"「頑皮」的「頑」與下列哪一個詞語中的「頑」意思最接近？","choices":["頑石不靈","頑強抵抗","冥頑不靈","頑童嬉戲"],"answer":3,"explain":"「頑皮」的「頑」指淘氣、調皮，與「頑童」相同。「頑石」「冥頑」的「頑」多指愚笨、不通事理，「頑強」則指固執、堅強不屈，意義都不相同。"},{"level":"adv","topic":"語文應用","q":"若要為〈暑假作業〉加一個能呈現其「幽默」基調的副標題，下列何者最合適？","choices":["最後一天的手忙腳亂","一場莊嚴肅穆的告別","壯麗山河的旅行紀事","對師長的深情告白"],"answer":0,"explain":"「最後一天的手忙腳亂」點出兄妹倆臨時趕作業的狼狽與趣味，最能呼應全文幽默、輕鬆的基調；其餘選項的莊嚴、寫景或抒情語氣皆與本文風格不符。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>科學方法與實驗室安全 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#3f7d4e;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "bio-scimethod",
+  "title": "科學方法與實驗室安全",
+  "subject": "生物",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "科學方法",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>科學方法與實驗室安全</h1><div class="sub">生物 · 科學方法 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"科學方法步驟","q":"科學家探究自然現象時，通常從哪一個步驟開始？","choices":["提出假說","設計實驗","觀察","做出結論"],"answer":2,"explain":"科學方法的一般步驟為：觀察→發現問題→提出假說→設計實驗→記錄與分析→做出結論。第一步是先用感官或儀器進行觀察，蒐集訊息後才可能發現問題。"},{"level":"basic","topic":"假說的定義","q":"在科學方法中，「假說」指的是下列何者？","choices":["針對所發現的問題，提出的一個合理且可被驗證的暫時性解釋","實驗完成後整理出的最終定論","使用儀器所測得的精確數據","實驗中維持固定不變的條件"],"answer":0,"explain":"假說是針對觀察後所發現的問題，提出一個合理的暫時性解釋（可能的答案），並且必須能夠用實驗加以檢驗。它不是最終結論，也不是數據本身。"},{"level":"basic","topic":"操縱變因","q":"設計實驗時，實驗者「刻意改變」以觀察其影響的變因，稱為什麼？","choices":["控制變因","操縱變因","應變變因","無關變因"],"answer":1,"explain":"操縱變因（又稱操作變因）是實驗中由實驗者主動改變的因素，用來探討它對結果的影響；一次實驗只能改變一個操縱變因。"},{"level":"basic","topic":"應變變因","q":"實驗中因操縱變因改變而「跟著改變、被觀察或測量」的結果，稱為什麼變因？","choices":["操縱變因","控制變因","應變變因","對照變因"],"answer":2,"explain":"應變變因是實驗所要觀察或測量的結果，會隨著操縱變因的改變而變化，因此又稱為依變變因。"},{"level":"basic","topic":"控制變因","q":"為了確保實驗結果的差異只由操縱變因造成，其他必須「保持固定不變」的條件稱為什麼？","choices":["應變變因","操縱變因","控制變因","實驗變因"],"answer":2,"explain":"控制變因是實驗中維持固定不變的所有其他條件。唯有把它們控制住，才能確定應變變因的改變是由操縱變因所引起。"},{"level":"basic","topic":"顯微鏡放大倍率","q":"複式顯微鏡的總放大倍率如何計算？","choices":["目鏡倍率 ＋ 物鏡倍率","目鏡倍率 × 物鏡倍率","物鏡倍率 ÷ 目鏡倍率","目鏡倍率 － 物鏡倍率"],"answer":1,"explain":"複式顯微鏡的總放大倍率＝目鏡倍率 × 物鏡倍率。例如目鏡10倍搭配物鏡10倍，放大倍率即為100倍。"},{"level":"basic","topic":"顯微鏡成像特性","q":"透過複式顯微鏡觀察到的影像，與實際標本相比會呈現什麼特性？","choices":["上下顛倒、左右相反的倒立影像","與實物完全相同方向的正立影像","只有左右相反，上下不變","只有上下顛倒，左右不變"],"answer":0,"explain":"複式顯微鏡的物鏡與目鏡都是凸透鏡，光線經兩次折射後成像，看到的是上下顛倒、左右相反的放大倒立影像。"},{"level":"basic","topic":"酒精燈的使用","q":"使用酒精燈加熱器材時，一般應該用火焰的哪一部分來加熱？","choices":["焰心","內焰","外焰","燈蕊"],"answer":2,"explain":"酒精燈的火焰分為外焰、內焰與焰心，其中外焰溫度最高，因此加熱時通常以外焰進行，加熱效率較佳。"},{"level":"basic","topic":"實驗室安全守則","q":"使用完酒精燈要熄滅火焰時，正確的做法是下列何者？","choices":["用嘴把火吹熄","用燈帽蓋熄","直接倒水澆熄","用手搧滅火焰"],"answer":1,"explain":"熄滅酒精燈應以燈帽蓋熄，絕不可用嘴吹熄（可能引燃燈內酒精蒸氣造成危險），也不可用水澆或用手搧。"},{"level":"basic","topic":"測量與讀數","q":"用量筒量取水的體積時，讀取刻度的正確方式為何？","choices":["由上往下俯視刻度","由下往上仰視刻度","視線與凹液面最低處保持水平（平視）","以凹液面最高處為準讀數"],"answer":2,"explain":"量筒讀數時應將量筒放在水平桌面上，視線與凹液面最低處齊平（平視），並以凹液面最低處對齊的刻度為準，才能減少讀數誤差。"},{"level":"basic","topic":"實驗室安全守則","q":"若不慎有化學藥品沾到皮膚，最優先的緊急處理方式是什麼？","choices":["立刻用衛生紙擦乾","用大量清水沖洗","塗抹另一種藥品中和","先不理會等下課再處理"],"answer":1,"explain":"皮膚接觸到化學藥品時，應立即用大量清水沖洗以稀釋並移除藥品，再視情況就醫或告知老師；不可只用衛生紙擦拭或自行以其他藥品中和。"},{"level":"adv","topic":"變因判斷","q":"小明想探討「光照強度是否影響水草產生氣泡的速率」，其他條件皆相同。此實驗的操縱變因為何？","choices":["氣泡產生的速率","光照的強度","水的溫度","水草的種類"],"answer":1,"explain":"研究問題是「光照強度是否影響」，因此實驗者刻意改變的「光照強度」是操縱變因；氣泡速率是被觀察的應變變因，水溫與水草種類則須固定為控制變因。"},{"level":"adv","topic":"變因判斷","q":"承上題，小明的實驗中「水草每分鐘產生的氣泡數」屬於下列哪一種變因？","choices":["操縱變因","應變變因","控制變因","無關變因"],"answer":1,"explain":"氣泡數是隨光照強度改變而被測量的結果，屬於應變變因（依變變因）。"},{"level":"adv","topic":"變因判斷","q":"研究「不同濃度肥料對某種植物生長高度的影響」時，下列哪一項最應該被設定為控制變因？","choices":["肥料的濃度","植物生長的高度","每盆植物的澆水量","肥料濃度造成的差異"],"answer":2,"explain":"肥料濃度是操縱變因、植物高度是應變變因；而澆水量等其他條件必須保持固定不變，屬於控制變因，才能確定高度差異只由肥料濃度造成。"},{"level":"adv","topic":"顯微鏡放大倍率","q":"使用複式顯微鏡時，若目鏡為10倍、物鏡為40倍，則此時觀察到的總放大倍率為多少？","choices":["50倍","400倍","4倍","50倍以上但無法計算"],"answer":1,"explain":"總放大倍率＝目鏡倍率 × 物鏡倍率＝10 × 40＝400倍。"},{"level":"adv","topic":"顯微鏡操作","q":"用複式顯微鏡尋找標本時，通常應「先用低倍物鏡」再換高倍，主要原因為何？","choices":["低倍鏡的視野範圍較大，較容易先找到觀察目標","低倍鏡放大倍率較高，看得更清楚","低倍鏡不需要調整光線","高倍鏡會使影像變成正立"],"answer":0,"explain":"低倍物鏡放大倍率較小、視野範圍較大且較明亮，容易先找到並將目標移到視野中央，之後再換高倍鏡放大觀察細節。"},{"level":"adv","topic":"顯微鏡操作","q":"在顯微鏡下觀察時，發現要看的細胞影像偏在視野的「左下方」，想把它移到中央，應把玻片往哪個方向移動？","choices":["往右上方移動","往右下方移動","往左下方移動","往左上方移動"],"answer":2,"explain":"由於顯微鏡成像上下顛倒、左右相反，影像的移動方向與玻片實際移動方向相反。影像在左下方，代表玻片要往左下方移動，影像才會朝中央（往右上）移動。"},{"level":"adv","topic":"實驗室安全守則","q":"點燃或熄滅酒精燈時，之所以「不可用嘴吹熄」，最主要的理由是什麼？","choices":["用嘴吹會弄髒燈口不衛生","吹氣可能把燈內酒精蒸氣點燃，引起火焰竄出或爆燃的危險","吹氣會讓火焰溫度升高","嘴吹會使酒精蒸發太快而浪費"],"answer":1,"explain":"用嘴吹會把空氣送入燈內，與內部酒精蒸氣混合並被火焰引燃，可能造成火焰往外猛竄甚至爆燃，因此必須改用燈帽蓋熄。"},{"level":"adv","topic":"測量與讀數","q":"用量筒量取液體時，若「由上往下俯視」讀取凹液面刻度，所讀到的體積數值會有什麼情形？","choices":["比實際體積偏大","比實際體積偏小","與實際體積完全相同","無法讀出任何數值"],"answer":0,"explain":"俯視時視線由上往下傾斜，所對到的刻度會高於實際凹液面位置，因此讀數會比實際體積偏大；反之仰視則會偏小。正確做法是平視。"},{"level":"adv","topic":"對照實驗設計","q":"在設計對照實驗（設實驗組與對照組）時，為什麼兩組之間「只能有一項變因不同」？","choices":["這樣實驗做起來比較快、比較省時","才能確定結果的差異是由該項變因所造成","因為儀器一次只能測量一種數據","為了讓兩組看起來完全一樣"],"answer":1,"explain":"若兩組間有兩個以上的條件不同，就無法判斷結果差異究竟是哪一項造成的。只讓單一操縱變因不同、其餘皆為控制變因，才能確認因果關係。"},{"level":"adv","topic":"科學方法的本質","q":"下列有關「假說」的敘述，何者正確？","choices":["假說一旦提出就一定是正確的，不需要驗證","假說必須能夠用實驗加以檢驗，且可能被實驗結果推翻","假說就是實驗最後得到的結論","假說是不能修改的固定答案"],"answer":1,"explain":"好的假說必須是可被實驗檢驗的合理解釋。若實驗結果不支持假說，就要修正假說或重新提出；符合假說時才進一步歸納出結論。因此假說是暫時性、可被驗證與修正的。"},{"level":"adv","topic":"顯微鏡操作","q":"用複式顯微鏡對焦時，為什麼要「從側面注視」，先用粗調節輪讓物鏡（或載物台）接近玻片，再從目鏡觀察並上升尋找影像？","choices":["因為側面看比較清楚影像的細節","為了避免物鏡下降時撞到、壓破玻片","因為粗調節輪只能從側面才轉得動","這樣可以直接得到正立的影像"],"answer":1,"explain":"若一邊看目鏡一邊下降物鏡，容易在看不到距離的情況下讓物鏡撞破玻片。正確做法是先從側面看著把物鏡調到接近玻片，再由目鏡觀察、緩緩上升尋找影像，最後用細調節輪調清晰。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

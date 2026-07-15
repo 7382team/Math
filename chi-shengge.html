@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>生之歌選 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-shengge",
+  "title": "生之歌選",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>生之歌選</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈生之歌選〉的作者是誰？","choices":["琦君","杏林子","張曉風","簡媜"],"answer":1,"explain":"〈生之歌選〉的作者是杏林子。她以樂觀、勵志的散文聞名，作品充滿對生命的熱愛。琦君、張曉風、簡媜雖也是知名散文作家，但並非本文作者。"},{"level":"basic","topic":"作者","q":"杏林子的本名是什麼？","choices":["劉俠","劉墉","劉鶚","劉俊"],"answer":0,"explain":"杏林子本名劉俠（西元一九四二～二〇〇三年），生於陝西省扶風縣杏林鎮。「杏林子」是她的筆名，一方面紀念故鄉杏林鎮，一方面因「杏林」為醫界別稱，寄寓她久病與醫藥為伍、感念醫護的心情。"},{"level":"basic","topic":"出處","q":"〈生之歌選〉一文選自杏林子的哪一本著作？","choices":["《生之頌》","《生之歌》","《杏林小記》","《另一種愛情》"],"answer":1,"explain":"本課選自杏林子的散文集《生之歌》。這本書出版至今流傳甚廣，是杏林子影響最深遠的作品，也長期被各級學校選為勵志教材。"},{"level":"basic","topic":"文體","q":"就文體與語體而言，〈生之歌選〉屬於下列何者？","choices":["文言文的論說文","白話文的勵志散文","近體詩","文言文的傳記"],"answer":1,"explain":"〈生之歌選〉以淺白流暢的現代語言書寫，藉小生物、大自然抒發對生命的體悟，屬於白話文的勵志散文，並非韻文或文言作品。"},{"level":"basic","topic":"作者生平","q":"杏林子十二歲時罹患了什麼疾病，使她全身關節受損、行動不便？","choices":["小兒麻痺症","類風濕性關節炎","肺結核","紅斑性狼瘡"],"answer":1,"explain":"杏林子十二歲時罹患類風濕性關節炎，全身關節幾乎都受到損壞，行動極為不便，卻仍以堅強的意志持續寫作，成為她生命故事的重要背景。"},{"level":"basic","topic":"主旨","q":"下列何者最能概括〈生之歌選〉的主旨？","choices":["描寫四季更迭的自然美景","考據古代的花草名物","珍惜生命、樂觀奮鬥的積極精神","抒發對故鄉的思念之情"],"answer":2,"explain":"本文藉由觀察種子、毛蟲等微小生命，闡發珍惜生命、樂觀奮鬥的精神，鼓勵人在困境中依然懷抱希望。主旨在於歌頌生命的可貴，而非寫景、考據或思鄉。"},{"level":"basic","topic":"作者事蹟","q":"杏林子曾創辦下列哪一個專為身心障礙者服務的社會福利機構？","choices":["伊甸社會福利基金會","慈濟功德會","創世基金會","陽光社會福利基金會"],"answer":0,"explain":"杏林子創辦「伊甸社會福利基金會」，長期為身心障礙者爭取權益、提供服務，展現她把對生命的熱愛化為實際行動的一面。"},{"level":"basic","topic":"詞語","q":"「一粒貌不驚人的種子」中，「貌不驚人」是什麼意思？","choices":["容貌兇惡嚇人","外表平凡、不起眼","神情驚慌失措","長相高大威武"],"answer":1,"explain":"「貌不驚人」指外表平凡、毫不起眼，並無突出之處。作者用它形容種子外觀普通，藉以反襯種子日後綻放花季的燦爛，突顯平凡中蘊藏的生機。"},{"level":"basic","topic":"字音","q":"「毛蟲將『蛻』變為彩蝶」中，「蛻」的讀音是下列何者？","choices":["ㄩㄝˋ","ㄊㄨㄟˋ","ㄕㄨㄟˋ","ㄉㄨㄟˋ"],"answer":1,"explain":"「蛻變」的「蛻」讀作ㄊㄨㄟˋ，本指昆蟲脫皮，引申為脫胎換骨、澈底改變。此處形容毛蟲化為彩蝶的過程，象徵生命的成長與轉化。"},{"level":"basic","topic":"詞語","q":"「五色斑斕的彩蝶」中，「斑斕」用來形容什麼？","choices":["色彩錯雜、燦爛耀眼","動作緩慢遲鈍","聲音低沉悅耳","數量繁多密集"],"answer":0,"explain":"「斑斕」形容色彩錯雜、鮮明燦爛。用「五色斑斕」描寫彩蝶，凸顯毛蟲蛻變後的美麗，與先前「奇貌不揚」的樣貌形成強烈對比。"},{"level":"basic","topic":"作者態度","q":"杏林子雖長年為病痛所苦，但她面對人生的態度是？","choices":["消極頹喪、怨天尤人","樂觀積極、奮鬥不懈","看破紅塵、避世隱居","斤斤計較、憤世嫉俗"],"answer":1,"explain":"杏林子雖飽受病痛折磨，卻始終樂觀積極、努力不懈，把對生命的熱愛寫入作品，也付諸公益行動。這種奮鬥精神正是〈生之歌選〉最動人的力量。"},{"level":"adv","topic":"修辭","q":"「一粒貌不驚人的種子，是隱藏著一個花季的燦爛；一隻奇貌不揚的毛蟲，將蛻變為五色斑斕的彩蝶。」這兩句主要藉由什麼方式凸顯生命的可貴？","choices":["以外表的平凡對比結果的燦爛","以誇張的數字強調生命短暫","以設問引起讀者好奇","以時間先後鋪陳事件經過"],"answer":0,"explain":"句中「貌不驚人／奇貌不揚」寫外表的平凡，「花季的燦爛／五色斑斕的彩蝶」寫結果的美麗，前後形成鮮明對比（映襯），藉以說明平凡渺小的生命也蘊藏著無限可能。"},{"level":"adv","topic":"修辭","q":"承上題，這兩句「一粒……；一隻……」句式相近、字數相當、成雙並列，就句式而言最主要運用了下列哪一種修辭？","choices":["映襯","對偶","頂真","呼告"],"answer":1,"explain":"兩個分句結構相似、字數相當、意義並列，兩兩成對，就句式而言屬於「對偶」（僅兩句成雙相對，非三句以上，故不作排比）。至於內容上「平凡外表」對「燦爛結果」的對比，則屬映襯，是另一層次的分析。"},{"level":"adv","topic":"文意","q":"作者藉「種子開花」「毛蟲化蝶」，最想傳達的道理是什麼？","choices":["自然界弱肉強食的殘酷","平凡渺小的生命也蘊藏無限的可能與價值","美麗的事物終將凋零","人應順應天命、不必努力"],"answer":1,"explain":"種子雖不起眼卻能綻放花季，毛蟲雖醜陋卻能化為彩蝶，作者藉此說明再平凡渺小的生命都潛藏無限的可能與價值，鼓勵人珍惜自己、勇於奮鬥。"},{"level":"adv","topic":"寫作手法","q":"杏林子在《生之歌》中常取材於小生物與大自然，這種寫作手法的用意最接近下列何者？","choices":["以小見大，藉細微事物體悟生命哲理","堆砌華麗詞藻，炫耀學問","純粹記錄自然觀察，不含寓意","借古諷今，批評時政"],"answer":0,"explain":"作者從種子、毛蟲、蜘蛛等微小事物入手，卻能從中領悟深刻的生命哲理，是典型「以小見大」的手法，讓抽象的生命體悟變得具體可感、親切動人。"},{"level":"adv","topic":"作者生平","q":"根據杏林子的生平，她十六歲以後之所以能轉變對生命的看法、轉為積極樂觀，主要原因是？","choices":["病情完全康復","找到心靈的寄託（信仰）","獲得鉅額財富","遠離家人獨居"],"answer":1,"explain":"杏林子的病並未痊癒，但十六歲以後因為有了信仰、找到心靈的寄託，才逐漸改變對生命的態度，由消沉轉為樂觀積極。這份心靈力量是她創作的重要泉源。"},{"level":"adv","topic":"綜合","q":"下列關於杏林子的敘述，何者正確？","choices":["她是清代的閨秀作家","本名劉俠，身殘志堅，創辦伊甸基金會服務身障者","作品多為文言章回小說","因家境富裕而一生順遂"],"answer":1,"explain":"杏林子本名劉俠，雖罹患類風濕性關節炎，卻身殘志堅，不但持續以白話散文寫作，還創辦伊甸社會福利基金會服務身心障礙者。她是現代作家，並非清代閨秀，作品也非文言章回小說。"},{"level":"adv","topic":"文意","q":"文中先寫種子、毛蟲「貌不驚人」「奇貌不揚」，其作用是什麼？","choices":["強調它們毫無價值","為後文的燦爛與美麗作鋪墊、反襯","說明作者不喜歡這些生物","純粹客觀描寫，沒有作用"],"answer":1,"explain":"先寫外表的平凡不起眼，是為了反襯後文「花季的燦爛」「五色斑斕的彩蝶」，藉由前後落差，突顯生命由平凡走向美好的過程，使道理更具說服力與感染力。"},{"level":"adv","topic":"風格","q":"〈生之歌選〉作為勵志散文，其語言風格最貼切的描述是？","choices":["文字晦澀艱深，充滿典故","文字輕巧、筆調溫暖，於平易中見深刻","語氣激昂慷慨，充滿說教","多用方言俚語，詼諧逗趣"],"answer":1,"explain":"杏林子以輕巧的文字、溫暖的筆調，訴說對生命深刻的體悟，讀來親切自然，於平易中見深意。這正是《生之歌》能感動廣大讀者、歷久不衰的原因。"},{"level":"adv","topic":"象徵","q":"「毛蟲蛻變為彩蝶」在文中象徵的意義最接近下列何者？","choices":["生命歷經蛻變成長，終能綻放光彩","美好事物稍縱即逝","外表決定一切","命運無法改變"],"answer":0,"explain":"毛蟲經過蛻變化為彩蝶，象徵生命只要經歷成長與磨鍊，終能脫胎換骨、綻放光彩。這與作者珍惜生命、樂觀奮鬥的主旨相呼應，鼓勵人勇敢面對生命的試煉。"},{"level":"adv","topic":"呼應","q":"「通過苦難的試煉，可以使生命發出不朽的光輝」這樣的體悟，最能呼應杏林子哪一種生命經驗？","choices":["長年與病痛搏鬥卻仍積極創作、服務人群","年少時遊歷各地飽覽風光","在官場上歷經浮沉起落","經商致富後散盡家財"],"answer":0,"explain":"杏林子雖長期為類風濕性關節炎所苦，卻沒有被病痛擊倒，反而持續寫作、投身公益。她以自身經歷印證「苦難能使生命發光」，使這句體悟格外真切動人。"},{"level":"adv","topic":"字形","q":"下列詞語用字完全正確的一組是？","choices":["五色斑爛","拖變為彩蝶","花季的燦爛","貌不驚人的重子"],"answer":2,"explain":"正確用字為「花季的燦爛」。其餘各項皆有錯字：「斑爛」應作「斑斕」、「拖變」應作「蛻變」、「重子」應作「種子」。作答時須留意形近字的辨別。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鮭魚產卵，力爭上游 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-guiyu",
+  "title": "鮭魚產卵，力爭上游",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>鮭魚產卵，力爭上游</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈鮭魚產卵，力爭上游〉一文的作者是誰？","choices":["郭泰","琦君","洪醒夫","劉墉"],"answer":0,"explain":"本文作者為郭泰，臺灣作家，著有《拜動物為師》等書，善於藉觀察動物習性啟發人生道理。"},{"level":"basic","topic":"出處","q":"本課〈鮭魚產卵，力爭上游〉節選自下列哪一部作品？","choices":["《昆蟲記》","《拜動物為師》","《動物農莊》","《西頓動物記》"],"answer":1,"explain":"本文節選自郭泰的《拜動物為師》，藉觀察動物習性來啟發人生道理。"},{"level":"basic","topic":"文體","q":"就文章性質而言，本文屬於下列何者？","choices":["抒情文","說明文（科普文章）","純粹的議論文","應用文"],"answer":1,"explain":"本文是一篇科普性質的說明文，運用定義、數據、舉例、比較、引用等說明方法，深入淺出地介紹鮭魚的習性。"},{"level":"basic","topic":"主旨","q":"本文藉由鮭魚洄游產卵的歷程，主要想傳達下列何種精神？","choices":["安土重遷、知足常樂","隨遇而安、順其自然","力爭上游、堅持到底的不屈不撓精神","明哲保身、趨吉避凶"],"answer":2,"explain":"作者藉鮭魚奮力逆流而上、力竭仍完成產卵的歷程，啟示讀者應效法其不屈不撓、力爭上游、堅持到底的精神。"},{"level":"basic","topic":"外型特徵","q":"根據課文，鮭魚在外型上最明顯的特徵是什麼？","choices":["背鰭與尾鰭之間多一個小小的脂鰭","頭上長有兩根長觸鬚","身上覆有堅硬的骨板","尾鰭呈鮮豔的藍色"],"answer":0,"explain":"課文指出鮭魚最明顯的特徵，是在背鰭與尾鰭之間多長了一個小小的脂鰭。"},{"level":"basic","topic":"自然常識","q":"到了產卵季節，鮭魚的體色會產生怎樣的變化？","choices":["由淡紅色變成銀白色","由銀白色變成淡紅色","由黑色變成金黃色","始終維持墨綠色不變"],"answer":1,"explain":"課文提到，產卵季節時鮭魚的體色會由原來的銀白色轉變成淡紅色。"},{"level":"basic","topic":"自然常識","q":"鮭魚平時主要棲息於下列哪一種環境？","choices":["熱帶珊瑚礁淺灘","內陸的湖泊沼澤","北太平洋與北大西洋的寒冷水域","赤道附近的溫暖海域"],"answer":2,"explain":"課文指出鮭魚棲息於北太平洋和北大西洋的寒冷水域，屬冷水性魚類。"},{"level":"basic","topic":"字詞","q":"課文中「洄游」一詞的意思是什麼？","choices":["在原地打轉、來回游動而不前進","為適應覓食、產卵等生活需要，沿一定方向有規律地往返移動","順著水流往下游漂去","潛入深海底層覓食"],"answer":1,"explain":"「洄游」指某些水中生物為適應覓食、產卵等生活需要，沿一定方向、有規律地往返移動的習性。"},{"level":"basic","topic":"字詞","q":"課文中「溯河」的「溯」意思最接近下列何者？","choices":["順著河水而下","逆著河川而上","橫渡河面","沿岸緩行"],"answer":1,"explain":"「溯」為逆流而上之意，「溯河」即逆著河川往上游前進。"},{"level":"basic","topic":"自然常識","q":"鮭魚洄游的最終目的地——產卵的地點是在哪裡？","choices":["出生河流的上游（淡水）","深海海溝","河口的鹹淡水交界處","外海的礁岩區"],"answer":0,"explain":"鮭魚會從海洋洄游回到自己出生的河流上游（淡水）產卵，完成繁殖使命。"},{"level":"basic","topic":"自然常識","q":"根據課文，鮭魚洄游返鄉產卵大約發生在一年中的哪個時節？","choices":["三月至五月","六月至八月","九月至十一月","十二月至隔年二月"],"answer":2,"explain":"課文指出鮭魚的生殖期在每年九至十一月，此時成熟鮭魚溯河返鄉產卵。"},{"level":"adv","topic":"數據","q":"課文以數據說明鮭魚的洄游距離，下列敘述何者正確？","choices":["一律不超過五十公里","大多在一六○至三二○公里之間，最長可達二千公里","全程固定為一千公里","最短也有五千公里"],"answer":1,"explain":"課文運用數據說明，鮭魚洄游距離大多在一六○至三二○公里之間，最長可達二千公里，凸顯其旅程之艱辛。"},{"level":"adv","topic":"自然常識","q":"課文中，科學家推測鮭魚能返回出生地，下列何者是文中提到的可能原因之一？","choices":["依靠同伴發出的鳴叫聲來引導","憑藉母河特殊的氣味來辨識","感應地球磁場的變化","追隨固定的洋流一路漂送"],"answer":1,"explain":"課文中科學家推測鮭魚返回出生地的可能原因有二：一是像候鳥般依太陽與星辰判定方位，二是憑藉母河特殊的氣味來辨識，故「母河的氣味」為文中說法。地磁、洋流、同伴鳴叫聲皆非本課所述。"},{"level":"adv","topic":"內容理解","q":"鮭魚踏上返鄉洄游之旅後，會出現下列哪種情形？","choices":["沿途大量進食以補充體力","不再攝食，最後力竭而死","遇到障礙便折返大海","產卵後立刻恢復體力游回海洋"],"answer":1,"explain":"鮭魚返鄉途中不再攝食，一路奮力逆流而上，抵達產卵地完成任務後多已筋疲力盡，力竭而死。"},{"level":"adv","topic":"延伸比較","q":"課文以臺灣特有的「櫻花鉤吻鮭」作對比，關於牠的敘述何者正確？","choices":["每年仍洄游到海洋產卵","因環境特殊，已喪失洄游移棲的習性，一生在溪流中度過","體型是所有鮭魚中最大的","只分布於北大西洋"],"answer":1,"explain":"臺灣的櫻花鉤吻鮭產於大甲溪上游，因河流短促、冬季乾涸等環境因素，已喪失洄游移棲的習性，習慣終生生活於溪流之中。"},{"level":"adv","topic":"說明方法","q":"作者在文中舉「櫻花鉤吻鮭」為例，主要運用了下列哪一種說明方法？","choices":["下定義","舉例（並作對比）","引用名言","純粹抒發感情"],"answer":1,"explain":"作者舉櫻花鉤吻鮭為例，並與一般會洄游的鮭魚作對比，屬於「舉例」與「比較」的說明方法。"},{"level":"adv","topic":"字詞","q":"「傳宗接代」一詞的意思是什麼？","choices":["承接前人未完成的事業","使宗族的生命世代延續不絕","傳授技藝給下一代","傳遞書信與消息"],"answer":1,"explain":"「傳宗接代」指生育子女，使家族宗嗣的生命世代延續、綿延不絕。文中用以說明鮭魚洄游產卵的目的。"},{"level":"adv","topic":"字詞","q":"課文中「攝食」的「攝」意思最接近下列何者？","choices":["拍照","攝取、取用","統理、代理","收斂、約束"],"answer":1,"explain":"「攝食」即攝取食物之意，「攝」在此為攝取、取用。"},{"level":"adv","topic":"修辭","q":"作者以人性化的觀點詮釋鮭魚力竭產卵的行為，將動物賦予人的情態，這種寫作特色屬於下列何者？","choices":["誇飾","擬人（人性化觀點）","設問","映襯"],"answer":1,"explain":"作者以人性化的觀點詮釋鮭魚的行為，將動物擬人化來描寫，屬於擬人修辭，使形象更加生動感人。"},{"level":"adv","topic":"字詞運用","q":"「力爭上游」除了描寫鮭魚逆流而上外，用來比喻人時最恰當的意思是？","choices":["爭奪上游的居住權","努力向上、力求進步","搶先佔據有利位置以獲利","喜歡待在河的上游"],"answer":1,"explain":"「力爭上游」原指逆水而上，引申比喻人努力向上、不甘落後、力求進步的積極態度。"},{"level":"adv","topic":"內容理解","q":"課文描述鮭魚洄游時「成群結隊」的壯觀場面，下列何者符合文意？","choices":["僅有零星幾條單獨行動","隊伍多達數千甚至數萬條，綿延幾十公里","只在夜間偷偷洄游","全程都由人工放流引導"],"answer":1,"explain":"課文描寫鮭魚返鄉時成群結隊，隊伍總計數千條、甚至達數萬條之多，可綿延幾十公里，場面十分壯觀。"},{"level":"adv","topic":"成語","q":"下列哪一組成語最能貼切形容鮭魚洄游產卵所展現的精神？","choices":["半途而廢、知難而退","不屈不撓、堅持到底","隨波逐流、得過且過","杯弓蛇影、草木皆兵"],"answer":1,"explain":"鮭魚克服湍流、瀑布與天敵，逆流奮進直到力竭，正展現「不屈不撓、堅持到底」的精神，也是本文要傳達的核心啟示。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

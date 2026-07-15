@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>音樂家與職籃巨星 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-yinyuejia",
+  "title": "音樂家與職籃巨星",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "王溢嘉"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>音樂家與職籃巨星</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈音樂家與職籃巨星〉一文的作者是誰？","choices":["張曉風","廖鴻基","王溢嘉","琦君"],"answer":2,"explain":"本文作者為王溢嘉。他是台灣台中人，台大醫學系畢業後棄醫從文，成為專業作家，著作涵蓋文化評論與科學論述等多種文類。"},{"level":"basic","topic":"出處","q":"本文選自王溢嘉的哪一部作品？","choices":["《幽夢影》","《蟲洞書簡》","《湖濱散記》","《城南舊事》"],"answer":1,"explain":"本文選自《蟲洞書簡》。這是王溢嘉為青少年所寫的一系列勵志篇章，以書信的形式與年輕讀者對話。"},{"level":"basic","topic":"語體","q":"本文以何種語體寫成？","choices":["白話文（語體文）","文言文","駢文","樂府詩"],"answer":0,"explain":"本文是以白話文（語體文）寫成的現代散文，用語淺白流暢，方便青少年閱讀理解。"},{"level":"basic","topic":"取材人物","q":"文中作為「音樂家」代表舉例的是誰？","choices":["貝多芬","莫札特","蕭邦","魯賓斯坦"],"answer":3,"explain":"作者以鋼琴家魯賓斯坦作為「音樂家」的例子。他被譽為二十世紀最佳鋼琴曲目詮釋者之一，且自幼即展現音樂天分。"},{"level":"basic","topic":"取材人物","q":"文中作為「職籃巨星」代表舉例的是誰？","choices":["林書豪","麥可‧喬丹","柯比‧布萊恩","姚明"],"answer":1,"explain":"作者以美國職籃巨星麥可‧喬丹作為例子。他在球場上的表現出神入化，被稱為「飛人」，但其成就同樣來自不懈的苦練。"},{"level":"basic","topic":"課文內容","q":"文中提到魯賓斯坦被譽為什麼？","choices":["交響樂之父","小提琴之王","二十世紀最佳鋼琴曲目詮釋者之一","歌劇泰斗"],"answer":2,"explain":"魯賓斯坦被譽為「二十世紀最佳鋼琴曲目詮釋者之一」。他是一位鋼琴家，「詮釋」指的是對鋼琴曲目的演繹與呈現。"},{"level":"basic","topic":"課文內容","q":"依課文所述，魯賓斯坦雖有天分，但他自己強調成功的關鍵是什麼？","choices":["天分","運氣","家世背景","苦練"],"answer":3,"explain":"魯賓斯坦雖是備受讚譽的音樂神童，但他強調的並非「天分」而是「苦練」。作者藉此說明：即使有天分，若不苦練，也難以開花結果。"},{"level":"basic","topic":"課文內容","q":"課文中提到魯賓斯坦每天大約練琴多久？","choices":["六到八小時","一到兩小時","三到四小時","十小時以上"],"answer":0,"explain":"課文提到魯賓斯坦每天心無旁騖地練琴約六到八小時，以此具體呈現他苦練不懈的程度。"},{"level":"basic","topic":"課文內容","q":"依課文，喬丹後來被哪一所大學的籃球隊網羅？","choices":["哈佛大學","杜克大學","北卡羅萊納大學","加州大學洛杉磯分校"],"answer":2,"explain":"喬丹後來被北卡羅萊納大學的籃球隊網羅，為他日後踏上職籃之路鋪路。"},{"level":"basic","topic":"主旨","q":"本文的主旨最接近下列何者？","choices":["天分決定一切，努力沒有用處","成功並無祕訣，天分之外更須靠苦練（勤能補拙）","運動成就高於藝術成就","名人多半出身富貴之家"],"answer":1,"explain":"本文藉魯賓斯坦與喬丹兩例說明：成功並無祕訣，天分之外更須靠苦練，勤能補拙，唯有努力磨練才能出人頭地。"},{"level":"basic","topic":"詞語","q":"成語「臨陣磨槍」的意思是什麼？","choices":["平時就勤加準備","槍法十分高超","上戰場前仔細檢查武器","事到臨頭才匆忙準備"],"answer":3,"explain":"「臨陣磨槍」指到了上陣時才匆忙磨利槍頭，比喻事到臨頭才倉促準備。這與本文強調平時就該及早苦練的精神正好相反。"},{"level":"adv","topic":"文體","q":"就內容性質而言，本文屬於下列哪一種文體？","choices":["論說文（藉事例闡明道理）","記敘文","抒情文","應用文中的柬帖"],"answer":0,"explain":"本文提出「成功須靠苦練」的看法，並舉魯賓斯坦、喬丹的事例加以論證，屬於論說文。它雖採書信形式書寫，但性質上是說理的論說文。"},{"level":"adv","topic":"寫作手法","q":"本文主要運用哪一種論證方法來支持論點？","choices":["數據統計法","反面駁斥法","舉例論證（例證法）","純以引用經典為證"],"answer":2,"explain":"作者列舉魯賓斯坦與喬丹兩個具體人物的事例來印證「成功須靠苦練」的道理，屬於舉例論證（例證法），使論點更具說服力。"},{"level":"adv","topic":"篇章結構","q":"作者同時並舉「音樂家」與「職籃巨星」兩個不同領域的例子，主要用意為何？","choices":["並舉不同領域的成功者相互映襯，凸顯『苦練』是共通的道理","說明音樂比籃球更重要","暗示兩人是好朋友","純粹增加趣味，別無深意"],"answer":0,"explain":"音樂與籃球分屬藝術與運動兩個不同領域，作者藉兩者相互映襯，凸顯不論哪一行，「苦練」都是成功共通的關鍵，使道理更具普遍性與說服力。"},{"level":"adv","topic":"詞語","q":"課文以「璞玉」比喻什麼樣的人？","choices":["價值連城的珍寶","資質雖好但尚未經過磨練的人","不學無術的人","天生毫無才能的人"],"answer":1,"explain":"「璞」是未經琢磨的玉石。課文以「璞玉」比喻資質雖好卻尚未經過磨練的人，說明再好的資質若不琢磨，也發揮不出價值。"},{"level":"adv","topic":"修辭","q":"「即使你的資質再好，若沒有經過琢磨，也是一塊沒有什麼價值的璞玉。」這句話主要運用了什麼修辭？","choices":["誇飾","設問","對偶","譬喻"],"answer":3,"explain":"此句以「璞玉」比喻未經磨練的人的資質，屬於譬喻（比喻）修辭，把抽象的道理化為具體可感的形象。"},{"level":"adv","topic":"課文內容","q":"依課文，喬丹在高中時曾有一段時間不被看好、只被列入二軍，主要原因是什麼？","choices":["功課成績太差","身高不夠高","年紀太小","練球態度不佳"],"answer":1,"explain":"課文提到喬丹曾因身高不夠而一度被列入二軍，並不被認為是天生的籃球好手；後來他持續苦練，加上身高增長，才正式入選校隊。"},{"level":"adv","topic":"詞語","q":"成語「脫穎而出」的意思與典故，下列敘述何者正確？","choices":["比喻僥倖成功","比喻半途而廢","語出毛遂自薦的典故，比喻人的才能完全顯露出來","比喻臨陣退縮"],"answer":2,"explain":"「脫穎而出」語出《史記》毛遂自薦「錐處囊中，其末立見」的典故，比喻人的才能全部顯露出來。課文結尾以此勉勵讀者藉苦練使自己脫穎而出。"},{"level":"adv","topic":"字詞辨正","q":"關於「心無旁騖」的用字，下列說明何者正確？","choices":["「騖」意為追求，全詞指專心一意、沒有別的念頭，不可寫成「鶩」（鴨）","「騖」同「鶩」，都指鴨子","「旁騖」指旁邊的野鴨","此詞怎麼寫都可以，沒有正誤之分"],"answer":0,"explain":"「心無旁騖」的「騖」音ㄨˋ，意為追求、強求，全詞指專心一意、沒有其他的追求；不可寫成「鶩」（ㄨˋ，指鴨子），二字須加以辨別。"},{"level":"adv","topic":"文意推論","q":"根據本文，作者對「天才」與「苦練」的看法，最接近下列何者？","choices":["只要有天分就不必努力","苦練毫無意義","天分與苦練都不重要，全靠運氣","天分是先天無法選擇的，苦練卻操之在我；兩者兼具，而苦練尤其可貴"],"answer":3,"explain":"作者認為天分是先天決定、無法自我選擇的，但苦練是可以自我要求並產生成果的。成功須兩者兼具，而其中苦練操之在我，因此尤其可貴。"},{"level":"adv","topic":"主旨延伸","q":"下列俗諺，何者與本文「勤能補拙、苦練致勝」的主旨最相符？","choices":["近朱者赤，近墨者黑","一分耕耘，一分收穫","塞翁失馬，焉知非福","十年樹木，百年樹人"],"answer":1,"explain":"「一分耕耘，一分收穫」強調付出多少努力就有多少收穫，與本文「勤能補拙、苦練才能成功」的主旨最為契合。其餘三者分別談環境影響、禍福相倚與教育樹人，皆不切合。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

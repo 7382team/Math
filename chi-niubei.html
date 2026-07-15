@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>牛背上的呀喝 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-niubei",
+  "title": "牛背上的呀喝",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>牛背上的呀喝</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者－本名","q":"〈牛背上的呀喝〉的作者是李潼，他的本名是下列何者？","choices":["賴和","楊喚","賴西安","楊弦"],"answer":2,"explain":"李潼本名賴西安（1953－2004），生於花蓮，是著名的兒少文學作家與校園民歌作詞人。賴和、楊喚、楊弦則另有其人。"},{"level":"basic","topic":"作者－美譽","q":"李潼在文學創作上成就非凡，尤其被文壇譽為？","choices":["田園詩人","臺灣少年小說第一人","現代散文之王","臺灣鄉土文學之父"],"answer":1,"explain":"李潼的少年小說刻劃人物細膩、文字流暢跳脫，因而享有「臺灣少年小說第一人」的美譽。"},{"level":"basic","topic":"文體","q":"就文體而言，〈牛背上的呀喝〉屬於下列何者？","choices":["文言論說文","古典詩","章回小說","白話散文"],"answer":3,"explain":"本文是一篇以白話文寫成、記敘童年往事的散文小品，屬於白話散文。"},{"level":"basic","topic":"題目意涵","q":"篇名中的「呀喝」在文中主要的作用是什麼？","choices":["驅趕牛隻時發出的吆喝聲","牛的名字","一種農具","村莊的地名"],"answer":0,"explain":"「呀喝」是騎牛、趕牛時所發出的吆喝聲，屬於摹擬聲音的狀聲詞（擬聲詞）。"},{"level":"basic","topic":"情節背景","q":"依課文所述，作者體驗騎牛是在什麼樣的情境下發生的？","choices":["上學途中偶然遇見","隨父母到牧場旅遊","暑假受童伴邀約，到壽豐鄉間作客、幫忙採收西瓜時","參加學校農事比賽"],"answer":2,"explain":"課文開頭寫童伴的親戚住在花蓮壽豐鄉間，七月暑假西瓜大量採收，特地邀請作者一行前去作客、幫忙抱西瓜，其間體驗了最令他心動的騎牛。"},{"level":"basic","topic":"內容－想像","q":"騎牛之前，作者「想像中」的騎牛景象是下列何者？","choices":["牛步緩行、悠閒吃草","頭戴草帽、甩動童軍繩，像西部牛仔般威風地騎牛呀喝","摔得滿身泥濘、狼狽不堪","牽著牛在田邊慢慢散步"],"answer":1,"explain":"作者原本想像自己頭戴草帽、甩動童軍繩，像美國西部電影裡的牛仔般威風地騎牛呀喝、響徹原野，與後來狼狽的實際情形形成強烈對比。"},{"level":"basic","topic":"詞語－靈機一動","q":"「靈機一動」這個語詞的意思最接近下列何者？","choices":["心神不寧","反覆猶豫","一時衝動而後悔","忽然想到解決的辦法"],"answer":3,"explain":"「靈機一動」指心思靈敏，忽然想出辦法或主意。"},{"level":"basic","topic":"詞語－兩全其美","q":"「兩全其美」的意思是下列何者？","choices":["顧全兩方面，使彼此都圓滿","兩人一起受罰","做到一半就放棄","顧此失彼"],"answer":0,"explain":"「兩全其美」指做一件事能兼顧兩方面，使雙方都得到圓滿的結果；「顧此失彼」則意思相反。"},{"level":"basic","topic":"詞語－竅門","q":"文中說許多事都各有「竅門」，「竅門」的意思是什麼？","choices":["隱密的洞穴","多餘的麻煩","做事的要訣、關鍵方法","意外的災禍"],"answer":2,"explain":"「竅門」指做事的訣竅、要領，也就是關鍵的方法。"},{"level":"basic","topic":"作者－身分","q":"除了兒少文學作家，李潼在校園民歌時期還有什麼身分？","choices":["電影導演","民歌歌詞創作者（作詞人）","職業畫家","新聞主播"],"answer":1,"explain":"李潼在校園民歌時代勤於填詞，以本名賴西安發表〈月琴〉、〈廟會〉、〈散場電影〉等膾炙人口的歌詞。"},{"level":"basic","topic":"主旨","q":"本文透過騎牛的親身經驗，最主要想傳達的道理是什麼？","choices":["做人要功成名就","鄉村生活一定勝過都市","動物比人聰明","許多事看似容易，實際做起來卻各有學問，須親身實踐"],"answer":3,"explain":"作者藉由想像與現實的落差，點出許多事看來容易，真正做起來才知各有竅門，須虛心學習、親身體驗。"},{"level":"adv","topic":"詞語－處變不驚","q":"「處變不驚」用來形容一個人的什麼表現？","choices":["遭遇突發變故仍能保持鎮定","遇事容易慌張失措","個性活潑好動","做事拖泥帶水"],"answer":0,"explain":"「處變不驚」指面對變故或突發狀況仍能沉著冷靜、不慌張。"},{"level":"adv","topic":"修辭－仿詞","q":"文中「騎牛難下」的說法，是仿擬（改造）自下列哪一個成語？","choices":["對牛彈琴","九牛一毛","騎虎難下","牛刀小試"],"answer":2,"explain":"作者以「騎牛難下」仿擬成語「騎虎難下」，藉諧趣的仿詞表現騎牛時進退兩難的窘境。"},{"level":"adv","topic":"寫作手法－對比","q":"本文在寫作上運用最明顯的手法是下列何者？","choices":["大量引用歷史典故","將想像（理想）與現實加以對比","層層設問步步逼近","把結局放在最前面倒敘"],"answer":1,"explain":"全文以騎牛「想像中的美好」與「實際的狼狽」相互對照，形成鮮明的對比，是本文最突出的手法。"},{"level":"adv","topic":"修辭－摹聲","q":"「呀喝」、「噠噠」這類模擬聲音的詞語，屬於哪一種修辭？","choices":["譬喻","誇飾","轉化","摹聲（狀聲、擬聲）"],"answer":3,"explain":"「呀喝」、「噠噠」這類模擬聲音的詞語，屬於摹聲（狀聲、擬聲）修辭，可增添臨場感。"},{"level":"adv","topic":"作者－民歌作品","q":"下列哪一首膾炙人口的校園民歌歌詞出自李潼（賴西安）之手？","choices":["月琴","橄欖樹","童年","外婆的澎湖灣"],"answer":0,"explain":"〈月琴〉是李潼以本名賴西安填詞的代表作之一；〈橄欖樹〉為三毛作詞，〈童年〉為羅大佑、〈外婆的澎湖灣〉為葉佳修的作品。"},{"level":"adv","topic":"作者－少年小說","q":"下列何者是李潼的少年小說作品？","choices":["城南舊事","寄小讀者","少年噶瑪蘭","邊城"],"answer":2,"explain":"《少年噶瑪蘭》是李潼著名的少年小說；《城南舊事》為林海音、《寄小讀者》為冰心、《邊城》為沈從文的作品。"},{"level":"adv","topic":"情節背景－地點","q":"課文中作者體驗騎牛的地點在哪裡？","choices":["宜蘭羅東鎮","花蓮壽豐鄉","臺東池上鄉","屏東恆春鎮"],"answer":1,"explain":"課文寫童伴的親戚住在花蓮壽豐鄉間，作者一行暑假前往作客，並在當地體驗騎牛。（李潼後來雖定居宜蘭羅東，但此文所寫的騎牛之事發生於花蓮壽豐。）"},{"level":"adv","topic":"內容－現實","q":"下列何者最符合作者「實際」騎牛時的狼狽情形？","choices":["牛毛扎人、屁股坐不穩，黃牛自顧自邁步奔走，他只能驚慌大叫","牛乖巧聽話、任他自在指揮","他一躍上牛便穩穩騎行","牛怕生而不肯讓他靠近"],"answer":0,"explain":"實際騎牛時，作者發覺高度不對、牛背的牛毛扎著兩腿內側、屁股坐不穩，黃牛卻自動開步、四蹄有力地往前走，他只能發出慘叫，與想像大相逕庭。"},{"level":"adv","topic":"作者－籍貫","q":"作者李潼的出生地是下列何者？","choices":["臺北","高雄","臺南","花蓮"],"answer":3,"explain":"李潼（賴西安）出生於花蓮，後來定居宜蘭羅東；本文所寫的騎牛往事也發生在花蓮。"},{"level":"adv","topic":"語文常識－散文","q":"下列關於「散文」這種文體的敘述，何者正確？","choices":["必須押韻且每句字數固定","形式自由、不受格律限制，常抒寫真實的見聞與情感","一定要虛構出完整曲折的故事情節","只能用文言文書寫"],"answer":1,"explain":"散文形式自由、不受格律拘束，多抒寫作者真實的生活見聞與情感，本文即為記敘童年往事的散文小品。"},{"level":"adv","topic":"體悟","q":"綜觀全文，作者從這次騎牛經驗中得到的體悟是什麼？","choices":["凡事不能只憑想像，唯有親身實踐、虛心學習才能真正掌握","從此再也不親近任何動物","鄉下的孩子都不友善","做事只要有膽量就一定會成功"],"answer":0,"explain":"作者體會到許多事看來容易，實際卻各有竅門；凡事不能只憑想像，唯有親身嘗試、虛心請教學習，才能真正學會。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

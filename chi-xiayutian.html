@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>下雨天，真好 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-xiayutian",
+  "title": "下雨天，真好",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>下雨天，真好</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈下雨天，真好〉一文的作者是誰？","choices":["琦君","林海音","張曉風","簡媜"],"answer":0,"explain":"本文作者為琦君，是台灣現代散文名家，擅長以溫柔筆調書寫童年與思鄉之情。林海音著有《城南舊事》，張曉風、簡媜亦為知名散文作家，皆非本文作者。"},{"level":"basic","topic":"作者本名","q":"作者琦君的本名為下列何者？","choices":["潘希真","潘玉貞","潘慧珠","潘蘊華"],"answer":0,"explain":"琦君本名潘希真（亦作潘希珍），「琦君」是筆名。她是浙江永嘉（瞿溪）人，大學時受業於詞學大師夏承燾門下。"},{"level":"basic","topic":"文體","q":"就文體而言，〈下雨天，真好〉屬於哪一類？","choices":["散文","新詩","小說","劇本"],"answer":0,"explain":"本文是一篇白話散文，兼具記敘與抒情，藉雨天回憶童年往事、抒發思鄉之情，並非新詩、小說或劇本。"},{"level":"basic","topic":"出處","q":"〈下雨天，真好〉一文選自琦君的哪一部作品集？","choices":["《紅紗燈》","《背影》","《城南舊事》","《荷塘月色》"],"answer":0,"explain":"本文出自琦君的散文集《紅紗燈》。《背影》《荷塘月色》為朱自清作品，《城南舊事》為林海音作品。"},{"level":"basic","topic":"主旨","q":"下列何者最能表達本文的主旨？","choices":["藉下雨天回憶童年往事，抒發對故鄉與親人的思念","描寫雨天造成交通不便的種種困擾","說明梅雨形成的自然科學原理","議論人們應該如何預防雨季的疾病"],"answer":0,"explain":"全文以「雨」為線索，串起童年生活與對母親、父親、故鄉的懷念，屬懷舊抒情之作，並非說明雨的成因或議論防病之理。"},{"level":"basic","topic":"篇名寓意","q":"篇名「下雨天，真好」中的「真好」，主要表達作者怎樣的情感？","choices":["對雨天的喜愛，以及雨天勾起的美好回憶","對雨天終於停歇的慶幸","對雨具生意興隆的欣喜","對農作物獲得灌溉的實用考量"],"answer":0,"explain":"「真好」是作者對雨天的由衷喜愛，因為雨天總能把她帶回童年、帶回故鄉的美好記憶，故篇名即點出全文懷舊而溫馨的基調。"},{"level":"basic","topic":"情感對象","q":"本文回憶童年往事時，作者傾注最深情感、著墨最多的人物是？","choices":["母親","同學","鄰居","老師"],"answer":0,"explain":"文中藉雨天回憶最令作者思念的是母親，講故事、雨中陪伴、操持家務等段落著墨最多，字裡行間流露對母親與家人深摯的懷念，這也是琦君散文常見的主題。"},{"level":"basic","topic":"修辭","q":"「屋裡掛滿萬國旗似的溼衣服」，這句話運用了哪一種修辭法？","choices":["譬喻","設問","誇飾","頂真"],"answer":0,"explain":"此句以「萬國旗」比喻屋內五顏六色、形形色色的溼衣服，有喻體「萬國旗」、喻詞「似的」，屬譬喻（明喻）修辭。"},{"level":"basic","topic":"語言風格","q":"關於琦君散文的語言風格，下列敘述何者最貼切？","choices":["文字平易質樸，情感溫柔敦厚","詞藻華麗堆砌，刻意賣弄典故","語氣犀利辛辣，充滿諷刺批判","句式艱澀難懂，多用文言虛字"],"answer":0,"explain":"琦君的散文向以溫柔敦厚、平易質樸見長，用平實文字寫尋常情事，卻能感人至深，與華麗、辛辣或艱澀等風格不同。"},{"level":"basic","topic":"作者籍貫","q":"作者琦君是哪一地方的人？","choices":["浙江永嘉（瞿溪）","北平","廣東潮州","福建廈門"],"answer":0,"explain":"琦君是浙江永嘉縣瞿溪鄉人，童年在江南水鄉度過，故鄉的人事景物正是她散文中反覆書寫、魂牽夢縈的題材。"},{"level":"basic","topic":"開篇技法","q":"本文一開篇便寫掀開窗簾看見窗上撒滿水珠，隨即點出「又是個下雨天」，這種寫法屬於？","choices":["開門見山、開篇點題","先抑後揚","倒敘插敘","託物言志"],"answer":0,"explain":"文章起筆即直接寫雨、點出雨天（「一清早，掀開窗簾看看，窗上已撒滿了水珠；啊，好極了，又是個下雨天」），屬開門見山、開篇點題的寫法，直接扣合篇名與全文的懷舊主題。"},{"level":"adv","topic":"修辭辨析","q":"「屋裡掛滿萬國旗似的溼衣服」一句中，作為「喻詞」的是哪一個詞？","choices":["似的","萬國旗","溼衣服","掛滿"],"answer":0,"explain":"譬喻由本體、喻體、喻詞組成。本句本體為「溼衣服」，喻體為「萬國旗」，「似的」則是連接兩者的喻詞，屬明喻。"},{"level":"adv","topic":"修辭知識","q":"本文常用「摹寫」修辭。下列對「摹寫」的說明，何者正確？","choices":["將視覺、聽覺、嗅覺等感官印象具體描寫出來","在句尾連續使用相同的字詞以加強語氣","用問句形式表達，明知故問或激問","把物當作人來寫，賦予人的動作情感"],"answer":0,"explain":"摹寫是把對事物的視覺、聽覺、嗅覺、味覺、觸覺等感官印象，用文字具體描繪出來的修辭法。選項三為設問，選項四為轉化（擬人），皆非摹寫。"},{"level":"adv","topic":"句意理解","q":"文中「雨天總是把我帶到另一個處所」，句中的「另一個處所」最主要是指？","choices":["記憶中的故鄉與童年","遙遠的外國都市","夢中虛構的仙境","未來想移居的城市"],"answer":0,"explain":"原文說「雨天總是把我帶到另一個處所，在那兒，我又可以重享歡樂的童年」，可知「另一個處所」是就時空回憶而言，指作者童年生活的故鄉。雨聲雨景勾起回憶，將她從眼前帶回昔日的家鄉，呼應全文思鄉懷舊之旨。"},{"level":"adv","topic":"情感層次","q":"本文以成年之筆追憶童年雨趣，其情感基調最接近下列何者？","choices":["在歡樂溫馨的回憶中，隱含物是人非的淡淡惆悵","從頭到尾洋溢輕快活潑，毫無感傷","充滿憤懣不平，控訴命運的不公","冷靜客觀地記錄，不帶任何情感"],"answer":0,"explain":"作者一面重溫童年雨天的種種樂趣，一面因親人故鄉俱已遠去，字裡行間浮現思念與惆悵，形成「樂中帶哀」、溫馨而略帶感傷的懷舊情調。"},{"level":"adv","topic":"作者作品","q":"下列哪一部作品也是琦君所寫？","choices":["《煙愁》","《雅舍小品》","《朝花夕拾》","《呼蘭河傳》"],"answer":0,"explain":"《煙愁》為琦君的散文名作。《雅舍小品》是梁實秋作品，《朝花夕拾》為魯迅所著，《呼蘭河傳》則是蕭紅的作品。"},{"level":"adv","topic":"作者師承","q":"琦君在大學時期受業於哪一位詞學大師門下？","choices":["夏承燾","胡適","梁啟超","王國維"],"answer":0,"explain":"琦君就讀之江大學中文系時，師事詞學大師夏承燾，深受古典詩詞薰陶，這也奠定她散文典雅而深情的底蘊。（其筆名「琦君」，一說即與夏承燾、龍沐勛兩位老師有關。）"},{"level":"adv","topic":"語文常識","q":"文中提到的「黃梅天（梅雨）」，通常出現在一年中的什麼時節？","choices":["春末夏初（約五、六月），江南一帶連綿陰雨","隆冬十二月的乾冷季節","深秋九、十月的秋高氣爽","正月新春的短暫回暖"],"answer":0,"explain":"梅雨又稱黃梅天，因正值江南梅子成熟而得名，約在春末夏初（五、六月間），長江中下游一帶多連綿陰雨，正是本文雨天氛圍的背景。"},{"level":"adv","topic":"成語辨析","q":"下列與「雨」相關的成語，何者用來比喻人具有支配局面的極大本領或神通？","choices":["呼風喚雨","滿城風雨","春風化雨","未雨綢繆"],"answer":0,"explain":"「呼風喚雨」原指神仙道術能召喚風雨，後比喻人具有支配自然或左右局面的極大能力。「滿城風雨」比喻消息傳遍、議論紛紛；「春風化雨」比喻良好的教育；「未雨綢繆」比喻事先準備。"},{"level":"adv","topic":"寫作手法","q":"關於本文的敘寫方式，下列敘述何者最正確？","choices":["以童年的「我」為視角，藉雨串聯一幕幕往事","以第三人稱全知觀點，客觀報導他人生活","採用戲劇對白形式，逐場推展情節","以論點加例證，層層說理反覆論證"],"answer":0,"explain":"本文是回憶性抒情散文，以童年的「我」為敘述視角，用「雨」為線索串連童年生活片段，而非第三人稱報導、戲劇對白或議論說理。"},{"level":"adv","topic":"文體辨析","q":"若依表達方式將文章分類，〈下雨天，真好〉最接近下列哪一種？","choices":["記敘、抒情兼具的散文","闡明事理的說明文","提出主張加以論證的議論文","有固定格式的應用文"],"answer":0,"explain":"本文透過記敘童年雨天往事來抒發思鄉懷舊之情，屬記敘兼抒情的散文，而非旨在說明事理、論證主張或講求固定格式的應用文。"},{"level":"adv","topic":"主題連結","q":"琦君散文常見的核心主題，與本文最為相通的是？","choices":["懷念童年、思念故鄉與親情","描寫都市生活的繁華競逐","抒發對政治時局的批判","探討科技發展帶來的變遷"],"answer":0,"explain":"琦君的散文大多書寫從幼到老的生活，反覆吟詠童年、故鄉與親情，本文正是這一主題的代表，與都市、政治、科技等題材無涉。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

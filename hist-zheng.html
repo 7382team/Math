@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鄭氏時期的統治與開發 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist-zheng",
+  "title": "鄭氏時期的統治與開發",
+  "subject": "歷史",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "臺灣史",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>鄭氏時期的統治與開發</h1><div class="sub">歷史 · 臺灣史 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"鄭成功攻臺","q":"鄭成功率軍進攻臺灣、開始驅逐荷蘭人是在哪一年？","choices":["1624年","1661年","1683年","1721年"],"answer":1,"explain":"鄭成功於1661年率軍自金門出發，經鹿耳門進入臺江內海攻臺；1624年是荷蘭人開始統治臺灣，1683年是明鄭結束，1721年為朱一貴事件（屬清朝時期）。"},{"level":"basic","topic":"鄭荷之戰","q":"鄭成功攻臺時，荷蘭人最後堅守、被圍困約九個月才投降的城堡是？","choices":["熱蘭遮城","普羅民遮城","億載金城","諸羅城"],"answer":0,"explain":"鄭成功先攻下赤崁的普羅民遮城，再包圍荷蘭長官駐守的熱蘭遮城（今臺南安平），圍城約九個月後迫使荷蘭東印度公司投降；億載金城、諸羅城均為後來清朝時期的建設。"},{"level":"basic","topic":"鄭成功／國姓爺","q":"鄭成功因受明朝皇帝賜姓，民間尊稱他為下列何者？","choices":["平西王","靖海侯","國姓爺","定南王"],"answer":2,"explain":"鄭成功受南明皇帝賜姓「朱」，故被尊稱「國姓爺」，並受封延平郡王；平西王為吳三桂、靖海侯為施琅、定南王為孔有德，皆非鄭成功。"},{"level":"basic","topic":"明鄭三代","q":"明鄭時期共歷經三代統治者，依先後順序排列正確的是？","choices":["鄭成功→鄭經→鄭克塽","鄭成功→鄭克塽→鄭經","鄭經→鄭成功→鄭克塽","鄭芝龍→鄭成功→鄭經"],"answer":0,"explain":"明鄭三代依序為鄭成功、鄭經、鄭克塽。鄭成功攻臺後僅一年多即病逝，由其子鄭經繼位，最後由孫鄭克塽於1683年降清。鄭芝龍是鄭成功之父，未曾統治臺灣。"},{"level":"basic","topic":"承天府與行政","q":"鄭成功在今臺南設立、作為明鄭最高行政中心的機構是？","choices":["臺灣府","承天府","淡水廳","諸羅縣"],"answer":1,"explain":"鄭成功攻臺後設承天府為最高行政中心，並在其下設天興、萬年二區作為地方行政單位；臺灣府、淡水廳、諸羅縣皆為後來清朝的行政區劃。"},{"level":"basic","topic":"陳永華／孔廟","q":"陳永華建議興建、成為推行儒學中心並被稱為「全臺首學」的建築是？","choices":["臺南天后宮","艋舺龍山寺","臺南孔廟","臺南城隍廟"],"answer":2,"explain":"1666年在陳永華建議下，臺灣第一座孔廟建於今臺南，兼為官立儒學學堂，人稱「全臺首學」，是明鄭推行儒家教育的中心。"},{"level":"basic","topic":"陳永華／屯田制","q":"陳永華為了「寓兵於農」、開墾土地並解決糧食問題，所推行的制度是？","choices":["均田制","租庸調制","府兵制","屯田制"],"answer":3,"explain":"陳永華推行屯田制（軍屯），讓軍隊平時開墾耕種、戰時作戰，既解決糧食問題又拓展土地，留下新營、柳營、下營等地名。其餘選項為中國歷代的土地或賦稅、兵制，並非明鄭在臺推行者。"},{"level":"basic","topic":"施琅攻臺","q":"1683年率領清朝水師、在澎湖海戰打敗明鄭而促使臺灣歸清的將領是？","choices":["劉國軒","施琅","鄭克塽","揆一"],"answer":1,"explain":"1683年清朝福建水師提督施琅率軍在澎湖海戰擊敗明鄭。劉國軒是戰敗的明鄭主帥，鄭克塽是投降的明鄭統治者，揆一則是先前投降鄭成功的荷蘭長官。"},{"level":"basic","topic":"明鄭結束","q":"明鄭政權在哪一年結束（鄭克塽降清、臺灣歸入清朝）？","choices":["1662年","1624年","1683年","1721年"],"answer":2,"explain":"1683年澎湖海戰後鄭克塽投降清朝，明鄭政權結束，臺灣正式納入清朝版圖。1662年是明鄭開始（荷蘭投降退出），1624年是荷蘭開始統治，1721年為清朝時期的朱一貴事件。"},{"level":"basic","topic":"陳永華／保甲制度","q":"陳永華推行、以「十戶為一牌、十牌為一甲、十甲為一保」來管理戶口與維持治安的制度是？","choices":["保甲制度","屯田制度","科舉制度","郡縣制度"],"answer":0,"explain":"陳永華引進保甲制度，以十戶一牌、十牌一甲、十甲一保的層級來編組人民，達到戶口管理與地方治安的目的；屯田是耕墾制度、科舉是選才制度、郡縣是行政區劃，皆非此題所指。"},{"level":"basic","topic":"鄭克塽","q":"明鄭時期最後一位統治者（第三代）是誰？","choices":["鄭經","鄭成功","鄭芝龍","鄭克塽"],"answer":3,"explain":"明鄭第三代、也是最後一位統治者是鄭克塽，於1683年降清而使明鄭結束。鄭成功為第一代、鄭經為第二代，鄭芝龍則未統治臺灣。"},{"level":"adv","topic":"攻臺目的／反清復明","q":"鄭成功之所以要攻打並占領臺灣，最主要的目的是什麼？","choices":["替清朝開拓海外疆土","協助荷蘭人在臺傳教","以臺灣作為「反清復明」的根據地","躲避日本的侵略"],"answer":2,"explain":"鄭成功在中國東南沿海抗清失利後，攻占荷蘭統治的臺灣，是為了取得穩固的根據地，以繼續推動「反清復明」的事業，而非為清朝效力或其他目的。"},{"level":"adv","topic":"圍城戰術","q":"面對堅固的熱蘭遮城久攻不下，鄭成功主要採取什麼方式迫使荷蘭人投降？","choices":["長期圍城、封鎖補給，等待對方投降","以大砲一舉轟破城牆攻入","放火燒城逼敵撤退","從一開始就和平談判接收"],"answer":0,"explain":"鄭成功初攻熱蘭遮城受挫後，改採圍城戰術，長期封鎖荷軍的補給與援兵，經過約九個月，終於迫使幾乎孤立無援的荷蘭守軍談和投降、退出臺灣。"},{"level":"adv","topic":"儒學教育目的","q":"陳永華在臺灣興建孔廟、設立學校並實施科舉考試，主要用意是什麼？","choices":["為了與荷蘭人進行貿易","向清朝表示投降的誠意","培養人才、推廣儒家思想以鞏固統治","專門用來訓練軍隊作戰"],"answer":2,"explain":"陳永華主張「建聖廟、立學校」，透過孔廟與學校推廣儒學、並以科舉（州試、府試、院試）選拔人才進入太學，目的是培育治理人才、以文教鞏固明鄭在臺灣的統治基礎。"},{"level":"adv","topic":"海外貿易／出口","q":"明鄭時期臺灣主要出口下列哪一組商品，以換取火槍、火藥等軍需物資？","choices":["石油、天然氣","蔗糖、鹿皮","茶葉、樟腦","棉花、羊毛"],"answer":1,"explain":"明鄭以臺灣所產的蔗糖、鹿皮等外銷日本、南洋與英國東印度公司，換取火槍、火藥等軍需品，以支持反清事業。茶葉、樟腦是後來清朝時期臺灣的重要出口，其餘選項則非當時臺灣的產物。"},{"level":"adv","topic":"海外貿易／英國東印度公司","q":"明鄭曾與哪一個歐洲國家的東印度公司簽訂通商協議，購買火槍、火藥等軍需品？","choices":["英國","荷蘭","西班牙","葡萄牙"],"answer":0,"explain":"明鄭與英國東印度公司簽訂通商協議，輸出砂糖、皮革並購入軍需品。荷蘭正是被鄭成功驅逐的對象，不可能成為軍需來源，西班牙、葡萄牙也非此時的通商對象。"},{"level":"adv","topic":"東寧行政沿革","q":"鄭經繼位後把「東都」改名為「東寧」，並把地方由「縣」升為「州」，這些作為最能反映什麼？","choices":["決定放棄臺灣退回中國","準備向清朝稱臣納貢","更積極、更制度化地經營與治理臺灣","打算恢復荷蘭人的統治"],"answer":2,"explain":"鄭經1664年改東都為東寧，並升天興、萬年二縣為州、增設安撫司，代表明鄭把臺灣當成長期經營的基地，行政制度更加健全，而非放棄臺灣或臣服他人。"},{"level":"adv","topic":"荷蘭與明鄭比較","q":"比較荷蘭時期與明鄭時期對臺灣的統治，下列敘述何者正確？","choices":["兩者都是漢人所建立的政權","明鄭是臺灣第一個漢人政權，荷蘭則是外來的殖民統治","明鄭統治臺灣的時間比荷蘭長很多","荷蘭人在臺灣大力推行儒學教育"],"answer":1,"explain":"明鄭是臺灣第一個漢人政權，荷蘭則是為了貿易利益而來的殖民統治；荷蘭統治約三十八年、明鄭約二十餘年，明鄭時間較短；推行儒學、興建孔廟是明鄭（陳永華）的措施，而非荷蘭。"},{"level":"adv","topic":"陳永華經濟建設","q":"陳永華引進製鹽（曬鹽）方法、並鼓勵種植甘蔗製糖，這些措施的主要作用是？","choices":["準備向清朝進貢特產","討好在臺的荷蘭商人","發展經濟、增加財源以支持明鄭政權","純粹供作宗教祭祀之用"],"answer":2,"explain":"陳永華引進曬鹽法改良製鹽、又推廣種蔗製糖，一方面滿足民生需求，一方面透過外銷增加財政收入，以支撐明鄭的軍事與統治開銷，並非為進貢或祭祀。"},{"level":"adv","topic":"明鄭統治範圍","q":"關於明鄭時期在臺灣的統治範圍與行政安排，下列敘述何者正確？","choices":["統治範圍已涵蓋整個臺灣本島與離島","首府設在今日的臺北","行政事務仍交由荷蘭人代為管理","以承天府為中心，下設天興、萬年二區"],"answer":3,"explain":"明鄭以承天府（今臺南）為中心，下設天興、萬年二區，實際開發與統治集中在臺灣西南一帶，並非遍及全臺；首府在臺南而非臺北，行政也由明鄭自行掌理，荷蘭人已被驅逐。"},{"level":"adv","topic":"澎湖海戰結果","q":"1683年明鄭軍隊在澎湖海戰戰敗後，接著發生的結果是？","choices":["荷蘭人再度占領臺灣","鄭克塽投降清朝，明鄭政權宣告結束","鄭經即位繼續率軍抵抗","臺灣宣布脫離清朝獨立"],"answer":1,"explain":"澎湖海戰中明鄭主帥劉國軒戰敗，明鄭失去抵抗的意志，不久鄭克塽率眾投降清朝，明鄭在臺灣二十餘年的統治結束；此時鄭經已去世，荷蘭也早已退出臺灣。"},{"level":"adv","topic":"攻臺歷史意義","q":"鄭成功打敗荷蘭、結束其在臺統治，這場戰役最重要的歷史意義是？","choices":["使臺灣立即成為清朝的一省","讓臺灣從此由日本統治","開啟臺灣的明鄭（漢人）統治時期","使荷蘭得以繼續統治臺灣"],"answer":2,"explain":"1662年荷蘭投降退出臺灣，結束其約三十八年的統治，開啟由鄭氏建立的明鄭政權——臺灣第一個漢人政權；臺灣納入清朝要到1683年之後，日本統治則遲至十九世紀末，均與此役無關。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

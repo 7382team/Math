@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>茶葉的分類 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-chaye",
+  "title": "茶葉的分類",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>茶葉的分類</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文體","q":"「茶葉的分類」一課，就其寫作目的與方式而言，屬於下列哪一種文體？","choices":["記敘文","說明文","抒情文","議論文"],"answer":1,"explain":"本課旨在客觀介紹茶葉的分類標準、製茶方式與沖泡知識，以傳達知識、解說事理為主，屬於說明文。記敘文重在敘事，抒情文重在情感抒發，議論文重在說理論辯，皆與本課性質不同。"},{"level":"basic","topic":"分類標準","q":"課文介紹茶葉時，最主要是依據下列何種標準來分類？","choices":["採收季節","茶樹高度","發酵程度","產地遠近"],"answer":2,"explain":"茶葉最常見、也是本課採用的分類方式，是依「發酵程度」的高低，分為不發酵茶、部分發酵茶與全發酵茶。發酵程度不同，茶的香氣、滋味與茶湯顏色也隨之不同。"},{"level":"basic","topic":"不發酵茶","q":"下列何者屬於「完全不發酵」的茶？","choices":["烏龍茶","紅茶","鐵觀音","綠茶"],"answer":3,"explain":"綠茶採收後立即以高溫殺菁，抑制酵素作用，使茶葉不進行發酵，故為不發酵茶。烏龍茶、鐵觀音屬部分發酵茶，紅茶則為全發酵茶。"},{"level":"basic","topic":"全發酵茶","q":"依發酵程度分類，「紅茶」屬於下列哪一類？","choices":["全發酵茶","不發酵茶","部分發酵茶","後發酵茶"],"answer":0,"explain":"紅茶讓茶菁充分發酵至接近完全，發酵程度最高（近100%），茶湯呈紅褐色，故屬全發酵茶。不發酵茶為綠茶，部分發酵茶如烏龍茶、包種茶。"},{"level":"basic","topic":"部分發酵茶","q":"下列各茶中，何者屬於「部分發酵茶」？","choices":["綠茶","凍頂烏龍茶","紅茶","碧螺春"],"answer":1,"explain":"凍頂烏龍茶屬部分發酵茶（發酵度約25～30%）。綠茶與碧螺春均為不發酵茶，紅茶則為全發酵茶。"},{"level":"basic","topic":"茶湯顏色","q":"一般而言，綠茶沖泡後的茶湯顏色最接近下列何者？","choices":["紅褐色","綠色","深黑色","乳白色"],"answer":1,"explain":"綠茶不發酵，保留較多葉綠素，茶湯呈綠色（或黃綠色）。全發酵的紅茶因多酚類氧化，茶湯才呈紅褐色。"},{"level":"basic","topic":"沖泡水溫","q":"沖泡「不發酵的綠茶」時，水溫大約以幾度為宜？","choices":["100°C","80°C","60°C","40°C"],"answer":1,"explain":"綠茶等不發酵茶葉質較嬌嫩，水溫過高易釋出過多兒茶素而使茶湯苦澀，故宜用約80°C（約70～85°C）的較低水溫沖泡；全發酵的紅茶才需接近100°C。60°C、40°C則水溫太低，難以釋放茶香。"},{"level":"basic","topic":"沖泡水溫","q":"相較於綠茶，沖泡「全發酵的紅茶」時所需的水溫應如何？","choices":["完全相同","較高，約100°C","較低，約70°C","須用冷水"],"answer":1,"explain":"發酵程度越高的茶，通常需以較高水溫沖泡才能充分釋放香氣滋味。紅茶約需接近一百度，高於綠茶的約八十度。"},{"level":"basic","topic":"地方特色茶","q":"下列產地與茶葉的搭配，何者正確？","choices":["日月潭—綠茶","三峽—鐵觀音","坪林—文山包種茶","鹿谷—紅茶"],"answer":2,"explain":"坪林一帶盛產文山包種茶；鹿谷以凍頂烏龍茶聞名；日月潭以紅茶著稱；三峽則產碧螺春（綠茶）。鐵觀音則以台北木柵著名。故僅「坪林—文山包種茶」正確。"},{"level":"basic","topic":"地方特色茶","q":"台灣「凍頂烏龍茶」最主要的產地是下列何者？","choices":["新北坪林","南投鹿谷","南投日月潭","新北三峽"],"answer":1,"explain":"凍頂烏龍茶以南投鹿谷一帶為著名產地；坪林產文山包種茶，日月潭產紅茶，三峽產碧螺春。"},{"level":"basic","topic":"六大茶類","q":"若依發酵（氧化）程度將茶分為「六大茶類」，下列何者不屬於這六大茶類？","choices":["綠茶","白茶","黑茶","花茶"],"answer":3,"explain":"依發酵程度區分的六大茶類為綠茶、白茶、黃茶、青茶（烏龍茶）、紅茶、黑茶。花茶是以花薰製而成的再加工茶，並非依發酵程度分出的基本茶類。"},{"level":"adv","topic":"發酵程度排序","q":"下列三種茶，依「發酵程度由低到高」排列，何者正確？","choices":["綠茶→烏龍茶→紅茶","紅茶→烏龍茶→綠茶","烏龍茶→綠茶→紅茶","綠茶→紅茶→烏龍茶"],"answer":0,"explain":"綠茶為不發酵（0%），烏龍茶為部分發酵（約25%上下），紅茶為全發酵（近100%）。故由低到高應為綠茶→烏龍茶→紅茶。"},{"level":"adv","topic":"製茶—殺菁","q":"製茶過程中的「殺菁」，其主要作用是什麼？","choices":["讓茶葉繼續發酵變紅","以高溫破壞茶葉中的酵素活性，停止發酵","增加茶葉的含水量","使茶葉重新吸收養分"],"answer":1,"explain":"殺菁是藉高溫（炒或蒸）破壞茶葉中的酵素活性，抑制多酚類繼續氧化，藉此固定茶葉的發酵程度並軟化葉片，利於後續揉捻。"},{"level":"adv","topic":"製茶—萎凋","q":"製茶步驟中的「萎凋」，主要目的為下列何者？","choices":["立即停止一切化學變化","為茶葉染上紅褐色","使茶葉水分適度消散，並促進香氣形成","增加茶葉的重量"],"answer":2,"explain":"萎凋是藉日光或室內熱能使茶菁水分適度散失，葉質變軟，並促使內部化學變化進行，發展出茶的香氣，是部分發酵茶、全發酵茶的重要步驟。"},{"level":"adv","topic":"發酵的化學意義","q":"就化學變化而言，茶葉「發酵」主要是指下列何種作用？","choices":["茶葉吸收水分而膨脹","葉綠素大量增生","糖分結晶析出","茶葉中多酚類物質與空氣接觸產生氧化"],"answer":3,"explain":"製茶所謂的「發酵」，實際上是茶菁細胞受破壞後，內含的多酚類物質（兒茶素）與空氣接觸產生氧化作用，進而生成香氣、甘味並改變茶湯色澤。氧化越多，發酵程度越高。"},{"level":"adv","topic":"發酵程度比較","q":"下列部分發酵茶中，發酵程度通常最高的是哪一種？","choices":["文山包種茶","高山烏龍茶","東方美人茶","凍頂烏龍茶"],"answer":2,"explain":"文山包種茶與高山烏龍茶發酵度較低（約8～25%），凍頂烏龍茶約25～30%，而東方美人茶（又稱白毫烏龍）發酵度可達50～60%以上，是部分發酵茶中發酵程度最高者。"},{"level":"adv","topic":"高山茶","q":"依茶業改良場的一般定義，「高山茶」通常指種植於海拔約多少公尺以上的茶？","choices":["300公尺","1000公尺","600公尺","3000公尺"],"answer":1,"explain":"依行政院農委會茶業改良場的一般定義，海拔一千公尺以上山區所產的茶稱為高山茶，主要產區多分布於一千至二千四百公尺（如阿里山、杉林溪、梨山）。高山日夜溫差大、雲霧多，兒茶素等苦澀成分較低，滋味甘醇。三百、六百公尺屬低海拔茶，三千公尺以上則已超過台灣主要茶園的分布高度。"},{"level":"adv","topic":"部分發酵茶範圍","q":"下列四種茶，何者「不」屬於部分發酵茶？","choices":["鐵觀音","日月潭紅茶","文山包種茶","凍頂烏龍茶"],"answer":1,"explain":"鐵觀音、文山包種茶、凍頂烏龍茶都是部分發酵茶；日月潭紅茶為全發酵茶，發酵程度最高，故不屬部分發酵茶。"},{"level":"adv","topic":"說明文特點","q":"下列關於「說明文」寫作特點的敘述，何者最恰當？","choices":["以客觀、條理分明的方式解說事物或事理","著重誇張的想像與強烈的情感抒發","主要在提出主張並反駁對方論點","以虛構情節鋪陳人物的悲歡離合"],"answer":0,"explain":"說明文旨在客觀傳達知識、解說事物特徵或事理，講求條理清楚、用語準確，不刻意抒發個人情感。第二項偏抒情，第三項偏議論，第四項偏記敘（小說），皆非說明文特點。"},{"level":"adv","topic":"說明方法","q":"課文將茶分為「不發酵茶、部分發酵茶、全發酵茶」來介紹，主要運用了哪一種說明方法？","choices":["譬喻","分類","誇飾","設問"],"answer":1,"explain":"依某一標準（發酵程度）把事物分成幾個類別加以說明，是「分類」說明法。譬喻、誇飾、設問屬修辭手法，且多用於文學性文章，並非此處主要採用的說明方法。"},{"level":"adv","topic":"說明方法","q":"「綠茶是完全不發酵的茶」這句話，就說明方法而言，最接近下列何者？","choices":["舉例子","作比較","下定義","打比方"],"answer":2,"explain":"此句用簡明的語句指出綠茶的本質特徵，屬「下定義」的說明方法。舉例子是列舉實例，作比較是兩相對照，打比方（譬喻）是以他物形容，皆與此句不同。"},{"level":"adv","topic":"綜合判斷","q":"綜合本課內容，下列敘述何者正確？","choices":["發酵程度越高，茶湯顏色越淺","發酵程度越高，茶湯顏色通常越深，沖泡水溫也偏高","不發酵茶需用最高的水溫沖泡","紅茶是不發酵茶的代表"],"answer":1,"explain":"由課文可知，發酵程度越高（如紅茶），多酚氧化越多，茶湯顏色越深（紅褐色），且宜用較高水溫（接近100°C）沖泡；不發酵的綠茶則茶湯較綠、水溫約80°C即可。故第二項正確。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>值得記憶的小事：日記 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-riji",
+  "title": "值得記憶的小事：日記",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>值得記憶的小事：日記</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"日記格式","q":"寫日記時，第一行通常必須交代哪三項？","choices":["標題、作者、頁碼","地點、人物、心情","季節、節氣、生肖","日期、星期、天氣"],"answer":3,"explain":"日記的固定格式，第一行要寫清楚日期（幾月幾日）、星期幾與當天的天氣狀況，這三項是日記格式最基本、缺一不可的要件。"},{"level":"basic","topic":"文體歸類","q":"就文體性質而言，日記屬於下列何者？","choices":["描寫景物的寫景文","議論說理的論說文","純粹的抒情韻文","帶有記敘性質的應用文"],"answer":3,"explain":"日記是把生活中的所見所聞所感記錄下來，具有實用目的，屬於應用文；因其內容多在記人敘事，故帶有記敘文的性質。"},{"level":"basic","topic":"寫作原則","q":"寫日記最應把握的核心原則是什麼？","choices":["字數愈多愈好","必須虛構情節以增加趣味","一定要押韻對仗","內容要真實，據實記錄"],"answer":3,"explain":"日記是寫給自己看的生活紀錄，貴在真實誠懇，怎麼想就怎麼寫，不說假話，這樣日後回顧才有意義，也才能真實反映當時的生活與心境。"},{"level":"basic","topic":"記敘要素","q":"記敘文的六要素，一般指下列哪一組？","choices":["春、夏、秋、冬、日、夜","主旨、段落、修辭、標點、字數、題目","時間、地點、人物、事情的起因、經過、結果","起、承、轉、合、押韻、對仗"],"answer":2,"explain":"記敘六要素指時間、地點、人物，以及事情的起因、經過、結果。把這六方面交代清楚，讀者才能對所敘之事有完整的了解，這也是寫日記記事的基礎。"},{"level":"basic","topic":"人稱","q":"日記記錄的是自己的生活與感受，通常採用第幾人稱書寫？","choices":["第二人稱","第三人稱","第一人稱","不使用任何人稱"],"answer":2,"explain":"日記是記錄自身的所見所聞所感，以「我」的角度書寫，屬第一人稱，讀來親切真切，也最能表達個人真實的想法與情感。"},{"level":"basic","topic":"天氣欄","q":"關於日記格式中的「天氣」欄，下列敘述何者正確？","choices":["須抄錄整份氣象預報全文","可以完全省略，不必書寫","必須寫出精確到小數點的氣溫數值","用簡單詞語描述當天天氣，如晴、陰、雨"],"answer":3,"explain":"天氣欄只需用「晴、陰、雨、多雲」等簡單詞語標明當天天氣即可，是日記格式三要件之一，不可省略，但也不需要冗長詳盡的氣象資料。"},{"level":"basic","topic":"書寫頻率","q":"顧名思義，「日記」在時間上的書寫特點是什麼？","choices":["每十年寫一次","一生只能寫一篇","每年只寫一次","每天記錄一次"],"answer":3,"explain":"「日」記即以「天」為單位，理想上每天記下當日值得留存的人事物與感想；相對地，以「週」為單位彙整一週生活的則稱為週記。"},{"level":"basic","topic":"選材","q":"從課文標題「值得記憶的小事」可知，日記的取材態度應是？","choices":["只有驚天動地的大事才配寫進日記","生活中的小事只要有意義、有感受，也值得記下","一定要寫別人的事，不能寫自己的事","只能記錄夢境，不能記錄現實"],"answer":1,"explain":"標題「值得記憶的小事」點明：日記不必都寫大事，日常生活中看似平凡的小事，只要能引發感受、有所體會，就是值得記憶、值得記錄的題材。"},{"level":"basic","topic":"正文格式","q":"日記的正文（本文）通常寫在哪裡？","choices":["只能寫在紙張的邊緣空白處","寫在日期、星期、天氣的下一行，另起段落","寫在整篇日記的最後、署名之後","寫在日期同一行的最前面"],"answer":1,"explain":"日記先在首行寫明日期、星期、天氣，正文則另起一行書寫，是日記的主要部分；記事力求簡明、有條理，把當天的事與感受交代清楚。"},{"level":"basic","topic":"日記分類","q":"把看到的人、事、景物仔細記下，寫出其特徵，這類日記通常稱為？","choices":["帳簿日記","數學日記","廣告日記","觀察日記"],"answer":3,"explain":"觀察日記著重把觀察到的人物、事物或景物記錄下來，每次擷取一個側面，寫出特徵；此外還有記錄活動的活動日記、抒寫省思的思考日記等類型。"},{"level":"basic","topic":"記敘要素","q":"「昨天下午在學校操場」這句話，主要交代了記敘六要素中的哪些？","choices":["主旨和大意","時間和地點","修辭和標點","起因和結果"],"answer":1,"explain":"「昨天下午」是時間，「在學校操場」是地點。時間與地點是記敘六要素中交代事件背景的兩項，能讓讀者清楚事情發生的時空。"},{"level":"adv","topic":"記敘要素","q":"記敘六要素中的「起因」，指的是什麼？","choices":["參與事件的人物","事情發生的地點","事情發生的原因","事情最後的結局"],"answer":2,"explain":"「起因」指事情為何會發生，也就是事件的緣由；與之相對的「結果」則是事情的結局。兩者加上經過，構成一件事完整的來龍去脈。"},{"level":"adv","topic":"日記與週記","q":"關於「日記」與「週記」的差別，下列敘述何者正確？","choices":["兩者格式與單位完全相同，沒有任何差異","日記只能寫景，週記只能抒情","日記以一天為單位記錄，週記則彙整一週的生活","日記必須公開發表，週記只能自己保存"],"answer":2,"explain":"日記與週記都屬記敘性的應用文，差別在時間單位：日記逐日記錄當天的事，週記則回顧、統整一週的生活與心得，篇幅通常較日記完整。"},{"level":"adv","topic":"日期作用","q":"日記在每篇開頭標明日期、星期、天氣，最主要的作用是什麼？","choices":["純粹是裝飾，沒有實際用途","為了向他人證明自己很忙碌","為了湊字數，讓篇幅看起來較長","清楚標記時空背景，方便日後查考與回顧"],"answer":3,"explain":"標明日期、星期、天氣，能為每則紀錄定位時間與情境，讓日後翻閱時可迅速對照當時的時空背景與心境，這正是日記格式如此規定的實用意義。"},{"level":"adv","topic":"文字風格","q":"就文字表達而言，寫日記較合適的原則是？","choices":["全篇使用注音符號書寫","刻意堆砌華麗辭藻，愈艱澀愈好","只寫流水帳而不加任何感受","簡明扼要、據實記述，重點突出"],"answer":3,"explain":"日記記事力求簡單明瞭、有條理，把當天的重點與感受清楚寫出即可，不必刻意雕琢辭藻；同時也應適度寫下感想，才不致淪為毫無心得的流水帳。"},{"level":"adv","topic":"日記功能","q":"長期持續寫日記，對學習寫作最直接的好處是什麼？","choices":["能保證作文一定滿分","可以取代所有課本，不必再上課","累積生活素材、練習觀察與表達，提升寫作能力","使人不必再閱讀任何書籍"],"answer":2,"explain":"持之以恆寫日記，能不斷累積寫作素材，訓練觀察力與文字表達，並養成反省思考的習慣，對提升寫作能力大有幫助，但這是助力而非萬能保證。"},{"level":"adv","topic":"記敘要素","q":"下列何者「不」屬於記敘文的六要素？","choices":["人物","修辭手法","事情的經過","時間"],"answer":1,"explain":"記敘六要素為時間、地點、人物、起因、經過、結果。「修辭手法」是寫作技巧，並不在六要素之列，故為正確選項（不屬於六要素者）。"},{"level":"adv","topic":"情境判斷","q":"小明把校外教學參觀科博館的整個活動過程記進日記，這比較接近哪一類日記？","choices":["思考日記中純談道德的類型","觀察日記中純寫昆蟲外形的類型","帳目日記","活動日記"],"answer":3,"explain":"記錄參觀、訪問或學校班級舉辦的各項活動經過，屬「活動日記」。它著重敘述活動的來龍去脈與心得，與偏重描寫特徵的觀察日記略有不同。"},{"level":"adv","topic":"敘述順序","q":"一般人記當天發生的事，最常依事情發生的先後順序來寫，這種敘述方式稱為？","choices":["順敘","倒敘","插敘","補敘"],"answer":0,"explain":"依時間先後、事情發展順序來敘述，稱為「順敘」，最合乎日記逐日記事的習慣，條理清楚；倒敘、插敘等則是變化敘述順序的其他技巧。"},{"level":"adv","topic":"格式判讀","q":"下列哪一則的開頭最符合日記的標準格式？","choices":["七月十四日 星期二 晴","作者：王小明","第一課 日記","敬愛的老師收"],"answer":0,"explain":"日記開頭應標明日期、星期與天氣，如「七月十四日 星期二 晴」；其餘選項分別是課名、書信的稱謂與署名，皆不合日記的格式要求。"},{"level":"adv","topic":"情境判斷","q":"「經過一番努力，我終於學會了騎腳踏車。」這句話在記敘六要素中，最能對應哪一項？","choices":["地點","天氣","時間","結果"],"answer":3,"explain":"「終於學會了騎腳踏車」交代的是事情最後的結局，對應六要素中的「結果」；記敘一件事若能寫清起因、經過與結果，內容才會完整。"},{"level":"adv","topic":"寫作態度","q":"關於寫日記的內容取捨，下列態度何者最恰當？","choices":["把當天每一分鐘的行動鉅細靡遺全部列出","抄襲他人的日記當作自己的內容","為了好看而編造沒有發生過的事","選取當天印象深刻、有感受的事來寫，並適當抒發心得"],"answer":3,"explain":"寫日記宜擇取當天最有感觸、值得記憶的人事物，並寫下自己的想法與體會；不必事事流水帳般照錄，更不可抄襲或虛構，才符合日記真實而有意義的精神。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
