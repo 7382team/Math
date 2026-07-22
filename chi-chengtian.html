@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>記承天寺夜遊 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-chengtian",
+  "title": "記承天寺夜遊",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "蘇軾"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>記承天寺夜遊</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與時代","q":"〈記承天寺夜遊〉的作者蘇軾，是哪一個朝代的文學家？","choices":["唐代","南宋","北宋","明代"],"answer":2,"explain":"蘇軾（1037－1101）為北宋眉州眉山人，仁宗嘉祐二年進士。本文作於宋神宗元豐六年（1083），屬北宋時期。"},{"level":"basic","topic":"出處","q":"本文選自下列哪一部書？","choices":["東坡志林","夢溪筆談","世說新語","水經注"],"answer":0,"explain":"〈記承天寺夜遊〉選自蘇軾的筆記小品集《東坡志林》。《夢溪筆談》為沈括所作，《世說新語》為劉義慶編，《水經注》為酈道元所作。"},{"level":"basic","topic":"作者生平","q":"關於蘇軾的敘述，下列何者正確？","choices":["字永叔，號醉翁，為北宋文壇領袖","字介甫，主持變法而與舊黨對立","字魯直，號山谷道人，長於書法","字子瞻，號東坡居士，為唐宋古文八大家之一"],"answer":3,"explain":"蘇軾字子瞻，號東坡居士，眉州眉山人，位列唐宋古文八大家。字永叔、號醉翁者為歐陽脩；字介甫者為王安石；字魯直、號山谷道人者為黃庭堅。"},{"level":"basic","topic":"寫作背景","q":"蘇軾寫作本文時的處境為何？","choices":["初中進士，意氣風發地任職京城","因「烏臺詩案」被貶為黃州團練副使","奉命出使遼國，途中夜宿寺院","辭官歸隱故鄉眉山，閒居讀書"],"answer":1,"explain":"元豐二年蘇軾因「烏臺詩案」下獄，後貶為黃州團練副使，有職無權。元豐六年夜訪同被貶謫、寄居承天寺的友人張懷民，寫下本文。"},{"level":"basic","topic":"文體","q":"就文體而言，本文最適合歸入下列何者？","choices":["議論文，全篇反覆論辯是非","應用文，屬呈給君王的奏疏","記敘文（遊記小品），記夜遊所見所感","韻文，句句押韻的辭賦"],"answer":2,"explain":"本文以八十餘字記敘夜遊承天寺的經過，兼寫景抒情，屬記敘文中的遊記小品，全篇散行不押韻。"},{"level":"basic","topic":"字詞義","q":"「月色入戶」的「戶」，在文中的意思是：","choices":["門","戶籍簿冊","人家、住戶","窗子上的紙"],"answer":0,"explain":"「戶」古義指單扇的門，此處指月光照進門內。今日「住戶」「戶籍」為引申後的用法，並非本句之義。"},{"level":"basic","topic":"字詞義","q":"「欣然起行」的「欣然」，意思是：","choices":["驚慌的樣子","高興的樣子","疲倦的樣子","遲疑的樣子"],"answer":1,"explain":"「欣」為喜悅，「然」為形容詞詞尾，「欣然」即高興、愉快的樣子，寫出作者見月色而興致大起。"},{"level":"basic","topic":"字詞義","q":"「念無與為樂者」的「念」，意思最接近下列何者？","choices":["朗讀出聲","掛念亡故的親人","念念不忘的執著","想到、考慮到"],"answer":3,"explain":"「念」在文言中常作「想、想到」解，此句是說：想到沒有可以一同賞玩取樂的人。"},{"level":"basic","topic":"字詞義","q":"「懷民亦未寢」的「寢」，意思是：","choices":["睡覺","生病臥床","停止、擱置","居住的房間"],"answer":0,"explain":"「寢」本義為睡、臥。「未寢」即還沒睡。「寢」作「停止」解（如「其事遂寢」）非本句用法。"},{"level":"basic","topic":"字詞義","q":"「蓋竹柏影也」的「蓋」，在文中的作用是：","choices":["表示覆蓋、遮蔽","表示大概、恐怕，語氣不定","表示恍然明白，可譯為「原來是」","表示轉折，可譯為「但是」"],"answer":2,"explain":"「蓋」在此為表推知、點破真相的語氣詞，可譯為「原來是」，表現作者由錯覺（藻荇）轉為醒悟（竹柏影）的驚喜。"},{"level":"basic","topic":"字詞義","q":"「但少閒人如吾兩人者耳」中「但」與「耳」的意思，依序是：","choices":["但是／耳朵","凡是／聽聞","只是／罷了","偏偏／了不起"],"answer":2,"explain":"文言「但」多作「只、只是」解，「耳」為句末語氣詞，相當於「罷了」，二字合用透出淡淡的自嘲與感慨。"},{"level":"basic","topic":"主旨","q":"本文的主旨最貼近下列何者？","choices":["感嘆人生短暫，勸人及時行樂縱情享受","描寫寺廟建築之美，宣揚佛法無邊","痛斥政敵陷害，立志再起復仇","在貶謫的失意中自我排遣，展現曠達自適而又微含悵惘的心境"],"answer":3,"explain":"蘇軾貶謫黃州，藉夜遊賞月自我開解，「閒人」二字既有能領略美景的自得曠達，也隱含被投閒置散的悵惘，二者交融即為主旨。"},{"level":"adv","topic":"句子翻譯","q":"「解衣欲睡，月色入戶，欣然起行」最恰當的白話翻譯是：","choices":["解開衣服想睡覺，月光被門擋住，只好高興地在屋內走動","脫下衣服正想睡覺，月光照進門來，於是高興地起身出門散步","把衣服脫下想睡，月色照在戶籍簿上，欣然起身讀書","解衣睡去之後，夢見月光進門，醒來高興地趕路"],"answer":1,"explain":"「欲」為將要、想要，「入戶」為照進門內，「起行」為起身走動、出門散步。三句寫出由睡意到遊興的轉折。"},{"level":"adv","topic":"句子翻譯","q":"「念無與為樂者，遂至承天寺尋張懷民」的正確語譯是：","choices":["想到沒有可以一同賞玩取樂的人，於是就到承天寺去找張懷民","想到無人能為我作樂，於是到承天寺請張懷民奏樂","掛念著不能一起作樂的人，就到承天寺去尋求快樂","念了一段經文取樂之後，終於在承天寺找到張懷民"],"answer":0,"explain":"「無與為樂者」即「沒有可以一起遊樂的人」，「遂」為「於是、就」，「尋」為尋找。此句寫出作者的孤獨與對知己的渴求。"},{"level":"adv","topic":"句子翻譯","q":"「庭下如積水空明，水中藻荇交橫，蓋竹柏影也」的語譯，何者最正確？","choices":["庭院裡積滿了雨水而清澈見底，水中長滿水草，把竹柏的影子遮住了","庭院中的月光像積水一般清澈透明，水中水草縱橫交錯，原來是竹子和柏樹的影子","庭院下方有一池空明的水，水中種著藻荇，旁邊蓋了一片竹柏林","庭院像積水一樣冰冷空虛，水草橫生，大概是竹柏被風吹落的緣故"],"answer":1,"explain":"此句以「積水空明」喻月色澄澈，以「藻荇交橫」喻竹柏投下的疏影，「蓋」點明是錯覺的真相。庭中並無真水真草。"},{"level":"adv","topic":"句子翻譯","q":"「但少閒人如吾兩人者耳」的語譯，最正確的是：","choices":["但是很少有人像我們兩個一樣清閒地聽人說話","只有缺少空閒的人才會像我們兩個這樣勞碌","但願減少像我們兩人這樣的閒人才好","只是缺少像我們兩個這樣清閒的人罷了"],"answer":3,"explain":"「但」為只是，「少」為缺少，「如吾兩人者」為定語後置，修飾「閒人」，「耳」為「罷了」。全句是自負與自嘲兼具的感嘆。"},{"level":"adv","topic":"修辭辨析","q":"「庭下如積水空明」一句所使用的修辭是：","choices":["映襯","譬喻（明喻）","誇飾","頂真"],"answer":1,"explain":"本體為庭中月色，喻依為澄澈的積水，以喻詞「如」連接，屬明喻。全句以水寫月，化無形為有形。"},{"level":"adv","topic":"文意推求","q":"「水中藻荇交橫」句中的「藻荇」，實際上指的是什麼？","choices":["承天寺池塘裡真正的水草","月光在地面上流動的波紋","竹子和柏樹投在地上的影子","夜露凝結在庭中的痕跡"],"answer":2,"explain":"由下句「蓋竹柏影也」可知，庭中並無水，「積水」是月色，「藻荇」則是竹柏的影子，作者先造成錯覺再點破，更見月夜之清幽。"},{"level":"adv","topic":"修辭辨析","q":"「何夜無月？何處無竹柏？」兩句所用的修辭與作用，何者最恰當？","choices":["設問中的懸問，作者確實不知答案而發問","排比兼摹寫，細膩描繪月色與竹柏的形貌","設問中的激問（反問），答案在問題的反面，強調月與竹柏處處可見","呼告，直接呼喚月亮與竹柏傾訴心事"],"answer":2,"explain":"兩句採用激問（反問），意即「哪一夜沒有月？哪個地方沒有竹柏？」暗示美景常有，藉此逼出下文「但少閒人」的關鍵。"},{"level":"adv","topic":"文意推求","q":"文中「閒人」一詞的含意，下列說明何者最貼切？","choices":["既指不汲汲於名利、能從容欣賞景物的雅人，也暗含被貶而無公事可辦的自嘲","專指遊手好閒、不事生產而遭人鄙視的人","指寺中專門負責接待訪客的僧人","指心中毫無牽掛、已完全忘卻仕途的隱士"],"answer":0,"explain":"「閒人」表面自誇能領略清景，實則呼應其貶官黃州、有職無權的處境，故兼具曠達自得與微微悵惘的雙層意涵。"},{"level":"adv","topic":"文意推求","q":"作者「解衣欲睡」卻又「欣然起行」，最能說明作者什麼樣的性情？","choices":["生活作息紊亂，夜不能寐","急於外出處理公務，不敢延誤","刻意作態，想在友人面前表現風雅","對自然美景敏感，能在平凡處發現樂趣、隨遇而安"],"answer":3,"explain":"月色不過尋常，作者卻因此打消睡意、乘興而起，可見其心境澄明、善於在困頓中尋得生活情趣的曠達性格。"},{"level":"adv","topic":"文意推求","q":"作者「遂至承天寺尋張懷民」，而不另尋他人，主要原因最可能是：","choices":["張懷民精通天文，可為他解說月象","張懷民同樣被貶黃州、寄居承天寺，處境相似而能相知","承天寺離蘇軾住處最近，順路可到","張懷民是蘇軾的門生，不得不隨侍在側"],"answer":1,"explain":"張懷民（名夢得）亦於元豐六年被貶黃州，暫寓承天寺。同為天涯淪落人，故能「亦未寢」而「相與步於中庭」，可見二人的知己之情。"},{"level":"adv","topic":"篇章結構","q":"本文結構層次的安排，下列何者最正確？","choices":["先敘事（夜遊緣起）→ 再寫景（庭中月色）→ 末抒情議論（閒人之嘆）","先議論（人生無常）→ 再敘事（訪友）→ 末寫景（竹柏）","先寫景（月色）→ 再議論（何夜無月）→ 末敘事（尋懷民）","全篇純為寫景，並無敘事與抒情成分"],"answer":0,"explain":"全文由「解衣欲睡」至「相與步於中庭」為敘事；「庭下如積水空明……蓋竹柏影也」為寫景；「何夜無月……如吾兩人者耳」轉入抒情議論，層次井然。"},{"level":"adv","topic":"比較與判斷","q":"關於本文的寫作特色，下列敘述何者「錯誤」？","choices":["全文不足百字，語言精鍊而意境深遠","寫月光不直接說「月光如何」，而以水中藻荇的錯覺側面烘托","敘事、寫景、抒情融為一體，末句餘韻不盡","通篇鋪陳華麗辭藻、大量堆砌典故，以顯博學"],"answer":3,"explain":"本文以白描見長，文字素樸自然，不用僻典、不事雕琢，正是其動人之處。「堆砌典故以顯博學」之說與本文文風完全相反，故為錯誤敘述。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

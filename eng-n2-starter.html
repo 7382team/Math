@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Getting Ready for Class 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-n2-starter",
+  "title": "Getting Ready for Class",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "複習·暖身",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Getting Ready for Class</h1><div class="sub">英文 · 複習·暖身 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"be動詞","q":"My brother and I ___ in the same class this year.","choices":["am","is","are","be"],"answer":2,"explain":"主詞 My brother and I 是複數，be 動詞用 are。am 只配 I，is 配單數第三人稱。"},{"level":"basic","topic":"現在簡單式","q":"Tom ___ his homework after dinner every day.","choices":["do","does","doing","did"],"answer":1,"explain":"every day 表習慣，用現在簡單式；主詞 Tom 為第三人稱單數，動詞加 -es，故用 does。did 是過去式，與 every day 不合。"},{"level":"basic","topic":"現在進行式","q":"Look! The students ___ the classroom now.","choices":["clean","cleans","are cleaning","cleaned"],"answer":2,"explain":"Look! 和 now 表示動作正在進行，用現在進行式 be + V-ing。主詞 The students 為複數，故用 are cleaning。"},{"level":"basic","topic":"祈使句","q":"___ late for school, please.","choices":["Not be","Don't be","Doesn't be","No be"],"answer":1,"explain":"否定祈使句的公式是 Don't + 原形動詞。be 動詞的否定祈使句為 Don't be...，不論對象是誰都不用 Doesn't。"},{"level":"basic","topic":"時間介系詞","q":"We have English class ___ Monday morning.","choices":["in","on","at","for"],"answer":1,"explain":"特定某一天的早上（Monday morning）要用 on。in 用於月份、年份或 in the morning；at 用於幾點鐘。"},{"level":"basic","topic":"時間表達","q":"It's 6:15 now. We can also say it's ___ six.","choices":["a quarter past","a quarter to","half past","ten to"],"answer":0,"explain":"a quarter 是十五分鐘。past 表示「過」，六點過十五分即 a quarter past six；to 表示「差」，half past 是三十分。"},{"level":"basic","topic":"過去簡單式","q":"They ___ a movie last night.","choices":["watch","watches","watched","watching"],"answer":2,"explain":"last night 表示過去的時間，動詞要用過去式。watch 是規則動詞，字尾加 -ed 成為 watched。"},{"level":"basic","topic":"be動詞過去式","q":"I ___ at home yesterday afternoon.","choices":["am","is","was","were"],"answer":2,"explain":"yesterday 表過去，be 動詞要用過去式。I 和單數主詞用 was，you 及複數主詞才用 were。"},{"level":"basic","topic":"頻率副詞","q":"Sam drinks milk seven days a week. He ___ drinks milk.","choices":["always","never","seldom","sometimes"],"answer":0,"explain":"一週七天都喝，表示頻率是百分之百，用 always（總是）。never 是從不，seldom 是很少，sometimes 是有時候。"},{"level":"basic","topic":"情態助動詞 must","q":"You look sick. You ___ see a doctor today.","choices":["must","can't","may not","don't have to"],"answer":0,"explain":"must 表示「必須」，用來說明應該做的事。can't 是不能，may not 是不可以，don't have to 是不必，三者都與句意相反。"},{"level":"basic","topic":"疑問詞 why","q":"A: ___ are you so happy? B: Because I got an A on the test.","choices":["What","Why","How","When"],"answer":1,"explain":"回答用 Because 表示原因，所以問句要用 Why（為什麼）。What 問事物，How 問方式，When 問時間。"},{"level":"adv","topic":"現在簡單式否定句","q":"Which sentence is correct?","choices":["She don't like math.","She doesn't likes math.","She doesn't like math.","She not like math."],"answer":2,"explain":"第三人稱單數的否定句用 doesn't，且 doesn't 後面的動詞要回到原形，所以是 She doesn't like math。"},{"level":"adv","topic":"時態辨析","q":"Nick usually ___ TV at night, but he ___ his homework now.","choices":["watches; is doing","is watching; does","watch; is doing","watched; did"],"answer":0,"explain":"usually 表習慣，用現在簡單式 watches；now 表正在進行，用現在進行式 is doing。兩種時態要分清楚。"},{"level":"adv","topic":"be動詞過去式","q":"My friends ___ at the party last Sunday, but I ___ not there.","choices":["was; were","were; was","were; were","was; was"],"answer":1,"explain":"My friends 是複數，用 were；I 用 was。was/were 要看主詞單複數，不能互換。"},{"level":"adv","topic":"不規則過去式","q":"Last Sunday we ___ to the zoo and ___ many animals.","choices":["go; see","went; saw","goed; seed","went; see"],"answer":1,"explain":"Last Sunday 表過去，兩個動詞都要用過去式。go 和 see 是不規則動詞，過去式為 went 和 saw，不可加 -ed。"},{"level":"adv","topic":"祈使句情境","q":"The library is very quiet. The teacher says to the students, \"___\"","choices":["Please talk here.","You are talking now.","Please don't talk here.","Don't you talk here?"],"answer":2,"explain":"圖書館很安靜，老師要求學生別說話，用否定祈使句 Please don't + 原形動詞。"},{"level":"adv","topic":"because / so","q":"It rained hard, ___ we stayed home. We didn't go out ___ it rained hard.","choices":["because; so","so; because","so; so","because; because"],"answer":1,"explain":"so 引導結果（下大雨，所以待在家）；because 引導原因，後面接一個完整句子。兩者位置不可對調。"},{"level":"adv","topic":"情態助動詞 may","q":"You want to borrow your classmate's eraser. What do you say?","choices":["May I use your eraser?","You must give me your eraser.","Can you used my eraser?","I may your eraser."],"answer":0,"explain":"有禮貌地請求許可用 May I + 原形動詞。must 是命令口氣；助動詞後不可接過去式 used；may 是助動詞，後面一定要有原形動詞。"},{"level":"adv","topic":"時間介系詞辨析","q":"Our first class begins ___ 8:10 ___ the morning.","choices":["in; at","at; in","on; in","at; on"],"answer":1,"explain":"幾點幾分用 at（at 8:10）；早上、下午、晚上用 in（in the morning）。兩者不可互換。"},{"level":"adv","topic":"be動詞疑問句","q":"Which question is correct?","choices":["Is your parents at home?","Are your parents at home?","Do your parents at home?","Your parents are at home?"],"answer":1,"explain":"your parents 是複數，be 動詞疑問句要把 are 放句首。句中沒有一般動詞，不能用 Do 開頭。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

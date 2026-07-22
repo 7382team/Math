@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>How Can We Go to the Beach? 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-h2-u6",
+  "title": "How Can We Go to the Beach?",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "問路·交通工具 take/go by",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>How Can We Go to the Beach?</h1><div class="sub">英文 · 問路·交通工具 take/go by · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"問路與方向","q":"A: Excuse me. How can I ___ to the train station?\nB: Go straight and turn left.","choices":["get","take","give","make"],"answer":0,"explain":"問路的常用句型是 How can I get to + 地方？get to 表示「到達」。take 後面要接交通工具，give 和 make 語意不合。"},{"level":"basic","topic":"交通工具 take/go by","q":"We ___ the MRT to school every day.","choices":["go by","take","go","ride by"],"answer":1,"explain":"take + 交通工具（take the MRT / take a bus）表示「搭乘」。go by 後面直接接交通工具且不加冠詞（go by MRT），不能說 go by the MRT。"},{"level":"basic","topic":"交通工具 take/go by","q":"My father goes to work ___ car.","choices":["by a","take","by","on a"],"answer":2,"explain":"go by + 交通工具，交通工具前面不加 a/an/the，所以是 by car。若要用冠詞則須改成 take a car 或 in his car。"},{"level":"basic","topic":"地方介系詞","q":"The bookstore is ___ the corner of Main Street and Park Road.","choices":["in","at","to","for"],"answer":1,"explain":"「在轉角」用 at the corner of。in 用於較大空間內部，to 表示方向，for 表示對象或目的，都不能用來表示轉角位置。"},{"level":"basic","topic":"地方介系詞","q":"There is a small park ___ the library and the post office.","choices":["between","next","across","behind of"],"answer":0,"explain":"between A and B 表示「在 A 和 B 之間」。next 要用 next to，across 要用 across from，behind 後面不加 of。"},{"level":"basic","topic":"問路與方向","q":"Walk straight for two blocks, and then ___ right at the bank.","choices":["turning","turns","to turn","turn"],"answer":3,"explain":"指路時用祈使句，動詞用原形開頭，所以是 turn right。祈使句不加 to，也不隨人稱變化。"},{"level":"basic","topic":"地方介系詞","q":"The convenience store is ___ from the school, so I can see it from my classroom.","choices":["across","cross","next","in front"],"answer":0,"explain":"across from 表示「在……對面」。cross 是動詞「穿越」，next 要接 to，in front 要接 of。"},{"level":"basic","topic":"交通工具 take/go by","q":"It's a nice day. Let's ___ our bikes to the beach.","choices":["riding","ride","go by","drive"],"answer":1,"explain":"Let's 後面要接原形動詞，騎腳踏車用 ride one's bike，所以是 ride our bikes。riding 是動名詞不能接在 Let's 後面；go by 後面不加所有格（go by bike）；drive 是開車。"},{"level":"basic","topic":"can/may/must","q":"You ___ wear a helmet when you ride a scooter. It's the law.","choices":["may","must","can","don't have to"],"answer":1,"explain":"must 表示「必須」，用於法律或強烈規定。may 是「可以、也許」，can 是「能夠」，don't have to 是「不必」，語意相反。"},{"level":"basic","topic":"問路與方向","q":"A: ___ is the beach from here?\nB: About three kilometers.","choices":["How long","How far","How much","How often"],"answer":1,"explain":"問距離用 How far。How long 問時間長度，How much 問價錢或數量，How often 問頻率。"},{"level":"basic","topic":"過去式","q":"Last summer, we ___ to Kenting by train.","choices":["go","went","goes","are going"],"answer":1,"explain":"Last summer 表示過去時間，動詞要用過去式；go 的過去式是不規則變化 went。"},{"level":"adv","topic":"句子改錯：交通工具","q":"Which sentence is correct?","choices":["I go to school by the bus every morning.","I take a bus to school every morning.","I take to school by bus every morning.","I go by a bus to school every morning."],"answer":1,"explain":"take + a/the + 交通工具是正確用法。by + 交通工具時不能加冠詞（by bus 才對），所以 by the bus、by a bus 都錯；take 後面必須直接接交通工具。"},{"level":"adv","topic":"句子改錯：地方介系詞","q":"Find the correct sentence.","choices":["The hospital is in front the park.","The hospital is next the park.","The hospital is behind of the park.","The hospital is in front of the park."],"answer":3,"explain":"in front of 是完整片語，不可省略 of；next 必須寫成 next to；behind 是單一介系詞，後面不加 of。"},{"level":"adv","topic":"時態辨析：過去式","q":"We usually take the bus, but yesterday it ___ hard, so my mom ___ us to school.","choices":["rained / drove","rained / drives","rains / drove","raining / driving"],"answer":0,"explain":"yesterday 表過去，兩個動詞都要用過去式。rain 是規則變化加 -ed 成 rained，drive 是不規則變化成 drove。混用現在式與過去式是常見錯誤。"},{"level":"adv","topic":"時態辨析：be 動詞過去式","q":"The beach ___ crowded last Sunday, but the shops near it ___ closed.","choices":["were / was","was / were","was / was","were / were"],"answer":1,"explain":"主詞 The beach 是單數用 was；The shops 是複數用 were。was/were 要看主詞單複數，這是常見的混淆點。"},{"level":"adv","topic":"頻率副詞位置","q":"Choose the correct sentence.","choices":["My brother rides always his bike to the beach.","Always my brother rides his bike to the beach.","My brother always rides his bike to the beach.","My brother rides his bike always to the beach."],"answer":2,"explain":"頻率副詞（always, often, usually 等）要放在一般動詞之前，所以是 always rides。放在動詞後面或句首都不合語法。"},{"level":"adv","topic":"頻率副詞位置","q":"The bus to the beach ___. It always comes at eight o'clock.","choices":["is never late","never is late","is late never","never late is"],"answer":0,"explain":"頻率副詞遇到 be 動詞時要放在 be 動詞之後，所以是 is never late。與一般動詞（放動詞前）的規則相反，容易搞混。"},{"level":"adv","topic":"why/because/so","q":"___ did you take a taxi to the beach? ___ we were late for the boat.","choices":["Why / So","Because / Why","How / Because","Why / Because"],"answer":3,"explain":"問原因用 Why 開頭，回答原因用 Because。so 表示「所以」，用來接結果，不能用來回答 Why 的問句。"},{"level":"adv","topic":"why/because/so","q":"It ___ very hot yesterday, ___ we went swimming at the beach.","choices":["was / so","was / because","were / so","is / so"],"answer":0,"explain":"yesterday 用過去式，主詞 It 是單數所以用 was。前句是原因、後句是結果，中間用 so「所以」；because 用來引導原因，順序會相反。"},{"level":"adv","topic":"情境選填：問路","q":"A: Excuse me. I'm looking for the beach.\nB: ___ It's only ten minutes away.\nA: Thank you very much!","choices":["You can take the No. 5 bus.","I went there last week.","The beach is very beautiful.","How can I get there?"],"answer":0,"explain":"A 在問路，B 應該給出到達方式。其他選項雖然文法正確，但沒有回答「怎麼去」，與後面「只要十分鐘」的內容也接不上。"},{"level":"adv","topic":"情境選填：can/may/must","q":"The sign says \"No swimming.\" You ___ swim here, but you ___ walk on the sand.","choices":["can't / must","must / can","must not / can","may / must not"],"answer":2,"explain":"告示牌禁止游泳，所以用 must not（禁止）。走在沙灘上是被允許的，用 can（可以）。must 是「必須」，語意不合。"},{"level":"adv","topic":"時態辨析：過去式疑問句","q":"A: How ___ you get to the beach last Saturday?\nB: We ___ the train.","choices":["did / took","did / take","do / took","were / took"],"answer":0,"explain":"last Saturday 是過去時間，疑問句用助動詞 did，且 did 後面的動詞要用原形 get。回答時沒有助動詞，動詞用過去式 took。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

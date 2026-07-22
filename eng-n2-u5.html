@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Why Do You Like Summer? 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-n2-u5",
+  "title": "Why Do You Like Summer?",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "Why·because",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Why Do You Like Summer?</h1><div class="sub">英文 · Why·because · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"Why 問句","q":"___ do you like summer? Because I can swim every day.","choices":["What","Why","Where","Who"],"answer":1,"explain":"回答用 Because 說明原因，所以問句要用 Why（為什麼）。What 問事物、Where 問地點、Who 問人。"},{"level":"basic","topic":"because 回答","q":"I like winter ___ I can make snowmen.","choices":["so","because","but","or"],"answer":1,"explain":"because 後面接原因，說明「喜歡冬天」的理由。so 表結果、but 表轉折、or 表選擇，都不合語意。"},{"level":"basic","topic":"季節表達","q":"It is hot and sunny. We often go swimming. It is ___.","choices":["winter","fall","summer","spring"],"answer":2,"explain":"hot and sunny（炎熱晴朗）又常去游泳，指的是夏天 summer。"},{"level":"basic","topic":"過去式","q":"She ___ to the beach last Sunday.","choices":["go","goes","went","going"],"answer":2,"explain":"last Sunday 表過去時間，動詞要用過去式。go 是不規則動詞，過去式為 went。"},{"level":"basic","topic":"頻率副詞","q":"Tom ___ late for school. He always comes early.","choices":["is never","never is","be never","never be"],"answer":0,"explain":"頻率副詞 never 要放在 be 動詞之後，故為 is never。若句中是一般動詞，才放在動詞前面。"},{"level":"basic","topic":"can 用法","q":"I ___ swim very well, but my sister can't.","choices":["can","cans","can to","canning"],"answer":0,"explain":"助動詞 can 不隨主詞變化，也不加 to 或 -ing，後面直接接原形動詞。"},{"level":"basic","topic":"must 用法","q":"You ___ do your homework every day. It is your job.","choices":["must","must to","musts","musting"],"answer":0,"explain":"must 是助動詞，表示「必須」，後面直接接原形動詞，不加 to，也不因主詞變化。"},{"level":"basic","topic":"交通工具","q":"I go to school ___ bike every morning.","choices":["by","in","with","of"],"answer":0,"explain":"交通方式用「by + 交通工具（單數且不加冠詞）」，如 by bike、by bus、by train。"},{"level":"basic","topic":"so 用法","q":"It was very hot, ___ we drank a lot of water.","choices":["because","so","but","or"],"answer":1,"explain":"前句是原因、後句是結果，用 so（所以）連接。because 後面才是接原因。"},{"level":"basic","topic":"be 動詞過去式","q":"The weather ___ very cold last winter.","choices":["is","are","was","were"],"answer":2,"explain":"last winter 表過去，主詞 The weather 為單數，be 動詞過去式用 was；were 用於複數主詞或 you。"},{"level":"basic","topic":"喜好表達","q":"A: Do you like spring? B: Yes, I ___.","choices":["do","does","am","did"],"answer":0,"explain":"問句用助動詞 Do 開頭，簡答就用 do 回答。主詞 I 不用 does，不能用 be 動詞 am，也不可換成過去式 did。"},{"level":"adv","topic":"Why 問句語序","q":"Which sentence is correct?","choices":["Why you like summer?","Why do you like summer?","Why does you like summer?","Why you do like summer?"],"answer":1,"explain":"Why 問句語序為「Why + 助動詞 + 主詞 + 原形動詞」。主詞 you 要搭配 do，不可用 does，也不能省略助動詞。"},{"level":"adv","topic":"why/because 情境","q":"A: Why did you stay home yesterday? B: ___","choices":["Because it rained hard.","So it rained hard.","Because it rains hard tomorrow.","But it rained hard."],"answer":0,"explain":"Why 問句用 Because 回答原因；問句是 did，回答也要用過去式 rained，不可用現在式或 tomorrow。"},{"level":"adv","topic":"時態辨析","q":"Last summer we ___ to Kenting by train with my grandparents.","choices":["go","goes","went","are going"],"answer":2,"explain":"Last summer 是過去時間，必須用過去式 went。現在式與現在進行式都不能配過去的時間副詞。"},{"level":"adv","topic":"時態辨析","q":"Amy usually ___ to school by bus, but yesterday she ___ to school.","choices":["goes / walked","went / walks","go / walk","goes / walks"],"answer":0,"explain":"usually 表習慣用現在式，主詞 Amy 為第三人稱單數，動詞加 -s 為 goes；yesterday 表過去，用過去式 walked。"},{"level":"adv","topic":"was/were 辨析","q":"My friends ___ at the beach last weekend, and I ___ with them.","choices":["was / was","were / was","were / were","was / were"],"answer":1,"explain":"My friends 是複數主詞用 were；I 的 be 動詞過去式是 was。兩者不可混用。"},{"level":"adv","topic":"must 用法","q":"It is 11:30 at night. You ___ go to bed now, or you will be late for school tomorrow.","choices":["may","must","can't","don't have to"],"answer":1,"explain":"後半句「不然明天上學會遲到」表示這是必要的，用 must（必須）。may 是「可以」、can't 是「不能」、don't have to 是「不必」，語意都相反或不合。"},{"level":"adv","topic":"may 用法","q":"A: ___ I use your ruler? B: Sure, here you are.","choices":["May","Must","Am","Do"],"answer":0,"explain":"禮貌地請求許可用 May I...?。Must 是「必須」，Am、Do 在此無法接原形動詞 use 形成請求句。"},{"level":"adv","topic":"交通工具","q":"The train station is too far. Let's ___ a taxi.","choices":["take","by","ride","go by"],"answer":0,"explain":"搭計程車用 take a taxi。by taxi 前面不加冠詞且不能接在 Let's 後面；ride 用於腳踏車、機車等跨坐的交通工具。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

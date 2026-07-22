@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>座右銘 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-zuoyouming",
+  "title": "座右銘",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "崔瑗"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>座右銘</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與時代","q":"〈座右銘〉的作者崔瑗是哪一個朝代的人？","choices":["西漢","東漢","曹魏","西晉"],"answer":1,"explain":"崔瑗，字子玉，涿郡安平（今河北安平）人，東漢著名的文學家與書法家，其父為崔駰。他草書造詣極高，與杜度並稱「崔杜」。〈座右銘〉為其傳世代表作。"},{"level":"basic","topic":"文章出處","q":"崔瑗〈座右銘〉最著名的傳世版本收錄於下列哪一部書中？","choices":["《昭明太子集》","《古文觀止》","《世說新語》","《文選》"],"answer":3,"explain":"〈座右銘〉收錄於南朝梁昭明太子蕭統所編的《文選》卷五十六。《文選》是我國現存最早的詩文總集，〈座右銘〉因入選《文選》而流傳千古。"},{"level":"basic","topic":"文體常識","q":"關於「銘」這種文體，下列敘述何者正確？","choices":["原刻於器物之上，用以警惕自己或稱述功德","專指帝王祭祀天地時所頌唱的樂章","是記錄朝廷政令得失的官方公文","為死者立傳、敘述其一生功業的傳記文"],"answer":0,"explain":"「銘」原是鑄刻在青銅器、碑石等器物上的文字，一類用以自我警惕（如座右銘），一類用以稱頌功德（如功德銘）。因刻於器物，故文字精簡、多用韻語。崔瑗把這篇文字置於座位右邊自我警戒，「座右銘」一詞即由此而來。"},{"level":"basic","topic":"字詞義","q":"「無道人之短」的「道」，意思是什麼？","choices":["道路","道理","說、談論","引導"],"answer":2,"explain":"「道」在此作動詞用，是「說、談論」的意思，全句意為「不要談論別人的短處」。同樣用法如〈桃花源記〉「不足為外人道也」的「道」。"},{"level":"basic","topic":"字詞義","q":"「無說己之長」的「說」，其詞義為何？","choices":["解釋、說明","遊說、勸服","通「悅」，喜悅","誇耀、稱述"],"answer":3,"explain":"此處「說」讀作ㄕㄨㄛ，意為「誇耀、稱述」，全句意為「不要誇耀自己的長處」。與上句「無道人之短」正好構成對偶，一戒論人非，一戒自誇。"},{"level":"basic","topic":"字詞義","q":"「世譽不足慕」的「慕」，意思最接近下列何者？","choices":["羨慕、貪求","思念故人","模仿效法","傍晚時分"],"answer":0,"explain":"「慕」是羨慕、貪求之意。「世譽不足慕」意為「世俗的名譽不值得羨慕貪求」，下句接「唯仁為紀綱」，說明作者以仁德而非虛名作為立身準則。"},{"level":"basic","topic":"字詞義","q":"「守愚聖所臧」的「臧」，在句中的意思是什麼？","choices":["隱藏、收藏","讚許、認為好","奴僕、下人","貪汙、不法所得"],"answer":1,"explain":"「臧」本義為「善、好」，在此活用為動詞，作「讚許、認為好」解。全句意為「持守愚拙、不炫耀才華，是聖人所讚許的」。「守愚」並非真愚笨，而是藏拙不炫的修養。"},{"level":"basic","topic":"字詞義","q":"「在涅貴不緇」中的「涅」與「緇」，解釋正確的是：","choices":["涅：泥濘的道路；緇：跌倒","涅：滯留不前；緇：細密的絲織品","涅：黑色染料（黑泥）；緇：被染黑","涅：白色的石灰；緇：漂白"],"answer":2,"explain":"「涅」是可作黑色染料的礦石、黑泥，比喻污濁的環境；「緇」本指黑色，此處作動詞，指「被染黑」。全句意為「處在黑色染料中，可貴的是不被染黑」，比喻身處污濁環境仍能保持節操。《論語．陽貨》「涅而不緇」即為同類用法。"},{"level":"basic","topic":"字詞義","q":"「柔弱生之徒」的「徒」，意思是什麼？","choices":["徒步行走","徒弟、學生","白白地、徒然","同類、一類"],"answer":3,"explain":"「徒」在此指「同類、一類」。全句意為「柔弱是屬於生存的一類」，呼應下句「老氏誡剛強」，即老子認為柔弱能長存、剛強易折毀。"},{"level":"basic","topic":"文意主旨","q":"綜觀全文，崔瑗〈座右銘〉所要傳達的主旨是什麼？","choices":["感嘆懷才不遇，抒發對世道不公的怨懟","揭示修身處世的準則，並期勉持之以恆地實踐","描寫田園閒居之樂，勸人歸隱山林","追述家族先世功業，勉勵子孫光耀門楣"],"answer":1,"explain":"全文從不道人短、不誇己長談起，歷數施恩不念、受恩不忘、以仁為本、守愚含光、柔弱不爭、慎言知足等處世修身的原則，最後以「行之苟有恆，久久自芬芳」作結，強調唯有長久力行，德行才能自然散發芬芳。"},{"level":"basic","topic":"文化常識","q":"「柔弱生之徒，老氏誡剛強」中的「老氏」是指誰？","choices":["老子","孔子","孟子","莊子"],"answer":0,"explain":"「老氏」即老子，道家的代表人物。《老子》中有「堅強者死之徒，柔弱者生之徒」「強梁者不得其死」等說法，主張柔弱勝剛強。崔瑗在此援引道家思想，告誡自己不可逞強好勝。"},{"level":"adv","topic":"句子翻譯","q":"「施人慎勿念，受施慎勿忘」翻譯成白話，最恰當的是：","choices":["施捨給別人時要慎重考慮，接受別人施捨時要記得推辭","幫助別人要常常掛念他，別人幫助自己則不必放在心上","施恩給別人，千萬不要老記在心上；接受別人的恩惠，千萬不可忘記","施捨他人要謹慎不張揚，受人恩惠也要謹慎不聲張"],"answer":2,"explain":"「慎勿」是「千萬不要」的意思。這兩句一施一受，形成鮮明對照：自己施恩要能忘懷，不求回報；受人之恩則要牢記於心，常懷感激。這正是全文「每兩句意義相對」的典型寫法。"},{"level":"adv","topic":"字詞義","q":"「隱心而後動，謗議庸何傷」的「庸」，用法與意義為何？","choices":["作名詞，指平庸無能的人","作動詞，指僱用、任用","作形容詞，指平常、普通的","作副詞，表反問，相當於「豈、哪裡」"],"answer":3,"explain":"「庸」在此是表反問的副詞，等於「豈、哪裡、何」，「庸何傷」即「哪裡能傷害得了呢」。「隱心」指審度自己的內心；全句意為：先審度自己問心無愧再行動，別人的毀謗議論又哪能傷害到我呢？"},{"level":"adv","topic":"文意推求","q":"「曖曖內含光」一句所要表達的處世態度是什麼？","choices":["外表不張揚顯耀，內在卻蘊藏著才德光輝","韜光養晦以待時機，伺機一舉揚名天下","在黑暗的環境中要點燃燈火照亮他人","外表要打扮得光鮮亮麗，才不致被人看輕"],"answer":0,"explain":"「曖曖」形容光線昏暗不明的樣子。此句承接上句「在涅貴不緇」，說有德之人外表看似黯淡不起眼，內在卻蘊含著光輝。這是一種內斂含蓄、不炫耀外露的修養，與前文「守愚聖所臧」互相呼應，而非為了日後揚名的謀略。"},{"level":"adv","topic":"修辭辨析","q":"「在涅貴不緇」一句主要運用了什麼修辭手法？","choices":["設問","譬喻","誇飾","轉品"],"answer":1,"explain":"此句以「置身黑色染料中卻不被染黑」比喻人身處污濁環境仍能堅守節操不受同化，屬於譬喻（借喻）。作者不直說「處濁世而守節」，而以具體的染色情景設喻，使抽象的操守具象可感。"},{"level":"adv","topic":"文意推求","q":"「行行鄙夫志，悠悠故難量」二句的意思是：","choices":["不斷前行是平凡人的志願；路途遙遠所以難以測量","行事果決是君子的作風；猶豫遲疑的人前途難料","見識淺薄的人志向遠大；心胸開闊的人反而難成大器","剛強好勝只是見識淺薄者的志向；胸懷悠然寬厚的人，成就才難以估量"],"answer":3,"explain":"「行行」形容剛強好勝的樣子（如《論語》「子路行行如也」），「鄙夫」指見識淺薄的人，「悠悠」形容從容閒靜、寬厚不爭的樣子，「難量」即不可限量。二句承「老氏誡剛強」而來，以剛強與悠然對比，說明不爭者反而成就無限。"},{"level":"adv","topic":"文意推求","q":"「無使名過實，守愚聖所臧」所反映的態度，最接近下列何者？","choices":["應努力經營名聲，使聲名遠播於四方","既然名不副實在所難免，不如安於平庸","不讓名聲超過實際才德，寧可藏拙自守","才德既然勝過名聲，就該挺身自我推薦"],"answer":2,"explain":"「無使名過實」是告誡自己不要讓虛名超過實際的才德，「守愚」則是不炫耀、甘於顯得愚拙。二句合看，是主張務實內斂、名實相副，並非安於平庸，也不是要積極經營聲名。"},{"level":"adv","topic":"形式與修辭","q":"關於〈座右銘〉的形式特色，下列敘述何者正確？","choices":["全篇為五言，兩句一組、上下相對，多處運用對偶","全篇為七言，句句押韻且不換韻","採用長短句錯落的騷體，句末多用「兮」字","全篇為散文，不押韻也不講求句式整齊"],"answer":0,"explain":"〈座右銘〉全篇二十句、每句五言，共一百字。內容上兩句構成一組意思，如「無道人之短，無說己之長」「施人慎勿念，受施慎勿忘」等，句式整齊、上下相對，大量運用對偶，並押韻便於誦記，符合銘文精簡易誦的特性。"},{"level":"adv","topic":"句子翻譯","q":"「慎言節飲食，知足勝不祥」的白話翻譯，最恰當的是：","choices":["謹慎的言語勝過豐盛的飲食，知足的人不會遭人厭惡","說話要謹慎，飲食要節制，知足就能免除災禍","說話要有分寸，飲食要合乎禮節，知足的人容易獲勝","少說話多吃飯，知足者自然能得到吉祥的預兆"],"answer":1,"explain":"「慎言」指說話謹慎，避免禍從口出；「節飲食」指節制口腹之欲；「不祥」指災禍、不吉利的事，「勝」是克服、免除。全句說明謹言、節欲、知足三者能使人遠離禍患。"},{"level":"adv","topic":"字詞義與文意","q":"「行之苟有恆，久久自芬芳」中的「苟」字，以及全句在文中的作用，說明正確的是：","choices":["「苟」為「苟且」；此句感嘆世人做事馬虎，難以持久","「苟」為「暫且」；此句勸人暫時忍耐，等待時來運轉","「苟」為「豈」；此句反問世上哪有真能持之以恆的人","「苟」為「如果」；此句總結全文，強調唯有長久力行，德行自然如香氣般散發"],"answer":3,"explain":"「苟」在此為連詞，表假設，即「如果、假使」。前十八句列舉種種修身處世的準則，末二句則收束全篇：這些道理如果能持之以恆地實踐，日久自然德行馨香。以「芬芳」譬喻美好的德行，是全文的總結與期勉。"},{"level":"adv","topic":"比較閱讀","q":"「在涅貴不緇，曖曖內含光」所表現的精神，與下列何者最為相近？","choices":["近朱者赤，近墨者黑","工欲善其事，必先利其器","出淤泥而不染，濯清漣而不妖","見賢思齊焉，見不賢而內自省也"],"answer":2,"explain":"周敦頤〈愛蓮說〉「出淤泥而不染」與「在涅貴不緇」同樣以身處污穢而不受沾染為喻，強調堅守節操；且「不妖」的含蓄自持亦近於「曖曖內含光」的內斂。「近朱者赤，近墨者黑」意思恰恰相反，說的是環境會改變人；另兩句分別談準備工夫與見賢自省，主旨不同。"},{"level":"adv","topic":"寫作背景","q":"根據史料記載，崔瑗寫作〈座右銘〉的背景是：","choices":["兄長被殺，他手刃仇人後亡命他鄉，遇赦返鄉，痛定思痛而作此銘自我警惕","在朝為官時受人排擠貶謫，作此文抒發不平","晚年辭官歸隱田園後，寫此文教導鄉里子弟","奉皇帝之命為朝廷官員撰寫的訓誡文告"],"answer":0,"explain":"據記載，崔瑗的兄長崔章被人殺害，崔瑗親手殺死仇人後逃亡他鄉，多年後遇朝廷大赦才得以返回故里。經此劫難，他悔恨反省，寫下這篇文字置於座位右側以自我警戒，「座右銘」之名即由此而來。也因此文中特別強調不逞剛強、慎言知足。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

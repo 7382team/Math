@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>We Visited a Museum Yesterday 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-k2-u4",
+  "title": "We Visited a Museum Yesterday",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "一般動詞過去式(規則與不規則)",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>We Visited a Museum Yesterday</h1><div class="sub">英文 · 一般動詞過去式(規則與不規則) · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"過去式-不規則動詞","q":"She ___ to the park yesterday.","choices":["go","goes","went","going"],"answer":2,"explain":"yesterday（昨天）表示過去時間，動詞要用過去式。go 是不規則動詞，過去式為 went。"},{"level":"basic","topic":"過去式-規則變化","q":"We ___ a museum last Saturday.","choices":["visit","visited","visits","visiting"],"answer":1,"explain":"last Saturday 是過去時間。visit 是規則動詞，字尾直接加 -ed 變成 visited。"},{"level":"basic","topic":"過去式-不規則動詞","q":"I ___ a big dinosaur in the museum last week.","choices":["see","saw","sees","seeing"],"answer":1,"explain":"last week 表過去。see 是不規則動詞，過去式為 saw，不可寫成 seed。"},{"level":"basic","topic":"過去式-規則變化","q":"He ___ TV with his brother last night.","choices":["watchs","watched","watch","watching"],"answer":1,"explain":"last night 表過去，watch 為規則動詞，加 -ed 成為 watched。watchs 是錯誤拼法（現在式第三人稱應為 watches）。"},{"level":"basic","topic":"過去式-否定句","q":"They ___ not go to school yesterday.","choices":["do","does","did","are"],"answer":2,"explain":"一般動詞過去式的否定用 did not + 原形動詞。因為 did 已表示過去，後面的 go 要保持原形。"},{"level":"basic","topic":"過去式-疑問句","q":"___ you finish your homework last night?","choices":["Do","Does","Did","Are"],"answer":2,"explain":"問過去發生的事，一般動詞疑問句用 Did + 主詞 + 原形動詞。"},{"level":"basic","topic":"過去式-不規則動詞","q":"My mom ___ a birthday cake for me last week.","choices":["make","makes","made","making"],"answer":2,"explain":"make 是不規則動詞，過去式為 made，不可加 -ed 寫成 maked。"},{"level":"basic","topic":"過去式-拼字規則","q":"The bus ___ in front of the museum ten minutes ago.","choices":["stoped","stopped","stopping","stops"],"answer":1,"explain":"stop 是「短母音＋單子音」結尾的動詞，加 -ed 前要重複字尾子音，變成 stopped。"},{"level":"basic","topic":"過去式-規則變化","q":"The students ___ soccer after school yesterday.","choices":["play","played","plaied","playing"],"answer":1,"explain":"play 的字尾是「母音＋y」，不需改 y 為 i，直接加 -ed 成為 played。"},{"level":"basic","topic":"過去式-拼字規則","q":"She ___ English very hard last night.","choices":["studyed","studied","studys","studies"],"answer":1,"explain":"study 的字尾是「子音＋y」，要去 y 加 -ied，變成 studied。"},{"level":"basic","topic":"過去式-疑問句","q":"Did he ___ to Taipei by bus last Sunday?","choices":["go","went","goes","going"],"answer":0,"explain":"Did 開頭的疑問句中，主要動詞要用原形，所以是 go，不能再用過去式 went。"},{"level":"adv","topic":"過去式-疑問句句型辨析","q":"Which sentence is correct?","choices":["Did you went to the zoo last week?","Did you go to the zoo last week?","Do you went to the zoo last week?","Did you goes to the zoo last week?"],"answer":1,"explain":"過去式疑問句公式為 Did + 主詞 + 原形動詞。Did 已表示過去，動詞不再變化，故 (B) 正確。"},{"level":"adv","topic":"過去式-否定句辨析","q":"Which negative sentence is correct?","choices":["We didn't saw the show yesterday.","We don't saw the show yesterday.","We didn't see the show yesterday.","We didn't sees the show yesterday."],"answer":2,"explain":"didn't 後面必須接原形動詞，saw 要改回 see；yesterday 表過去，所以不能用 don't。"},{"level":"adv","topic":"why/because 與過去式","q":"A: Why were you late for school this morning?  B: ___","choices":["So I missed the bus.","Because I missed the bus.","Because I miss the bus.","Why I missed the bus."],"answer":1,"explain":"Why 的問句用 Because 回答理由；且事情發生在今天早上（過去），動詞要用過去式 missed。"},{"level":"adv","topic":"過去式-問答與不規則動詞","q":"A: ___ your sister buy anything at the museum shop?  B: Yes, she ___ two postcards.","choices":["Did / bought","Did / buy","Does / bought","Did / buyed"],"answer":0,"explain":"疑問句用 Did + 主詞 + 原形動詞（buy）；回答是肯定的直述句，要用過去式。buy 是不規則動詞，過去式為 bought，不可寫成 buyed。"},{"level":"adv","topic":"過去式-拼字規則綜合","q":"Which group of past forms is spelled correctly?","choices":["planned / carried / stopped","planed / carryed / stoped","planned / carryed / stopped","planed / carried / stoped"],"answer":0,"explain":"plan、stop 是「短母音＋單子音」結尾，要重複字尾子音再加 -ed（planned, stopped）；carry 是「子音＋y」結尾，去 y 加 -ied（carried）。"},{"level":"adv","topic":"時態辨析","q":"We ___ to school by bike every day, but we ___ by bus yesterday.","choices":["go / went","went / go","go / go","went / went"],"answer":0,"explain":"every day 表習慣，用現在式 go；yesterday 表過去，用過去式 went。要依時間副詞判斷時態。"},{"level":"adv","topic":"be動詞過去式","q":"___ they at the museum last Sunday?","choices":["Was","Were","Did","Do"],"answer":1,"explain":"句中沒有一般動詞，at the museum 是介系詞片語，需用 be 動詞。主詞 they 為複數，過去式用 Were。"},{"level":"adv","topic":"過去式-簡答","q":"A: Did you have fun at the museum yesterday?  B: ___","choices":["No, I didn't.","No, I don't.","No, I wasn't.","No, I didn't had."],"answer":0,"explain":"Did 開頭的問句要用 did / didn't 簡答；yesterday 表過去，不能用 don't，題目也不是 be 動詞問句，故不用 wasn't。簡答後面不再加動詞。"},{"level":"adv","topic":"so/because 與過去式","q":"It rained hard yesterday, ___ we didn't go to the beach.","choices":["because","so","why","but"],"answer":1,"explain":"前句是原因、後句是結果時，用 so（所以）連接；because 後面接的才是原因。兩句都用過去式（rained, didn't go）。"},{"level":"adv","topic":"過去式-不規則動詞綜合","q":"Last Sunday, my family ___ to the night market and ___ a lot of food.","choices":["go / eat","went / ate","went / eated","goed / ate"],"answer":1,"explain":"Last Sunday 表過去，兩個動詞都要用過去式。go → went、eat → ate 都是不規則變化，不可寫成 goed 或 eated。"},{"level":"adv","topic":"過去式-疑問詞問句","q":"A: What ___ you do last weekend?  B: I visited my grandma in Yilan.","choices":["do","did","does","are"],"answer":1,"explain":"last weekend 表過去，疑問詞問句為 What + did + 主詞 + 原形動詞；回答的 visited 也印證用過去式。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

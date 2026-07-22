@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>勤訓 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-qinxun",
+  "title": "勤訓",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "李文炤"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>勤訓</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與出處","q":"〈勤訓〉的作者與出處，下列敘述何者正確？","choices":["唐代韓愈，選自《昌黎先生集》","宋代歐陽脩，選自《歐陽文忠公集》","清代李文炤，選自《恆齋文集》","明代宋濂，選自《宋學士文集》"],"answer":2,"explain":"〈勤訓〉作者李文炤（西元一六七二～一七三五），字元朗，號恆齋，清代湖南善化（今長沙）人。康熙五十二年（癸巳）舉人，無意仕途，曾任嶽麓書院主講、山長，訂定〈嶽麓書院學規〉，潛心程朱理學。本文選自《恆齋文集》。"},{"level":"basic","topic":"文體判斷","q":"就寫作目的與筆法而言，〈勤訓〉屬於下列何種文體？","choices":["論說文，旨在闡明道理、勸勉世人","記敘文，重在記述大禹與陶侃的生平事蹟","抒情文，抒發作者懷才不遇的感慨","應用文，是寫給子姪輩的一封家書"],"answer":0,"explain":"本文先立「治生之道，莫尚乎勤」的論點，再從反面（好逸惡勞之害）與正面（天地之理、聖賢惜陰）加以論證，屬說理勸勉的論說文。文中雖提及大禹、陶侃，但只是論證用的例證，並非以記人敘事為主。"},{"level":"basic","topic":"字詞義","q":"「治生之道，莫尚乎勤」句中的「尚」，意思是：","choices":["崇尚某種社會風氣","超過、勝過","尚且、還","久遠、長久"],"answer":1,"explain":"「莫尚乎勤」的「乎」相當於「於」，表比較；「尚」是超過、勝過之意，全句即「沒有什麼比勤勞更重要（更勝過勤勞）」。選項「尚且」是「大禹之聖，且惜寸陰」的「且」，不可混淆。"},{"level":"basic","topic":"國學常識","q":"文中「故邵子云：『一日之計在於晨，一歲之計在於春，一生之計在於勤。』」所稱的「邵子」是指：","choices":["春秋時期的召（邵）公","東漢的南陽太守邵信臣","唐代詩人邵謁","北宋理學家邵雍"],"answer":3,"explain":"邵子指邵雍，北宋理學家，字堯夫，諡康節，為宋代理學的重要人物。作者引其言以加強論點，這是「引用」修辭。"},{"level":"basic","topic":"字詞義","q":"「玩日愒歲」一語的意思是：","choices":["玩賞四時景物，怡情養性","貪圖安逸，白白虛度光陰","依照時節妥善安排農事","年年重複做著相同的工作"],"answer":1,"explain":"「玩」為輕忽、玩忽；「愒」（音ㄎㄞˋ）是貪、荒廢。「玩日愒歲」即輕忽時日、荒廢歲月，形容懶散度日、浪費光陰，與上文「惡勞而好逸」互相呼應。語本《左傳．昭公元年》「翫歲而愒日」。"},{"level":"basic","topic":"字詞義","q":"「甘食褕衣」形容的是哪一種生活態度？","choices":["節制飲食，衣著樸素","甘願粗茶淡飯、身穿破衣","貪求美味的食物、愛穿華麗的衣服","把食物與衣服施捨給貧苦的人"],"answer":2,"explain":"「甘」指以之為甘美，即貪求美食；「褕」（音ㄩˊ）是華美的衣服。「甘食褕衣」寫一般人只顧口腹之欲與外表享受，正是「惡勞而好逸」的具體表現。"},{"level":"basic","topic":"字詞義","q":"「徒然食息於天地之間，是一蠹耳」句中的「蠹」，本義與譬喻義為何？","choices":["本義為蛀蟲，用以比喻無益於世、白耗資源的人","本義為蜘蛛，用以比喻結網坐享其成的人","本義為倉庫，用以比喻只知囤積財貨的人","本義為樹根，用以比喻墨守成規、不知變通的人"],"answer":0,"explain":"「蠹」是蛀蝕木頭、書籍的蛀蟲。作者說怠惰之人只是在天地間白白吃喝作息，如同一隻蛀蟲，蠶食而無所貢獻，語氣嚴厲，具警惕作用。"},{"level":"basic","topic":"字詞義","q":"「夫天地之化，日新則不敝」句中的「敝」，意思最接近：","choices":["遮蔽、掩蓋","疲倦、勞累","謙稱自己的一方","敗壞、衰朽"],"answer":3,"explain":"「敝」在此為敗壞、破舊衰朽之意。全句說天地化育萬物之理是天天更新變化，因此不會敗壞，藉此推出下文「戶樞不蠹，流水不腐」的道理。"},{"level":"basic","topic":"字詞義","q":"「勞則思，逸則淫」句中的「淫」，在文中應解作：","choices":["雨下得過多而成災","放蕩散漫、心思迷亂","沉浸於學問之中","用水浸泡、浸濕"],"answer":1,"explain":"「淫」有過度、放縱之意，此處指人一旦安逸就流於放蕩散漫、心志迷亂。與前句「勞則思」（勞動就會用心思考）形成映襯，說明心力愈用愈靈活。語意本於《國語．魯語下》「勞則思，思則善心生；逸則淫，淫則忘善」。"},{"level":"basic","topic":"主旨","q":"下列何者最能概括〈勤訓〉全文的主旨？","choices":["讀書人應以求取功名為終身職志","生活務必節儉，才能積少成多","勤勉是安身立命的根本，應戒除好逸惡勞的習性","孝順父母是做人處世最重要的德行"],"answer":2,"explain":"全文以「治生之道，莫尚乎勤」立論，反覆論證怠惰之害與勤勉之要，並以聖賢惜陰收束，主旨在勸人勤勉、戒除怠惰。節儉、功名、孝道皆非本文論述重點。"},{"level":"basic","topic":"字詞義","q":"關於「大禹之聖，且惜寸陰；陶侃之賢，且惜分陰」中的「寸陰」與「分陰」，說明正確的是：","choices":["兩者都指極短的時間，而「分陰」又比「寸陰」更為短暫","「寸陰」指白天的時光，「分陰」指夜晚的時光","兩者都是指一年四季循環的漫長歲月","「寸陰」指年少的歲月，「分陰」指年老的歲月"],"answer":0,"explain":"古人以日影移動的長度計時，日影移動一寸稱「寸陰」，一分更短於一寸，故「分陰」比「寸陰」更短。由寸陰而分陰，是層層加強的寫法，凸顯惜時之切。"},{"level":"adv","topic":"句子翻譯","q":"「治生之道，莫尚乎勤」的白話翻譯，何者最恰當？","choices":["治理國家的方法，最重要的就是崇尚節儉","管理生活的人，沒有一個願意勤勞做事","謀生的道理很多，勤勞只不過是其中一項罷了","謀生的道理，沒有比勤勞更為重要的了"],"answer":3,"explain":"「治生」指謀求生計；「莫」是沒有什麼；「尚乎勤」即勝過勤勞。全句意謂謀生之道中，沒有比勤更可貴、更重要的。此句是全文的中心論點。"},{"level":"adv","topic":"句子翻譯","q":"「言雖近而旨則遠矣」的意思是：","choices":["話說得雖然遙遠難懂，用意卻十分淺近","說話的人雖然近在眼前，志向卻極為遠大","話說得雖然淺白平易，含意卻非常深遠","言語雖然親切，反而疏遠了聽話的人"],"answer":2,"explain":"「近」指語言淺近平易，「旨」指意義、用意，「遠」指深遠。作者評邵雍之語看似平常，實則寓意深刻，藉此引導讀者重視這段引言。"},{"level":"adv","topic":"句子翻譯","q":"「以之為農，則不能深耕而易耨」翻譯最正確的是：","choices":["讓這種好逸惡勞的人去務農，他就不能深入耕作、勤快除草","因為他是農夫，所以耕田容易，除草也容易","農人普遍認為深耕比除草來得容易","用農具耕田，土翻得太深就難以除草"],"answer":0,"explain":"「之」代指前文「惡勞而好逸」的人；「以之為農」即讓這種人去當農夫。「易耨」的「易」是治理、勤治，「耨」為除草，語出《孟子》「深耕易耨」。此句與工、商、士三句構成排比，說明怠惰者從事任何行業都難有成就。"},{"level":"adv","topic":"句子翻譯","q":"「徒然食息於天地之間，是一蠹耳」的翻譯，何者正確？","choices":["只要能在天地之間吃飯休息，就已經是一種福氣了","白白地在天地之間吃喝作息，不過是一隻蛀蟲罷了","徒步行走於天地之間，就像蛀蟲一樣渺小卑微","天地之間的蛀蟲，也同樣需要吃飯與休息"],"answer":1,"explain":"「徒然」是白白地、毫無作為；「食息」指吃喝作息；「耳」是句末語氣詞，相當於「罷了」。全句嚴厲批評怠惰者對世間毫無貢獻，猶如蛀蟲。"},{"level":"adv","topic":"句子翻譯","q":"「故戶樞不蠹，流水不腐，誠不欲其常安也」的意思是：","choices":["門軸和流水都必須時常保養，才不會損壞發臭","門軸生了蛀蟲、流水發出臭味，都是因為活動太過頻繁","只要把門關緊、讓水停住不流，就能長久保持安穩","常轉動的門軸不會被蟲蛀、流動的水不會腐臭，實在是因為不希望它們長久安逸不動"],"answer":3,"explain":"「戶樞」是門軸，「蠹」在此作動詞，指被蟲蛀蝕；「誠」是實在、確實。此句由自然物理推及人事，說明恆常活動才不致衰敗，為下文「人之心與力，何獨不然」鋪路。"},{"level":"adv","topic":"文意推求","q":"「大禹之聖，且惜寸陰；陶侃之賢，且惜分陰；又況賢聖不若彼者乎？」作者這樣安排的用意，何者最恰當？","choices":["以聖賢尚且如此愛惜光陰，反襯才德不如他們的一般人更應該勤勉惜時","說明大禹與陶侃天資不足，所以必須比別人加倍努力","指出聖賢的時間比常人寶貴，因此一般人不必勉強仿效","藉兩人相互比較，斷定陶侃的成就高於大禹"],"answer":0,"explain":"「且」是「尚且」，「又況……乎」是「何況……呢」，屬於由高推低的層層逼進。聖賢尚且惜陰，才德不及者自然更該勤勉，這是以退為進、加強說服力的寫法。"},{"level":"adv","topic":"修辭辨析","q":"「以之為農，則不能深耕而易耨；以之為工，則不能計日而效功；以之為商，則不能乘時而趨利；以之為士，則不能篤志而力行」所使用的主要修辭是：","choices":["頂真","轉化","排比","借代"],"answer":2,"explain":"四句結構相同、語氣一致、意義相關並列，是典型的「排比」。作者以農工商士四種身分並舉，說明怠惰之害無所不在，語勢層層堆疊，極具說服力。（原文作「計日而效功」，「效功」即收到成效。）"},{"level":"adv","topic":"修辭辨析","q":"「故戶樞不蠹，流水不腐」在文中的修辭作用是：","choices":["以誇飾強調門軸與流水永遠不會損壞","以譬喻說明恆常活動就不會衰敗，並由物理推及人事","以設問引起讀者對自然現象的好奇心","以映襯凸顯門軸與流水兩者性質的差異"],"answer":1,"explain":"作者以門軸常轉不遭蟲蛀、流水常動不致腐臭為喻，說明「日新則不敝」的道理，再以「人之心與力，何獨不然」轉入人事，是譬喻兼類推的手法。"},{"level":"adv","topic":"修辭辨析","q":"「人之心與力，何獨不然？」一句的修辭判斷與作用，何者正確？","choices":["是疑問，作者確實不知道答案，故提出以求教於人","是引用，借用前人成語來加強說服力","是摹寫，具體描繪人的心力運作的樣貌","是激問（反詰），答案已在問題的反面，強調人的心力同樣愈用愈健"],"answer":3,"explain":"「何獨不然」意即「難道只有人不是這樣嗎」，答案顯然是「也是這樣」，屬於答案在問題反面的激問（反問）。用反問代替直述，語氣更強，也使文章起伏有致。"},{"level":"adv","topic":"文意比較","q":"作者先寫大禹「惜寸陰」，再寫陶侃「惜分陰」，在時間單位上如此安排，最主要的用意是：","choices":["依照兩人生存年代的先後順序排列","表示陶侃的身分地位高於大禹","由「寸陰」推進到更短的「分陰」，以層遞手法加強惜時的力度","說明夏代與晉代所使用的計時工具並不相同"],"answer":2,"explain":"分短於寸，由「惜寸陰」到「惜分陰」，時間單位愈縮愈小，惜時的程度卻愈來愈深，屬於層遞（層層遞進）。此語本出《晉書．陶侃傳》，陶侃嘗言「大禹聖者，乃惜寸陰，至於眾人，當惜分陰」。"},{"level":"adv","topic":"篇章結構","q":"下列何者最能說明〈勤訓〉全文的論述順序？","choices":["先立論指出勤最可貴，次從反面寫怠惰之害，再從正面以天地之理與聖賢事例作證，末以反問收束","先記敘大禹、陶侃的事蹟，再抒發個人感慨，最後引用邵雍的話作結","全篇採問答體展開，逐一駁斥他人反對勤勞的主張","先描寫四季景物，再論士農工商的分別，最後勸人及時行樂"],"answer":0,"explain":"首段引邵雍語立論「莫尚乎勤」；次段從反面寫好逸惡勞者農工商士皆一事無成，斥為蠹蟲；末段從正面以「日新則不敝」的天地之理與大禹、陶侃惜陰為證，並以「又況賢聖不若彼者乎」的反問作結，結構嚴謹、正反相成。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>聲音鐘 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-shengyinzhong",
+  "title": "聲音鐘",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "陳黎"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>聲音鐘</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者出處","q":"〈聲音鐘〉一文選自下列哪一本書？","choices":["《小太陽》","《陳黎散文選》","《城南舊事》","《島嶼邊緣》"],"answer":1,"explain":"本課選自《陳黎散文選》（亦見於《陳黎跨世紀散文選》）。《小太陽》為林良（筆名子敏）之作；《城南舊事》為林海音之作；《島嶼邊緣》則是陳黎的詩集，並非本文出處。"},{"level":"basic","topic":"作者","q":"〈聲音鐘〉的作者陳黎，本名為何？","choices":["陳膺文","陳映真","陳冠學","陳之藩"],"answer":0,"explain":"陳黎本名陳膺文，「陳黎」為其筆名。陳映真、陳冠學、陳之藩皆為另有其人的作家。"},{"level":"basic","topic":"作者","q":"關於〈聲音鐘〉的作者，下列敘述何者正確？","choices":["筆名子敏，以兒童文學《小太陽》聞名","宜蘭人，一生專力創作武俠小說","花蓮人，兼擅新詩與散文，並從事翻譯，曾獲吳三連文藝獎","以《城南舊事》描寫北平童年生活著稱的林海音"],"answer":2,"explain":"陳黎為臺灣花蓮人，臺灣師大英語系畢業，是詩人、散文家兼翻譯家，曾獲吳三連文藝獎、時報文學獎、國家文藝獎等。第一個選項所指為林良，最後一個選項所指為林海音，皆非本文作者。"},{"level":"basic","topic":"文體","q":"〈聲音鐘〉一文的文體為何？","choices":["文言小說","現代散文","古典詩歌","戲劇劇本"],"answer":1,"explain":"本文是以白話書寫的現代散文（記敘兼抒情），作者記錄自身聽聞叫賣聲的生活經驗並抒發感受，並非韻文或小說、劇本。"},{"level":"basic","topic":"字詞義","q":"課文注釋中「天籟」一詞的意思，下列何者最恰當？","choices":["天空中降下的雷鳴巨響","從孔穴中發出的聲音，泛指美妙自然的聲響","宮廷樂師所演奏的正統雅樂","人工刻意造作而成的噪音"],"answer":1,"explain":"「籟」本指從孔穴發出的聲音，「天籟」即自然界的聲響，引申用來形容聲音美妙動聽。課文以此讚美小販叫賣聲的悅耳。"},{"level":"basic","topic":"字詞義","q":"「乍暖還寒」一語的意思是什麼？","choices":["天氣持續炎熱不退","由酷寒一夕轉為盛暑","氣候終年溫暖宜人","天氣冷熱不定，時暖時寒"],"answer":3,"explain":"「乍」是「剛剛」，「還」是「又、再」，「乍暖還寒」指剛剛暖和起來卻又轉冷，形容天氣冷熱不定，多用於初春時節。"},{"level":"basic","topic":"字詞義","q":"「具體而微」的正確解釋為何？","choices":["內容大致齊備，只是規模較小","說得十分具體，毫無隱瞞","細微到幾乎無法察覺","外表粗具形貌，內容卻空洞不實"],"answer":0,"explain":"「具體而微」謂各項內容大體都具備了，只是規模比較小，重點在「該有的都有，只是小」，而非「不完整」或「空洞」。"},{"level":"basic","topic":"字詞義","q":"「每天不知凡幾」的「不知凡幾」是什麼意思？","choices":["不知道究竟是第幾次","沒有幾個人，數量稀少","不知總共有多少，形容數目很多","不清楚是平凡或特別"],"answer":2,"explain":"「凡幾」即「總共多少」，「不知凡幾」是說多得數不清，用來強調數量之多。課文以此形容搶著出來買蝦仁羹的大人小孩非常多。"},{"level":"basic","topic":"字詞義","q":"「抑揚頓挫」四字各有其義，其中「抑」字的意思是什麼？","choices":["高揚","低下","停頓","轉折"],"answer":1,"explain":"「抑」為低下、壓低，「揚」為高揚，「頓」為停頓，「挫」為轉折；四字合稱，用來形容聲音高低起伏、富有節奏變化。"},{"level":"basic","topic":"字詞義","q":"課文中賣烤番薯的老頭喊的「阿──奇毛」，是指下列何者？","choices":["蚵仔煎","芋粿","蝦仁羹","烤番薯"],"answer":3,"explain":"「阿奇毛」為日語音譯詞，即「烤番薯」。課文中另一個常見的日語音譯詞是「歐巴桑」，指中年婦人。"},{"level":"basic","topic":"主旨","q":"〈聲音鐘〉一文的主旨，下列敘述何者最貼切？","choices":["藉各種準時出現的小販叫賣聲，寫出時刻、日子與季節的推移，並展現市井小民的活力與生活情味","批判都市攤販沿街叫賣，製造噪音、影響安寧","回憶童年在鄉下叫賣維生的艱苦歲月","考證臺灣各地小吃的名稱由來與製作方法"],"answer":0,"explain":"作者把準時出現的叫賣聲當作「鐘」，由聲音判知時刻、星期與季節，從平凡中發現不平凡，寫出城市生活的活力與人情味，並非批判噪音或考證小吃。"},{"level":"basic","topic":"字詞義","q":"「瑰寶」一詞中，「瑰」字的意思是什麼？","choices":["聚集","毀壞","奇異、珍貴","回歸"],"answer":2,"explain":"「瑰」有奇特、珍異之意，「瑰寶」即珍貴稀有的寶物。此字不可與「歸」、「壞」等音近或形近字混淆。"},{"level":"adv","topic":"文意推求","q":"課文說「日子安靜得像掛在壁上的月曆」，這句話所要表達的是什麼？","choices":["作者非常勤於在月曆上記事","日子平靜單調，時光在無聲無息中悄悄流逝","家中牆壁空曠，只掛了一份月曆","作者厭惡看月曆，因為日子過得太快"],"answer":1,"explain":"月曆掛在牆上一動不動、無聲無息，作者以此比喻生活平靜而缺少變化，時間只能默默流逝，正好反襯叫賣聲所帶來的活潑生機。"},{"level":"adv","topic":"修辭辨析","q":"「日子安靜得像掛在壁上的月曆」一句，主要運用了何種修辭？","choices":["譬喻","設問","誇飾","對偶"],"answer":0,"explain":"句中以「日子」（喻體）比作「掛在壁上的月曆」（喻依），並用「像」作喻詞，三者俱全，屬明喻，為譬喻修辭。"},{"level":"adv","topic":"修辭辨析","q":"「這些美妙的叫賣聲，活潑、快樂地在每日生活的舞臺裡翻滾跳躍」一句所用的修辭是？","choices":["映襯","頂真","借代","轉化（擬人）"],"answer":3,"explain":"叫賣聲本無生命，作者卻賦予它「活潑」、「快樂」、「翻滾跳躍」等人的情態與動作，屬轉化中的擬人。"},{"level":"adv","topic":"修辭辨析","q":"課文寫下「豆奶哦！煎包哦！糯米飯哦！」、「鹹──芭樂，鹹──甜──脆，甘──的哦！」，主要是運用哪一種修辭技巧？","choices":["視覺摹寫","嗅覺摹寫","聽覺摹寫","觸覺摹寫"],"answer":2,"explain":"作者直接以文字記錄小販口中喊出的聲調與拉長的語氣，訴諸讀者的聽覺想像，屬聽覺摹寫，使叫賣聲如在耳邊。"},{"level":"adv","topic":"文意推求","q":"「昨天晚上你也許還吃著燒仙草，今天你忽然聽到他改叫『冷豆花哦』。」這句話最能讓讀者感受到什麼？","choices":["小販因生意不佳而被迫改行","季節已由寒冷轉為溫暖，時序悄然推移","作者的口味突然改變","同一位小販其實是兩個不同的人"],"answer":1,"explain":"燒仙草為冬日熱食，冷豆花為天暖後的冷食；小販所賣之物一改，正說明季節已由冬入春。這正呼應「聲音鐘」不只報時刻，也報季節。"},{"level":"adv","topic":"文意推求","q":"課文提到聽見「修理沙發哦」的車子經過，作者便可判斷出什麼？","choices":["又到了週末","已經是深夜時分","颱風即將來襲","冬天已經過去"],"answer":0,"explain":"課文寫「慢條斯理，喊著『修理沙發哦』的車子經過時，你知道又是週末了」，此車固定在週末經過，因此這個聲音成了「星期」的指標。可見「聲音鐘」除了報時刻、報季節，還能報出一週中的日子。"},{"level":"adv","topic":"文意推求","q":"「那位賣蝦仁羹的歐巴桑的叫賣聲恐怕是最平板無奇的，但還沒看到她就拿著大碗小碗衝出來的大人小孩，每天不知凡幾。」作者藉此要說明什麼？","choices":["這位歐巴桑不擅長做生意，門可羅雀","居民只是被迫捧場，其實並不喜歡她的東西","叫賣聲雖然平淡無奇，生意卻十分興隆，可見食物美味、深受歡迎","大人小孩爭先恐後，造成街道秩序混亂"],"answer":2,"explain":"句中以「最平板無奇」的叫賣聲與「不知凡幾」的顧客形成對比，正說明真正吸引人的是東西的好，而非叫賣的花巧，也寫出鄰里生活的熱鬧人情。"},{"level":"adv","topic":"篇章結構","q":"本文首段與末段都出現「我喜歡（聽）那些像鐘一般準確出現的小販的叫賣聲」，這樣的安排有何作用？","choices":["作者一時疏忽，重複了同樣的句子","為了湊足篇幅，使文章顯得較長","表示作者對前面所寫的內容感到後悔而加以更正","首尾呼應，反覆強調主旨，使文章結構完整如時鐘般循環"],"answer":3,"explain":"首尾以相同句意收束，形成前後呼應，既強化「叫賣聲即是鐘」的主旨，也讓全文結構如鐘面一般繞了一圈，回到原點，十分完整。"},{"level":"adv","topic":"文意推求","q":"作者把小販的叫賣聲稱為「聲音鐘」，最主要的理由是什麼？","choices":["叫賣聲出現的時間十分準確，與作者的日常作息相合，可據以判知時刻與季節","小販都在身上掛著時鐘沿街叫賣","叫賣聲的音色與鐘聲極為相似，難以分辨","小販固定在整點敲鐘提醒居民出來購買"],"answer":0,"explain":"作者所謂「鐘」，重點在「準確」二字：這些叫賣聲每天在固定時段出現，聽見某種叫賣就知道是幾點、是星期幾、是什麼季節，因而具有鐘的功能，並非指音色像鐘。"},{"level":"adv","topic":"文意推求","q":"「叫賣聲就正好穿過你推開的窗戶，不客氣地進來」句中的「不客氣」，帶有什麼樣的意味？","choices":["指責小販態度粗魯無禮，令人厭煩","說明作者因被打擾而與小販起了爭執","暗示都市噪音已嚴重侵犯居民的生活安寧","以擬人的口吻寫聲音的直率闖入，語帶親暱與趣味，顯出彼此的熟稔不見外"],"answer":3,"explain":"全文對叫賣聲抱持喜愛與欣賞的態度，此處「不客氣」是把聲音當作熟識的老朋友，逕自登門而不需寒暄，語氣詼諧親切，並非責備或抱怨。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

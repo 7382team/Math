@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>木蘭詩 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-mulan",
+  "title": "木蘭詩",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古典詩",
+  "ready": true,
+  "author": "樂府詩"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>木蘭詩</h1><div class="sub">國文 · 古典詩 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者出處","q":"〈木蘭詩〉最早見於南朝陳・釋智匠《古今樂錄》，後來收錄於下列哪一部詩歌總集？","choices":["蕭統《文選》","郭茂倩《樂府詩集》","劉義慶《世說新語》","徐陵《玉臺新詠》"],"answer":1,"explain":"〈木蘭詩〉收錄於宋代郭茂倩所編的《樂府詩集》，歸入〈橫吹曲辭・梁鼓角橫吹曲〉。《世說新語》是筆記小說，並非詩歌總集。"},{"level":"basic","topic":"作者出處","q":"關於〈木蘭詩〉的作者，下列敘述何者最正確？","choices":["北朝民間的集體創作，作者姓名不可考","由一位名叫木蘭的北朝女詩人自述所作","唐代韋元甫獨力創作的長篇敘事詩","宋代郭茂倩根據史書改寫而成"],"answer":0,"explain":"〈木蘭詩〉是北朝民歌，出於民間集體創作、口耳相傳，作者姓名不詳（佚名）。郭茂倩只是編纂者，並非作者。"},{"level":"basic","topic":"文體常識","q":"關於〈木蘭詩〉的文體，下列敘述何者正確？","choices":["屬近體詩中的七言律詩，講究平仄與對仗","屬樂府詩，是一首長篇敘事詩，句式長短不拘","屬駢文，通篇四六對仗、講求辭藻","屬詞，有固定的詞牌、字數與押韻規定"],"answer":1,"explain":"〈木蘭詩〉是樂府詩（北朝民歌），以敘事為主，句子有五言、七言、九言等，長短不受限制，不屬於格律嚴謹的近體詩。"},{"level":"basic","topic":"文學常識","q":"關於「樂府」一詞的說明，下列何者正確？","choices":["原是漢代掌管音樂的官署名稱，後來演變為一種詩體名稱","是唐代科舉考試中規定必考的應試文體","是宋代配合詞牌演唱的長短句作品總稱","專指民間口耳相傳、不能入樂的散文故事"],"answer":0,"explain":"「樂府」本為漢武帝設立、負責採集民歌與制樂的官署；後來把該官署所採集、可以合樂演唱的詩歌也稱為「樂府」，遂成為一種詩體名稱。"},{"level":"basic","topic":"字詞義","q":"「木蘭當戶織」的「當戶」，意思是什麼？","choices":["把門關上","擋住門口不讓人進出","擔任守門的差事","對著門、在門口"],"answer":3,"explain":"「當」是「對著、面對」的意思，「當戶織」即對著門織布。同一用法又見於下文「阿姊聞妹來，當戶理紅妝」。"},{"level":"basic","topic":"字詞義","q":"「願為市鞍馬，從此替爺征」的「市」，古義為何？","choices":["市場、集市","城市、都會","購買","交易所課的稅"],"answer":2,"explain":"此處「市」是動詞，作「買」解，「市鞍馬」即購買馬匹與馬具。與下文「東市買駿馬」的「市」（名詞，市場）用法不同，是常見的段考考點。"},{"level":"basic","topic":"字詞義","q":"「阿爺無大兒，木蘭無長兄」的「爺」，在詩中指誰？","choices":["祖父","父親","兄長","對年長男子的通稱"],"answer":1,"explain":"「爺」是北方方言中對「父親」的稱呼，全詩「卷卷有爺名」「替爺征」「爺娘聞女來」的「爺」都指父親。"},{"level":"basic","topic":"字詞義","q":"「策勳十二轉，賞賜百千強」的「強」，意思是什麼？","choices":["強迫、逼迫","強壯、健壯","勉強、不情願","有餘、以上"],"answer":3,"explain":"「強」在此作「有餘」解，「百千強」即百千有餘，形容賞賜極為豐厚。"},{"level":"basic","topic":"字詞義","q":"「出門看火伴，火伴皆驚忙」的「火伴」，是指什麼？","choices":["軍中專門掌管伙食的士兵","在家中同鍋吃飯的親人","同營共灶的同袍、戰友","負責點燃烽火傳訊的哨兵"],"answer":2,"explain":"古代兵制十人為一「火」，同「火」的人共用一灶，故稱「火伴」，即一起當兵的同袍。今日寫作「夥伴」，詞義已擴大為一般的同伴。"},{"level":"basic","topic":"字詞義","q":"「脫我戰時袍，著我舊時裳」的「著」，意思是什麼？","choices":["穿（衣服）","顯著、明顯","著手、開始做","附著、黏住"],"answer":0,"explain":"「著」在此通「穿」，「著我舊時裳」即穿上從前的女子衣裙，與上句「脫我戰時袍」相對，寫木蘭回復女兒身。"},{"level":"basic","topic":"主旨","q":"下列何者最能說明〈木蘭詩〉的主旨？","choices":["鋪寫邊塞風光的壯闊瑰麗，抒發遊歷之樂","抒發征人久戍思鄉、厭惡戰爭的悲苦","諷刺當時徵兵制度的嚴苛與朝廷的無能","歌頌木蘭代父從軍的孝心與勇敢，以及功成後不慕名利的情操"],"answer":3,"explain":"全詩敘寫木蘭代父從軍、征戰立功，最後辭官還鄉，重點在表彰她的孝親、勇敢與不慕榮利，並非單純寫景或諷刺時政。"},{"level":"adv","topic":"句子翻譯","q":"「萬里赴戎機，關山度若飛」，這兩句的白話翻譯，下列何者最恰當？","choices":["遠行萬里投奔軍中謀求官職，越過關山時心情輕快得像飛一樣","奔赴萬里之外參與戰事，越過一道道關口山嶺，快得像飛一樣","在萬里邊關等待作戰時機，抬頭看飛鳥越過山嶺","萬里之外傳來緊急軍情，關山上的飛鳥都被驚起"],"answer":1,"explain":"「戎機」指戰事、軍務；「度」是越過；「若飛」形容行軍神速。全句寫木蘭遠赴戰場、翻山越嶺、行軍如飛的英姿。"},{"level":"adv","topic":"修辭辨析（互文）","q":"「將軍百戰死，壯士十年歸」運用了「互文」修辭，其正確理解應為何？","choices":["將軍都戰死沙場了，只有壯士活著回來","將軍身經百戰而戰死，壯士則熬滿十年才歸鄉","將士們身經百戰，有的戰死沙場，有的歷經多年才凱旋而歸","將軍打滿一百場仗才陣亡，壯士打滿十年仗才回家"],"answer":2,"explain":"互文是上下句文意互相補足、合起來理解。此句應解為「將軍、壯士身經百戰，歷經多年，有的戰死、有的生還」，不可拆開來只讓將軍死、只讓壯士歸。"},{"level":"adv","topic":"修辭辨析（排比、互文）","q":"「東市買駿馬，西市買鞍韉，南市買轡頭，北市買長鞭」四句所用的修辭與作用，下列何者最正確？","choices":["只用頂真，前後句首尾相接、環環相扣","只用誇飾，強調當時市場數量之多","只用映襯，以四方市場對比木蘭家的貧寒","兼用排比與互文，寫木蘭四處張羅行裝、準備出征的忙碌"],"answer":3,"explain":"四句句式整齊為「排比」；東西南北市並非各自只買一樣東西，而是文意互相補足的「互文」，合起來表示木蘭到處奔走採辦裝備，渲染出征前的緊張忙碌。"},{"level":"adv","topic":"修辭辨析（頂真）","q":"下列詩句，何者運用了「頂真」修辭？","choices":["不聞機杼聲，惟聞女嘆息","朔氣傳金柝，寒光照鐵衣","雄兔腳撲朔，雌兔眼迷離","出門看火伴，火伴皆驚忙"],"answer":3,"explain":"頂真是以前句末尾的字詞作為後句的開頭。「火伴」蟬聯而下，正是頂真；詩中「軍書十二卷，卷卷有爺名」「歸來見天子，天子坐明堂」也屬此類。其餘三個選項為對偶。"},{"level":"adv","topic":"修辭辨析（複沓）","q":"「旦辭爺娘去，暮宿黃河邊……旦辭黃河去，暮至黑山頭」句式反覆出現，這種「複沓」手法的作用為何？","choices":["藉句式反覆表現行軍神速、路程層層推遠，並襯托木蘭日益深切的思親之情","說明黃河與黑山相距不遠，行軍旅途十分輕鬆愉快","表現木蘭在途中迷路徘徊，不知該往哪個方向前進","描寫沿途風景秀麗，令木蘭流連忘返、忘記軍務"],"answer":0,"explain":"複沓（反覆）以相似句式重複詠唱，是民歌常見手法。此處「旦辭……暮宿（暮至）……不聞……但聞……」層層推進，既見行程之速、離家之遠，也把思念父母之情一層層加深。"},{"level":"adv","topic":"文意推求","q":"「不聞爺娘喚女聲，但聞黃河流水鳴濺濺」所要表達的情意為何？","choices":["以聽不見父母呼喚、只聽見流水聲，反襯木蘭離家日遠的思親之情","因為黃河水聲太過喧鬧，蓋過了父母呼喚的聲音","表現木蘭對父母的怨恨，不願再聽見他們的聲音","描寫黃河景色壯闊，使木蘭忘卻從軍的煩憂"],"answer":0,"explain":"「不聞……但聞……」以聽覺對比，用眼前的水聲反襯耳邊再也沒有父母呼喚，正是以景襯情，寫出少女從軍在外的孤單與想家。"},{"level":"adv","topic":"文意推求（虛數）","q":"詩中「軍書十二卷」「策勳十二轉」「同行十二年」的「十二」，應如何理解？","choices":["都是確切的數字，恰好都是十二","都是虛數，用來表示數量多、次數頻繁，不必坐實計算","前二者是虛數，「同行十二年」則是確指木蘭從軍的年數","都是指木蘭出征時的年紀"],"answer":1,"explain":"古人常以「三」「九」「十二」「百」「千」等表示多數。「十二卷」言徵兵文書之多，「十二轉」言功勳之高，「十二年」言從軍之久，皆為虛數；「將軍百戰死，壯士十年歸」的「百」「十」亦同。"},{"level":"adv","topic":"文意推求（人物形象）","q":"木蘭立下大功後「不用尚書郎，願馳千里足，送兒還故鄉」，這最能表現她何種情操？","choices":["畏懼官場鬥爭、膽小怕事的怯懦","嫌天子賞賜太少而心生不滿","自認女子不宜做官的自卑心理","不慕名利、眷戀故鄉親情的可貴情操"],"answer":3,"explain":"木蘭功成不受高官厚祿，只求一匹快馬回鄉侍奉父母，充分表現她從軍的初衷是盡孝而非求名，凸顯不慕榮利、質樸真誠的性格。"},{"level":"adv","topic":"句子翻譯","q":"「朔氣傳金柝，寒光照鐵衣」的白話翻譯，下列何者最恰當？","choices":["北方的寒氣傳送著打更的柝聲，清冷的月光映照著戰士的鎧甲","北風吹送著陣前的金鼓聲，溫暖的陽光照在鐵甲上","初一的空氣中傳來金屬敲擊聲，寒冷的燈光照著單薄的衣裳","北方傳來緊急戰報，寒光閃閃的兵器映亮了衣衫"],"answer":0,"explain":"「朔氣」指北方寒氣；「金柝」是軍中夜間巡更報時所敲的器具；「寒光」指清冷月光；「鐵衣」即鎧甲。兩句以聽覺、視覺寫出邊塞夜營的苦寒。"},{"level":"adv","topic":"文意推求（比喻）","q":"全詩以「雄兔腳撲朔，雌兔眼迷離；雙兔傍地走，安能辨我是雄雌」作結，其用意為何？","choices":["說明兔子雌雄本來就分不出，木蘭藉此推卸欺瞞同袍的責任","感嘆自己出身低微，始終無人賞識","以兔為喻，風趣地說明男女並肩奔走時難以分辨，也暗讚木蘭才能不遜男子","責備同袍粗心大意，連男女都認不出來"],"answer":2,"explain":"結尾用雙兔並奔難辨雌雄作比喻，既幽默地為木蘭女扮男裝十二年未被識破作解釋，也含蓄地肯定女子的才幹並不輸給男子，收束全篇、餘味無窮。"},{"level":"adv","topic":"比較與延伸","q":"〈木蘭詩〉與〈孔雀東南飛〉並稱，下列有關兩者共同點的敘述，何者正確？","choices":["皆為近體詩，格律、平仄十分嚴謹","皆為文人所作、篇幅短小的抒情詩","皆為長篇敘事樂府詩，合稱「樂府雙璧」","皆為唐代作品，內容都在描寫邊塞戰爭"],"answer":2,"explain":"〈木蘭詩〉為北朝民歌、〈孔雀東南飛〉為漢代長篇敘事樂府，二者都是敘事性極強的樂府名篇，向來並稱「樂府雙璧」，皆非近體詩，也非唐人所作。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

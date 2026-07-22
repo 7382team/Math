@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>世說新語選 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-shishuo",
+  "title": "世說新語選",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "劉義慶"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>世說新語選</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與出處","q":"《世說新語》舊題何人所編撰？其身分為何？","choices":["西漢劉向，曾任光祿大夫，校理群書","南朝梁劉孝標，曾為本書作注","南朝宋劉義慶，宋武帝劉裕之姪，封臨川王","北朝魏酈道元，曾任御史中尉"],"answer":2,"explain":"《世說新語》舊題南朝宋劉義慶（西元四〇三～四四四年）編撰。他是宋武帝劉裕的姪子，襲封臨川王，愛好文史，門下聚集許多文人雅士，一般認為本書是他招集門客共同編寫而成。劉孝標是為本書作注的人，並非編者；劉向、酈道元則與本書無關。"},{"level":"basic","topic":"文體常識","q":"《世說新語》記載漢末至東晉名士的言行軼事，就文體而言，它屬於下列何者？","choices":["志人小說","志怪小說","傳奇小說","章回小說"],"answer":0,"explain":"《世說新語》專記魏晉名士的言談舉止與生活風貌，是魏晉南北朝「志人小說」的代表作。「志怪小說」記神鬼怪異之事，如干寶《搜神記》；「傳奇」是唐代的文言短篇小說；「章回小說」則是明清長篇白話小說的體制。"},{"level":"basic","topic":"文學常識","q":"關於《世說新語》全書的編排體例，下列敘述何者正確？","choices":["依朝代先後編年排列，起自西漢，終於南朝","依人物姓氏筆畫排列，一人一篇，互不相涉","依詩、賦、書、論等文類分編，共十二類","依內容性質分為德行、言語等三十六門"],"answer":3,"explain":"《世說新語》依內容性質分門編排，共三十六門，始於〈德行〉，終於〈仇隙〉，中間包括言語、政事、文學、方正、雅量等，每門收錄若干則短小的故事。它並非編年、依姓氏或依文類編排。"},{"level":"basic","topic":"課文出處","q":"課本所選的兩則短文，分別出自《世說新語》的哪兩門？","choices":["〈詠雪〉出自〈德行〉，〈陳太丘與友期〉出自〈雅量〉","〈詠雪〉出自〈言語〉，〈陳太丘與友期〉出自〈方正〉","〈詠雪〉出自〈文學〉，〈陳太丘與友期〉出自〈政事〉","〈詠雪〉出自〈方正〉，〈陳太丘與友期〉出自〈言語〉"],"answer":1,"explain":"〈詠雪〉記謝家子姪比喻白雪的機智應對，重在言談之美，收於〈言語〉門；〈陳太丘與友期〉記元方責客不信無禮、正直不阿，收於〈方正〉門（「方正」即品行正直、不隨意屈從）。"},{"level":"basic","topic":"字詞義","q":"「俄而雪驟」中的「俄而」，意思是：","choices":["不久、一會兒","忽然之間毫無預兆","整夜、通宵","從前、過去"],"answer":0,"explain":"「俄而」是文言常見的時間副詞，指「不久、一會兒」。「俄而雪驟」是說過了一會兒雪下得又大又急（驟：急、猛）。此語表示謝安提問是在雪勢轉大之後，順勢而發。"},{"level":"basic","topic":"字詞義","q":"「撒鹽空中差可擬」中的「擬」，意思是：","choices":["打算、準備","起草、草擬","比擬、相比","模仿、抄襲"],"answer":2,"explain":"此處「擬」是「比擬、相比」的意思，「差」則作「大致、勉強」解。全句意為「大致可以拿把鹽撒在空中來相比」。今日常用的「擬定」（起草）、「擬將」（打算）都是後起的用法，不合此處文意。"},{"level":"basic","topic":"字詞義","q":"「尊君在不」中的「不」字，其用法與意義為何？","choices":["作否定副詞，意為「沒有」","作動詞，意為「不理會」","為衍字，無義，可以刪去","通「否」，用於句末表疑問"],"answer":3,"explain":"「不」在此通「否」，讀作ㄈㄡˇ，置於句末構成疑問語氣，相當於今語的「……嗎」。「尊君在不」即「你父親在家嗎」。這是文言常見的通假用法，段考常考。"},{"level":"basic","topic":"字詞義","q":"「與人期行，相委而去」中的「委」，意思是：","choices":["委託、交付","捨棄、丟下","委屈、受冤","衰頹、萎靡"],"answer":1,"explain":"「委」在此作「捨棄、丟下」解，「相委而去」是說把我丟下就走了。這是友人責備陳太丘的話。若解為「委託」則語意不通，因為友人正在生氣，並非感謝對方託付。"},{"level":"basic","topic":"字詞義","q":"「元方入門不顧」中的「顧」，意思是：","choices":["照顧、看護","顧慮、考慮","回頭看","拜訪、探望"],"answer":2,"explain":"「顧」的本義是「回頭看」，「入門不顧」即走進大門，頭也不回。成語「義無反顧」（回頭）、「三顧茅廬」（拜訪）、「奮不顧身」（顧慮）中的「顧」義各不相同，須依文意判斷。"},{"level":"basic","topic":"古今異義","q":"「謝太傅寒雪日內集，與兒女講論文義」中的「兒女」，古義所指為何？","choices":["指子姪輩等家族中的晚輩","專指自己親生的兒子和女兒","指年幼無知、不懂事的孩童","指家中僕役所生的子女"],"answer":0,"explain":"文中「兒女」是古義，泛指子姪輩的晚輩。由下文「兄子胡兒」（謝朗）、「兄女」（謝道韞）可知，在座的正是謝安兄長的子女，並非謝安親生子女。今語「兒女」則專指自己的子女，古今義有別。"},{"level":"basic","topic":"主旨","q":"〈陳太丘與友期〉一文所要凸顯的主旨，最接近下列何者？","choices":["說明父母應以身作則，方能教好子女","描寫東漢末年世道衰微、人情澆薄","感嘆天資聰穎者往往少年早慧而晚成","強調做人應守信重禮，並讚許元方的明理善辯"],"answer":3,"explain":"全文以元方「日中不至，則是無信；對子罵父，則是無禮」兩句為核心，直指友人失信、失禮兩項過失，既彰顯「信」與「禮」的做人道理，也表現七歲元方應對得體、據理力爭的機智與正直。"},{"level":"basic","topic":"文意理解","q":"依〈陳太丘與友期〉文意，友人是在何時、因何事而「怒」？","choices":["在陳太丘離去前，因等不到元方出來相迎而發怒","在元方說出「無信」「無禮」之後，因被小孩指責而發怒","在得知陳太丘已先行離去之後，認為對方丟下自己爽約而發怒","在下車拉元方卻遭拒之後，因顏面掃地而發怒"],"answer":2,"explain":"友人過了正午才到，問「尊君在不」，元方答「待君久不至，已去」，友人聽後才「便怒曰：『非人哉！與人期行，相委而去。』」可見發怒的原因是他認為陳太丘不等自己就走。事實上失約的是友人自己，這正是元方後文反駁的立足點。至於「慚」與「下車引之」則在被元方責備之後，順序不可顛倒。"},{"level":"adv","topic":"句子翻譯","q":"「未若柳絮因風起」一句，語譯最恰當的是：","choices":["沒有比柳絮更能承受風力的東西了","不如比作柳絮憑藉風勢飛舞飄起","還沒等到柳絮就先被風吹起來了","如果不是柳絮，就不會隨風飄動"],"answer":1,"explain":"「未若」即「不如、比不上」，「因」作「憑藉、趁著」解，「起」指飛揚而起。全句是謝道韞認為把白雪比作乘風飛舞的柳絮，勝過兄長「撒鹽空中」的比喻。「因」在此非「因為」，是本課重要字詞。"},{"level":"adv","topic":"句子翻譯","q":"「日中不至，則是無信；對子罵父，則是無禮」語譯最恰當的是：","choices":["太陽到了正中還不出發，就是懶惰；當著父親罵兒子，就是嚴苛","整天都不來，就是不守信；面對兒子責罵父親，就是不孝順","約定正午卻沒到，就是不守信用；對著人家兒子責罵人家父親，就是沒有禮貌","白天不肯前來，就是沒有誠意；教兒子頂撞父親，就是沒有家教"],"answer":2,"explain":"「日中」指約定的正午時刻，「無信」是不守信用；「對子罵父」指當著人家兒子的面辱罵人家的父親（友人先前罵「非人哉」），「無禮」是沒有禮貌。元方以「信」「禮」兩點層層責備，說理明確而不失分寸。"},{"level":"adv","topic":"句子翻譯","q":"「過中不至，太丘舍去，去後乃至」語譯最恰當的是：","choices":["過了正午友人還沒到，陳太丘就不再等候而離開，他走後友人才到","友人經過中途不再前進，陳太丘捨棄他而去，去了以後才到達","過了中午仍未到達，陳太丘就把房舍讓出來，離去之後才回來","友人錯過了時辰，陳太丘因此留下等他，直到最後才等到人"],"answer":0,"explain":"「舍」通「捨」，指捨棄不再等候；「去」是「離開」（古義，與今語「前往」相反）；「乃」作「才」解。全句是說過了正午友人未到，陳太丘便逕自離開，等他走了以後友人才姍姍來遲，正為下文友人發怒與元方辯駁鋪路。"},{"level":"adv","topic":"句子翻譯","q":"「友人慚，下車引之。元方入門不顧」語譯最恰當的是：","choices":["友人慚愧，下車引導元方上車，元方進門後就不再理睬","友人慚愧，下車援引古書來說服他，元方進門後不加理會","友人慚愧，下車後被人牽引離開，元方進門後不再回顧往事","友人感到慚愧，下車想拉元方的手（示好），元方卻走進門去，頭也不回"],"answer":3,"explain":"「慚」是慚愧，「引」作「拉」解，指友人想拉元方的手表示歉意與親近；「不顧」即不回頭看。這一結尾寫出友人知錯而元方不假辭色，凸顯少年的耿直，也留下值得討論的餘味。"},{"level":"adv","topic":"修辭辨析","q":"關於〈詠雪〉中的修辭運用，下列說明何者正確？","choices":["「白雪紛紛何所似」是激問，問而不答，答案在問句的反面","「白雪紛紛何所似」是設問中的提問，「撒鹽空中差可擬」與「未若柳絮因風起」則是譬喻","「撒鹽空中差可擬」是誇飾，「未若柳絮因風起」是轉化","「即公大兄無奕女，左將軍王凝之妻也」是映襯，藉夫婿的官職反襯其才"],"answer":1,"explain":"謝安先問「白雪紛紛何所似」，有問有答，屬設問中的「提問」（激問則是問而不答、答案在反面）。子姪兩人分別以「撒鹽」「柳絮」比喻紛飛的白雪，都是譬喻。末句交代謝道韞身分，屬補敘，並非映襯。"},{"level":"adv","topic":"文意比較","q":"歷來評論多認為「未若柳絮因風起」勝過「撒鹽空中差可擬」，其主要理由為何？","choices":["柳絮比鹽粒稀有珍貴，用來比喻更能顯示謝家的富貴氣派","鹽是俗物不可入詩，凡涉及飲食之物一律不宜用於比喻","柳絮不僅顏色形態近似雪花，且輕盈隨風飄舞，兼得雪之神態與春意，意境較美","撒鹽一句字數較少，音節急促，不符合當時對偶工整的要求"],"answer":2,"explain":"撒鹽只取「白」與「顆粒下墜」的形似，鹽重而直落，缺乏美感；柳絮則色白、質輕，隨風飛舞的姿態與雪花飄揚極為神似，且柳絮予人春天的聯想，形神兼備、意境悠遠，故評價較高。謝道韞也因此獲「詠絮之才」的美稱。"},{"level":"adv","topic":"文意推求","q":"〈詠雪〉末寫「公大笑樂」，最能顯示謝安當時的心情是：","choices":["既欣賞晚輩的巧思，也為家族後輩的才思敏捷感到欣慰喜悅","嘲笑姪兒謝朗的比喻粗俗，藉笑聲加以責備","認為兩人的答案都不理想，只好一笑帶過以免尷尬","笑姪女不知天高地厚，竟敢當眾反駁兄長"],"answer":0,"explain":"謝安以「白雪紛紛何所似」考較子姪，兩人隨即應聲作答，尤以謝道韞之喻最為出色。「大笑樂」寫出他既欣賞晚輩巧思、又因家族後繼有人而歡欣的心情，同時透露魏晉士族家庭融洽而重清談的風氣，非嘲笑或敷衍。"},{"level":"adv","topic":"文意推求","q":"對於元方「入門不顧」的行為，下列理解何者最為周延？","choices":["元方年僅七歲不懂禮數，此舉純屬孩童任性，作者藉此暗諷陳太丘教子無方","此舉表現元方對失信無禮者的鮮明態度，符合〈方正〉篇旨；但友人既已知慚謝過，亦有人認為元方稍欠寬容","元方因懼怕友人再度動怒而急忙躲入家中，是明哲保身、不與人爭的表現","元方入門是為了進去通報父親已歸，並非有意冷落友人，友人乃自作多情"],"answer":1,"explain":"本則收在〈方正〉門，重在表彰元方是非分明、不因對方是長輩而屈從，「入門不顧」正是這種正直態度的表現。但友人已「慚」並「下車引之」，故後人也常據此討論元方是否失之寬厚——這是本課常見的開放性思辨題，答案須兼顧兩面。"},{"level":"adv","topic":"稱謂辨析","q":"文中「尊君在不」與「君與家君期日中」兩句的稱謂，說明正確的是：","choices":["「尊君」是自稱其父的謙詞，「家君」是稱人之父的敬詞","「尊君」「家君」都是元方對自己父親的稱呼，只是語氣有別","「尊君」指國君，「家君」指家中長輩，兩者所指不同人","「尊君」是稱對方父親的敬詞，「家君」是對人稱自己父親的謙詞"],"answer":3,"explain":"「尊君」是友人對元方稱他的父親，屬敬稱（同類敬詞尚有令尊、令堂）；「家君」是元方對外人稱自己的父親，屬謙稱（同類尚有家父、家母、家兄）。敬人稱「尊」「令」，謙己稱「家」「舍」，是文言稱謂的重要分辨點。"},{"level":"adv","topic":"文意推求","q":"〈詠雪〉結尾特別補上「即公大兄無奕女，左將軍王凝之妻也」，其作用最主要是：","choices":["補敘「兄女」的身分來歷，點出她就是後世稱譽的才女謝道韞，以增強故事的可信與分量","說明謝安家世顯赫，暗示晉朝士族壟斷政治的弊病","藉由夫婿的官職，說明女子必須依附丈夫才能留名","交代寫作年代，讓讀者推知這場家庭聚會的確切時間"],"answer":0,"explain":"全文先以「兄女」略稱，末尾才點明她是謝安大哥謝奕（字無奕）的女兒、左將軍王凝之的妻子，也就是史上著名的才女謝道韞。這種先藏後揭的補敘，既說明人物來歷、增添真實感，也讓「未若柳絮因風起」的評價更顯重量，「詠絮之才」遂成為讚美女子文才的典故。"},{"level":"adv","topic":"篇章比較","q":"比較〈詠雪〉與〈陳太丘與友期〉兩則，下列敘述何者最恰當？","choices":["兩則都以景物描寫為主，藉四季變化寄寓人生感慨","兩則都刻意鋪陳曲折情節，篇幅宏大，屬長篇敘事","兩則篇幅都極短，皆藉人物的對話展現少年的機智與才性，體現本書「記言」的特色","兩則主角都因家世顯赫而受重用，旨在說明門第決定成就"],"answer":2,"explain":"兩則都只有百餘字，情節極簡，全靠對話推進：謝道韞以一句妙喻見文才，元方以兩句反詰見識見與膽識，都突出少年的聰慧與才性。這正是《世說新語》文字精鍊、善於「記言」以傳神的一貫風格。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>誇父逐日 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-kuafu",
+  "title": "誇父逐日",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "山海經"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>誇父逐日</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－出處","q":"〈誇父逐日〉一文選自下列哪一部典籍？","choices":["《淮南子》","《山海經》","《搜神記》","《列子》"],"answer":1,"explain":"〈誇父逐日〉選自《山海經》，是中國上古神話的重要文獻。《淮南子》為西漢淮南王劉安集門客所編；《搜神記》是東晉干寶的志怪小說；《列子》中則收錄〈愚公移山〉等寓言。"},{"level":"basic","topic":"文學常識－篇卷","q":"課文〈誇父逐日〉出自《山海經》的哪一部分？","choices":["〈海內南經〉","〈大荒東經〉","〈海外北經〉","〈中山經〉"],"answer":2,"explain":"本文出自《山海經．海外北經》。另在〈大荒北經〉中也有一段記載誇父的文字，但情節與評價略有不同，兩者不可混淆。"},{"level":"basic","topic":"文學常識－作者與成書","q":"關於《山海經》的作者與成書，下列敘述何者正確？","choices":["為屈原一人於楚國所作","為劉向、劉歆父子創作的地理專書","為莊周及其門人共同編寫","非一時一人之作，作者已不可考，西漢末由劉向、劉歆父子整理校訂"],"answer":3,"explain":"《山海經》全書十八卷，內容累積於戰國至秦漢之間，成書非一時、作者非一人，姓名已不可考；西漢末年劉向、劉歆父子加以整理校訂，屬「整理」而非「創作」。"},{"level":"basic","topic":"文體與性質","q":"就文體與內容性質而言，〈誇父逐日〉應歸屬於下列何者？","choices":["上古神話","唐人傳奇","史傳散文","章回小說"],"answer":0,"explain":"本文敘述誇父與太陽賽跑、杖化鄧林等超乎現實的情節，是先民對自然現象的想像與解釋，屬上古神話。傳奇為唐代文言短篇小說，史傳散文記載真實史事，章回小說盛行於明清，皆與本文不合。"},{"level":"basic","topic":"字詞義－古今異義","q":"「誇父與日逐走」的「走」，在文中的意思是：","choices":["行走","逃離","奔跑","前往"],"answer":2,"explain":"文言的「走」是「跑」的意思，今義「行走」在文言中多用「行」或「步」。「逐走」即競跑、賽跑，故「與日逐走」是「和太陽賽跑」。"},{"level":"basic","topic":"字詞義－古今異義","q":"「飲於河、渭」的「河」，在本文中所指為何？","choices":["泛指一切河川","護城的河渠","銀河","專指黃河"],"answer":3,"explain":"古代「河」是黃河的專稱，「江」則專指長江；「渭」指渭水（黃河支流）。後世「河」才泛化為一般河流的通稱。"},{"level":"basic","topic":"字詞義－詞性活用","q":"「北飲大澤」的「北」，在句中的意義與用法是：","choices":["名詞，指北方的國度","方位名詞作狀語，向北方","動詞，指戰敗逃走","形容詞，寒冷的"],"answer":1,"explain":"「北」本為方位名詞，此處置於動詞「飲」之前作狀語，表示行動的方向，意為「向北方（去喝水）」。「北」作「敗逃」解時如「追亡逐北」，與本句不合。"},{"level":"basic","topic":"字詞義－詞性活用","q":"「道渴而死」的「道」，意思是：","choices":["道理","說話","在半路上","引導"],"answer":2,"explain":"「道」本指道路，此處為名詞作狀語，表示地點，意為「在半路上」。全句意謂「還沒走到大澤，就在半路上因口渴而死」。"},{"level":"basic","topic":"字詞義","q":"「棄其杖」的「棄」，意思最接近下列何者？","choices":["丟下、拋下","嫌惡、討厭","遺忘、忘記","贈送、給予"],"answer":0,"explain":"「棄」是丟下、拋棄之意。誇父臨死時丟下手中的木杖，木杖才得以化為鄧林。"},{"level":"basic","topic":"詞語解釋","q":"課文末句「化為鄧林」的「鄧林」，一般解釋為：","choices":["竹林","松林","楓林","桃林"],"answer":3,"explain":"歷來注家多以「鄧林」即「桃林」，是誇父棄杖所化成的一片桃樹林，可供後人遮蔭、解渴。"},{"level":"basic","topic":"主旨","q":"就課文〈誇父逐日〉（《山海經．海外北經》）的敘述來看，下列何者最能說明其主旨？","choices":["象徵先民不畏艱難、勇於挑戰自然的堅強意志","勸戒世人凡事應量力而為，不可好高騖遠","說明黃河、渭水乾涸的地理成因","描寫遠古先民逐水草而居的遷徙生活"],"answer":0,"explain":"〈海外北經〉的記述純為客觀敘事，寫誇父明知太陽難以追及仍奮力向前，死後棄杖化為桃林澤及後人，展現人類征服自然、追求光明的雄心與奉獻精神。「量力而為」是〈大荒北經〉「誇父不量力」一語所反映的另一種評價，並非本課主旨；其餘兩項則非文章內容。"},{"level":"adv","topic":"句子翻譯","q":"「誇父與日逐走，入日」語譯最恰當的是：","choices":["誇父和太陽賽跑，一直追到太陽落下的地方","誇父被太陽追趕，只好躲進太陽裡取暖","誇父隨著太陽移動，日出而作、日落而息","誇父趕在太陽下山前，走進了日出的山谷"],"answer":0,"explain":"「逐走」為競跑、賽跑，「入日」指追趕到太陽落下之處。全句寫誇父與日競逐並追至日入之地，氣魄極大。"},{"level":"adv","topic":"句子翻譯","q":"「河、渭不足，北飲大澤」語譯最恰當的是：","choices":["黃河、渭水水位不高，只好往北方尋找大湖","黃河、渭水不夠深，於是向北開鑿一個大湖","黃河、渭水的水不夠他喝，就往北方要去喝大湖的水","黃河、渭水不供給他飲用，北方的大湖才願意給他水"],"answer":2,"explain":"「不足」是「不夠（喝）」，「北」為向北，「大澤」指大湖。此句以兩條大河仍不足解渴，誇飾誇父體型之巨與渴之甚。"},{"level":"adv","topic":"句子翻譯","q":"「未至，道渴而死」語譯最恰當的是：","choices":["太陽還沒下山，他就已經渴死在路上","還沒到達（大澤），就在半路上因為口渴而死","沒有人來救他，他只好在路上等死","還沒喝到水，就在大澤旁邊渴死了"],"answer":1,"explain":"「未至」承上省略了賓語「大澤」，指還沒到大澤；「道」為在半路上，「而」表因果承接，「渴而死」即因口渴而死。"},{"level":"adv","topic":"句子翻譯","q":"「棄其杖，化為鄧林」語譯最恰當的是：","choices":["他丟掉手杖，走進了鄧林之中","他把手杖插在地上，指向鄧林的方向","他的手杖被人拾去，種出了一片桃林","他丟下的手杖，變成了一片桃林"],"answer":3,"explain":"「其」指誇父，「棄其杖」即丟下他的手杖；「化為」是變成，「鄧林」即桃林。句中省略主語「杖」，須由上下文補出。"},{"level":"adv","topic":"虛詞用法","q":"「飲於河、渭」的「於」，其意義與用法是：","choices":["連詞，表示轉折，相當於「卻」","介詞，引出處所，相當於「到」、「在」","動詞，往、去","語末助詞，無義"],"answer":1,"explain":"「於」是介詞，用來引介動作發生的處所，「飲於河、渭」即「到黃河、渭水去喝水」。此類用法如「戰於長勺」、「取之於藍」。"},{"level":"adv","topic":"修辭辨析","q":"「渴，欲得飲，飲於河、渭；河、渭不足，北飲大澤」主要運用的修辭手法是：","choices":["誇飾","設問","映襯","轉品"],"answer":0,"explain":"一人飲盡黃河、渭水仍不解渴，是超乎事實的鋪張形容，屬誇飾。設問須有提問，映襯須有正反並列，轉品指詞性轉換（如本文「北」字），皆非此句主要手法。"},{"level":"adv","topic":"文意推求－象徵","q":"作者在誇父渴死之後，特別加上「棄其杖，化為鄧林」一筆，其用意最可能是：","choices":["說明誇父其實並未真正死去","解釋桃樹只生長在北方的原因","使悲劇轉為餘韻，象徵犧牲者仍以生命遺澤後人","暗示誇父的失敗是因為過於依賴手杖"],"answer":2,"explain":"誇父雖敗，其杖卻化為桃林，可供後來的追日者遮蔭解渴。這一筆把失敗的死亡化為造福後人的延續，使全篇由悲壯轉出希望，是神話最動人的收束。"},{"level":"adv","topic":"文意推求","q":"根據課文，下列敘述何者正確？","choices":["誇父最後追上太陽，並將它帶回人間","誇父在黃河邊喝水時被大水沖走而死","誇父放棄追日，回頭往南方尋找水源","誇父喝過黃河、渭水後仍不解渴，北行途中渴死"],"answer":3,"explain":"課文敘述順序為：與日逐走→入日→渴而飲於河渭→河渭不足→北飲大澤→未至而道渴死→棄杖化為鄧林。誇父並未追上太陽，也不曾放棄或南行，死因是口渴而非溺水。"},{"level":"adv","topic":"比較閱讀","q":"《山海經．大荒北經》另載：「誇父不量力，欲追日景。」此語與課文〈誇父逐日〉相較，主要差異在於：","choices":["情節完全不同，大荒北經未提及誇父之死","敘事觀點帶有評價，對誇父的行為持批評、否定的態度","文字較長，補充了誇父化為鄧林後的結局","改以第一人稱敘述誇父的心理活動"],"answer":1,"explain":"〈海外北經〉純為客觀敘事，語氣中隱含讚嘆；〈大荒北經〉則直接以「不量力」三字加以評斷，帶有批評意味。（〈大荒北經〉同樣記有「未至，死于此」，且未提鄧林。）同一神話因記述者立場不同而評價互異，是比較閱讀的重點。"},{"level":"adv","topic":"比較閱讀－主題","q":"下列故事的精神，與〈誇父逐日〉最為相近的是：","choices":["精衛銜木石以填東海，日日不休","楚人刻舟求劍，舟行而劍不動","宋人揠苗助長，苗盡枯槁","南郭處士濫竽充數，終至逃亡"],"answer":0,"explain":"精衛填海與誇父逐日同為上古神話，都表現人（或化身）以渺小之力對抗浩大自然、雖死不悔的堅毅精神。刻舟求劍、揠苗助長、濫竽充數皆為諷刺性寓言，旨在譏刺人的愚昧或虛偽。"},{"level":"adv","topic":"字詞辨析","q":"下列文句中「足」字的意義，與「河、渭不足」的「足」相同的是：","choices":["「足」下不必如此多禮","手舞「足」蹈，喜不自勝","家給人「足」，衣食無缺","此人言行輕浮，不「足」為信"],"answer":2,"explain":"「河、渭不足」的「足」是「充足、夠」的意思，與「家給人足」相同。「足下」為敬稱，「手舞足蹈」的「足」指腳，「不足為信」的「足」是「值得」，三者皆異。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

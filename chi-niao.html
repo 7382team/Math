@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鳥 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-niao",
+  "title": "鳥",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "白話文",
+  "ready": true,
+  "author": "梁實秋"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>鳥</h1><div class="sub">國文 · 白話文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與出處","q":"關於本課〈鳥〉的出處，下列敘述何者正確？","choices":["選自《背影》，作者朱自清","選自《雅舍小品》，作者梁實秋","選自《飲冰室文集》，作者梁啟超","選自《城南舊事》，作者林海音"],"answer":1,"explain":"本文選自梁實秋的散文集《雅舍小品》。《雅舍小品》是梁實秋書寫日常題材的小品文結集，篇幅短小、幽默中帶有深意。《背影》為朱自清作品、《飲冰室文集》為梁啟超作品、《城南舊事》為林海音作品，均與本課無關。"},{"level":"basic","topic":"作者生平","q":"下列關於梁實秋的敘述，何者正確？","choices":["他倡導「新民叢報體」，是清末維新運動的重要人物","他一生專攻新詩創作，代表作為《再別康橋》","他終生未曾離開中國大陸，作品多寫東北農村生活","他是散文家、文學評論家兼翻譯家，曾以將近四十年的時間獨力譯完《莎士比亞全集》"],"answer":3,"explain":"梁實秋（1903-1987）是著名散文家、文學評論家兼翻譯家，自一九三○年代著手翻譯莎士比亞，前後以近四十年之力獨自完成《莎士比亞全集》中譯。「新民叢報體」出於梁啟超；《再別康橋》為徐志摩作品；梁實秋一九四九年來臺，曾任臺灣師範大學英語系主任、文學院院長，並非終生未離大陸。"},{"level":"basic","topic":"文體判別","q":"就文體而言，〈鳥〉一文應歸為下列何者？","choices":["文言筆記小說","白話散文（小品文）","近體詩","應用文中的書信"],"answer":1,"explain":"〈鳥〉是以白話寫成的散文小品，屬於抒情兼寫景的散文。文中雖引用「搏扶搖而直上」等文言詞語，但整體語言為白話，並非文言小說、詩歌或書信。"},{"level":"basic","topic":"字詞義","q":"「羽翮不整的蜷伏著不動」句中，「羽翮」的意思是：","choices":["鳥類羽毛的莖管，可泛指羽毛","鳥的爪子","鳥的鳴叫聲","鳥的巢穴"],"answer":0,"explain":"「翮」音ㄏㄜˊ，本指羽毛中間堅硬的莖管，「羽翮」即羽毛的莖管，引申泛指羽毛。「羽翮不整」是說架上的鷹羽毛凌亂不整齊，藉此襯出牠失去自由後的萎靡。"},{"level":"basic","topic":"字詞義","q":"「哪裡有半點瞵視昂藏的神氣」句中，「瞵視昂藏」形容的是：","choices":["低頭沉睡、動也不動的樣子","驚慌失措、四處逃竄的樣子","左顧右盼、神采飛揚的樣子","體型高大、行動遲緩的樣子"],"answer":2,"explain":"「瞵」是注視、瞪視；「昂藏」是氣度軒昂、神采飛揚。「瞵視昂藏」合起來形容鷹左顧右盼、神氣威武的模樣。作者用它反問架上蒙眼的鷹「哪裡有半點」這種神氣，突顯失去自由的可憐。"},{"level":"basic","topic":"字詞義","q":"「真是減一分則太瘦，增一分則太肥那樣的穠纖合度」句中，「穠纖合度」意謂：","choices":["顏色濃淡搭配得宜","動作快慢節奏分明","肥瘦大小恰到好處","羽毛長短參差不齊"],"answer":2,"explain":"「穠」指豐腴肥美，「纖」指細瘦，「合度」是合乎標準。「穠纖合度」形容鳥的身軀胖瘦大小都恰到好處。此語承上文「細瘦而不乾癟，豐腴而不臃腫」而來，正是寫鳥的形體之美。"},{"level":"basic","topic":"字詞義","q":"下列文中詞語解釋，何者有誤？","choices":["「乾癟」：豐滿而有光澤","「蜷伏」：彎曲著身體伏著不動","「斑斕」：花紋鮮麗、光彩奪目","「臃腫」：肥胖而不靈活"],"answer":0,"explain":"「乾癟」是枯瘦、不飽滿之意，與「豐滿有光澤」正好相反。原文「細瘦而不乾癟，豐腴而不臃腫」即以「乾癟」與「臃腫」為兩端，說明鳥身恰到好處。其餘三者解釋皆正確。"},{"level":"basic","topic":"字詞義","q":"「有的曳著長長的尾巴」句中的「曳」，意思最接近下列何者？","choices":["揮動","收攏","折斷","拖"],"answer":3,"explain":"「曳」是拖、拉的意思，「曳著長長的尾巴」即拖著長長的尾巴。成語「棄甲曳兵」的「曳」也是拖著之意，可以互相印證。"},{"level":"basic","topic":"課文理解","q":"依課文所述，作者「開始欣賞鳥」是在什麼地方？","choices":["北平（北京）","四川","東北","臺灣"],"answer":1,"explain":"課文明言「我開始欣賞鳥，是在四川」，作者在四川的黎明時分聽見窗外一片鳥囀，才真正領略鳥聲之美。文末則以離開四川以後所見所聞作對照，形成今昔之比。"},{"level":"basic","topic":"主旨","q":"下列何者最能說明〈鳥〉一文的主旨？","choices":["介紹各種鳥類的生態習性，普及自然科學知識","描寫養鳥、賞鳥的樂趣，鼓勵讀者提籠架鳥","藉鳥類的遷徙，感嘆自己漂泊異鄉、思念故人","藉描寫鳥聲之美、鳥形之俊俏與鳥的處境，抒發愛鳥之情，寄託對自由的嚮往與對生命的悲憫"],"answer":3,"explain":"全文以「我愛鳥」為綱領，先寫籠中鳥、架上鷹的苦悶，再寫四川鳥聲的清脆嘹亮與鳥形的玲瓏俊俏，末段以「我不忍看」作結。作者的愛鳥之情中，含有對自由的嚮往與對受困生命的悲憫，這才是主旨所在。文中對籠中鳥是同情而非鼓勵豢養。"},{"level":"basic","topic":"篇章結構","q":"本文開頭即以「我愛鳥」三字起筆，這樣的寫法及作用是：","choices":["開門見山，直接點明全文綱領，以下各段皆緊扣此意而發","設問破題，故意提出疑問引起讀者好奇","先抑後揚，先貶低鳥再逐步稱讚","倒敘法，先寫結局再回頭交代原因"],"answer":0,"explain":"「我愛鳥」是直陳的敘事句，屬開門見山（開宗明義）的破題法。這三字是全文的綱領，以下寫籠中鳥的苦悶、鳥聲之美、鳥形之俊俏，乃至末段的不忍，都由「愛鳥」生發，文意一線貫串。"},{"level":"adv","topic":"句子翻譯","q":"「如果想要『搏扶搖而直上』，便要撞頭碰壁」句中，「搏扶搖而直上」的意思是：","choices":["用力搏鬥以求脫困","扶著搖晃的枝條慢慢往上爬","拍動翅膀，乘著旋風直向高空飛去","順著風勢由高處滑翔而下"],"answer":2,"explain":"「搏」是拍擊、振動翅膀；「扶搖」是自下盤旋而上的暴風、旋風。「搏扶搖而直上」即拍著翅膀乘旋風直上青天。籠中鳥想這樣高飛，卻只會撞上柵欄，正見其受困之苦。"},{"level":"adv","topic":"典故出處","q":"「搏扶搖而直上」一語，化用自下列哪一部典籍？","choices":["《論語‧學而》","《詩經‧國風》","《史記‧項羽本紀》","《莊子‧逍遙遊》"],"answer":3,"explain":"《莊子‧逍遙遊》寫大鵬「摶扶搖而上者九萬里」，形容鵬鳥乘旋風高飛。作者藉此典故寫鳥本該翱翔天際的天性，與籠中「撞頭碰壁」的處境形成強烈落差，更見不自由之可悲。"},{"level":"adv","topic":"典故比較","q":"「真是減一分則太瘦，增一分則太肥」的寫法，化用自宋玉〈登徒子好色賦〉的名句。下列比較何者正確？","choices":["原句「增之一分則太長，減之一分則太短」是形容美人身材，作者移用來形容鳥身的肥瘦恰到好處","原句形容琴聲高低，作者改用來形容鳥鳴","原句形容山勢險峻，作者改用來形容鳥飛的高度","原句本就是形容鳥的體態，作者只是原句照錄"],"answer":0,"explain":"宋玉〈登徒子好色賦〉以「增之一分則太長，減之一分則太短」形容東家之子身材的恰到好處。梁實秋將形容美人的句式移來寫鳥，把「長短」換成「肥瘦」，以人們熟悉的美感標準襯托鳥身之美，是巧妙的化用而非照錄。"},{"level":"adv","topic":"修辭辨析","q":"「飲啄倒是方便，冬天還有遮風的棉罩，十分的『優待』」句中，「優待」二字加上引號，主要運用了何種修辭？","choices":["誇飾，強調待遇非常好","倒反（反諷），表面說優待，實則諷刺這是剝奪自由的囚禁","設問，引導讀者思考","頂真，前後詞語相承"],"answer":1,"explain":"作者表面說籠中鳥吃喝方便、冬天有棉罩，是「十分的優待」，但下一句馬上接「如果想要搏扶搖而直上，便要撞頭碰壁」。可見所謂優待實為囚禁，語意與字面相反，是倒反（反諷）修辭，引號正是提醒讀者留意這層反話。"},{"level":"adv","topic":"修辭辨析","q":"下列文句與其修辭判斷，何者正確？","choices":["「牠像虹似地一下就消逝了」──排比","「腳上像是有彈簧」──設問","「牠像虹似地一下就消逝了」──譬喻","「那一片聲音是清脆的，是嘹亮的」──映襯"],"answer":2,"explain":"「像虹似地」以彩虹為喻體，用「像……似地」為喻詞，是典型的譬喻（明喻），寫鳥飛掠而過的絢麗與短暫。「腳上像是有彈簧」同樣是譬喻，不是設問；「是清脆的，是嘹亮的」是同一句式的連用，屬類疊排比，並非把相反事物並列的映襯。"},{"level":"adv","topic":"修辭辨析","q":"「有的一聲長叫，包括著六七個音階；有的只是一個聲音，圓潤而不覺其單調；有時是獨奏，有時是合唱，簡直是一派和諧的交響樂。」關於這段文字的分析，何者最恰當？","choices":["全段以視覺摹寫為主，重在描寫鳥的羽色","全段運用轉品，將名詞轉為動詞使用","全段以誇飾為主，並無任何譬喻成分","以聽覺摹寫鋪陳鳥聲的變化，末句再用譬喻把鳥鳴比作交響樂，使抽象聲音具體可感"],"answer":3,"explain":"這段先以「六七個音階」「圓潤」「獨奏」「合唱」等聽覺摹寫，層層鋪寫鳥聲的豐富變化，最後以「簡直是一派和諧的交響樂」作譬喻收束，把難以捉摸的聲音轉化為讀者可感的音樂經驗。文中寫的是聲音而非羽色，也非轉品。"},{"level":"adv","topic":"章法與寫作手法","q":"作者先寫架上的鷹「羽翮不整的蜷伏著不動」、籠中鳥「撞頭碰壁」，再寫四川的鳥聲清脆嘹亮、鳥形玲瓏俊俏。這樣的安排，主要用意是：","choices":["以籠中鳥的苦悶反襯自然中鳥的自在，藉映襯突顯自由的可貴","為了湊足篇幅，兩部分並無關聯","先總說後分說，屬於歸納的說明方式","以時間先後排列，重在記錄作者的生平行蹤"],"answer":0,"explain":"全文以「不自由」與「自由」兩種鳥的處境相對照，運用映襯（反襯）手法：籠中鳥、架上鷹愈顯萎靡苦悶，自然中的鳥愈顯輕靈自在，讀者由此體會作者對自由的珍視與對受困生命的不忍。"},{"level":"adv","topic":"文意推求","q":"「常年的關在柵欄裡，飲啄倒是方便，冬天還有遮風的棉罩……但是如果想要『搏扶搖而直上』，便要撞頭碰壁。」由這段文字最可以推知作者的看法是：","choices":["飼養者照顧周到，籠中鳥其實過得比野鳥幸福","鳥只要有食物就滿足，並不在意能否飛翔","衣食無缺不能取代自由，失去自由的生命終究是苦悶的","鳥應該學會適應環境，不必強求高飛"],"answer":2,"explain":"作者刻意先列出籠中鳥「飲啄方便」「有棉罩」等物質上的照顧，再以「但是」一轉，點出牠一想高飛就撞頭碰壁。這種先揚後抑的推論，正說明溫飽並不能彌補自由的喪失，呼應全文對自由的嚮往。"},{"level":"adv","topic":"文意推求","q":"文中提到詩人哈代寫聖誕前夕爐火熊熊、筵席豐盛，窗外卻有一隻小鳥禁不住料峭寒風而墜地凍死。作者引述此事的用意是：","choices":["說明外國詩人比中國文人更懂得觀察鳥類","點出鳥並不永久給人喜悅，有時也帶來悲苦，藉以流露對弱小生命的悲憫","強調過節時應多準備食物餵養野鳥","藉此批評哈代的詩作情調過於陰鬱"],"answer":1,"explain":"作者以室內的溫暖豐盛與窗外小鳥的凍餒僵死強烈對比，說明「鳥並不永久的給人喜悅，有時也給人悲苦」。這一筆使全文的愛鳥之情不止於欣賞，更擴大為對寒天凍地中弱小生命的憐憫，也為結尾「我不忍看」蓄勢。"},{"level":"adv","topic":"情感體會","q":"文末寫「再令人觸目的就是那些偶然一見的囚在籠裡的小鳥兒了，但是我不忍看。」這句所表現的情感與作用是：","choices":["因不忍見鳥失去自由而別過眼去，既見悲憫之深，又與首段「我愛鳥」首尾呼應","因看膩了籠中鳥，覺得牠們平凡無趣","因害怕鳥的怪叫聲，故不敢正視","因懷念四川的美食，無心賞鳥"],"answer":0,"explain":"「不忍看」三字不是厭倦或恐懼，而是愛之深故不忍見其受苦。作者離開四川後，再難見到自在跳盪的鳥，眼前只剩籠中鳥，於是以「我不忍看」收束，既將愛鳥之情推向悲憫的高度，也與開篇「我愛鳥」前後呼應，結構完整。"},{"level":"adv","topic":"比較閱讀","q":"杜甫〈春望〉：「感時花濺淚，恨別鳥驚心。」以此與〈鳥〉一文相比較，兩者相通之處在於：","choices":["都以工整的對偶句寫成，講究平仄格律","都在勸人愛護環境、保育鳥類","都以鳥為比喻，諷刺當時的政治人物","都把個人的情感投注於鳥等外物之上，使外物染上作者的感情色彩"],"answer":3,"explain":"杜甫因感時傷別，看花亦落淚、聞鳥亦驚心，是移情於物；梁實秋看見籠中鳥便覺其苦悶，看見鳥凌空跳盪便覺「好銳利的喜悅刺上我的心頭」，同樣是以有情之眼觀物。兩者相通在移情作用，而非格律、保育或政治諷刺——〈鳥〉為白話散文，本無平仄對偶之限。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

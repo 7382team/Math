@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>What Can You Do There? 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng-k2-u2",
+  "title": "What Can You Do There?",
+  "subject": "英文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "情態助動詞 can/may·連接詞 and/but/or",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>What Can You Do There?</h1><div class="sub">英文 · 情態助動詞 can/may·連接詞 and/but/or · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"can（能力）","q":"My sister ___ swim very well.","choices":["cans","can","can to","is can"],"answer":1,"explain":"can 是情態助動詞，不隨主詞變化，不加 -s，後面直接接原形動詞，所以用 can swim。"},{"level":"basic","topic":"can（能力）","q":"Tom can ___ a bike, but he can't drive a car.","choices":["rides","riding","ride","to ride"],"answer":2,"explain":"情態助動詞 can 後面一定接原形動詞，故選 ride，不可用 rides/riding/to ride。"},{"level":"basic","topic":"can（請求）","q":"___ you help me with my homework, please?","choices":["Can","Do","Are","Does"],"answer":0,"explain":"請求別人幫忙用 Can you...?，情態助動詞放句首形成疑問句；Do/Are/Does 都不能接原形 help 表請求。"},{"level":"basic","topic":"may（允許）","q":"\"___ I use your pen?\" \"Sure, here you are.\"","choices":["Am","May","Do","Must"],"answer":1,"explain":"May I...? 用來禮貌地請求允許，意思是「我可以…嗎？」；Must I 是「我一定要…嗎」，語意不合。"},{"level":"basic","topic":"can 否定","q":"It's too dark. I ___ see anything.","choices":["can't","don't","am not","doesn't"],"answer":0,"explain":"can 的否定是 can't（cannot），後接原形 see；don't/doesn't 不能與情態助動詞的用法混用。"},{"level":"basic","topic":"連接詞 and","q":"You can go to the zoo ___ see many animals there.","choices":["but","or","and","so"],"answer":2,"explain":"前後兩件事語意順接、方向一致，用 and 連接；but 表轉折、or 表選擇，皆不合。"},{"level":"basic","topic":"連接詞 but","q":"I can play the piano, ___ I can't play the guitar.","choices":["and","but","or","because"],"answer":1,"explain":"前句「會彈鋼琴」與後句「不會彈吉他」語意相反，用表轉折的 but。"},{"level":"basic","topic":"連接詞 or","q":"We can take a bus ___ ride a bike to the museum. Which one do you like?","choices":["and","so","or","but"],"answer":2,"explain":"兩者擇一時用 or；句尾 Which one 提示是二選一，所以不用 and。"},{"level":"basic","topic":"can 疑問句回答","q":"\"Can Amy speak Japanese?\" \"No, she ___.\"","choices":["doesn't","isn't","can't","not can"],"answer":2,"explain":"用 Can 提問就用 can/can't 回答，故答 No, she can't.；不可換成 doesn't 或 isn't。"},{"level":"basic","topic":"can 否定 + but","q":"Penguins ___ fly, but they can swim very well.","choices":["can","can't","aren't","don't can"],"answer":1,"explain":"企鵝不會飛，前後用 but 轉折，故前面要用否定的 can't + 原形 fly；aren't/don't can 都是錯誤用法。"},{"level":"basic","topic":"can（請求）的回答","q":"\"Can you open the door for me?\" \"___\"","choices":["Sure, no problem.","Yes, I do.","No, I don't.","Yes, I am."],"answer":0,"explain":"Can you...? 是請求幫忙，答應時說 Sure, no problem. 或 Yes, I can.；不能用 do/am 來回答 can 的問句。"},{"level":"adv","topic":"句子改錯（can + 原形）","q":"Which sentence is correct?","choices":["He can plays basketball after school.","He can play basketball after school.","He cans play basketball after school.","He can to play basketball after school."],"answer":1,"explain":"can 後面必須接原形動詞，且 can 本身不加 -s、不接 to，所以只有 can play 正確。"},{"level":"adv","topic":"句子改錯（can 疑問句）","q":"Which sentence is WRONG?","choices":["Can you come to my party?","Can I sit here?","Do you can swim?","Can she cook dinner?"],"answer":2,"explain":"情態助動詞 can 本身就是助動詞，疑問句要把 can 移到句首，不能再加 Do，應改成 Can you swim?"},{"level":"adv","topic":"may（不允許）","q":"\"May I take a picture here?\" \"No, you ___. Look at the sign.\"","choices":["may not","may","don't","can to"],"answer":0,"explain":"拒絕允許時用 may not（不可以）；may 是允許、語意相反，don't 不能回答 May 的問句，can to 為錯誤用法。"},{"level":"adv","topic":"連接詞 or（二選一）","q":"You can go to the beach ___ the mountains this weekend, but you can't go to both.","choices":["and","or","but","so"],"answer":1,"explain":"後半句 but you can't go to both 表示只能擇一，故用 or；用 and 會變成兩個都去，與句意矛盾。"},{"level":"adv","topic":"連接詞綜合（and / but）","q":"Amy can speak English ___ Chinese, ___ she can't speak Japanese.","choices":["and / but","but / and","or / so","and / or"],"answer":0,"explain":"英文和中文都會，語意順接用 and；後面「但不會日文」語意相反，用 but 轉折。"},{"level":"adv","topic":"can 問句與答句一致","q":"\"___ your parents speak English?\" \"My mom ___, but my dad can't.\"","choices":["Can / can","Do / do","Can / does","Are / is"],"answer":0,"explain":"問句用 Can 開頭，答句就要用 can/can't 呼應；My mom do、My mom does 與 can't 不搭配，Are 也不能接原形動詞。"},{"level":"adv","topic":"can + 連接詞 and","q":"A: \"What can you do at the beach?\" B: \"I ___ swim ___ build sandcastles.\"","choices":["can / and","can / but","cans / and","can to / or"],"answer":0,"explain":"can 不加 -s、不接 to，後接原形 swim；兩件都能做的事語意順接，用 and 連接。"},{"level":"adv","topic":"連接詞 but 情境","q":"You can take the MRT to the zoo, ___ you can't take your dog with you.","choices":["and","or","but","so"],"answer":2,"explain":"「可以搭捷運」與「不能帶狗」語意相反，用 but 表轉折；and/or/so 都不符合前後對比的語意。"},{"level":"adv","topic":"can（允許）情境","q":"\"Can I go to the movies tonight?\" \"Yes, you ___, but you can't come home late.\"","choices":["can","are","do","can to"],"answer":0,"explain":"用 Can I...? 請求允許，答應時用 Yes, you can.；are/do 不能回答 can 的問句，can to 為錯誤用法。"},{"level":"adv","topic":"can + 連接詞綜合","q":"In the library, you ___ read books, ___ you can't talk loudly.","choices":["can / and","can / but","can't / but","may not / or"],"answer":1,"explain":"在圖書館「可以看書」用 can，「但不能大聲說話」語意相反用 but；can't/may not 與前半句語意矛盾。"},{"level":"adv","topic":"交通工具用法 by","q":"You can go to Taipei ___ train. It's fast and cheap.","choices":["by","take","with","ride"],"answer":0,"explain":"「搭乘某交通工具」用 by + 交通工具（不加冠詞），如 by train / by bus / by MRT；go 後面不能直接接 take/ride，with train 也不合用法。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

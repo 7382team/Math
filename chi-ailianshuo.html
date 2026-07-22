@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>愛蓮說 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-ailianshuo",
+  "title": "愛蓮說",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "周敦頤"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>愛蓮說</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與出處","q":"〈愛蓮說〉的作者周敦頤是哪一個朝代的人？","choices":["東晉","北宋","南宋","唐代"],"answer":1,"explain":"周敦頤（西元一〇一七～一〇七三年）為北宋人，是宋代理學的開創者之一。文中提到的陶淵明是晉代人、「李唐」指唐朝，都是作者所引述的前人，不可誤認為作者的時代。"},{"level":"basic","topic":"作者與出處","q":"關於周敦頤的敘述，下列何者正確？","choices":["字元亮，因不為五斗米折腰而歸隱田園","號東坡居士，為唐宋古文八大家之一","字茂叔，號濂溪，學者稱他為「濂溪先生」","字子厚，作〈始得西山宴遊記〉等永州八記"],"answer":2,"explain":"周敦頤字茂叔，號濂溪，世稱濂溪先生，著有《太極圖說》、《通書》，後人輯為《周元公集》（一作《周濂溪集》）。「字元亮、不為五斗米折腰」是陶淵明；「東坡居士」是蘇軾；「字子厚、永州八記」是柳宗元。"},{"level":"basic","topic":"文體","q":"〈愛蓮說〉屬於「說」這種文體，關於「說」的特點，下列敘述何者最恰當？","choices":["屬於議論文體，可直接說明事理，也可藉描寫事物來寄託道理","屬於書信體，用來向友人陳述心事並請求回覆","屬於韻文，句句押韻且必須四句一段","屬於史傳，專門記載人物的生平事蹟與功過"],"answer":0,"explain":"「說」是古代的論說文體，可以直接說明事理，也可以借人、借事、借物來論述道理。〈愛蓮說〉即藉描寫蓮花來寄託君子的品格，屬於「託物言志」的寫法。"},{"level":"basic","topic":"字詞義","q":"「水陸草木之花，可愛者甚蕃」句中的「蕃」，意思是：","choices":["遮蔽","繁殖","外族","眾多"],"answer":3,"explain":"「蕃」在此作「多、眾多」解，「可愛者甚蕃」即「值得喜愛的非常多」。「蕃」另有繁殖之義，或通「藩」而有屏障、遮蔽之義，也可指外族，但在本句中皆不合文意。"},{"level":"basic","topic":"字詞義","q":"「濯清漣而不妖」句中的「濯」，意思是：","choices":["浸泡","洗滌","灌溉","照映"],"answer":1,"explain":"「濯」是洗、洗滌的意思。「濯清漣而不妖」指蓮花經清水洗滌，卻不顯得妖豔。「清漣」則指清澈而有微波的水。"},{"level":"basic","topic":"字詞義","q":"「濯清漣而不妖」的「妖」，在文中的意思是：","choices":["妖怪、鬼魅","怪異的災禍","豔麗而不莊重","早死、夭折"],"answer":2,"explain":"「妖」在此形容花色過於豔麗而失去端莊，帶有輕浮媚俗之意。作者藉此凸顯蓮花雖經清水洗滌仍不媚俗的清雅。"},{"level":"basic","topic":"字詞義","q":"「香遠益清」句中的「益」，意思是：","choices":["更加","利益","增添","有助於"],"answer":0,"explain":"「益」在此為副詞，作「更加、越發」解。「香遠益清」意為香氣傳得愈遠，愈使人感到清雅。"},{"level":"basic","topic":"字詞義","q":"「菊之愛，陶後鮮有聞」句中的「鮮」，意思是：","choices":["新鮮的","鮮明的","鮮美的","很少"],"answer":3,"explain":"「鮮」在此讀作ㄒㄧㄢˇ，作「少」解，「鮮有聞」即「很少聽說」。此為文言文中重要的古今異義字。"},{"level":"basic","topic":"字詞義","q":"「自李唐來，世人甚愛牡丹」句中的「李唐」是指：","choices":["姓李的唐姓人家","唐朝","唐代詩人李白","李姓與唐姓的世族"],"answer":1,"explain":"唐朝皇帝姓李，故以「李唐」代稱唐朝，屬於借代用法。唐代社會盛行賞玩牡丹，作者以此點出世人愛慕富貴的風氣由來已久。"},{"level":"basic","topic":"主題內容","q":"依課文所述，菊、牡丹、蓮三者分別象徵什麼？","choices":["菊—富貴　牡丹—君子　蓮—隱逸","菊—君子　牡丹—隱逸　蓮—富貴","菊—隱逸　牡丹—富貴　蓮—君子","菊—隱逸　牡丹—君子　蓮—富貴"],"answer":2,"explain":"課文明言：「菊，花之隱逸者也；牡丹，花之富貴者也；蓮，花之君子者也。」菊象徵避世的隱士，牡丹象徵世俗的富貴，蓮則象徵品德高潔的君子。"},{"level":"basic","topic":"主旨","q":"〈愛蓮說〉全文的主旨最接近下列何者？","choices":["藉蓮花的高潔，表達君子潔身自愛、不同流合汙的操守","描寫蓮花的形態之美，勸人多多種植蓮花","感嘆隱居生活孤苦，勸人及早出仕求取功名","說明各種花卉的栽培方法與生長環境"],"answer":0,"explain":"作者藉蓮「出淤泥而不染」的特質，寄託君子潔身自愛、不隨波逐流的人格理想，同時委婉諷刺世人爭逐富貴的風氣。全文重點在言志，而非寫景或說明栽培。"},{"level":"adv","topic":"句子翻譯","q":"「予獨愛蓮之出淤泥而不染，濯清漣而不妖」，語譯最恰當的是：","choices":["我特別喜愛蓮花，因為它把淤泥都染成了清澈的顏色","我唯獨喜愛蓮花，可惜它長在淤泥中，終究染上了污穢","我獨自喜愛蓮花，它需要清水洗滌，才能不顯得妖豔","我唯獨喜愛蓮花從淤泥中長出卻不被沾染，經清水洗滌卻不顯妖豔"],"answer":3,"explain":"「出淤泥而不染」是從污泥中長出卻不被沾染；「濯清漣而不妖」是雖經清水洗滌卻不顯得妖媚。兩句合寫蓮花既不受環境汙染、也不因外在條件優越而流於媚俗。"},{"level":"adv","topic":"句子翻譯","q":"「中通外直，不蔓不枝」，語譯最恰當的是：","choices":["（莖）內部貫通、外形挺直，不生蔓藤也不長枝節","中間通達外面筆直，沒有蔓草也沒有樹枝遮擋","從中間可以通到外面，路途筆直而沒有分岔","內心通曉外表正直，不攀附權貴也不結黨營私"],"answer":0,"explain":"此句寫蓮莖的形態：中空貫通、外形挺直，不橫生蔓藤、不旁生枝節。選項四是此句的「象徵意涵」而非字面語譯，作答時要分清「翻譯」與「引申義」。"},{"level":"adv","topic":"句子翻譯","q":"「香遠益清，亭亭淨植」，語譯最恰當的是：","choices":["香氣飄向遠方就變淡了，只能孤零零地種在水裡","香味清淡而不遠傳，安靜地栽種在乾淨的地方","香氣傳得愈遠愈顯清雅，潔淨挺拔地直立著","香氣清新有益身心，一叢一叢地密植在池中"],"answer":2,"explain":"「益」為更加，「香遠益清」指香氣遠播而愈覺清雅；「亭亭」是高聳挺立的樣子，「淨植」是潔淨地直立，「植」在此作「立」解，非「種植」。"},{"level":"adv","topic":"句子翻譯","q":"「可遠觀而不可褻玩焉」，語譯最恰當的是：","choices":["可以遠遠地看，也可以拿在手中把玩啊","可以在遠處觀賞，卻不可以輕慢地親近玩弄啊","只能遠遠地想像，不能真正走近去看啊","可以遠望它的形影，卻聞不到它的香氣啊"],"answer":1,"explain":"「褻」是親近而不莊重，「褻玩」即輕慢地玩弄。此句寫蓮花令人肅然起敬，象徵君子端莊自持、可敬而不可輕侮。「焉」為句末語氣詞。"},{"level":"adv","topic":"文意推求","q":"「菊之愛，陶後鮮有聞」一句的「菊之愛」，其語序與語意應理解為：","choices":["菊花的可愛之處，指菊花本身的美感","菊花對人的喜愛，把菊花當作主語","菊花與愛情的關聯，是一種比喻說法","「愛菊」的倒裝，指「對菊花的喜愛」"],"answer":3,"explain":"「菊之愛」是賓語前置的倒裝句，「之」為提賓的助詞，等於「愛菊」。下文「蓮之愛」、「牡丹之愛」同理，皆指「對某花的喜愛」。"},{"level":"adv","topic":"文意推求","q":"「牡丹之愛，宜乎眾矣」一句流露出作者怎樣的情感？","choices":["感嘆世人多追逐富貴，語帶委婉的諷刺","欣喜牡丹受人喜愛，讚美當代審美風尚","後悔自己沒有及早跟隨眾人栽種牡丹","勸勉世人應多欣賞牡丹以陶冶性情"],"answer":0,"explain":"「宜乎眾矣」意為「當然是很多人了」，表面陳述事實，實則以反諷語氣感嘆世人爭慕富貴。與前句「同予者何人」的孤獨感相對照，更見作者的堅持。"},{"level":"adv","topic":"修辭辨析","q":"「不蔓不枝」中的「蔓」、「枝」原為名詞，在此當動詞使用，這種修辭稱為：","choices":["映襯","誇飾","轉品","轉化"],"answer":2,"explain":"詞語改變原有詞性而使用，稱為「轉品」。「蔓」、「枝」本為名詞，此處作「生蔓」、「長枝節」的動詞用。「轉化」是把物擬人或把抽象具象化，兩者不同。"},{"level":"adv","topic":"修辭辨析","q":"「蓮之愛，同予者何人？」這一句所使用的修辭是：","choices":["排比，連用三個結構相同的句子","設問（激問），以問句表達感慨而答案已在言外","頂真，前句末字為後句首字","類疊，同一詞語反覆出現"],"answer":1,"explain":"此句以疑問形式發出感嘆，答案其實是「幾乎沒有」，屬於設問中的激問（反問）。作者藉此表達知音難尋、堅守高潔者稀少的孤獨感慨。"},{"level":"adv","topic":"文意推求","q":"「中通外直，不蔓不枝」用來比喻君子的哪一種品格？","choices":["多才多藝，善於在各種場合展現長才","廣結善緣，喜歡與各方人士往來應酬","隱居避世，遠離塵囂而不問世事","內心通達、行事正直，不攀附權勢、不結黨營私"],"answer":3,"explain":"「中通」喻內心通達無私，「外直」喻立身行事正直；「不蔓」喻不攀附依傍，「不枝」喻不旁生枝節、不結黨營私。這是本文託物言志的關鍵句。"},{"level":"adv","topic":"比較辨析","q":"就作者的評價而言，「菊」與「蓮」所代表的人生態度差別何在？","choices":["菊代表避世隱居的隱士，蓮代表身處濁世仍堅守節操的君子","菊代表追逐名利的俗人，蓮代表淡泊無爭的隱者","菊代表年少輕狂，蓮代表年長持重","菊代表富貴榮華，蓮代表清貧自守"],"answer":0,"explain":"菊為「花之隱逸者」，如陶淵明般避世而居；蓮為「花之君子者」，身處淤泥而不受沾染。兩者同樣高潔，但菊是「離開濁世」，蓮是「留在濁世而不同流合汙」，這正是作者最推崇之處。"},{"level":"adv","topic":"寫作手法","q":"本文先寫陶淵明愛菊、世人愛牡丹，再寫自己獨愛蓮，這樣安排的主要作用是：","choices":["說明三種花的栽種難易，作為選花的依據","以菊、牡丹作陪襯，藉對比更凸顯蓮的高潔","依時代先後排列，凸顯文章的歷史縱深","表示作者對三種花都同樣喜愛，不分高下"],"answer":1,"explain":"作者運用襯托與對比：菊的隱逸、牡丹的富貴，都是為了襯出蓮「出淤泥而不染」的君子品格。全文以一個「愛」字貫串，結構嚴謹，屬託物言志之作。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

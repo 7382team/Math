@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>陋室銘 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-loushiming",
+  "title": "陋室銘",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "劉禹錫"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>陋室銘</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者","q":"〈陋室銘〉的作者劉禹錫是哪一個朝代的文學家？","choices":["東晉","唐代","北宋","南朝梁"],"answer":1,"explain":"劉禹錫（西元七七二～八四二年），字夢得，唐代文學家。他因參與王叔文的政治革新失敗而屢遭貶謫，〈陋室銘〉即為他被貶、出任和州刺史時期的作品。"},{"level":"basic","topic":"出處","q":"〈陋室銘〉一文選自下列哪一部書？","choices":["昭明文選","世說新語","唐詩三百首","全唐文"],"answer":3,"explain":"〈陋室銘〉選自《全唐文》，後來也收入《古文觀止》。《唐詩三百首》收的是詩，本文是韻文（銘），並非詩作，故不選。"},{"level":"basic","topic":"文體","q":"關於本文文體「銘」的敘述，下列何者最正確？","choices":["原是刻在器物、碑石上的文字，多用韻，內容常為警惕自己或稱述功德","是一種不押韻的散文，專門用來記述遊歷見聞","是一種長篇的史書體裁，用來記載帝王世系","是一種書信體，用於朋友之間往來問候"],"answer":0,"explain":"「銘」原本是刻在器物或碑石上的文字，篇幅簡短、多用韻語，內容以自我警惕（座右銘）或記功述德為主。〈陋室銘〉全篇押韻，正是託物言志的銘文。"},{"level":"basic","topic":"字詞義","q":"「山不在高，有仙則名」句中的「名」，意思是什麼？","choices":["名字、名稱","名義上的","出名、聞名","指稱、命名"],"answer":2,"explain":"此處「名」由名詞轉為動詞，作「出名、聞名」解。全句是說：山不一定要高，只要有神仙居住就會出名。"},{"level":"basic","topic":"字詞義","q":"「水不在深，有龍則靈」句中的「靈」，意思最接近下列何者？","choices":["靈驗、有靈氣","靈魂、精神","靈巧、機敏","靈柩、棺木"],"answer":0,"explain":"「靈」在此作「靈驗、顯得有靈氣」解。此句與上句「有仙則名」對舉，都是用來比喻：事物的價值不在外在條件，而在內在的可貴之處。"},{"level":"basic","topic":"字詞義","q":"「斯是陋室，惟吾德馨」句中的「斯」，意思是什麼？","choices":["於是","斯文、文雅","分開","這"],"answer":3,"explain":"「斯」與「是」都是指示代詞，意思都是「這」。「斯是陋室」即「這是一間簡陋的屋子」。"},{"level":"basic","topic":"字詞義","q":"「惟吾德馨」的「馨」，在文中是什麼意思？","choices":["屋內焚香的香氣","品德美好，如香氣般遠播","財物豐足、家境富裕","溫馨和睦的氣氛"],"answer":1,"explain":"「馨」本指能散播到遠處的香氣，此處借喻品德高尚美好、聲名遠播。「惟吾德馨」是說：只因為我的品德芬芳美好（所以陋室不陋）。"},{"level":"basic","topic":"字詞義","q":"「往來無白丁」句中的「白丁」，是指什麼樣的人？","choices":["穿著白衣的官員","沒有學問的平民","白髮蒼蒼的老人","初次見面的陌生人"],"answer":1,"explain":"「白丁」原指沒有功名官職的平民，文中引申為沒有學問的粗俗之人，與上句「鴻儒」（學識淵博的大學者）相對。"},{"level":"basic","topic":"字詞義","q":"「無案牘之勞形」句中的「案牘」，指的是什麼？","choices":["書桌上的文具","占卜用的龜甲","官府的公文書","案頭擺放的古董"],"answer":2,"explain":"「案」指几案，「牘」是古代書寫用的木片，「案牘」合稱即官府的公文書。作者藉此表達自己不願為繁瑣公務所累。"},{"level":"basic","topic":"字詞義","q":"「無案牘之勞形」的「形」，意思是什麼？","choices":["形狀","情勢","顯露","身體"],"answer":3,"explain":"「形」在此指形體、身體。「勞形」即使身體勞累。「無案牘之勞形」是說：沒有公文書使我的身體勞累。"},{"level":"basic","topic":"主旨","q":"〈陋室銘〉全文所要表達的主旨是什麼？","choices":["以居室簡陋而主人德高，表現安貧樂道、以德自持的節操","感嘆懷才不遇，期盼君王重新起用","描寫山水景物之美，抒發登臨的豪情","勸人努力讀書求取功名，光耀門楣"],"answer":0,"explain":"本文託物言志：屋子雖陋，但因主人品德高潔，便不覺其陋。全文流露安貧樂道、潔身自好、不慕榮利的情懷，並無求官或勸學之意。"},{"level":"adv","topic":"句子翻譯","q":"「斯是陋室，惟吾德馨」翻譯成白話，何者最恰當？","choices":["這雖是簡陋的屋子，可惜我的品德還不夠好","這間簡陋的屋子，是我用來薰香修身的地方","這是一間簡陋的屋子，只因為我的品德美好（就不覺得簡陋了）","這間屋子並不簡陋，因為我在裡面收藏了許多寶物"],"answer":2,"explain":"「惟」有「只因為」之意，「德馨」指品德美好。全句意謂：屋子雖然簡陋，但因主人德行高尚，陋室便不再簡陋，是全文的主旨句。"},{"level":"adv","topic":"句子翻譯","q":"「談笑有鴻儒，往來無白丁」的意思是什麼？","choices":["談笑時要提防大人物，往來時不必理會平民","在此高談闊論的人很多，因此沒有時間接待訪客","只和讀書人談笑，卻不敢與平民百姓往來，顯得傲慢無禮","在此談笑往來的都是學識淵博的人，沒有淺陋無學問的人"],"answer":3,"explain":"「鴻儒」指博學的大學者，「白丁」指沒有學問的人。此句藉交往的對象，襯托主人格調高雅、志趣不俗，並非表現看不起百姓。"},{"level":"adv","topic":"句子翻譯","q":"「無絲竹之亂耳，無案牘之勞形」翻譯成白話，何者最正確？","choices":["沒有絲線與竹子堵住耳朵，沒有書桌讓身體靠著休息","沒有嘈雜的音樂擾亂耳朵，沒有公文書使身體勞累","不聽任何音樂以免分心，不看任何書籍以免傷神","耳朵聽不見絲竹之聲，是因為身體太過疲勞的緣故"],"answer":1,"explain":"「絲竹」指弦樂器與管樂器，借代為（世俗嘈雜的）音樂；「亂耳」即擾亂耳朵。「案牘」為公文書，「勞形」即使身體勞累。此句寫出遠離俗務、心境清淨的生活。"},{"level":"adv","topic":"修辭辨析","q":"「山不在高，有仙則名；水不在深，有龍則靈」，這兩句主要運用了哪些修辭手法？","choices":["誇飾、設問","排比、頂真","對偶、類比","映襯、倒裝"],"answer":2,"explain":"兩句字數相等、句法相同、詞性相對，是典型的「對偶」；同時以山、水的道理類比陋室，帶出「室不在陋，有德則馨」的結論，屬「類比」（比興）手法。（「名」「靈」由名詞轉為動詞雖屬轉品，但非本題選項所問的主要句法修辭。）"},{"level":"adv","topic":"修辭辨析","q":"文末「孔子云：何陋之有？」主要運用了什麼修辭手法？","choices":["引用","譬喻","誇飾","轉化"],"answer":0,"explain":"作者直接引述孔子的話作結，屬「引用」（明引）。此句同時也是反問語氣，以聖人之言強化「陋室不陋」的結論，收束全篇。"},{"level":"adv","topic":"文意推求","q":"作者舉出「南陽諸葛廬，西蜀子雲亭」，用意何在？","choices":["說明自己的居所比古人的更為華美","感嘆古人的居所早已荒廢，令人惋惜","說明自己遍遊南陽與西蜀，見識廣博","以古代名人的簡樸居所自比，強調室雖陋而人品高，故陋室不陋"],"answer":3,"explain":"諸葛亮隱居南陽的草廬、揚雄在西蜀的亭齋，都是簡樸的居所，卻因主人德才出眾而傳名後世。作者以此類比自己的陋室，呼應「惟吾德馨」的主旨。"},{"level":"adv","topic":"文意推求","q":"「西蜀子雲亭」中的「子雲」是指下列哪一位人物？","choices":["三國名將趙雲","唐代詩人李白","漢代文學家揚雄","東晉隱士陶淵明"],"answer":2,"explain":"「子雲」是西漢文學家揚雄的字，他為蜀郡成都人，居處簡樸而潛心著述。與上句的諸葛亮（南陽草廬）並舉，同為「居陋而德高」的例證。"},{"level":"adv","topic":"引用出處","q":"「何陋之有」一語原出自哪一部典籍？","choices":["孟子","論語","莊子","史記"],"answer":1,"explain":"語出《論語‧子罕》：「子欲居九夷。或曰：『陋，如之何？』子曰：『君子居之，何陋之有？』」作者引用時略去「君子居之」，既含蓄又不失自許之意。"},{"level":"adv","topic":"文意推求","q":"「苔痕上階綠，草色入簾青」二句，最能表現出什麼樣的情境？","choices":["陋室環境幽靜、少有俗客往來，作者自得其樂","屋舍年久失修，作者心中充滿抱怨與不平","庭院經過精心整理，處處可見富貴氣象","季節轉換迅速，暗示作者感嘆時光流逝"],"answer":0,"explain":"苔蘚能爬滿臺階、草色映入門簾，正說明門庭清幽、少人踐踏。作者不以為苦，反而寫得色彩清新可喜，可見其怡然自得的心境。"},{"level":"adv","topic":"修辭辨析","q":"「無絲竹之亂耳」中的「絲竹」，其用法與下列何者的原理相同？","choices":["把「絲竹」比喻成惱人的噪音，屬譬喻","使「絲竹」具有人的動作，屬轉化","以「絲竹」（樂器）代指「音樂」，屬借代","刻意誇大「絲竹」的音量，屬誇飾"],"answer":2,"explain":"「絲」指弦樂器，「竹」指管樂器，作者以製作樂器的材料代指樂器所奏出的音樂，是「借代」修辭。文中並非指所有音樂，因作者仍「可以調素琴」，所指的是官場宴飲的靡靡之音。"},{"level":"adv","topic":"比較閱讀","q":"下列文句所表現的精神，何者與〈陋室銘〉的主旨最為接近？","choices":["一簞食，一瓢飲，在陋巷，人不堪其憂，回也不改其樂","路漫漫其修遠兮，吾將上下而求索","會當凌絕頂，一覽眾山小","少壯不努力，老大徒傷悲"],"answer":0,"explain":"《論語》寫顏回身處陋巷卻不改其樂，正是「安貧樂道」的典型，與〈陋室銘〉居陋室而以德自持的精神最為契合。其餘三者分別表達求索不懈、登高壯志與惜時勸學，主旨不同。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

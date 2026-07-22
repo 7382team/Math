@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>唐詩選 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-tangshi",
+  "title": "唐詩選",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古典詩",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>唐詩選</h1><div class="sub">國文 · 古典詩 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與出處","q":"〈過故人莊〉一詩的作者是誰？","choices":["王維","孟浩然","李白","杜甫"],"answer":1,"explain":"〈過故人莊〉為唐代詩人孟浩然所作，是他隱居時期描寫田園生活的代表作。"},{"level":"basic","topic":"作者生平","q":"關於孟浩然的敘述，下列何者正確？","choices":["襄州襄陽人，一生大半隱居，與王維並稱「王孟」","字摩詰，官至尚書右丞，世稱「詩佛」","字太白，人稱「詩仙」，作品多寫邊塞戰事","曾任左拾遺，作品多寫安史之亂民生疾苦"],"answer":0,"explain":"孟浩然為襄州襄陽人，仕途不順，長期隱居鹿門山，與王維同為盛唐山水田園詩代表，並稱「王孟」。（二）為王維，（三）為李白，（四）為杜甫。"},{"level":"basic","topic":"文體格律","q":"〈過故人莊〉「故人具雞黍……還來就菊花」共八句、每句五字，就近體詩而言應屬於下列何者？","choices":["五言絕句","七言律詩","五言律詩","五言古詩"],"answer":2,"explain":"近體詩中每句五字、全篇八句者稱「五言律詩」。絕句為四句，七言律詩每句七字。"},{"level":"basic","topic":"字詞義","q":"「故人具雞黍」的「具」，意思最接近下列何者？","choices":["工具、器皿","準備、置辦","具備才能","詳細陳述"],"answer":1,"explain":"「具」在此為動詞，指準備、置辦飯菜。「雞黍」指雞肉與黃米飯，泛稱農家待客的豐盛飯食。"},{"level":"basic","topic":"字詞義","q":"「綠樹村邊合，青山郭外斜」中的「合」與「郭」，解釋正確的是：","choices":["合：聚會／郭：姓氏","合：符合／郭：郭外之地，指山谷","合：閉合門戶／郭：城門","合：環繞／郭：外城"],"answer":3,"explain":"「合」是環繞、合圍之意，寫綠樹圍繞村莊；古代城牆內層為「城」、外層為「郭」，「郭外」即外城之外，青山橫斜於村外遠處。"},{"level":"basic","topic":"字詞義","q":"「開軒面場圃」的「軒」，在句中指的是：","choices":["有帷幕的車子","高聳的樓臺","窗戶","廊下的欄杆"],"answer":2,"explain":"「軒」在此作「窗戶」解，「開軒」即推開窗子。「場圃」則指打穀場與菜園。"},{"level":"basic","topic":"文化常識","q":"「待到重陽日，還來就菊花」的「重陽日」是指農曆哪一天？","choices":["九月初九","七月初七","三月初三","正月十五"],"answer":0,"explain":"重陽節為農曆九月初九，古人有登高、賞菊、飲菊花酒的習俗，故詩人相約重陽再訪。"},{"level":"basic","topic":"作者與出處","q":"關於王維，下列敘述何者正確？","choices":["字子美，世稱「詩聖」","字摩詰，篤信佛教，有「詩佛」之稱","字樂天，提倡新樂府運動","字退之，倡導古文運動"],"answer":1,"explain":"王維字摩詰，因名字取自《維摩詰經》且長年參禪、以禪理入詩，故有「詩佛」之稱，官至尚書右丞，世稱「王右丞」。"},{"level":"basic","topic":"字詞義","q":"〈山居秋暝〉題目中的「暝」字，意思是：","choices":["閉上眼睛","冥想入定","日落、天色將晚","昏迷不醒"],"answer":2,"explain":"「暝」指日暮、天色昏暗。題意即「山中居所的秋日傍晚」，點出時節與時間。"},{"level":"basic","topic":"作品出處","q":"王維〈鹿柴〉的「柴」字，其義與讀音為何？","choices":["音ㄔㄞˊ，指燒火用的木柴","音ㄗˋ，指堆積","音ㄔㄞˊ，指姓氏","音ㄓㄞˋ，通「寨」，指木柵欄"],"answer":3,"explain":"〈鹿柴〉是王維輞川別業二十景之一，「柴」通「寨」「砦」，讀ㄓㄞˋ，指以樹木圍成的柵欄。此詩收於《輞川集》。"},{"level":"basic","topic":"字詞義","q":"〈相思〉「紅豆生南國」的「紅豆」，又名為何？","choices":["相思子","薏苡仁","菩提子","合歡花"],"answer":0,"explain":"紅豆又名「相思子」，產於南方，色澤鮮紅，古人常以之寄託思念之情。"},{"level":"basic","topic":"主旨","q":"〈過故人莊〉全詩所要表達的主旨，最貼切的是：","choices":["感嘆功名難就、壯志未酬的悲憤","描寫農村凋敝、民生困苦的實況","抒發羈旅漂泊、思念故鄉的愁緒","寫田園風光之美與朋友間真摯淳樸的情誼"],"answer":3,"explain":"全詩由應邀作客寫到把酒話桑麻、相約重陽再來，洋溢恬淡的田園之樂與真誠的友情，並無悲憤或困苦之意。"},{"level":"adv","topic":"句子翻譯","q":"「開軒面場圃，把酒話桑麻」最恰當的白話翻譯是：","choices":["推開窗子面對著穀場與菜園，舉起酒杯閒談農事","打開車簾眺望戰場，握著兵器談論軍情","開闢庭園種植花草，以酒澆愁談論家世","敞開心胸面對人群，藉酒抒發對桑麻買賣的看法"],"answer":0,"explain":"「軒」為窗，「場圃」為打穀場與菜園，「把酒」是端著酒杯，「桑麻」代指農事，全句寫農家閒話家常的閒適。"},{"level":"adv","topic":"字詞義","q":"「還來就菊花」的「就」，意思最接近下列何者？","choices":["完成、成就","就近、前來親近（賞菊、飲菊花酒）","就算、即使","遷就、將就"],"answer":1,"explain":"「就」為靠近、親近之意，此句寫詩人相約重陽再來賞菊、飲菊花酒，語氣自然親切，正顯賓主無拘束。"},{"level":"adv","topic":"句子翻譯","q":"「竹喧歸浣女，蓮動下漁舟」的意思是：","choices":["竹子被風吹倒，驚走了洗衣的女子；蓮花凋落，漁舟因而擱淺","竹林裡吵鬧不休，洗衣女與漁人正在爭執","竹林傳來喧笑，是洗衣女歸來；蓮葉搖動，是漁舟順流而下","竹聲淒清如泣，浣女與漁人皆感嘆秋日蕭索"],"answer":2,"explain":"此聯先寫聲響與動態，再點出原因，屬「倒裝」筆法：先聞竹喧、後知浣女歸；先見蓮動、後知漁舟下，充滿生活情趣。"},{"level":"adv","topic":"文意推求","q":"「隨意春芳歇，王孫自可留」表達了詩人怎樣的心境？","choices":["任憑春花凋謝，秋景依然可愛，自己願留在山中隱居","勸告貴族子弟不可久留山中，應及早返回朝廷","感嘆青春流逝，希望能重返仕途一展抱負","埋怨山居生活清苦，難以長久居留"],"answer":0,"explain":"此句反用《楚辭·招隱士》「王孫兮歸來，山中兮不可久留」之意；「王孫」實為自指，表明山中秋景可留人，流露安於隱居的自得。"},{"level":"adv","topic":"格律辨析","q":"〈山居秋暝〉的韻腳（押韻字）依序為下列何者？","choices":["後、照、女、歇","秋、流、舟、留","山、間、石、芳","暝、月、蓮、孫"],"answer":1,"explain":"律詩偶數句押韻，本詩二、四、六、八句末字為「秋、流、舟、留」，一韻到底，屬平聲韻。"},{"level":"adv","topic":"格律辨析","q":"關於五言律詩的格律，下列敘述何者正確？","choices":["全篇八句皆須對仗，缺一不可","偶數句可押韻亦可不押，甚為自由","頷聯（三、四句）與頸聯（五、六句）須對仗","首聯與尾聯必須對仗，中間兩聯則否"],"answer":2,"explain":"律詩八句分四聯，通例要求頷聯、頸聯對仗，首聯、尾聯可對可不對；偶數句必須押韻且一韻到底。"},{"level":"adv","topic":"修辭辨析","q":"「明月松間照，清泉石上流」一聯，在寫景手法上最主要的特色是：","choices":["誇飾與轉化並用，將明月比擬為人","設問自答，引起讀者思索","層層堆疊典故，以古諷今","上句靜景、下句動景，動靜相襯且兼具視覺與聽覺之美"],"answer":3,"explain":"上句寫月照松林，屬靜態視覺；下句寫泉流石上，屬動態並帶水聲，動靜相映，正是蘇軾評王維「詩中有畫」的表現。"},{"level":"adv","topic":"修辭辨析","q":"〈鹿柴〉「空山不見人，但聞人語響」所運用的手法及效果是：","choices":["以人聲之響反襯山林之空寂","以誇飾強調山中人聲鼎沸","藉排比句式加強節奏的緊湊","用譬喻將山谷比作空無一物的容器"],"answer":0,"explain":"「但」為「只」之意。空山中僅聞人語而不見其人，屬「以聲襯靜」的反襯手法，愈顯山林幽深寂靜。"},{"level":"adv","topic":"句子翻譯","q":"「願君多採擷，此物最相思」的「採擷」與全句意涵，說明正確的是：","choices":["採擷指挑選買賣，勸友人多做紅豆生意獲利","採擷指採摘，希望對方多採紅豆，因它最能寄託思念","採擷指採集藥材，勸友人以紅豆入藥療疾","採擷指採納意見，希望友人多聽勸告早日歸來"],"answer":1,"explain":"「採擷」的「擷」讀ㄐㄧㄝˊ（又音ㄒㄧㄝˊ），即採摘。詩人託物寄情，以紅豆（相思子）象徵思念，末句「相思」與首句「紅豆」呼應，一語雙關。"},{"level":"adv","topic":"比較閱讀","q":"比較孟浩然〈過故人莊〉與王維〈山居秋暝〉，下列敘述何者最恰當？","choices":["兩詩皆為七言絕句，皆抒發久困科場的牢騷","〈過故人莊〉寫塞外風光，〈山居秋暝〉寫宮廷生活","兩詩皆屬邊塞詩派，充滿雄壯激昂的氣勢","兩詩皆為五言律詩，同屬山水田園詩，皆流露對閒適生活的嚮往"],"answer":3,"explain":"兩詩同為五言律詩，孟浩然重田園人情、王維重山水禪境，同屬盛唐山水田園詩派，皆表現淡泊自適的情懷，故二人並稱「王孟」。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

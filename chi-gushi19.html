@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>古詩十九首選：庭中有奇樹 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-gushi19",
+  "title": "古詩十九首選：庭中有奇樹",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古典詩",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>古詩十九首選：庭中有奇樹</h1><div class="sub">國文 · 古典詩 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作品出處","q":"〈古詩十九首〉最早被收錄於下列哪一部書中？","choices":["西漢劉向所編的《戰國策》","南朝宋劉義慶的《世說新語》","北宋郭茂倩的《樂府詩集》","南朝梁蕭統所編的《文選》"],"answer":3,"explain":"〈古詩十九首〉最早見於南朝梁昭明太子蕭統所編的《文選》（又稱《昭明文選》），「古詩十九首」之名亦由蕭統所定。"},{"level":"basic","topic":"作者與時代","q":"關於〈庭中有奇樹〉的作者與時代，下列敘述何者正確？","choices":["作者為屈原，作於戰國時代","作者為曹植，作於三國時代","作者姓名不可考，一般認為是東漢末年文人的作品","作者為陶淵明，作於東晉時代"],"answer":2,"explain":"〈古詩十九首〉非一人一時之作，作者姓名皆不可考，一般認為是東漢末年（約西元一四〇至一九〇年間）無名氏文人的作品。"},{"level":"basic","topic":"文體判斷","q":"〈庭中有奇樹〉全詩八句、每句五字，就文體而言應歸類為：","choices":["七言律詩","五言絕句","四言古詩","五言古詩"],"answer":3,"explain":"本詩每句五字，共八句，不受近體詩平仄、對仗、黏對規則的限制，屬於五言古詩。近體詩（律詩、絕句）成熟於唐代，東漢時尚未形成。"},{"level":"basic","topic":"字詞義","q":"「庭中有奇樹」的「奇」，在此詩中應解釋為：","choices":["佳美、珍異","奇怪、詭異","單數、不成雙","剩餘、零星"],"answer":0,"explain":"「奇樹」猶言「嘉木」，指佳美珍異的樹木，是讚美之詞，並非「奇怪」之意。"},{"level":"basic","topic":"字詞義","q":"「綠葉發華滋」的「華滋」，意思是：","choices":["葉片肥厚多汁","花開得繁盛茂密","樹幹光滑潤澤","果實甘美豐盈"],"answer":1,"explain":"「華」同「花」；「滋」是繁盛之意。「發華滋」即花開得十分繁盛，寫出滿樹春意盎然的景象。"},{"level":"basic","topic":"字詞義","q":"「攀條折其榮」的「榮」，在此應解釋為：","choices":["榮耀、光彩","花朵，此指樹上所開的花","茂盛的枝葉","興盛的家業"],"answer":1,"explain":"「榮」即花。《爾雅．釋草》：「木謂之華，草謂之榮。」古人本以「華」指木本之花、「榮」指草本之花，但二者常通用；此處「折其榮」即折下樹上的花，與上句「發華滋」相呼應。"},{"level":"basic","topic":"字詞義","q":"「將以遺所思」的「遺」，讀音與詞義應為：","choices":["讀ㄧˊ，遺失","讀ㄧˊ，遺留","讀ㄨㄟˋ，遺憾","讀ㄨㄟˋ，贈送"],"answer":3,"explain":"「遺」在此讀ㄨㄟˋ（wèi），作「贈送、贈與」解。「將以遺所思」即要把花送給所思念的人。"},{"level":"basic","topic":"字詞義","q":"「馨香盈懷袖」的「盈」，意思最接近下列何者？","choices":["充滿","盈利","多餘","增添"],"answer":0,"explain":"「盈」是充盈、充滿之意。花香充滿了衣襟與衣袖，暗示手執花枝佇立良久，不忍放下。"},{"level":"basic","topic":"字詞義","q":"「路遠莫致之」的「致」，在此應解釋為：","choices":["導致、造成","情致、意趣","送到、送達","招來、羅致"],"answer":2,"explain":"「致」即「送到」。「路遠莫致之」是說路途遙遠，無法把花送到思念之人的手中。"},{"level":"basic","topic":"字詞義","q":"「但感別經時」的「但」與「經時」，解釋正確的是：","choices":["但：只是；經時：經歷了很長的時間","但：但是；經時：按時、準時","但：凡是；經時：經過的時候","但：只要；經時：經常、時常"],"answer":0,"explain":"「但」在古漢語中常作「只、只是」解；「別經時」指離別之後已經歷許久的時光。全句意為：只是感慨分別已經這麼久了。"},{"level":"basic","topic":"主旨","q":"〈庭中有奇樹〉一詩所抒發的主要情感是：","choices":["感嘆年華老去、功業未成","諷刺朝政腐敗、賢才不遇","描寫田園生活的閒適自得","思婦對遠行親人的深切思念"],"answer":3,"explain":"全詩藉折花欲贈而不得寄達，抒寫思婦懷念遠行親人之情，是典型的「思婦懷遠」之作。"},{"level":"adv","topic":"句子翻譯","q":"「庭中有奇樹，綠葉發華滋」的白話翻譯，何者最恰當？","choices":["庭院中種了許多樹，綠葉之間偶爾長出幾朵花","庭院裡有棵奇怪的樹，只長綠葉卻不開花","庭院裡的樹十分高大，綠葉滋潤而不見凋零","庭院裡有棵佳美的樹，在綠葉映襯下花開得十分繁盛"],"answer":3,"explain":"「奇樹」為佳美之樹，「華」同「花」，「滋」為繁盛。全句寫綠葉扶疏、繁花滿枝的春日景象。"},{"level":"adv","topic":"句子翻譯","q":"「攀條折其榮，將以遺所思」的意思是：","choices":["攀上樹枝欣賞花朵，藉此排遣心中的思念","拉著枝條折下花朵，想把它送給思念的人","攀折樹枝任其凋零，感嘆所思之人已忘記自己","沿著小路採摘花草，想留給自己日後回憶"],"answer":1,"explain":"「攀條」是拉著枝條，「折其榮」是折下花朵，「將以」即「想要用它來」，「遺」為贈送，「所思」指所思念的人。"},{"level":"adv","topic":"句子翻譯","q":"「馨香盈懷袖，路遠莫致之」的白話翻譯，何者正確？","choices":["香氣飄散在風中，因路途遙遠而漸漸消失","把香花收進衣袖裡，準備親自送到遠方","花的香氣充滿了衣襟衣袖，卻因路途遙遠無法送達","衣袖沾滿了花香，只好請人代為轉交遠方"],"answer":2,"explain":"「馨香」指花香，「盈懷袖」是充滿衣襟衣袖，「莫致之」即無法送到。手持花枝久立，香氣滿袖，正襯托無可奈何的悵惘。"},{"level":"adv","topic":"句子翻譯","q":"「此物何足貴，但感別經時」應如何理解？","choices":["這花其實算不上珍貴，只是感慨分別已經太久了","這花如此珍貴，正好可以彌補久別的遺憾","這花有什麼值得珍惜，何必為離別而傷感","這花價值不菲，只可惜錯過了贈花的時節"],"answer":0,"explain":"「何足貴」是反問語氣，表示不值得珍貴；「但」為「只是」。作者說花本身不足貴，貴的是花所寄託的久別相思。"},{"level":"adv","topic":"文意推求","q":"詩中「馨香盈懷袖」一句，除了寫花香，更暗示了什麼？","choices":["主人翁衣著華美、生活富裕","花朵香氣濃烈，令人難以忍受","主人翁手執花枝佇立良久，遲遲不忍放下","主人翁準備將花製成香囊隨身攜帶"],"answer":2,"explain":"香氣要充滿衣襟衣袖，必是持花久立所致。此句以「盈懷袖」的細節，含蓄寫出主人翁欲寄無從、徘徊惆悵的癡態。"},{"level":"adv","topic":"文意推求","q":"作者說「此物何足貴」，是否真的認為這朵花毫無價值？下列判斷何者最恰當？","choices":["是，因為花已凋謝，確實失去價值","否，這是以退為進的說法，反襯出花所承載的相思之情才最可貴","是，作者藉此表達對物質享受的鄙棄","否，作者是在誇讚這朵花天下無雙、價值連城"],"answer":1,"explain":"「何足貴」表面貶低花的價值，實則欲揚先抑：花本尋常，因寄託了久別的深情才顯得珍貴。這是反襯（欲揚先抑）的筆法。"},{"level":"adv","topic":"修辭辨析","q":"「此物何足貴」一句所使用的修辭手法是：","choices":["設問中的懸問（有疑而問）","譬喻","設問中的激問（反問，答案在問題的反面）","轉化"],"answer":2,"explain":"「何足貴」是明知故問，答案即在問題的反面——這花並不足貴。此為設問修辭中的「激問」（反詰）。"},{"level":"adv","topic":"修辭辨析","q":"全詩以「折花贈遠人」的舉動來承載思念之情，這種寫作手法最適合稱為：","choices":["託物寄情（借物抒情）","開門見山，直抒胸臆","先議論後敘事","用典抒懷"],"answer":0,"explain":"詩人不直說思念，而是藉「折花—欲贈—不得寄」的具體物象與動作寄託情感，屬託物寄情（借物抒情）的手法。"},{"level":"adv","topic":"章法結構","q":"本詩前四句寫綠葉繁花、攀條折榮的明媚景象，後四句轉為無法寄達的惆悵。這樣的安排效果是：","choices":["前後主旨互相矛盾，削弱了詩的感染力","以景物的華美誇耀庭院的富麗","以樂景反襯哀情，使離別之愁更顯深沉","藉四季更替暗示時間流逝之快"],"answer":2,"explain":"前半的春意盎然愈是美好，後半「路遠莫致」的失落就愈顯沉重，這是「以樂景寫哀情」的反襯手法。"},{"level":"adv","topic":"詩歌比較","q":"〈古詩十九首〉另一首〈涉江采芙蓉〉有「采之欲遺誰？所思在遠道」之句。它與〈庭中有奇樹〉最相似之處在於：","choices":["同樣描寫戰爭帶來的離亂之苦","同樣以採花欲贈遠方之人，抒發相思而不得的悵惘","同樣抒發及時行樂、人生苦短的感慨","同樣以隱居山林、寄情自然為主題"],"answer":1,"explain":"兩首詩都採用「採（折）花—欲贈遠人—無從寄達」的相同構思，抒發對遠方所思之人的深切思念與無奈。"},{"level":"adv","topic":"綜合鑑賞","q":"關於〈庭中有奇樹〉的寫作特色，下列敘述何者不正確？","choices":["語言質樸自然，不假雕琢而情意深長","全詩由景入情，層層轉折，情感自喜轉悲","以日常景物與細微動作傳達深情，含蓄不露","大量堆砌華麗辭藻與生僻典故，以顯博學"],"answer":3,"explain":"〈古詩十九首〉的風格向來以語言淺近質樸、情感真摯深婉著稱，並不堆砌辭藻或炫耀典故，故第四項敘述有誤。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

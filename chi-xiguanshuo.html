@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>習慣說 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi-xiguanshuo",
+  "title": "習慣說",
+  "subject": "國文",
+  "grade": "國一",
+  "term": "下",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文",
+  "ready": true,
+  "author": "劉蓉"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>習慣說</h1><div class="sub">國文 · 古文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"作者與出處","q":"〈習慣說〉一文選自下列哪一部著作？","choices":["《思辨錄疑義》","《湘鄉文鈔》","《養晦堂文集》","《曾文正公全集》"],"answer":2,"explain":"〈習慣說〉選自劉蓉的《養晦堂文集》（其詩文合刻稱《養晦堂詩文集》）。「養晦堂」是劉蓉居室之名，也正是課文開頭「讀書養晦堂之西偏一室」的所在。《思辨錄疑義》雖亦為劉蓉著作，但非本文出處。"},{"level":"basic","topic":"作者生平","q":"關於本文作者劉蓉，下列敘述何者正確？","choices":["清代人，字孟容，號霞仙，湖南湘鄉人","明代人，字孟容，號東坡，江蘇蘇州人","清代人，字子瞻，號霞仙，浙江紹興人","宋代人，字孟容，號霞仙，湖南湘鄉人"],"answer":0,"explain":"劉蓉為清代湖南湘鄉人，字孟容，號霞仙，曾為曾國藩幕僚，官至陝西巡撫，屬桐城派古文家。「子瞻」是蘇軾的字，「東坡」是蘇軾的號，皆與劉蓉無關。"},{"level":"basic","topic":"文體與寫作手法","q":"就文體而言，〈習慣說〉應歸類為下列何者？","choices":["抒發思鄉之情的抒情文","藉事說理的論說文","記錄山水行程的遊記","呈給君王的奏疏"],"answer":1,"explain":"題目中的「說」是古代論說文的一種文體。本文前三段記敘幼年踩窪地、父親填平窪地的小事，末段議論歸結出「君子之學貴慎始」的道理，屬於典型「藉事說理」的論說文。"},{"level":"basic","topic":"字詞義","q":"「俛而讀，仰而思」的「俛」，意思是：","choices":["勉強","撫摸","疲倦","低頭"],"answer":3,"explain":"「俛」同「俯」，是低頭的意思，與下句「仰」（抬頭）正好相對。「俛而讀，仰而思」即低頭讀書、抬頭思索，寫出作者專心用功的模樣。"},{"level":"basic","topic":"字詞義","q":"「思而弗得，輒起，繞室以旋」的「輒」，意思是：","choices":["偶爾","勉強","就、便","終於"],"answer":2,"explain":"「輒」是「就、便」之意，表示動作隨即發生。全句指想不通時就立刻站起來，在房裡繞著圈子走動。"},{"level":"basic","topic":"字詞義","q":"「每履之，足苦躓焉」的「躓」，意思是：","choices":["受傷流血","停滯不前","被絆倒","疼痛麻木"],"answer":2,"explain":"「躓」是絆倒、跌跤。「足苦躓焉」指腳常為絆倒所苦，寫出窪地初期造成的不便，與後文「既久而遂安之」形成對比。"},{"level":"basic","topic":"字詞義","q":"「室有窪徑尺，浸淫日廣」的「浸淫日廣」，是說：","choices":["屋內積水一天比一天深","窪坑逐漸向外擴大","讀書的興趣日漸濃厚","房間的採光日益不足"],"answer":1,"explain":"「浸淫」有逐漸滲透、漸漸蔓延之意，「日廣」即一天天變寬。因作者天天繞室踱步，窪坑被踩得愈來愈大，故云「浸淫日廣」。此處與「積水」無關。"},{"level":"basic","topic":"字詞義","q":"「既久而遂安之」的「安」，在文中的意思是：","choices":["安置、擺放","平安無事","安慰、撫平","習慣而覺得自在"],"answer":3,"explain":"「安之」是對它感到安適、習慣了它。時間一久，作者對凹陷的地面習以為常，不再覺得妨礙，正說明習慣的養成。"},{"level":"basic","topic":"主旨","q":"本文的主旨最接近下列何者？","choices":["習慣影響人極深，為學做人貴在開始時就謹慎","居家環境應保持整潔，才能專心讀書","讀書必須勤加背誦，日久自能融會貫通","為人子女應順從父命，不可違逆長輩"],"answer":0,"explain":"全文以窪地小事作喻，末段點出「習之中人甚矣哉」與「故君子之學貴慎始」，主旨在強調習慣一旦養成便難以更改，因此起步時就要格外審慎。其餘選項僅為文中枝節或引申，非主旨所在。"},{"level":"basic","topic":"字詞義","q":"「習之中人甚矣哉」的「中」，意思是：","choices":["中間、正中","考中、考取","影響、侵入人心","中止、停頓"],"answer":2,"explain":"「中」讀ㄓㄨㄥˋ，是擊中、深入影響之意。「習之中人甚矣哉」即「習慣對人的影響真是太深了啊」，是全文的議論核心。"},{"level":"basic","topic":"字詞義","q":"「繞室以旋」的「旋」，意思是：","choices":["來回繞行、踱步","旋轉身體原地打轉","很快、立刻","返回原處"],"answer":0,"explain":"「旋」在此指繞行、來回走動。作者思索不出時便起身在房中踱步，日久才把地面踩出凹坑，這是後文情節的重要伏筆。"},{"level":"adv","topic":"句子翻譯","q":"「一室之不治，何以天下國家為？」意思最接近下列何者？","choices":["一間房子不去整修，怎麼比得上治理天下國家？","一間房子若能整理好，天下國家也就治理好了。","只治理一間房子，為什麼還要談論天下國家呢？","連一間房子都整理不好，還談什麼治理天下國家呢？"],"answer":3,"explain":"「治」是整治、整理；「何以……為」是文言反問句式，意為「還要……做什麼呢」。全句是父親的責備，責怪作者連一室都不能整治，遑論治國平天下，語意與東漢陳蕃「一屋不掃，何以掃天下」相通。"},{"level":"adv","topic":"句子翻譯","q":"「後蓉履其地，蹴然以驚，如土忽隆起者」的語譯，何者最恰當？","choices":["後來我踩到那塊地方，驚惶不安，好像泥土突然凸起來一樣。","後來我走過那塊地方，急忙後退，因為泥土真的隆起了。","後來我踏上那塊土地，高興得跳起來，好像地面被墊高了。","後來我經過那塊地方，用力踩踏，想把凸起的泥土踩平。"],"answer":0,"explain":"「履」是踩、走過；「蹴然」形容驚惶不安的樣子；「如土忽隆起者」是比喻的說法——地其實已被填平，只因習慣了凹陷，才「感覺」像凸起。「因為泥土真的隆起了」一項誤把比喻當事實（下文「俯視地，坦然則既平矣」可證），其餘則曲解「蹴然」「履」的字義。"},{"level":"adv","topic":"句子翻譯","q":"「足履平地，不與窪適也」的意思是：","choices":["腳踩在平地上，正好與窪地一樣舒適。","腳踩在平地上，比走在窪地更加安穩。","腳本來就適合走平地，並不適應凹陷的窪地。","腳踩到窪地時，反而覺得比平地舒適。"],"answer":2,"explain":"「適」是適應、相合。此句說明人的腳天生適於行走平地，本不與窪地相合；下接「及其久而窪者若平」，才顯出習慣如何扭轉了原本的自然感受，前後語意須合看。"},{"level":"adv","topic":"句子翻譯","q":"「至使久而即乎其故，則反窒焉而不寧」的語譯，何者正確？","choices":["等到時間久了想起舊事，就會心煩意亂而睡不安穩。","等到習慣既久，再回復到原本的樣子，反而覺得窒礙而不安適。","時間一久便忘了舊有的模樣，於是心中空虛而不踏實。","長久以來固守舊習，因此思路阻塞而無法安靜下來。"],"answer":1,"explain":"「即乎其故」是回到原來（平地）的狀態，「窒」為窒礙不通，「不寧」是不安適。此句正是作者踩到填平後的地面反覺別扭的道理化說明，凸顯積習難返。"},{"level":"adv","topic":"文意推求","q":"父親「命童子取土平之」，其真正的用意是什麼？","choices":["擔心兒子跌倒受傷，純為安全著想。","想讓房間看起來整潔，以便招待客人。","藉此考驗兒子是否會抱怨父命。","藉整治居室的小事，點醒兒子小處不可苟且的道理。"],"answer":3,"explain":"父親先說「一室之不治，何以天下國家為」，再命人填土，可見填平窪地只是手段，真正目的是藉小事教子：連身邊小處都放任遷就，將來如何成就大事。這也為末段「貴慎始」的議論鋪路。"},{"level":"adv","topic":"文意推求","q":"地面已被填平，作者踩上去卻「蹴然以驚」，最主要的原因是：","choices":["童子填土時填得太高，地面確實凸起。","作者一時分神，沒有注意到地面已經改變。","作者對父親的責備心懷不滿，故意誇大反應。","作者早已習慣凹陷的地面，一旦復原反而不適應。"],"answer":3,"explain":"文中明言「俯視地，坦然則既平矣」，可知地面確實平整，並非真的凸起。驚訝來自長久習慣窪地後所形成的身體記憶，正是「習之中人甚矣哉」的最佳例證。"},{"level":"adv","topic":"修辭辨析","q":"「噫！習之中人甚矣哉！」這句話主要運用了何種修辭？","choices":["感嘆","設問","排比","映襯"],"answer":0,"explain":"句首用嘆詞「噫」，句末用「甚矣哉」的感嘆語氣詞，強烈抒發作者對習慣力量的驚嘆，屬感嘆修辭。此句也是全文由敘事轉入議論的樞紐。"},{"level":"adv","topic":"修辭辨析","q":"「一室之不治，何以天下國家為？」所用的修辭手法是：","choices":["懸問（心中確實有疑而發問）","激問（答案在問題的反面）","提問（自問自答）","誇飾（言過其實以求強調）"],"answer":1,"explain":"此句形式上是問句，實則不需回答，答案就在反面——「不能治天下國家」，屬激問（反問）。懸問是真有疑惑，提問則須自問自答，皆與此句語氣不合。"},{"level":"adv","topic":"比較與應用","q":"下列文句，何者所談的道理與本文「君子之學貴慎始」最為相近？","choices":["學而不思則罔，思而不學則殆。","三人行，必有我師焉。","鍥而不捨，金石可鏤。","勿以惡小而為之，勿以善小而不為。"],"answer":3,"explain":"「勿以惡小而為之」強調小惡不可縱容，與本文小窪成習、積習難改的道理相通，皆重在起始處的謹慎。其餘三句分別談學思並重、虛心求教、持之以恆，重點不同。"},{"level":"adv","topic":"篇章結構","q":"關於本文的寫作方式，下列敘述何者最為正確？","choices":["通篇議論說理，未涉及個人生活經驗。","先記敘幼時窪地一事，末段再據事說理，歸結論點。","先提出論點，再引用大量古人事例逐一佐證。","以景物描寫貫串全文，藉景抒發懷才不遇之慨。"],"answer":1,"explain":"本文結構為先敘後議：前三段敘述踩窪成習、父命填平、復感窒礙的經過，末段以「噫！習之中人甚矣哉」轉入議論，收束於「故君子之學貴慎始」，是典型的藉事說理。"},{"level":"adv","topic":"文意推求","q":"「已而復然，又久而後安之」一句在文中的作用是：","choices":["說明作者記性不佳，時常忘記地面已經填平。","說明重新適應平地也需長時間，可見習慣的改變十分不易。","說明童子填土的工作做得不夠確實，須反覆修整。","說明作者對父親的教誨仍未真正領會其中道理。"],"answer":1,"explain":"「復然」指再次出現先前那種驚訝感，「又久而後安之」則說明要再經過很長時間才重新習慣平地。這與前文「既久而遂安之」對稱呼應，凸顯無論養成或戒除，習慣都難以速改，正為「慎始」之說張本。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
