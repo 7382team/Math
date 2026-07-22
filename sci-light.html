@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>光學 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "sci-light",
+  "title": "光學",
+  "subject": "理化",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第4章 光、影像與顏色",
+  "tag": "反射與透鏡成像",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>光學</h1><div class="sub">理化 · 反射與透鏡成像 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"光的直進","q":"在同一種均勻介質中，光行進的路徑是","choices":["直線","曲線","折線","圓弧"],"answer":0,"explain":"光在同一種均勻介質中會沿直線前進（光的直進），這也是影子、日食、針孔成像的成因。只有在通過不同介質交界或介質不均勻時，光的路徑才會改變。"},{"level":"basic","topic":"針孔成像","q":"針孔成像（小孔成像）在光屏上所成的像是","choices":["正立實像","正立虛像","倒立虛像","倒立實像"],"answer":3,"explain":"因為光沿直線前進，物體上方射出的光通過小孔後到達光屏下方、下方的光到達上方，所以形成上下顛倒的像；此像能呈現在光屏上，屬於實像，故為倒立實像。"},{"level":"basic","topic":"反射定律","q":"根據光的反射定律，入射角與反射角的關係是","choices":["入射角大於反射角","入射角小於反射角","入射角等於反射角","沒有固定關係"],"answer":2,"explain":"反射定律指出：入射角等於反射角，且入射線、反射線與法線在同一平面上。角度都是相對法線量的，兩角恆相等。"},{"level":"basic","topic":"反射-法線","q":"反射角是反射線與下列何者之間的夾角","choices":["鏡面","法線","入射線","鏡子邊緣"],"answer":1,"explain":"入射角與反射角都是相對『法線』（垂直鏡面的直線）量取的。若誤以為是相對鏡面，量出的角度會是餘角，會算錯。"},{"level":"basic","topic":"平面鏡-虛像","q":"物體經平面鏡所成的像屬於","choices":["倒立實像","正立實像","正立虛像","倒立虛像"],"answer":2,"explain":"平面鏡的像是反射光線『延長線』會聚而成，無法呈現在光屏上，是正立、左右相反、與物等大的虛像。"},{"level":"basic","topic":"平面鏡-像距物距","q":"平面鏡成像時，像到鏡面的距離與物到鏡面的距離","choices":["相等","像距較大","像距較小","完全無關"],"answer":0,"explain":"平面鏡成像的特性之一是像距等於物距，像與物對稱於鏡面。物體離鏡多遠，像看起來就在鏡後同樣的距離。"},{"level":"basic","topic":"平面鏡-左右相反","q":"站在平面鏡前舉起右手，鏡中的像看起來像是舉起","choices":["右手","左手","兩隻手","無法判斷"],"answer":1,"explain":"平面鏡成像會左右相反（前後對調），所以舉起右手時，鏡中的像看起來像是舉起左手。像仍是正立、等大的。"},{"level":"basic","topic":"折射-筷子彎折","q":"把筷子斜插入水中，看起來筷子在水面處好像彎折了，這是因為光發生了","choices":["反射","直進","色散","折射"],"answer":3,"explain":"水中筷子反射的光由水進入空氣時方向改變（折射），使我們看到的像位置偏移，看起來像在水面處彎折。這是折射造成的視覺現象，筷子本身沒彎。"},{"level":"basic","topic":"折射-視深變淺","q":"從岸邊觀察清澈的池水，看到的池底比實際的","choices":["更深","更淺","一樣深","完全看不見"],"answer":1,"explain":"池底反射的光由水進入空氣時發生折射，使池底的像上移，因此看起來比實際深度淺。所以戲水時常會低估水深，要特別小心。"},{"level":"basic","topic":"凸透鏡-會聚","q":"凸透鏡對通過它的平行光線，主要作用是使光線","choices":["發散","平行不變","會聚","消失"],"answer":2,"explain":"凸透鏡中間厚、邊緣薄，具有會聚光線的作用，平行光通過後會聚於焦點，故又稱會聚透鏡，可用來當放大鏡或聚光。"},{"level":"basic","topic":"凹透鏡-發散","q":"平行光線通過凹透鏡後會","choices":["會聚於焦點","完全反射","被完全吸收","發散開來"],"answer":3,"explain":"凹透鏡中間薄、邊緣厚，對光線有發散作用，平行光通過後會向外散開，故稱發散透鏡；近視眼鏡即使用凹透鏡。"},{"level":"basic","topic":"光的三原色","q":"光的三原色是指","choices":["紅、黃、藍","紅、綠、藍","紅、綠、黃","黃、青、洋紅"],"answer":1,"explain":"光的三原色是紅、綠、藍（RGB），適當比例混合可產生各種色光，三者等量混合成白光。『紅黃藍』是顏料（顏色）的概念，不可混淆。"},{"level":"basic","topic":"光的色散","q":"太陽光通過三稜鏡後分散成紅橙黃綠藍靛紫等色光，這種現象稱為","choices":["色散","反射","漫射","全反射"],"answer":0,"explain":"白光是由多種色光組成，通過三稜鏡時各色光偏折程度不同而分開，稱為色散。彩虹就是陽光經水滴色散所形成。"},{"level":"basic","topic":"物體顏色成因","q":"在白光照射下，一片葉子看起來是綠色的，這是因為葉子","choices":["自己會發出綠光","把光折射成綠色","反射綠光而吸收其他色光","吸收綠光反射其他色光"],"answer":2,"explain":"不透明物體的顏色，取決於它反射了哪種色光。葉子反射綠光、吸收其他色光，所以看起來是綠色；葉子本身並不會發光。"},{"level":"adv","topic":"針孔成像-像的大小","q":"針孔成像時，若將後方的光屏往遠離針孔的方向移動，其餘條件不變，光屏上的像會","choices":["變大","變小","大小不變","立刻消失"],"answer":0,"explain":"依光的直進，光通過小孔後會繼續向外張開，光屏離小孔越遠，光錐張得越開，因此像會變大（但亮度會變暗）。像仍是倒立實像。"},{"level":"adv","topic":"針孔成像-倒立原因","q":"針孔成像所成的像會上下顛倒，最主要是因為","choices":["光沿直線前進","光發生反射","光發生折射","光被針孔吸收"],"answer":0,"explain":"物體上端的光沿直線通過小孔後落在光屏下方，下端的光落在上方，因此上下顛倒。這正是『光的直進』造成的結果，與反射、折射無關。"},{"level":"adv","topic":"反射-垂直入射","q":"一束光沿著法線方向垂直射向平面鏡，此時的入射角與反射角都是","choices":["0度","45度","90度","180度"],"answer":0,"explain":"入射角是入射線與法線的夾角。光沿法線方向入射時，入射線與法線重合，夾角為0度，故入射角=反射角=0度，光會沿原路徑反射回去。"},{"level":"adv","topic":"反射-角度變化","q":"一束光射向平面鏡，原本入射角為30度，若轉動入射光線使入射角變成50度，則反射角變為","choices":["30度","50度","20度","80度"],"answer":1,"explain":"由反射定律，反射角永遠等於入射角。入射角變成50度，反射角也隨之變成50度，兩者永遠相等。"},{"level":"adv","topic":"平面鏡-像的移動","q":"一個人以每秒1公尺的速度正對著平面鏡走近，鏡中的像與此人互相靠近的速度是每秒","choices":["1公尺","2公尺","0.5公尺","0公尺（不動）"],"answer":1,"explain":"像距等於物距，人向鏡靠近1公尺，像也向鏡靠近1公尺，兩者彼此接近的距離是1+1=2公尺，故相互靠近的速度為每秒2公尺。"},{"level":"adv","topic":"折射-硬幣現形","q":"空杯底部放一枚硬幣，眼睛在某位置剛好看不到它；慢慢倒入水後卻能看見硬幣，這是因為光的","choices":["反射","直進","折射","色散"],"answer":2,"explain":"倒水後，硬幣反射的光由水進入空氣時發生折射而改變方向，使原本被杯緣擋住的光線能進入眼睛，因此看得到硬幣。這是折射造成的現象。"},{"level":"adv","topic":"折射-偏折方向","q":"光線由空氣斜射進入水中時，折射光線的方向會","choices":["偏離法線","沿原方向直進","偏向法線","完全反射回空氣"],"answer":2,"explain":"光由較疏介質（空氣）斜射入較密介質（水）時，速度變慢，折射光線會偏向法線（折射角小於入射角）。反之由水進入空氣則偏離法線。"},{"level":"adv","topic":"凸透鏡-放大鏡","q":"把凸透鏡當作放大鏡，靠近觀察郵票上的細小圖案，看到的是","choices":["倒立放大的實像","倒立縮小的實像","正立縮小的虛像","正立放大的虛像"],"answer":3,"explain":"當物體很靠近凸透鏡（在焦點以內）時，凸透鏡會形成正立、放大的虛像，這就是放大鏡的原理，可把小字放大且方向不變。"},{"level":"adv","topic":"物體顏色-單色光下","q":"一件紅色的衣服，拿到只有綠色光照射的暗室裡，看起來會是","choices":["紅色","綠色","白色","黑色"],"answer":3,"explain":"紅衣服只會反射紅光、吸收其他色光。在只有綠光的環境中，綠光被衣服吸收、又沒有紅光可反射，沒有光進入眼睛，因此看起來是黑色。"},{"level":"adv","topic":"三原色-色光混合","q":"在白色螢幕上，將紅光和綠光重疊照射，重疊的區域會呈現","choices":["紫色","藍色","青色","黃色"],"answer":3,"explain":"光的三原色中，紅光加綠光混合會得到黃光。（紅+藍為洋紅，綠+藍為青，三色等量相加則成白光。）這是色光的加法混合，與顏料混色不同。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

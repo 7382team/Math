@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>魏晉至隋唐 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist2-weitang",
+  "title": "魏晉至隋唐",
+  "subject": "歷史",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2課 魏晉至隋唐",
+  "tag": "民族互動與文化交流",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>魏晉至隋唐</h1><div class="sub">歷史 · 民族互動與文化交流 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"五胡","q":"「五胡亂華」中的「五胡」，是指魏晉時期內遷中原的五支游牧民族。下列何者是正確的組合？","choices":["匈奴、鮮卑、契丹、女真、蒙古","突厥、回紇、吐蕃、党項、羌","匈奴、鮮卑、羯、氐、羌","匈奴、鮮卑、羯、契丹、突厥"],"answer":2,"explain":"五胡是指匈奴、鮮卑、羯、氐、羌五支內遷民族。契丹、女真、蒙古、突厥、回紇、吐蕃等多為隋唐以後或其他地區的民族，故其餘組合皆不正確。"},{"level":"basic","topic":"孝文帝改革","q":"北魏孝文帝推行漢化政策，下列何者是他採行的措施？","choices":["遷都洛陽，改鮮卑姓為漢姓，並鼓勵胡漢通婚","禁止人民信仰佛教，拆毀各地寺院","規定朝廷一律使用鮮卑語，禁止說漢語","將都城由洛陽遷回北方草原，恢復游牧生活"],"answer":0,"explain":"孝文帝為促進民族融合，遷都洛陽、改漢姓、說漢語、穿漢服、與漢族通婚。「使用鮮卑語、禁說漢語」「遷回北方草原」與其漢化、南遷政策正好相反，「滅佛毀寺」也非孝文帝所為。"},{"level":"basic","topic":"佛教傳入","q":"關於佛教傳入中國的敘述，下列何者正確？","choices":["佛教是本土宗教，由老子在春秋時期創立","佛教在明代鄭和下西洋時由非洲傳入","佛教到隋唐才首次傳入，此前中國並不知道","佛教源於印度，兩漢之際經由西域（絲路）傳入中國"],"answer":3,"explain":"佛教起源於印度，約在兩漢之際透過西域絲路傳入中國，魏晉南北朝時廣為流行。老子是道家人物而非佛教創始者；鄭和下西洋在明代且佛教非源於非洲；佛教也非隋唐才傳入。"},{"level":"basic","topic":"佛教藝術","q":"魏晉南北朝時期，隨著佛教盛行而開鑿、留下大量佛像的著名藝術遺跡是？","choices":["秦始皇兵馬俑","雲岡石窟、龍門石窟等石窟藝術","萬里長城的烽火臺","唐代的曲江池與大明宮"],"answer":1,"explain":"佛教盛行帶動石窟藝術，北魏開鑿雲岡（大同）、龍門（洛陽）等石窟，留下大量佛像。兵馬俑是秦代陵墓陪葬，長城烽火臺是軍事設施，曲江池與大明宮是唐代宮苑，皆與佛教石窟無關。"},{"level":"basic","topic":"隋朝統一","q":"結束魏晉南北朝長期分裂、再度統一中國的是哪一位君主？","choices":["隋文帝楊堅","唐太宗李世民","漢武帝劉徹","秦始皇嬴政"],"answer":0,"explain":"隋文帝楊堅建立隋朝並滅陳，統一南北，結束魏晉南北朝的分裂。唐太宗在隋之後，秦始皇與漢武帝則在魏晉南北朝之前，皆非結束此次分裂的人。"},{"level":"basic","topic":"大運河","q":"隋煬帝開鑿的大運河，其地理走向與中心為何？","choices":["以長安為中心，向西通往西域","沿著海岸線，連接廣州與越南","以洛陽為中心，北到涿郡（今北京附近）、南達餘杭（今杭州）","由東向西，連接黃河與塔里木河"],"answer":2,"explain":"大運河以洛陽為中心，北抵涿郡（今北京附近）、南達餘杭（今杭州），貫通南北多條水系，屬南北走向，而非以長安為中心，也非東西走向或沿海連接廣州、越南。"},{"level":"basic","topic":"大運河功能","q":"隋朝開鑿大運河，對後世最主要的影響或功能是？","choices":["阻擋北方游牧民族南下的軍事防線","溝通南北交通，便利漕運與經濟、文化交流","提供沿岸灌溉，使沙漠變為綠洲","專供皇帝乘船遊玩，對經濟毫無幫助"],"answer":1,"explain":"大運河貫通南北，便利漕運與南北經濟、文化交流，影響深遠。阻擋游牧民族是長城的功能；運河行於平原水系而非使沙漠變綠洲；也非僅供皇帝遊玩而無經濟價值。"},{"level":"basic","topic":"科舉創立","q":"打破世族門第壟斷、以考試選拔人才的科舉制度，最早創立於哪一朝代？","choices":["漢朝","魏晉","宋朝","隋朝"],"answer":3,"explain":"科舉制度創立於隋朝，以考試選才，唐代進一步發展完備。漢代行察舉、魏晉行九品中正制，宋代則是科舉更加完善的時期，皆非最早創立者。"},{"level":"basic","topic":"科舉意義","q":"隋唐的科舉制度，與魏晉南北朝的「九品中正制」相比，最大的不同在於？","choices":["科舉只錄取世家大族的子弟","科舉由地方中正官依門第高低評定等級","科舉完全廢除考試，改由皇帝隨意任命","科舉以才學考試取士，讓一般平民也有機會入仕"],"answer":3,"explain":"九品中正制重門第，官職多為世族壟斷；科舉以才學考試取士，使寒門、平民也能憑本事做官，促進社會流動。「只錄取世族」「依門第評等」其實是九品中正制的特徵，「廢除考試由皇帝任命」則與科舉精神相反。"},{"level":"basic","topic":"唐代盛世","q":"下列哪一組「治世」與其在位君主的搭配是正確的？","choices":["文景之治—唐太宗","貞觀之治—唐太宗；開元之治—唐玄宗","開元之治—隋文帝","貞觀之治—漢武帝"],"answer":1,"explain":"唐太宗締造「貞觀之治」，唐玄宗前期出現「開元之治（開元盛世）」。文景之治屬西漢，與唐太宗無關；開元之治配隋文帝、貞觀之治配漢武帝也都張冠李戴。"},{"level":"basic","topic":"長安國際都市","q":"唐代都城長安在當時被稱為國際性大都市，主要原因是？","choices":["各國使節、商人、留學生雲集，中外文化在此交流薈萃","它是全世界唯一有城牆的城市","它完全禁止外國人進入，保持純中國文化","它是佛教的發源地"],"answer":0,"explain":"長安匯聚各國使節、商旅與留學生，是中外文化交流的中心，故稱國際大都市。「全世界唯一有城牆」誇大不實；「禁止外國人進入」與國際都市相反；佛教發源於印度而非長安。"},{"level":"basic","topic":"遣唐使","q":"日本在唐代多次派遣「遣唐使」到中國，其主要目的是？","choices":["向唐朝宣戰，爭奪東亞霸權","護送佛教高僧回到印度取經","學習唐朝的典章制度與文化，帶回日本仿效","到中國經商販賣茶葉並定居"],"answer":2,"explain":"遣唐使的主要目的是學習唐朝先進的政治制度、律令、文字與文化，帶回日本加以仿效，推動日本改革，並非宣戰、護送高僧赴印度或單純經商定居。"},{"level":"basic","topic":"律令體制","q":"唐代完備的律令制度（如《唐律》），在東亞歷史上的重要意義是？","choices":["因過於嚴苛，實施後隨即被廢除","成為日本、朝鮮、越南等鄰近國家仿效、制定本國法律的範本","僅在中國通行，對周邊國家毫無影響","由日本傳入中國，是外來的法律制度"],"answer":1,"explain":"唐代律令（如《唐律》）體系完備，成為日本、朝鮮、越南等國制定律令的範本，是東亞文化圈的重要內涵。它並未旋即廢除，也非只在中國通行或由日本傳入中國。"},{"level":"basic","topic":"東亞文化圈","q":"學者所稱的「東亞文化圈」，是指周邊地區共同受到中國哪些文化要素影響而形成的？","choices":["拼音文字、伊斯蘭教、封建制度、種姓制度","楔形文字、基督教、民主制度、奧運","象形數字、印度教、部落制度、遊牧習俗","漢字、儒家思想、（漢傳）佛教、律令制度"],"answer":3,"explain":"東亞文化圈（又稱漢字文化圈）以漢字、儒家思想、漢傳佛教、律令制度為共同要素，日本、朝鮮、越南皆深受影響。其餘選項所列多屬其他文明的特徵，並非東亞文化圈的內涵。"},{"level":"adv","topic":"胡漢融合","q":"唐代時，長安人喜愛吃胡餅、坐胡床，樂舞中也流行西域傳來的音樂。這些現象最能說明什麼歷史發展？","choices":["唐朝人排斥外來文化，堅持傳統","游牧民族已完全取代漢人成為統治者","魏晉以來胡漢長期互動，游牧文化與農業文化相互交融","這些習俗都是日本遣唐使帶進中國的"],"answer":2,"explain":"胡餅、胡床、西域樂舞流行於中原，反映魏晉以來北方游牧民族與中原農業社會長期互動、彼此交融的結果。唐人並未排斥外來文化，游牧民族也未取代漢人成為統治者，這些習俗更非遣唐使帶入。"},{"level":"adv","topic":"五胡內遷背景","q":"魏晉時期，北方游牧民族大量內遷進入中原，並在西晉衰亡後紛紛建立政權。造成中原動盪的重要背景是？","choices":["西晉皇室內鬥（八王之亂）導致國力衰弱，內遷民族趁勢而起","中原氣候溫暖、糧食過剩，主動邀請游牧民族前來","秦始皇修築長城，把游牧民族全部隔絕在外","唐太宗推行開放政策，鼓勵各族遷入"],"answer":0,"explain":"西晉「八王之亂」使中央力量削弱、社會動盪，內遷的游牧民族趁機起兵建立政權，開啟五胡十六國局面。「氣候糧食主動邀請」不符史實；長城隔絕之說時代錯置且與結果相反；唐太宗鼓勵遷入則在唐代，時序在後。"},{"level":"adv","topic":"孝文帝改革目的","q":"北魏孝文帝身為鮮卑君主，卻大力推動說漢語、穿漢服、與漢族通婚。他這麼做的主要用意最可能是？","choices":["藉學習漢文化、促進胡漢融合，以鞏固統治、治理廣大的漢人地區","因為鮮卑文化即將失傳，只好全部拋棄","想討好南方的南朝，準備向南朝投降","為了讓鮮卑貴族反對他，好藉機削弱他們"],"answer":0,"explain":"北魏統治廣大的漢人地區，孝文帝推動漢化以促進胡漢融合、減少統治阻力，鞏固政權。全盤拋棄鮮卑文化並非其主要動機；討好南朝準備投降、故意讓貴族反對自己則不合政治邏輯。"},{"level":"adv","topic":"佛教盛行原因","q":"佛教雖在漢代已傳入，卻在魏晉南北朝時特別盛行。從當時的社會背景推斷，最可能的原因是？","choices":["政府強制規定每個人都必須出家","當時天下太平、生活富足，人民閒來無事才信佛","長期戰亂、社會動盪，人民在佛教中尋求心靈慰藉與寄託","因為當時已沒有其他任何宗教或思想存在"],"answer":2,"explain":"魏晉南北朝長期分裂戰亂、社會動盪，人民生活困苦，佛教關於因果、來世的教義提供心靈慰藉，加上統治者提倡，故特別盛行。政府並未強制出家，當時也非太平富足或別無其他宗教思想。"},{"level":"adv","topic":"大運河評價","q":"對於隋煬帝開鑿大運河，較為持平（客觀）的評價應該是？","choices":["完全是勞民傷財的暴政，對後世毫無任何好處","是一件輕鬆容易的工程，沒有造成任何負擔","隋煬帝因此深得民心，隋朝也因而長治久安","短期內大量徵發民力、加重人民負擔，但長期則便利南北交通與經濟交流"],"answer":3,"explain":"開鑿運河短期內徵發大量民力、加重人民負擔，是隋末民怨與速亡的原因之一；但長遠來看便利南北漕運與經濟文化交流，影響深遠，故此評價最為持平。其餘說法或全盤否定、或過度美化，皆有偏頗。"},{"level":"adv","topic":"科舉影響","q":"科舉制度長期實施後，對中國社會產生的重要影響是？","choices":["使官職完全由世家大族世代繼承，階級更加固定","提供平民憑考試向上流動的機會，並帶動社會重視讀書的風氣","因為不必讀書，社會上識字的人越來越少","使武將地位大幅提升，形成重武輕文的社會"],"answer":1,"explain":"科舉以考試取士，讓平民有憑才學入仕、向上流動的機會，也帶動整個社會重視讀書求學的風氣。「官職世族世襲」是九品中正制的結果，「不必讀書、重武輕文」則與科舉以文取士的性質相反。"},{"level":"adv","topic":"日本學唐","q":"遣唐使返回日本後，帶回許多唐朝的制度與文化。下列何者是日本學習唐朝的具體表現？","choices":["仿效唐朝發明了羅馬字母","廢除文字，改用結繩記事","都城平城京仿照長安的棋盤式布局，並依漢字創造出假名文字","完全放棄中國文化，發展出與東亞無關的獨立文明"],"answer":2,"explain":"日本平城京（奈良）仿唐都長安的棋盤式布局，並在漢字基礎上發展出假名，還參考唐律制定律令，是學習唐朝的具體成果。發明羅馬字母、廢除文字改結繩、放棄中國文化等說法均與史實不符。"},{"level":"adv","topic":"朝鮮越南","q":"除了日本以外，朝鮮半島與越南也屬於「東亞文化圈」。下列敘述何者正確？","choices":["兩地都曾長期使用漢字，並深受儒家思想與（漢傳）佛教影響","兩地都使用拼音字母，且信奉伊斯蘭教","兩地完全不受中國文化影響，自成一格","兩地都是中國大運河的一部分"],"answer":0,"explain":"朝鮮半島與越南長期使用漢字、吸收儒家思想與漢傳佛教，並仿行律令、科舉等制度，同屬東亞文化圈。使用拼音字母信奉伊斯蘭教、完全不受中國影響均與史實相反，兩地更非大運河的一部分。"},{"level":"adv","topic":"東亞文化圈特徵","q":"如果要判斷某個地區是否屬於古代「東亞文化圈」，下列哪一項是最恰當的判斷依據？","choices":["當地是否位於中國境內、由中國直接統治","當地是否曾使用漢字，並受儒學、（漢傳）佛教、律令制度的影響","當地是否與中國有陸地相連","當地是否曾派兵攻打過中國"],"answer":1,"explain":"東亞文化圈的核心判準是文化上的共同性——是否使用漢字並受儒學、漢傳佛教、律令等影響，而非政治統治、地理相連或軍事往來。日本隔海仍屬此圈，可見其餘依據皆不恰當。"},{"level":"adv","topic":"唐文化包容","q":"唐代長安城中，除了佛教寺院，還有祆教、景教等外來宗教的活動，各國人士往來其間。這最能反映唐代文化的什麼特色？","choices":["保守封閉、排斥外來事物","政治腐敗、社會混亂","重視農業、輕視商業","開放包容、兼容並蓄，展現恢弘的國際氣度"],"answer":3,"explain":"長安容納佛教、祆教、景教等多元宗教與各國人士，反映唐代文化開放包容、兼容並蓄的國際性格。保守封閉與現象相反，政治腐敗、重農輕商則與題幹描述的文化包容無關。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

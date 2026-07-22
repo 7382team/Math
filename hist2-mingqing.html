@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>明清時期 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist2-mingqing",
+  "title": "明清時期",
+  "subject": "歷史",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第4課 明清時期",
+  "tag": "近世東亞與世界的交會",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>明清時期</h1><div class="sub">歷史 · 近世東亞與世界的交會 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"明代的建立","q":"推翻蒙古人建立的元朝，於西元1368年建立明朝的開國君主是誰？","choices":["忽必烈","朱元璋","皇太極","趙匡胤"],"answer":1,"explain":"朱元璋(明太祖)推翻元朝，建立明朝，定都應天府(南京)。忽必烈是元朝的建立者，趙匡胤建立宋朝，皇太極則是清朝初期的君主。"},{"level":"basic","topic":"君主專制","q":"明太祖為了加強皇帝的權力、鞏固君主專制，採取了下列哪一項措施？","choices":["廢除丞相，六部直接聽命於皇帝","恢復封建，分封諸侯共治天下","把政務全交給宦官處理","由外戚掌握國家大政"],"answer":0,"explain":"明太祖廢除丞相(宰相)一職，讓六部直接對皇帝負責，使權力集中於皇帝一人之手，君主專制大為加強。其餘各項都會分散皇權，與其目的相反。"},{"level":"basic","topic":"明成祖","q":"將明朝首都由應天府(南京)遷往北京，並派遣船隊下西洋的皇帝是誰？","choices":["明太祖","明思宗","明成祖","明神宗"],"answer":2,"explain":"明成祖(永樂帝)遷都北京，並派鄭和下西洋。明太祖是開國君主、定都南京；明思宗(崇禎)是明朝末代皇帝。"},{"level":"basic","topic":"鄭和下西洋","q":"鄭和的船隊七次下西洋，航行最遠曾到達下列何處？","choices":["美洲大陸","非洲東岸","澳洲大陸","歐洲地中海"],"answer":1,"explain":"鄭和船隊最遠曾抵達非洲東岸(今東非、紅海一帶)。此時歐洲人才正要展開大航海，尚無人橫渡太平洋抵達美洲，因此其他選項都不正確。"},{"level":"basic","topic":"鄭和的目的","q":"明成祖派遣鄭和下西洋，最主要的目的是什麼？","choices":["尋找繞過鄂圖曼帝國的新航路","到美洲開採白銀礦","宣揚國威並發展朝貢貿易","向外傳播基督教信仰"],"answer":2,"explain":"鄭和下西洋主要在宣揚明朝國威、招徠各國前來朝貢。尋找新航路、傳教與追求商業利益是歐洲人航海的動機，並非鄭和的目的。"},{"level":"basic","topic":"大航海時代","q":"十五、十六世紀率先開闢新航路、展開海外擴張的兩個歐洲國家是？","choices":["英國與法國","葡萄牙與西班牙","荷蘭與德國","義大利與俄國"],"answer":1,"explain":"大航海時代最早由葡萄牙與西班牙帶頭開闢新航路，其後荷蘭、英國等才相繼東來，因此葡、西是先驅。"},{"level":"basic","topic":"歐人東來","q":"大航海時代，最早在中國取得澳門作為對華貿易據點的是哪一國？","choices":["荷蘭","西班牙","英國","葡萄牙"],"answer":3,"explain":"葡萄牙人於十六世紀中葉取得澳門，作為對中國貿易的據點。西班牙以菲律賓馬尼拉為據點，荷蘭則一度佔據臺灣。"},{"level":"basic","topic":"白銀來源","q":"明代中期以後大量流入中國的白銀，主要來自下列何處？","choices":["美洲與日本","非洲內陸","印度半島","中國本地新開的大銀礦"],"answer":0,"explain":"流入中國的白銀主要來自西屬美洲(如祕魯、墨西哥)的銀礦，以及日本。中國本身白銀產量不足，主要依賴進口。"},{"level":"basic","topic":"中國出口商品","q":"外國商人用白銀向中國換購的商品，最主要是下列何者？","choices":["稻米與小麥","絲綢、瓷器與茶葉","玉米與番薯","香料與象牙"],"answer":1,"explain":"中國以絲綢、瓷器、茶葉等手工業產品聞名，深受各國歡迎，因而換得大量白銀。玉米、番薯反而是由外國傳入中國的作物。"},{"level":"basic","topic":"一條鞭法","q":"明代後期推行、將賦稅與力役合併並改用白銀繳納的制度稱為？","choices":["均田制","租庸調法","一條鞭法","攤丁入畝"],"answer":2,"explain":"一條鞭法將田賦、力役等項目合併，折算成白銀繳納，反映白銀已成為主要貨幣。攤丁入畝則是清代的賦稅改革。"},{"level":"basic","topic":"新大陸作物","q":"明清時期傳入中國、原產於美洲的重要糧食作物是下列何者？","choices":["稻米與大豆","小麥與高粱","玉米與番薯","茶葉與甘蔗"],"answer":2,"explain":"玉米、番薯(甘藷)原產於美洲，隨大航海時代的物產交流傳入中國。稻米、小麥等則是中國原有的作物。"},{"level":"basic","topic":"人口增長","q":"玉米、番薯等新作物傳入後，對明清中國社會最明顯的影響是什麼？","choices":["人口大幅增加","人口急速減少","商業活動完全停止","白銀大量外流"],"answer":0,"explain":"新作物耐旱、適應力強，使糧食產量增加，能養活更多人口，明清人口因而大幅成長，這是重要的社會變遷。"},{"level":"basic","topic":"海禁政策","q":"明朝初年為防範沿海走私與海上勢力，曾實施什麼政策限制人民出海？","choices":["開放通商","海禁","攤丁入畝","均輸法"],"answer":1,"explain":"明初實施海禁，限制民間私自出海貿易，對外貿易主要透過官方的朝貢體系進行。其餘選項皆非限制出海的政策。"},{"level":"basic","topic":"朝貢貿易","q":"明朝官方所允許的對外貿易，主要透過下列哪一種體系進行？","choices":["自由市場貿易","殖民地貿易","股份公司貿易","朝貢貿易"],"answer":3,"explain":"明朝在海禁之下，對外貿易主要納入朝貢體系，外國須以「朝貢」名義才能與中國進行官方往來與買賣。"},{"level":"adv","topic":"朝貢貿易的性質","q":"某國使節帶著本國特產前來明朝進貢，明朝皇帝回贈更為豐厚的賞賜，並允許使節團順道進行買賣。這種情形最能反映明代對外貿易的什麼特色？","choices":["政府鼓勵民間自由出海通商","貿易被納入朝貢架構，帶有濃厚政治意涵","中國完全不與外國往來","中國以武力強迫各國前來通商"],"answer":1,"explain":"朝貢貿易「厚往薄來」，重在維持中國作為宗主國的政治威望，貿易被包裹在朝貢的架構之中，帶有濃厚的政治意涵，而非單純的自由買賣。"},{"level":"adv","topic":"白銀流入原因","q":"為什麼大航海時代美洲的白銀會源源不斷流入中國？最主要的原因是？","choices":["中國商品廣受各國歡迎，出口遠多於進口","中國向外國大量借款","中國出兵美洲掠奪白銀","外國把白銀當廢物運來中國丟棄"],"answer":0,"explain":"中國的絲綢、瓷器、茶葉暢銷全球，長期處於貿易順差(出超)，外國只能以白銀支付，白銀因而大量流入中國。"},{"level":"adv","topic":"全球貿易網","q":"西班牙人把美洲白銀運到菲律賓馬尼拉，再換取中國的絲綢、瓷器運回美洲。這條橫跨太平洋的貿易連結，最能說明下列何者？","choices":["明清中國自外於世界，與全球貿易無關","白銀只在中國國內流通","明清中國已被捲入全球貿易網之中","美洲與亞洲之間完全沒有往來"],"answer":2,"explain":"馬尼拉大帆船貿易把美洲、亞洲、歐洲連成一氣，說明明清中國已透過白銀與絲貨，被納入全球貿易網之中，並非閉關自守。"},{"level":"adv","topic":"新作物與人口","q":"玉米、番薯之所以能促使中國人口大增，和它們的哪一項特性關係最密切？","choices":["只能種在肥沃的水田裡","種下後不必照顧就能自動大量收成","完全取代稻米成為唯一糧食","耐旱耐瘠，可種於原本難以耕作的山地與旱地"],"answer":3,"explain":"玉米、番薯耐旱、耐貧瘠，能在山地、旱地等原本不利耕種的土地生長，使可耕地與糧食大增，因而支撐了人口的成長。"},{"level":"adv","topic":"中國的角色","q":"若從全球貿易網的角度來看明清中國，下列敘述何者最為貼切？","choices":["是商品輸出、白銀輸入的重要中心","完全沒有任何對外貿易","主要輸出白銀、輸入絲綢","是全世界最大的白銀生產國"],"answer":0,"explain":"明清中國大量輸出絲綢、瓷器、茶葉，並吸納來自美洲、日本的白銀，是全球貿易網中重要的商品供應與白銀匯聚中心；中國白銀多靠進口，並非主要產地。"},{"level":"adv","topic":"鄭和與歐洲比較","q":"同樣是大規模的航海活動，鄭和下西洋與稍後歐洲人的海外擴張，最大的不同在於？","choices":["鄭和以宣揚國威、朝貢為主；歐洲人以貿易獲利與殖民擴張為主","鄭和為了建立海外殖民帝國，歐洲人只是觀光","兩者都以傳播佛教為主要目的","鄭和使用蒸汽輪船，歐洲人使用帆船"],"answer":0,"explain":"鄭和下西洋重在宣揚國威、招徠朝貢，並未佔領土地；歐洲人的航海則以追求商業利益、建立殖民地為主要動機。蒸汽輪船是工業革命之後才出現，與此時無關。"},{"level":"adv","topic":"海禁與倭寇","q":"明代厲行海禁，但東南沿海的走私與『倭寇』問題反而更加嚴重。這最能說明什麼？","choices":["海禁徹底斷絕了一切海上活動","沿海居民從此不再依賴海洋維生","海上貿易需求龐大，禁令難以真正杜絕，反而助長走私","倭寇成員全部都是日本正規軍隊"],"answer":2,"explain":"沿海地區對海上貿易需求強烈，官方海禁無法滿足，反而促使民間走私盛行，並與海盜(倭寇)勢力交織。實際上倭寇成員也包含不少中國沿海居民。"},{"level":"adv","topic":"白銀與賦稅","q":"明代能夠推行『以白銀繳納賦稅』的一條鞭法，和下列哪一項發展關係最密切？","choices":["中國本地銀礦突然大量增產","政府下令禁止人民使用白銀","銅錢完全停止使用","美洲與日本白銀大量流入，使白銀足以作為通用貨幣"],"answer":3,"explain":"大航海時代大量白銀流入中國，使白銀充足到能作為主要通貨，政府才得以推行折銀繳稅的一條鞭法。可見賦稅制度改革與全球白銀流動密切相關。"},{"level":"adv","topic":"史料判讀","q":"明代文獻記載：『民間買賣，大者用銀，小者用錢。』這段話最能反映當時的什麼現象？","choices":["白銀已完全退出市場","政府嚴禁人民使用貨幣交易","中國自給自足，沒有商業行為","白銀已成為市場上通行的主要貨幣"],"answer":3,"explain":"「大者用銀」顯示大額交易普遍使用白銀，反映白銀已成為明代通行的主要貨幣，這與美洲、日本白銀大量流入密切相關。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

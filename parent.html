@@ -111,6 +111,7 @@
   </div>
 
   <div class="sec">開放課程 · 打開孩子可以練/可以打的單元,設每日題數</div>
+  <div id="gradeBar"></div>
   <div id="subjList"></div>
   <div class="save-hint" id="saveHint"></div>
 
@@ -157,7 +158,7 @@ const WD=["日","一","二","三","四","五","六"];
 const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const todayStr=()=>fmt(new Date());
 
-let UNITS=[],COURSES=[],SUBJECTS=[],collapsed={},chapExpanded={};
+let UNITS=[],COURSES=[],SUBJECTS=[],collapsed={},chapExpanded={},curGrade='國一';
 let settings={display_name:"",course_id:"",course_by_subject:{},reward_msg:"",selected_units:[],daily_goals:{},rest_days:[],parent_pin:null,exam_groups:[]};
 let egEdit=null;
 let board={nickname:"",group_code:"",opted_in:false};
@@ -165,7 +166,7 @@ let user=null;
 
 const unit=id=>UNITS.find(u=>u.id===id)||{title:id};
 const subjMeta=s=>SUBJECTS.find(x=>x.id===s)||{id:s,icon:"📚",color:"#8a857b"};
-const coursesFor=s=>COURSES.filter(c=>c.subject===s);
+const coursesFor=s=>COURSES.filter(c=>c.subject===s&&(c.grade||'國一')===curGrade);
 const cfg=uid=>{let g=settings.daily_goals[uid];if(g==null)return{target:10,mode:"attempts",level:"mix"};if(typeof g==="number")return{target:g,mode:"attempts",level:"mix"};return{target:g.target||10,mode:g.mode||"attempts",level:g.level||"mix"};};
 const enabled=()=>settings.selected_units.filter(u=>settings.daily_goals[u]!=null);
 
@@ -320,7 +321,7 @@ function chapterTreeHTML(sid,chapters){
   chapters.forEach((ch,idx)=>{
     const objs=chapObjs(ch); if(!objs.length) return;
     const rids=objs.filter(u=>u.ready!==false).map(u=>u.id);
-    if(ch.term!==lastTerm){ html+=`<div class="term-h">國一${ch.term||"上"}</div>`; lastTerm=ch.term; }
+    if(ch.term!==lastTerm){ html+=`<div class="term-h">${curGrade}${ch.term||"上"}</div>`; lastTerm=ch.term; }
     const onCnt=rids.filter(id=>settings.selected_units.includes(id)).length, total=rids.length, pend=objs.length-total;
     const state=total&&onCnt===total?"all":(onCnt>0?"some":"none");
     const exp=!!chapExpanded[sid+"|"+idx];
@@ -341,10 +342,20 @@ window.toggleChap=async(sid,idx)=>{
   else { ids.forEach(id=>{ if(!settings.selected_units.includes(id))settings.selected_units.push(id); if(settings.daily_goals[id]==null)settings.daily_goals[id]={target:10,mode:"attempts",level:"mix"}; }); chapExpanded[sid+"|"+idx]=true; }
   renderSubjects(); renderExam(); await saveSettings(); await loadOverview();
 };
+function renderGrades(){
+  const bar=$("gradeBar"); if(!bar) return;
+  const gs=['國一','國二','國三'].filter(g=>UNITS.some(u=>u.ready&&(u.grade||'國一')===g));
+  if(gs.length<=1){ bar.innerHTML=''; return; }
+  bar.innerHTML='<div style="display:flex;gap:8px;margin:2px 0 14px">'+gs.map(g=>{const on=g===curGrade;
+    return `<button onclick="setGrade('${g}')" style="flex:1;padding:10px 0;border-radius:12px;border:1.5px solid ${on?'#1b1d26':'#e0ddd2'};background:${on?'#1b1d26':'#fff'};color:${on?'#fff':'#6b6f52'};font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:.15s">${g}</button>`;
+  }).join('')+'</div>';
+}
+window.setGrade=(g)=>{ if(g===curGrade) return; curGrade=g; chapExpanded={}; renderSubjects(); };
 function renderSubjects(){
-  const subs=SUBJECTS.filter(s=>UNITS.some(u=>u.subject===s.id&&u.ready)).map(s=>s.id);
+  renderGrades();
+  const subs=SUBJECTS.filter(s=>UNITS.some(u=>u.subject===s.id&&u.ready&&(u.grade||'國一')===curGrade)).map(s=>s.id);
   $("subjList").innerHTML=subs.map(sid=>{ const m=subjMeta(sid),open=!collapsed[sid];
-    const list=UNITS.filter(u=>u.subject===sid&&u.ready);
+    const list=UNITS.filter(u=>u.subject===sid&&u.ready&&(u.grade||'國一')===curGrade);
     const onCnt=list.filter(u=>settings.selected_units.includes(u.id)).length;
     const courses=coursesFor(sid),cur=(settings.course_by_subject||{})[sid]||"";
     const ver=courses.length?`<div class="verrow"><span class="l">版本</span><select onchange="setVer('${sid}',this.value)"><option value="">預設</option>${courses.map(c=>`<option value="${c.id}" ${c.id===cur?"selected":""}>${c.title}</option>`).join("")}</select></div>`:"";

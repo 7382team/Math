@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>商周至漢代 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist2-shanghan",
+  "title": "商周至漢代",
+  "subject": "歷史",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1課 商周至漢代",
+  "tag": "國家與社會的建構",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>商周至漢代</h1><div class="sub">歷史 · 國家與社會的建構 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"封建制度","q":"西周時期，周天子將土地與人民分封給王室子弟與功臣，讓他們建立諸侯國以拱衛王室。這種制度稱為什麼？","choices":["郡縣制","封建制度","三省六部制","科舉制度"],"answer":1,"explain":"西周以封建制度分封諸侯，諸侯再對天子盡朝貢、隨從作戰等義務。郡縣制是秦朝的地方制度；三省六部與科舉都是後代（隋唐）才出現，皆不符合。"},{"level":"basic","topic":"宗法制度","q":"周代的宗法制度用來確定繼承與尊卑關係，王位、爵位主要由哪一種身分的人繼承？","choices":["正妻所生的長子（嫡長子）","妾所生的長子","年紀最小的兒子","才能最出眾的兒子"],"answer":0,"explain":"宗法制度採「嫡長子繼承制」，由正妻所生的長子繼承大宗，以避免爭位。其餘選項都不是宗法制度的繼承原則。"},{"level":"basic","topic":"甲骨文","q":"目前所知中國最早、已具系統的成熟文字，多刻在龜甲與獸骨上，出現於哪一個朝代？","choices":["夏朝","西周","商朝","秦朝"],"answer":2,"explain":"甲骨文是商朝的文字，主要刻在龜甲、獸骨上，是研究商代歷史的重要一手史料，早於西周與秦朝；夏朝目前尚無這類成熟文字的直接證據。"},{"level":"basic","topic":"甲骨文","q":"商朝人把文字刻在龜甲、獸骨上，最主要是為了記錄什麼事情？","choices":["買賣田地的契約","學生讀書的課本","詩歌與文學創作","占卜的問題與結果"],"answer":3,"explain":"商人遇事常占卜，並把占卜的內容與結果刻在甲骨上，故稱「卜辭」。甲骨文主要用途是記錄占卜，而非契約、課本或文學創作。"},{"level":"basic","topic":"青銅器","q":"商周時期，貴族用來祭祀祖先、象徵身分地位的禮器，多半是以哪一種材質鑄造？","choices":["鐵","青銅","陶土","黃金"],"answer":1,"explain":"商周是青銅器發達的時代，貴族以青銅鑄造鼎等禮器用於祭祀，象徵地位與權力。鐵器要到春秋戰國才普及；陶土與黃金並非當時禮器的主要材質。"},{"level":"basic","topic":"春秋戰國經濟","q":"春秋戰國時期農業生產力大幅提升，最主要是因為哪一項技術的推廣？","choices":["鐵製農具與牛耕的使用","火藥的發明","曲轅犁的普及","蒸汽機的引進"],"answer":0,"explain":"春秋戰國時鐵製農具與牛耕逐漸普及，開墾更多土地，糧食增加，推動社會變動。火藥、曲轅犁是唐宋才出現，蒸汽機更是近代西方的產物。"},{"level":"basic","topic":"諸子百家","q":"春秋戰國時期，面對劇烈的社會變動，出現許多提出各種主張的思想學派，後人合稱為什麼？","choices":["三教九流","唐宋八大家","諸子百家","建安七子"],"answer":2,"explain":"春秋戰國思想活躍，儒、道、墨、法等學派並起，合稱「諸子百家」。唐宋八大家、建安七子是後代文學上的稱呼，與此時代不符。"},{"level":"basic","topic":"秦的統一","q":"西元前221年，結束長期分裂、首次統一中國並自稱「始皇帝」的君主是誰？","choices":["周武王","漢高祖","商鞅","秦始皇（嬴政）"],"answer":3,"explain":"秦王嬴政滅六國、統一天下，自稱「始皇帝」，是中國第一位皇帝。周武王是西周開國君主；漢高祖是漢朝開國者；商鞅是戰國變法的政治家，皆非統一者。"},{"level":"basic","topic":"郡縣制","q":"秦朝統一後，在地方推行由中央任命官員、官位不世襲的制度，稱為什麼？","choices":["封建制度","郡縣制","宗法制度","行省制"],"answer":1,"explain":"秦朝廢封建、行郡縣，地方分為郡、縣，長官由皇帝直接派任且不世襲，以加強中央集權。封建制度的諸侯世襲，與郡縣制相反；宗法制是繼承制度，不是地方行政制度；行省制要到元朝才出現，皆不符合。"},{"level":"basic","topic":"秦統一措施","q":"秦始皇為了鞏固統一、便利各地往來，推行了下列哪一項措施？","choices":["統一文字、度量衡與貨幣","開科取士選拔官員","獨尊儒術罷黜百家","派鄭和下西洋"],"answer":0,"explain":"秦推行「書同文、車同軌」，統一文字（小篆）、度量衡與貨幣，利於統治與交流。科舉是隋唐制度；獨尊儒術是漢武帝的政策；鄭和下西洋是明朝之事，皆非秦始皇所為。"},{"level":"basic","topic":"文景之治","q":"漢初「文景之治」時期，統治者採取哪一種治國方針，讓社會經濟得以恢復？","choices":["嚴刑峻法、加重賦稅","大興土木、對外征戰","輕徭薄賦、與民休息","罷黜百家、獨尊儒術"],"answer":2,"explain":"文景之治承黃老「無為」思想，輕徭薄賦、與民休息，使漢初國力逐漸恢復、府庫充實。嚴刑峻法是秦的作風；大興土木、對外征戰與獨尊儒術則多屬漢武帝時期的作為。"},{"level":"basic","topic":"獨尊儒術","q":"漢武帝接受董仲舒的建議，「罷黜百家」而特別尊崇哪一家的思想，使它成為此後的主流學說？","choices":["法家","道家","墨家","儒家"],"answer":3,"explain":"漢武帝採董仲舒「罷黜百家，獨尊儒術」，儒家自此成為官方正統思想。法家是秦所重用；道家（黃老）盛行於漢初；墨家在此時已趨沒落，皆非答案。"},{"level":"basic","topic":"張騫通西域","q":"漢武帝時奉命出使西域，雖歷經艱險，卻促成中原與西域往來、為日後絲路奠基的人物是誰？","choices":["班超","張騫","玄奘","鄭和"],"answer":1,"explain":"漢武帝派張騫出使西域，帶回西域各國的資訊，開啟中原與西域的交通，是絲路開通的關鍵。班超是東漢經營西域者；玄奘是唐代取經僧；鄭和是明代航海家，時代與事蹟皆不符。"},{"level":"basic","topic":"絲路貿易","q":"透過絲路，中國向西方輸出的重要商品中，最具代表性的是哪一項？","choices":["絲綢","咖啡","橡膠","菸草"],"answer":0,"explain":"中國以絲綢聞名於西方，絲綢是絲路上向西輸出的代表性商品，「絲路」也因此得名。咖啡、橡膠、菸草分別原產於非洲、美洲等地，並非漢代中國向西輸出之物。"},{"level":"adv","topic":"封建與宗法","q":"小明讀到：「周天子把土地分給諸侯，諸侯再分給卿大夫；同時規定由嫡長子繼承，其餘子弟往下分封。」這段話最能說明周代哪兩種制度彼此配合？","choices":["郡縣制與科舉制","郡縣制與宗法制","封建制與宗法制","專賣制與察舉制"],"answer":2,"explain":"「分封土地」屬封建制，「嫡長子繼承、依血緣分封」屬宗法制，兩者相輔相成，構成周代統治的基礎。郡縣制、科舉、專賣、察舉均非周代這段敘述所指的制度。"},{"level":"adv","topic":"甲骨文史料","q":"學者研究商朝歷史時，常把甲骨文列為特別重要的證據。最主要的原因是什麼？","choices":["它是後人根據傳說想像寫成的","它記載了唐宋時期的政治","它是外國商人留下的紀錄","它是商朝當時人留下的第一手文字資料"],"answer":3,"explain":"甲骨文是商朝當時人親手刻寫、記錄當代事務的文字，屬於一手（第一手）史料，可信度高，因此格外重要。其他選項或把年代弄錯，或誤以為是傳說、外國紀錄，皆不正確。"},{"level":"adv","topic":"青銅器銘文","q":"有些商周青銅器內側鑄有文字（金文），記錄了受封、戰功或祭祀等事。這些銘文對今天的人最大的價值是什麼？","choices":["可作為了解當時政治與社會的重要史料","證明商周已經使用紙張印刷","說明當時已普遍使用鐵器耕作","記錄了絲路貿易的往來帳目"],"answer":0,"explain":"青銅器上的金文記載當時的分封、戰功、祭祀等事，是研究商周政治與社會的重要文字史料。紙張印刷是後代發明；鐵器普及是春秋戰國之事；絲路遲至漢代才開通，皆與商周金文無關。"},{"level":"adv","topic":"春秋戰國變法","q":"戰國時期各國紛紛任用人才、推動變法（如秦國任用商鞅）。各國這麼做，最主要的目的是什麼？","choices":["為了推廣佛教信仰","為了富國強兵，在兼併戰爭中生存並取勝","為了恢復周天子的權威","為了開闢通往歐洲的絲路"],"answer":1,"explain":"戰國諸國彼此兼併、征戰不休，變法圖強的核心目的是「富國強兵」，以求自保與擴張。當時佛教尚未傳入；各國並非要恢復周天子權威；絲路則是漢代才開通。"},{"level":"adv","topic":"郡縣制與封建比較","q":"與周代的封建制度相比，秦朝郡縣制最大的不同（也是它能加強中央集權的關鍵）在於哪一點？","choices":["地方官職世代相傳，長期由同一家族掌握","天子只保留虛名，實權都在諸侯手中","地方長官由中央任命、可調動撤換，且不世襲","地方完全自治，中央不加干涉"],"answer":2,"explain":"郡縣制的地方長官由皇帝任命，可隨時調動或罷免，且職位不世襲，權力收歸中央，故能加強中央集權。世襲、諸侯掌實權、地方自治等，正是封建制的特徵，與郡縣制相反。"},{"level":"adv","topic":"推恩令","q":"漢武帝下令：諸侯王死後，要把封地分給「所有」子弟，而不只傳給嫡長子。這道政策（推恩令）真正的用意是什麼？","choices":["讓諸侯國愈來愈大，好對抗匈奴","恢復周代的宗法繼承制度","鼓勵諸侯多多開墾荒地","使諸侯的封地越分越小，削弱其勢力"],"answer":3,"explain":"推恩令表面上「施恩」給諸侯眾子弟，實則使每個諸侯國被越分越小、力量分散，藉此削弱地方、鞏固中央。它的效果與「讓諸侯壯大」「恢復宗法」「鼓勵開墾」都相反或無關。"},{"level":"adv","topic":"儒學制度化","q":"漢武帝除了「獨尊儒術」，還設立「太學」並以儒家經典教學。設太學這項措施，對儒學造成最直接的影響是什麼？","choices":["培養通曉儒學的人才進入官府，使儒學與做官結合","使道家思想重新成為主流","讓佛教得以在中國廣為流傳","廢除文字，改以口耳相傳"],"answer":0,"explain":"太學以儒家經典培育人才，學成者多可入仕，使「讀儒學」與「當官」緊密結合，鞏固了儒學的主流地位。它並非振興道家或佛教，更不會廢除文字。"},{"level":"adv","topic":"絲路文化交流","q":"絲路開通後，除了商品買賣，還帶來什麼重要影響？下列敘述最恰當的是哪一項？","choices":["使東西方從此不再有任何往來","促成東西方在物產、宗教與文化上的交流（如佛教傳入中國）","讓中國文字傳遍整個歐洲並取代拉丁文","造成中國從此與世界完全隔絕"],"answer":1,"explain":"絲路不只是貿易通道，也是文化、宗教（如佛教東傳）與物產交流的橋樑，促進東西方互動。其餘選項把絲路的作用說成「斷絕往來」「取代拉丁文」等，與史實不符。"},{"level":"adv","topic":"東亞文化圈","q":"日本、朝鮮、越南等地在歷史上都曾使用漢字、學習儒學、仿行律令制度。這說明了什麼現象？","choices":["這些地區在漢代就被納入中國的郡縣直接管轄","這些地區的文化與中國毫無關聯","中國的漢字、儒學、律令向外傳播，形成以其為核心的「東亞文化圈」","漢字、儒學、律令其實是由這些地區傳入中國"],"answer":2,"explain":"漢字、儒學、律令向周邊地區傳播，成為日本、朝鮮、越南等地共同的文化要素，形成「東亞文化圈」。這些地區並非都被納入中國郡縣直接統治，文化也非毫無關聯，更不是由它們傳入中國。"},{"level":"adv","topic":"漢初到漢武帝脈絡","q":"漢初採「與民休息」的政策，到了漢武帝卻能大規模對外用兵、興辦事業。這兩者之間最合理的關聯是什麼？","choices":["兩者毫無關係，純屬巧合","因為漢武帝比文帝、景帝更早在位","因為漢武帝恢復了封建制度才有錢打仗","漢初休養生息累積了國力與財富，才使漢武帝有本錢積極作為"],"answer":3,"explain":"文景之治的休養生息使國力與府庫充實，為漢武帝日後對外用兵、推動各項事業奠定經濟基礎，兩者是「先累積、後施展」的因果脈絡。武帝在文景之後即位，也未恢復封建制度，其餘選項皆誤。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

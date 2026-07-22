@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>元素與原子 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "sci-atom",
+  "title": "元素與原子",
+  "subject": "理化",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第6章 物質的結構與化學式",
+  "tag": "元素與化學式",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>元素與原子</h1><div class="sub">理化 · 元素與化學式 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"元素的概念","q":"下列關於「元素」的敘述，何者正確？","choices":["元素是由兩種以上不同原子組成的物質","元素是無法用一般化學方法再分解成更簡單物質的純物質","水和二氧化碳都屬於元素","元素一定是氣體"],"answer":1,"explain":"元素是無法以一般化學方法再分解成更簡單物質的純物質，由同一種原子組成。水、二氧化碳由兩種以上元素組成，屬於化合物；元素也不一定是氣體(如鐵、銅為固體)。"},{"level":"basic","topic":"元素符號-氫","q":"氫的元素符號是下列何者？","choices":["H","He","Hg","N"],"answer":0,"explain":"氫的元素符號為 H。He 是氦、Hg 是汞、N 是氮。"},{"level":"basic","topic":"元素符號-鈉","q":"元素符號「Na」代表哪一種元素？","choices":["氮","鎳","鈣","鈉"],"answer":3,"explain":"Na 代表鈉。氮是 N、鎳是 Ni、鈣是 Ca，都不是 Na。"},{"level":"basic","topic":"元素符號-鐵","q":"鐵的元素符號是下列何者？","choices":["F","Fr","Fe","Ir"],"answer":2,"explain":"鐵的元素符號為 Fe(源自拉丁文 ferrum)。F 是氟、Fr 是鍅、Ir 是銥。"},{"level":"basic","topic":"元素符號配對","q":"下列「元素符號—名稱」的配對，何者正確？","choices":["Cl—氯","C—鈣","O—氫","Cu—碳"],"answer":0,"explain":"Cl 是氯，配對正確。C 是碳(鈣為 Ca)、O 是氧(氫為 H)、Cu 是銅(碳為 C)，其餘三項皆錯誤。"},{"level":"basic","topic":"原子結構-電荷","q":"在原子中，帶正電的粒子是下列何者？","choices":["電子","中子","光子","質子"],"answer":3,"explain":"質子帶正電。電子帶負電、中子不帶電，而光子並不是原子的組成粒子。"},{"level":"basic","topic":"原子結構","q":"關於原子的構造，下列敘述何者正確？","choices":["質子與電子都位於原子核內","原子核由質子和中子組成，電子分布在原子核外","中子帶負電，位於原子核外","電子位於原子核內，質子在核外運動"],"answer":1,"explain":"原子核由質子與中子組成，帶負電的電子則分布在核外。中子不帶電，且電子不在核內、質子不在核外。"},{"level":"basic","topic":"原子序=質子數","q":"已知某原子的原子序為 8，則此原子的質子數為多少？","choices":["4","16","8","0"],"answer":2,"explain":"原子序 = 質子數，因此原子序 8 表示質子數為 8(此為氧原子)。"},{"level":"basic","topic":"化學式-水","q":"水的化學式是下列何者？","choices":["H₂O","HO₂","H₂O₂","OH"],"answer":0,"explain":"水由 2 個氫原子與 1 個氧原子組成，化學式為 H₂O。H₂O₂ 是過氧化氫，並非水。"},{"level":"basic","topic":"化學式-二氧化碳","q":"二氧化碳的化學式是下列何者？","choices":["CO","CaO","C₂O","CO₂"],"answer":3,"explain":"二氧化碳由 1 個碳原子與 2 個氧原子組成，化學式為 CO₂。CO 是一氧化碳、CaO 是氧化鈣。"},{"level":"basic","topic":"化學式-氯化鈉","q":"食鹽的主要成分為氯化鈉，其化學式是下列何者？","choices":["Na₂Cl","NaCl","NaCl₂","NCl"],"answer":1,"explain":"氯化鈉的化學式為 NaCl，鈉與氯的原子數目比為 1:1。"},{"level":"basic","topic":"金屬與非金屬","q":"下列元素中，何者屬於金屬元素？","choices":["氧","氯","銅","硫"],"answer":2,"explain":"銅為金屬元素，具金屬光澤、能導電導熱。氧、氯、硫皆為非金屬元素。"},{"level":"basic","topic":"週期表-族","q":"在元素週期表中，同一「族」(同一直行)的元素通常具有下列何種特性？","choices":["具有相同的質子數","具有相似的化學性質","具有完全相同的原子量","一定都是金屬"],"answer":1,"explain":"同一族(同一直行)的元素化學性質相似。它們的質子數各不相同、原子量也不同，且同一族不一定都是金屬。"},{"level":"basic","topic":"原子與分子","q":"關於原子與分子，下列敘述何者正確？","choices":["分子一定比原子小","原子是由分子結合而成的","原子與分子是完全相同的東西","分子通常由兩個或多個原子結合而成"],"answer":3,"explain":"分子由兩個或多個原子結合而成，因此分子不會比組成它的原子小；是分子由原子組成，而非原子由分子組成。"},{"level":"adv","topic":"化合物判斷","q":"下列物質中，何者是「化合物」？","choices":["氧氣 (O₂)","鐵 (Fe)","水 (H₂O)","氦氣 (He)"],"answer":2,"explain":"化合物由兩種以上元素組成，水由氫、氧兩種元素組成，屬於化合物。O₂、Fe、He 都只由一種元素組成，屬於元素。"},{"level":"adv","topic":"元素vs化合物","q":"下列何者屬於「單一元素」構成的純物質(不是化合物)？","choices":["氧氣 (O₂)","二氧化碳 (CO₂)","氯化鈉 (NaCl)","水 (H₂O)"],"answer":0,"explain":"氧氣 O₂ 只由氧一種元素組成，屬於元素。CO₂、NaCl、H₂O 都由兩種以上元素組成，屬於化合物。"},{"level":"adv","topic":"分子中的原子數","q":"一個二氧化碳分子(CO₂)中，共含有幾個原子？","choices":["1 個","2 個","3 個","4 個"],"answer":2,"explain":"CO₂ 由 1 個碳原子與 2 個氧原子組成，共 1 + 2 = 3 個原子。"},{"level":"adv","topic":"化學式的意義","q":"化學式「H₂O」中，寫在 H 右下方的數字「2」代表的意義是？","choices":["有 2 個水分子","一個水分子中含有 2 個氫原子","氫原子帶 2 個正電","水的質量是 2"],"answer":1,"explain":"化學式中原子符號右下方的數字表示該原子的個數，H₂O 表示一個水分子含 2 個氫原子與 1 個氧原子。"},{"level":"adv","topic":"原子序-中性原子","q":"已知某中性(不帶電)原子的原子序為 6，下列敘述何者正確？","choices":["它有 6 個質子，也有 6 個電子","它有 6 個中子，沒有質子","它有 6 個質子，卻有 12 個電子","它的原子核帶負電"],"answer":0,"explain":"原子序 = 質子數 = 6；中性原子的電子數等於質子數，故也有 6 個電子。原子核由質子與中子組成，帶正電。"},{"level":"adv","topic":"元素符號書寫規則","q":"關於元素符號的書寫規則，下列何者正確？","choices":["若為兩個字母，兩個都要大寫","只能用一個大寫字母表示","第一個字母大寫，第二個字母小寫(如 Na、Cl)","字母的大小寫沒有規定"],"answer":2,"explain":"元素符號若由兩個字母組成，第一個字母大寫、第二個字母小寫，例如 Na、Cl、Fe。若寫成兩個大寫(如 CO)則代表由 C 和 O 兩種元素組成的化合物。"},{"level":"adv","topic":"化合物可分解","q":"水(H₂O)可以用電解的方法分解成氫氣和氧氣，這個現象說明水是？","choices":["一種元素，因為它無法再分解","一種金屬","一種原子","一種化合物，可分解成更簡單的物質"],"answer":3,"explain":"水能被分解成氫、氧兩種更簡單的物質(元素)，表示水是由不同元素組成的化合物；元素則無法用一般化學方法再分解。"},{"level":"adv","topic":"週期表-金屬分布","q":"關於元素週期表，下列敘述何者正確？","choices":["橫列稱為「族」，直行稱為「週期」","金屬元素多分布在週期表的左側與中間，非金屬多在右側","週期表中所有的元素都是金屬","同一週期的元素化學性質完全相同"],"answer":1,"explain":"週期表中金屬元素多位於左側與中間，非金屬元素多位於右側。橫列是「週期」、直行是「族」；化學性質相似的是同一族，而非同一週期。"},{"level":"adv","topic":"化學式-元素種類","q":"下列化學式中，何者表示「由兩種不同元素組成」的物質？","choices":["O₂","H₂","Fe","CO₂"],"answer":3,"explain":"CO₂ 由碳(C)和氧(O)兩種元素組成。O₂、H₂ 各只含一種元素，Fe 也只含鐵一種元素，皆為單一元素構成。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

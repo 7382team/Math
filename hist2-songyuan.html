@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>宋元時期 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist2-songyuan",
+  "title": "宋元時期",
+  "subject": "歷史",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3課 宋元時期",
+  "tag": "經濟發展與東亞互動",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>宋元時期</h1><div class="sub">歷史 · 經濟發展與東亞互動 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"經濟重心南移","q":"「蘇湖熟，天下足」這句宋代諺語反映了下列哪一項現象？","choices":["北方農業技術始終領先全國","江南地區成為全國糧食生產的重心","四川地區工商業最為發達","沿海居民多以海外貿易維生"],"answer":1,"explain":"「蘇湖熟，天下足」指太湖流域(蘇州、湖州一帶)稻米豐收便能供應全國，說明宋代江南已成為糧食生產重心，是經濟重心南移的具體表現。其餘選項與此諺語主旨無關。"},{"level":"basic","topic":"占城稻","q":"宋代自國外引進、耐旱又早熟，使稻米產量大增的稻種是？","choices":["占城稻","蓬萊米","在來米","玉米"],"answer":0,"explain":"宋代自占城(今中南半島)引進「占城稻」，具耐旱、早熟、可一年多穫的特性，使南方稻米產量大增。蓬萊米、在來米是後世台灣的稻種，玉米則是明代以後才由美洲傳入。"},{"level":"basic","topic":"交子","q":"世界上最早的紙幣「交子」出現於北宋的哪一地區？","choices":["開封","臨安","泉州","四川"],"answer":3,"explain":"北宋時四川地區商業發達，因當地使用的鐵錢笨重不便，商人遂發行「交子」作為交易憑證，這是世界上最早的紙幣。開封、臨安為都城，泉州為港口，皆非交子起源地。"},{"level":"basic","topic":"泉州港","q":"宋元時期被外國商人稱為國際大港、有「刺桐」之稱的港口是？","choices":["廣州","泉州","明州","揚州"],"answer":1,"explain":"泉州在宋元時期是重要的國際貿易港，外國商人以「刺桐(Zaitun)」稱之，一度為世界知名大港。廣州、明州、揚州雖也是港市，但「刺桐」專指泉州。"},{"level":"basic","topic":"市舶司","q":"宋朝在重要港口設置、專門管理海外貿易並抽稅的機構稱為？","choices":["市舶司","節度使","都護府","錦衣衛"],"answer":0,"explain":"宋朝在廣州、泉州等港口設「市舶司」，管理海外貿易並徵收關稅，是重要的財政來源。節度使是唐代地方軍政官，都護府為唐代邊疆機構，錦衣衛則是明代特務機關。"},{"level":"basic","topic":"活字印刷","q":"北宋時發明膠泥活字印刷術、提高印刷效率的人是？","choices":["蔡倫","沈括","祖沖之","畢昇"],"answer":3,"explain":"北宋畢昇發明膠泥活字印刷術，可重複排版、提高效率。蔡倫是東漢改良造紙術者；沈括在《夢溪筆談》中記載畢昇的發明，本人並非發明者；祖沖之則以計算圓周率著名。"},{"level":"basic","topic":"指南針","q":"宋代將指南針廣泛運用於下列何者，促進了海上貿易的發展？","choices":["農田灌溉","天文曆法","航海辨識方向","印刷書籍"],"answer":2,"explain":"宋代把指南針應用於航海，使船隻在海上也能辨識方向、遠航更安全，帶動海上貿易興盛。灌溉、曆法、印刷都與指南針無關。"},{"level":"basic","topic":"火藥","q":"下列關於宋代火藥的敘述，何者正確？","choices":["火藥開始被大量運用於軍事戰爭","火藥最早由歐洲傳入中國","火藥主要用於印刷書籍","火藥的發明使造紙術得以出現"],"answer":0,"explain":"宋代火藥技術成熟並大量運用於軍事，出現各種火器。火藥是中國的發明，後來才西傳歐洲(選項二相反)；火藥與印刷、造紙分屬不同技術(選項三、四錯誤)。"},{"level":"basic","topic":"遼與契丹","q":"與北宋並立、由耶律阿保機建立的遼，屬於下列哪一民族？","choices":["女真族","党項族","契丹族","蒙古族"],"answer":2,"explain":"遼由契丹族的耶律阿保機建立。女真族建立金，党項族建立西夏，蒙古族則於稍後崛起建立蒙古帝國與元朝。"},{"level":"basic","topic":"金與女真","q":"先後滅掉遼與北宋、由完顏阿骨打所建立的金，屬於哪一民族？","choices":["契丹族","党項族","匈奴","女真族"],"answer":3,"explain":"金由女真族的完顏阿骨打建立，後滅遼並攻滅北宋。契丹族建立遼，党項族建立西夏，匈奴則是漢代北方的游牧民族，與金無關。"},{"level":"basic","topic":"西夏與党項","q":"位於西北、由元昊建立、與宋遼並立的西夏，屬於哪一民族？","choices":["契丹族","党項族","女真族","鮮卑族"],"answer":1,"explain":"西夏由党項族的元昊建立，位於西北。契丹族建立遼，女真族建立金，鮮卑族則是南北朝時期建立北魏等政權的民族。"},{"level":"basic","topic":"成吉思汗","q":"西元1206年統一蒙古各部、被尊為「成吉思汗」的是誰？","choices":["忽必烈","窩闊台","鐵木真","完顏阿骨打"],"answer":2,"explain":"鐵木真統一蒙古各部後被尊為「成吉思汗」。窩闊台、忽必烈皆為其後代；完顏阿骨打則是女真族金朝的建立者，並非蒙古領袖。"},{"level":"basic","topic":"忽必烈與元朝","q":"正式建立元朝、並滅南宋完成統一的蒙古領袖是？","choices":["成吉思汗","耶律阿保機","岳飛","忽必烈"],"answer":3,"explain":"忽必烈定國號為「元」，並滅南宋、統一全國。成吉思汗統一蒙古但未建元朝；耶律阿保機建立遼；岳飛則是南宋抗金名將，並非蒙古人。"},{"level":"basic","topic":"元朝大都","q":"元朝統一中國後，將首都定於下列何處？","choices":["臨安","開封","大都","長安"],"answer":2,"explain":"元朝定都「大都」，即今日的北京。臨安(杭州)是南宋都城，開封是北宋都城，長安則為漢唐都城。"},{"level":"adv","topic":"澶淵之盟","q":"北宋與遼訂立「澶淵之盟」後，雙方維持長期和平。北宋主要以何種方式換取和平？","choices":["割讓燕雲十六州給遼","每年送給遼歲幣(銀、絹)","派兵協助遼對外作戰","開放科舉考試給契丹人"],"answer":1,"explain":"澶淵之盟後，北宋每年送給遼定額的歲幣(銀、絹)，換取雙方長期不再大規模交戰。燕雲十六州在此之前已非宋所有；宋並未派兵助遼，也未開放科舉給契丹。"},{"level":"adv","topic":"靖康之難與南宋","q":"金軍攻陷開封、擄走徽宗與欽宗，北宋因而滅亡；之後宋室南遷、定都臨安，史稱？","choices":["東晉","蜀漢","北宋","南宋"],"answer":3,"explain":"金滅北宋(靖康之難)後，宋室南遷、由高宗趙構在臨安(杭州)延續政權，史稱南宋。東晉、蜀漢是更早的朝代；北宋則已滅亡，並非南遷後的名稱。"},{"level":"adv","topic":"經濟重心南移的原因","q":"宋代經濟重心逐漸由北方移往南方，下列何者是促成此現象的重要原因？","choices":["北方戰亂使人口大量南遷，帶來勞力與技術","南方氣候寒冷不利農作","政府禁止北方人民從事農耕","南方缺乏河川不利灌溉"],"answer":0,"explain":"北方長期戰亂促使人口南遷，帶來勞動力與生產技術，加上南方氣候溫暖、水源充足，農工商業因而興盛，經濟重心南移。其餘選項與史實相反：南方氣候溫暖、河川眾多，政府也未禁止北方人耕作。"},{"level":"adv","topic":"宋代城市商業","q":"與唐代相比，宋代城市的商業活動出現明顯變化，下列敘述何者正確？","choices":["商業活動仍嚴格限制在白天固定的市集","打破坊市界線，並出現熱鬧的夜市","城市中一律禁止設立娛樂場所","商人地位低落而完全不得經商"],"answer":1,"explain":"宋代打破唐代「坊(住宅)」「市(商業)」的分區與時間限制，商店沿街可設，夜市也十分熱鬧，並出現瓦子(瓦舍)等娛樂場所。其餘選項與宋代商業繁榮的情況不符。"},{"level":"adv","topic":"海上貿易興盛","q":"宋代海上貿易特別發達，下列何者是重要的促成因素？","choices":["北方陸上絲路完全由宋朝控制","農業衰退迫使人民出海","指南針用於航海，加上造船技術進步","政府嚴格禁止對外貿易"],"answer":2,"explain":"宋代指南針應用於航海、造船技術進步，加上北方陸路受遼金阻隔，對外貿易轉而倚重海路，海上貿易因而興盛。北方陸路並非宋所能掌控；農業其實發達；政府也設市舶司獎勵而非禁止海貿。"},{"level":"adv","topic":"蒙古西征","q":"蒙古多次西征，對東西文化交流最重要的影響是？","choices":["把歐洲的火藥傳入中國","使佛教首次傳入中國","讓造紙術第一次傳到西方","將中國的火藥、印刷術、指南針等技術西傳"],"answer":3,"explain":"蒙古西征打通歐亞交通，使中國的火藥、印刷術、指南針等技術傳入西方，對後來歐洲發展影響深遠。火藥是中國發明而非歐洲傳入；佛教早在漢代已傳入中國；造紙術則更早便已西傳，皆非蒙古西征之功。"},{"level":"adv","topic":"元朝四等人制","q":"元朝將人民依族群分為四等，此「四等人制」的主要用意是？","choices":["鞏固蒙古人的統治地位、便於分化各族","促進各族群完全平等","推廣科舉、大量選拔漢人做官","鼓勵各族通婚以達民族融合"],"answer":0,"explain":"元朝將人民分為蒙古人、色目人、漢人、南人四等，並在待遇上有所差別，目的在鞏固蒙古統治、分化並防範人數眾多的漢人。此制度造成不平等，與促進平等、重用漢人或鼓勵融合的說法相反。"},{"level":"adv","topic":"交子出現原因","q":"北宋四川地區最早出現紙幣「交子」，其出現的主要原因是？","choices":["當地缺乏金屬無法鑄造錢幣","鐵錢笨重不便攜帶，商業交易需要更方便的貨幣","政府下令全面禁止使用銅錢","外國商人要求一律以紙幣交易"],"answer":1,"explain":"四川地區商業繁盛，但當地通行的鐵錢又重又不便攜帶，商人為方便大額交易而發行紙幣「交子」。並非缺乏金屬或政府禁用銅錢，也非外商要求。"},{"level":"adv","topic":"遼金夏宋並立","q":"對於宋代與遼、金、西夏並立的局面，下列敘述何者最為適當？","choices":["宋朝始終完全統一，未曾與外族政權並立","各政權彼此隔絕，毫無往來","各政權之間有戰有和，並存在貿易與文化交流","遼、金、西夏皆為漢族所建立的政權"],"answer":2,"explain":"宋代與遼、金、西夏長期並立，彼此之間有戰爭也有和議(如澶淵之盟)，並透過貿易(如榷場)與文化交流互相往來，形成多元互動的局面。宋朝並非完全統一；各政權也非毫無往來；遼、金、西夏均為非漢族所建。"},{"level":"adv","topic":"行省制度","q":"元朝統一後推行的「行省制度」，對後世最重要的影響是？","choices":["成為後代地方行政區劃(省)的基礎","恢復了周代的封建制度","廢除中央政府、改由地方自治","使中國從此不再設置首都"],"answer":0,"explain":"元朝在地方設「行中書省」管理廣大疆域，「省」的區劃就此奠定，影響後世直到今日。行省制度是中央加強對地方控制的方式，並非恢復封建、廢除中央或取消首都。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

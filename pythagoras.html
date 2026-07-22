@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>畢氏定理 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26;
+    --ink-soft:#5b606f;
+    --pos:#2563eb;      /* 正號：藍 */
+    --neg:#ea580c;      /* 負號：橘 */
+    --right:#16a34a;    /* 答對：綠 */
+    --wrong:#e11d48;    /* 答錯：紅 */
+    --line:#e6e8ef;
+    --card:#ffffff;
+    --key:#f3f5f9;
+    --key-press:#e3e7f0;
+    --bg:#f7f8fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,
+      var(--bg);
+    display:flex;justify-content:center;
+    padding:14px;
+  }
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .streak b{color:var(--ink);font-weight:600;}
+
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;
+      font-weight:500;background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);
+      cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;
+        padding:26px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+
+  .eq{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+      text-align:center;font-size:30px;font-weight:500;line-height:1.35;letter-spacing:.5px;
+      word-spacing:2px;min-height:44px;}
+  .eq .pos{color:var(--pos);font-weight:600;}
+  .eq .neg{color:var(--neg);font-weight:600;}
+  .eq .op{color:var(--ink);margin:0 2px;}
+  .eq .q{color:var(--ink-soft);}
+
+  .ans{margin-top:18px;height:56px;border-radius:14px;border:2px solid var(--line);
+       display:flex;align-items:center;justify-content:center;
+       font-family:'Lexend',sans-serif;font-size:28px;font-variant-numeric:tabular-nums;
+       transition:.15s;background:#fbfcfe;}
+  .ans.empty{color:#b7bccb;}
+  .ans.ok{border-color:var(--right);color:var(--right);background:#f0fdf4;}
+  .ans.no{border-color:var(--wrong);color:var(--wrong);background:#fff1f4;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+
+  /* 解釋 */
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:16px;display:none;}
+  .explain.show{display:block;}
+  .steps{font-family:'Lexend','Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;
+         font-size:17px;line-height:2;color:var(--ink);}
+  .steps .lead{color:var(--ink-soft);font-family:'Noto Sans TC';font-size:13px;margin-right:6px;}
+  .steps .pos{color:var(--pos);font-weight:600;}
+  .steps .neg{color:var(--neg);font-weight:600;}
+  .steps .res{color:var(--right);font-weight:700;}
+  .tip{margin-top:10px;font-size:13px;color:var(--ink-soft);background:#f4f6fb;
+       border-radius:10px;padding:9px 12px;line-height:1.6;}
+  svg{width:100%;height:auto;margin-top:6px;display:block;}
+
+  /* 鍵盤 */
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .key{border:none;border-radius:14px;background:var(--key);color:var(--ink);
+       font-family:'Lexend',sans-serif;font-size:24px;font-weight:500;
+       height:58px;cursor:pointer;transition:.08s;user-select:none;}
+  .key:active{background:var(--key-press);transform:scale(.96);}
+  .key.sign{color:var(--neg);font-weight:600;}
+  .key.del{color:var(--ink-soft);font-size:22px;}
+
+  .go{border:none;border-radius:16px;height:58px;width:100%;
+      font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--ink);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);}
+  .go.next{background:var(--pos);}
+  .go:disabled{opacity:.4;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "pythagoras",
+  "title": "畢氏定理",
+  "subject": "數學",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2章 平方根與畢氏定理",
+  "tag": "畢氏定理",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>畢氏定理</h1>
+      <div class="sub">求斜邊、求股</div>
+    </div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+
+  <div class="card">
+    <div class="eq" id="eq"></div>
+    <div class="ans empty" id="ans">?</div>
+
+    <div class="explain" id="explain">
+      <div class="steps" id="steps"></div>
+      <div id="numline"></div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <div class="pad" id="pad">
+    <button class="key" data-k="7">7</button>
+    <button class="key" data-k="8">8</button>
+    <button class="key" data-k="9">9</button>
+    <button class="key" data-k="4">4</button>
+    <button class="key" data-k="5">5</button>
+    <button class="key" data-k="6">6</button>
+    <button class="key" data-k="1">1</button>
+    <button class="key" data-k="2">2</button>
+    <button class="key" data-k="3">3</button>
+    <button class="key sign" data-k="sign">±</button>
+    <button class="key" data-k="0">0</button>
+    <button class="key del" data-k="del">⌫</button>
+  </div>
+
+  <button class="go" id="go">檢查</button>
+</div>
+
+<script>
+
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const sgn=()=>Math.random()<0.5?1:-1;
+let level='basic',problem=null,entry='',answered=false,streak=0;
+const MAXD=4;
+
+function polyStr(a,b,c){let s=(a===1?'':a===-1?'−':a)+'x²';if(b)s+=(b<0?' − '+(-b):' + '+b)+'x';if(c)s+=(c<0?' − '+(-c):' + '+c);return s;}
+function twoLine(top,ask){return '<div style="font-size:23px;font-weight:500">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
+
+const TRIPLES=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41],[6,8,10],[9,12,15],[12,16,20],[10,24,26]];
+function makeProblem(lv){
+  const tr=pick(TRIPLES);const scale=lv==='basic'?1:lv==='adv'?rand(1,3):rand(1,2);
+  const a=tr[0]*scale,b=tr[1]*scale,c=tr[2]*scale;
+  const findHyp=lv==='basic'?true:(Math.random()<0.5);
+  if(findHyp)return{t:'hyp',a,b,c,answer:c};
+  return{t:'leg',a,b,c,answer:a};
+}
+function qText(){const p=problem;if(p.t==='hyp')return '直角三角形兩股 '+p.a+'、'+p.b+'，斜邊 =';return '斜邊 '+p.c+'、一股 '+p.b+'，另一股 =';}
+function eqHTML(){const p=problem;
+  if(p.t==='hyp')return twoLine('直角三角形　兩股 = '+p.a+'、'+p.b,'斜邊長 =');
+  return twoLine('直角三角形　斜邊 = '+p.c+'、一股 = '+p.b,'另一股 =');
+}
+function buildSteps(){const p=problem;
+  if(p.t==='hyp')return '<div><span class="lead">畢氏</span>斜邊² = '+p.a+'² + '+p.b+'² = '+(p.a*p.a)+' + '+(p.b*p.b)+' = '+(p.c*p.c)+'</div><div>斜邊 = √'+(p.c*p.c)+' = <span class="res">'+p.c+'</span></div>';
+  return '<div><span class="lead">畢氏</span>股² = 斜邊² − 另一股² = '+p.c+'² − '+p.b+'² = '+(p.c*p.c)+' − '+(p.b*p.b)+' = '+(p.a*p.a)+'</div><div>股 = √'+(p.a*p.a)+' = <span class="res">'+p.a+'</span></div>';
+}
+function buildTip(){return '直角三角形：兩股平方和 = 斜邊平方（a² + b² = c²）。';}
+function render(){
+  document.getElementById('eq').innerHTML=eqHTML();
+  entry='';answered=false;
+  const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';
+  document.getElementById('explain').className='explain';
+  const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;
+}
+function showEntry(){const ans=document.getElementById('ans');
+  if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}
+  ans.textContent=entry.replace('-','−');ans.className='ans';}
+function check(){
+  if(entry===''||entry==='-')return;
+  answered=true;
+  const val=parseInt(entry,10);
+  const ans=document.getElementById('ans');
+  const correct=val===problem.answer;
+  ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');
+  if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}
+  streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');
+    if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}
+  }
+  document.getElementById('steps').innerHTML=buildSteps();
+  const nl=document.getElementById('numline');if(nl)nl.innerHTML='';
+  document.getElementById('tip').innerHTML=buildTip();
+  document.getElementById('explain').className='explain show';
+  const go=document.getElementById('go');go.textContent='下一題';go.className='go next';
+}
+function next(){problem=makeProblem(level);render();}
+document.getElementById('pad').addEventListener('click',e=>{
+  const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;
+  if(k==='del')entry=entry.slice(0,-1);
+  else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else{if(entry.replace('-','').length<MAXD)entry+=k;}
+  showEntry();
+});
+document.getElementById('go').addEventListener('click',()=>answered?next():check());
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');level=b.dataset.lv;next();
+}));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){answered?next():check();return;}
+  if(answered)return;
+  if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}
+  else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}
+  else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}
+});
+(function(){const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}
+})();
+next();
+</script>
+
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint/fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:10px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var eq=document.getElementById('eq');if(eq&&eq.parentNode){eq.parentNode.insertBefore(h,eq.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(typeof answered!=='undefined'&&answered)return;var t='';try{t=buildTip();}catch(e){}if(!t)return;box().innerHTML='💡 提示：'+t;}
+  function eliminateOne(){showHint();}          /* 數字輸入題：先給弱提示（沿用 buildTip） */
+  if(typeof next==='function'){var _n=next;next=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

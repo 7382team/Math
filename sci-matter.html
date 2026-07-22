@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>物質的世界 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "sci-matter",
+  "title": "物質的世界",
+  "subject": "理化",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2章 物質的世界",
+  "tag": "純物質與混合物",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>物質的世界</h1><div class="sub">理化 · 純物質與混合物 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"純物質與混合物","q":"下列何者屬於純物質？","choices":["蒸餾水","海水","空氣","牛奶"],"answer":0,"explain":"蒸餾水只由水分子組成，是純物質；海水（含鹽類）、空氣（含氮、氧等）、牛奶都由多種成分組成，皆為混合物。"},{"level":"basic","topic":"元素判別","q":"下列何者是「元素」？","choices":["水","氧氣","二氧化碳","食鹽"],"answer":1,"explain":"氧氣由單一種元素「氧」組成，屬於元素；水（H、O）、二氧化碳（C、O）、食鹽（氯化鈉，Na、Cl）都由兩種以上元素組成，為化合物。"},{"level":"basic","topic":"化合物判別","q":"下列何者屬於化合物？","choices":["黃金","氮氣","水","銅"],"answer":2,"explain":"水由氫、氧兩種元素以固定比例結合，為化合物；黃金、銅都是單一元素，氮氣（N₂）也只含氮一種元素，皆屬元素。"},{"level":"basic","topic":"混合物判別","q":"下列何者屬於混合物？","choices":["氧氣","二氧化碳","純鐵","糖水"],"answer":3,"explain":"糖水由糖與水混合而成，各成分保有原本性質且比例不固定，為混合物；氧氣、純鐵為元素，二氧化碳為化合物，皆屬純物質。"},{"level":"basic","topic":"空氣組成","q":"空氣中含量最多的氣體是下列何者？","choices":["氮氣","氧氣","二氧化碳","水蒸氣"],"answer":0,"explain":"空氣中氮氣約占體積的78%，是含量最多的氣體；氧氣約占21%，二氧化碳與水蒸氣等其他氣體僅占約1%。"},{"level":"basic","topic":"空氣組成比例","q":"空氣中氧氣約占體積的多少？","choices":["78%","21%","1%","50%"],"answer":1,"explain":"空氣中氧氣約占體積的21%；氮氣約占78%，其餘二氧化碳、稀有氣體等約占1%。"},{"level":"basic","topic":"溶質與溶劑","q":"將食鹽溶於水形成食鹽水，下列敘述何者正確？","choices":["食鹽是溶劑，水是溶質","食鹽水是純物質","食鹽是溶質，水是溶劑","食鹽就是溶液"],"answer":2,"explain":"被溶解的食鹽是溶質，能溶解溶質的水是溶劑，兩者混合形成的均勻混合物才叫溶液（食鹽水），且食鹽水是混合物而非純物質。"},{"level":"basic","topic":"溶液概念","q":"「溶液」是由什麼組成的？","choices":["只有溶質構成的純物質","只有溶劑構成的純物質","兩種互不相溶的液體","溶質均勻溶解在溶劑中所形成的混合物"],"answer":3,"explain":"溶液是溶質均勻溶解在溶劑中形成的均勻混合物，例如糖水、食鹽水；溶液同時含有溶質與溶劑，且屬於混合物。"},{"level":"basic","topic":"物質三態","q":"下列關於物質三態的敘述，何者正確？","choices":["固體有固定的形狀和體積","液體有固定的形狀","氣體有固定的形狀","氣體有固定的體積"],"answer":0,"explain":"固體有固定形狀與體積；液體有固定體積但無固定形狀（隨容器改變）；氣體形狀與體積都不固定，會充滿整個容器。"},{"level":"basic","topic":"狀態變化-熔化","q":"冰吸收熱量後變成水，這種狀態變化稱為？","choices":["凝固","熔化","汽化","凝華"],"answer":1,"explain":"物質由固態吸熱變為液態稱為熔化（如冰變水）；由液態變固態則為凝固，兩者互為相反的變化。"},{"level":"basic","topic":"狀態變化-汽化","q":"水加熱沸騰後變成水蒸氣，屬於下列哪一種狀態變化？","choices":["凝固","熔化","汽化","液化"],"answer":2,"explain":"物質由液態吸熱變為氣態稱為汽化（如水變水蒸氣）；反之氣態變液態為液化。熔化是固變液、凝固是液變固，均不符。"},{"level":"basic","topic":"狀態變化-凝固","q":"液態的水在低溫下結成冰，這種變化稱為？","choices":["熔化","汽化","昇華","凝固"],"answer":3,"explain":"物質由液態放熱變為固態稱為凝固（如水結冰）；熔化為固變液、汽化為液變氣、昇華為固直接變氣，皆不符。"},{"level":"basic","topic":"飽和溶液","q":"在一定溫度下，溶液中已無法再溶解更多溶質時，此溶液稱為？","choices":["飽和溶液","未飽和溶液","稀溶液","濃溶液"],"answer":0,"explain":"在特定溫度下溶質已達溶解上限、無法再溶解更多的溶液稱為飽和溶液；還能繼續溶解的則為未飽和溶液。濃、稀只描述含量多寡，與是否飽和無必然關係。"},{"level":"basic","topic":"重量百分濃度","q":"重量百分濃度是指溶液中哪一項的質量比例？","choices":["溶質質量占溶劑質量的百分比","溶質質量占整個溶液質量的百分比","溶劑質量占溶液質量的百分比","溶質體積占溶液體積的百分比"],"answer":1,"explain":"重量百分濃度＝溶質質量÷溶液質量×100%，分母是「溶質＋溶劑」的溶液總質量，而非只有溶劑；且是以質量而非體積計算。"},{"level":"adv","topic":"化合物判別-分解","q":"二氧化碳可用化學方法分解成碳和氧，由此可判斷二氧化碳屬於？","choices":["元素","混合物","化合物","溶液"],"answer":2,"explain":"能以化學方法分解成兩種以上元素的純物質為化合物；元素無法再以化學方法分解成更簡單的物質。二氧化碳可分解為碳與氧，故為化合物。"},{"level":"adv","topic":"純物質判別依據","q":"純物質具有固定的性質，下列何者可作為判斷「是否為純物質」的依據？","choices":["顏色鮮豔","可以導電","能溶於水中","具有固定的熔點與沸點"],"answer":3,"explain":"純物質有固定的熔點、沸點等物理性質，可作為判別依據；混合物的熔沸點通常不固定。顏色、導電性、能否溶於水都無法單獨判斷是否為純物質。"},{"level":"adv","topic":"空氣是混合物","q":"下列關於空氣的敘述，何者正確？","choices":["空氣是化合物","空氣是元素","空氣是混合物，各成分保有原本的性質","空氣中氧氣約占78%"],"answer":2,"explain":"空氣由氮、氧、二氧化碳等多種氣體混合而成，未經化學反應、各成分保有原本性質，屬混合物；且氮約占78%、氧約占21%，選項中氧占78%為錯誤。"},{"level":"adv","topic":"溶解度與溫度","q":"大多數固體溶質在水中的溶解度，隨溫度上升會如何變化？","choices":["減小","不變","先減小後增大","增大"],"answer":3,"explain":"多數固體溶質（如硝酸鉀、蔗糖）的溶解度會隨溫度升高而增大；相反地，氣體溶質的溶解度則隨溫度升高而減小。"},{"level":"adv","topic":"飽和溶液情境","q":"在20°C下，將食鹽持續加入一杯已飽和的食鹽水並攪拌，會發生什麼情況？","choices":["食鹽會繼續全部溶解","溫度會自動上升使食鹽全部溶解","食鹽不再溶解，沉在杯底","食鹽會變成氣體逸出"],"answer":2,"explain":"飽和溶液在該溫度下已達溶解上限，再加入的食鹽無法溶解，只會沉在杯底；溫度不會自行上升，食鹽也不會變成氣體。"},{"level":"adv","topic":"重量百分濃度計算","q":"將10克糖溶於90克水中，所得糖水的重量百分濃度約為多少？","choices":["約11%","90%","9%","10%"],"answer":3,"explain":"重量百分濃度＝溶質質量÷溶液質量×100%＝10÷(10+90)×100%＝10%。分母要用溶液總質量100克，不能只用溶劑90克（那會誤算成約11%）。"},{"level":"adv","topic":"濃度比較","q":"甲杯為20克鹽溶於80克水；乙杯為20克鹽溶於180克水。下列比較何者正確？","choices":["甲杯的重量百分濃度比乙杯高","乙杯的重量百分濃度比甲杯高","兩杯濃度相同","無法比較兩杯濃度"],"answer":0,"explain":"甲杯濃度＝20÷100×100%＝20%，乙杯＝20÷200×100%＝10%。兩杯溶質相同但乙杯水較多、溶液較稀，故甲杯濃度較高。"},{"level":"adv","topic":"狀態變化-昇華","q":"乾冰（固態二氧化碳）在室溫下直接變成二氧化碳氣體，此狀態變化稱為？","choices":["熔化","昇華","汽化","凝固"],"answer":1,"explain":"物質由固態不經液態直接變為氣態稱為昇華，如乾冰、樟腦丸；若由氣態直接變固態則稱凝華。熔化與汽化過程中會經過液態，故不符。"},{"level":"adv","topic":"狀態變化-液化","q":"夏天裝冰水的玻璃杯外壁出現小水珠，這是因為空氣中的水蒸氣發生了什麼變化？","choices":["水蒸氣遇冷液化(凝結)成小水珠","水蒸氣汽化成水珠","杯內的冰昇華","玻璃杯熔化"],"answer":0,"explain":"杯外空氣中的水蒸氣遇到冰冷的杯壁放出熱量，由氣態變成液態（液化／凝結）而附著成小水珠，並非杯內的水滲出，也不是杯子熔化。"},{"level":"adv","topic":"三態粒子模型","q":"關於同一物質三態時粒子（分子）的排列，下列何者正確？","choices":["固態粒子間距最大","氣態粒子間距最大、排列最鬆散","液態粒子完全不能移動","氣態粒子排列最緊密"],"answer":1,"explain":"固態粒子排列最緊密、只能原地振動；液態粒子可互相滑動；氣態粒子間距最大、排列最鬆散、運動最自由。狀態變化時粒子種類不變，只是排列與間距改變。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
