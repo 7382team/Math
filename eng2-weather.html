@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>天氣與季節 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng2-weather",
+  "title": "天氣與季節",
+  "subject": "英文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "weather adjectives · seasons",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>天氣與季節</h1><div class="sub">英文 · weather adjectives · seasons · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"名詞轉形容詞：sun → sunny 的重複子音拼字規則","q":"There are no clouds in the sky today. It is a ___ day, so let's go to the park.","choices":["sun","suny","sunning","sunny"],"answer":3,"explain":"名詞 sun（太陽）加 -y 可變成形容詞。sun 是「短母音 u + 單子音 n」結尾，要先重複字尾子音再加 y，正確拼法是 sunny（晴朗的）。空格後面接名詞 day，必須用形容詞修飾。(A) sun 是名詞，不能直接修飾 day。(B) suny 少了一個 n，拼字錯誤。(C) sunning 不是天氣形容詞。"},{"level":"basic","topic":"名詞轉形容詞：rain → rainy（不重複子音）","q":"We had a lot of rain last week. Every day was cold and ___.","choices":["rainy","rainny","rain","raining"],"answer":0,"explain":"rain 直接加 -y 變成形容詞 rainy（下雨的）。rain 字尾 n 前面是母音組合 ai，不是「短母音 + 單子音」，所以「不」重複 n。(B) rainny 多了一個 n，拼字錯誤。(C) rain 是名詞，不能和形容詞 cold 並列當主詞補語。(D) raining 是現在分詞，要說 It was raining，不能寫成 Every day was raining 來描述天氣狀態。"},{"level":"basic","topic":"問天氣句型：How is the weather...?（be 動詞單複數）","q":"A: ___ the weather in Taipei today?  B: It's hot and humid.","choices":["How does","How is","How are","What does"],"answer":1,"explain":"問天氣的固定句型是 How is the weather (in + 地點)?。weather 是不可數名詞、當單數主詞，所以用 be 動詞 is。(A)(D) 這個句型用 be 動詞，不需要助動詞 does。(C) weather 視為單數，不能用 are。"},{"level":"basic","topic":"問天氣句型：What is the weather like? 的句尾 like","q":"A: What is the weather ___ today?  B: It's cloudy and cool.","choices":["as","look","like","same"],"answer":2,"explain":"另一個問天氣的常用句型是 What is the weather like...?，這裡的 like 是介系詞，意思是「像…的樣子」，句尾不可省略。(A) as 不用於此句型。(B) look 是動詞，若要用須說 What does the weather look like?。(D) same 不能放在這個位置。"},{"level":"basic","topic":"四季名稱：美式 fall 與英式 autumn","q":"Leaves turn red and yellow, and the air gets cool. Americans call this season fall, and British people call it ___.","choices":["spring","summer","winter","autumn"],"answer":3,"explain":"「秋天」在美式英語是 fall，在英式英語是 autumn，兩者同義。(A) spring 是春天，花開的季節。(B) summer 是夏天，最熱的季節。(C) winter 是冬天，最冷的季節。"},{"level":"basic","topic":"rain 當動詞：It is raining 現在進行式","q":"Take your umbrella with you. It ___ outside right now.","choices":["rain","is raining","rains","was rain"],"answer":1,"explain":"rain 可當動詞「下雨」，主詞用虛主詞 it。right now 表示「此刻正在」，要用現在進行式 It is raining.。(A) 主詞 it 是第三人稱單數，動詞不能用原形。(C) rains 是現在簡單式，用來表達習慣或常態（例：It rains a lot in summer.），與 right now 不合。(D) was rain 文法錯誤，be 動詞後面不能直接接原形動詞。"},{"level":"basic","topic":"snow 當動詞與當名詞的詞性判斷","q":"It ___ a lot in Hokkaido in winter, so the streets are covered with white ___.","choices":["snow / snows","snowy / snow","snows / snow","snows / snowy"],"answer":2,"explain":"第一格是天氣動詞，主詞 it 為第三人稱單數，現在簡單式要加 -s：It snows a lot（常下雪）。第二格前面有形容詞 white 修飾、又接在 covered with 之後，需要名詞 snow（雪）。(A) 第一格 it 後不能用原形 snow；第二格 snows 是動詞，不能被 white 修飾。(B) 第一格沒有 be 動詞，不能直接放形容詞 snowy 當動詞。(D) 第二格 snowy 是形容詞，covered with 後面要接名詞。"},{"level":"basic","topic":"wind（名詞）與 windy（形容詞）的區別","q":"Hold your hat! The ___ is really strong today, so it is very ___ on the street.","choices":["wind / windy","windy / wind","wind / winds","windy / windy"],"answer":0,"explain":"第一格前面有冠詞 The、後面接 be 動詞 is，需要名詞 wind（風）。第二格在 it is very 之後描述天氣狀態，需要形容詞 windy（風大的）。注意 wind 字尾是 nd 兩個子音，加 y 時不重複子音。(B) 名詞與形容詞位置顛倒。(C) 第二格 winds 是名詞複數，不能放在 very 後面當形容詞。(D) 第一格是主詞，不可用形容詞。"},{"level":"basic","topic":"名詞轉形容詞：fog → foggy 的重複子音規則","q":"I can't see the cars in front of me. It is very ___ on the mountain road this morning.","choices":["fog","fogy","fogging","foggy"],"answer":3,"explain":"fog（霧）是「短母音 o + 單子音 g」結尾，加 -y 前要重複 g，寫成 foggy（有霧的）。very 是副詞，後面必須接形容詞。(A) fog 是名詞，不能被 very 修飾。(B) fogy 少了一個 g，拼字錯誤。(C) fogging 不是描述天氣的形容詞。"},{"level":"basic","topic":"溫度形容詞：hot（38°C 的情境判斷）","q":"The temperature is 38°C today. It is really ___, so let's stay home and turn on the air conditioner.","choices":["cool","hot","cold","warm"],"answer":1,"explain":"38°C 是很高的溫度，要用 hot（炎熱的），後面「開冷氣」也是線索。溫度由低到高常用 cold（冷）< cool（涼爽）< warm（溫暖）< hot（炎熱）。(A) cool 指涼爽舒適。(C) cold 指寒冷。(D) warm 指溫暖但不熱，都與 38°C 不符。"},{"level":"basic","topic":"溫度形容詞：warm（不冷不熱）","q":"Spring in Taipei is not too hot and not too cold. It is ___ and comfortable.","choices":["warm","freezing","snowy","foggy"],"answer":0,"explain":"「不太熱也不太冷」正是 warm（溫暖的）所描述的溫度。(B) freezing 指極冷、快結冰，與 not too cold 矛盾。(C) snowy 指下雪的，台北的春天不會下雪。(D) foggy 指有霧的，說的是能見度而不是溫度。"},{"level":"basic","topic":"未來天氣疑問句：What is the weather going to be like?","q":"A: What ___ the weather going to be like tomorrow?  B: It's going to be windy and rainy.","choices":["does","do","is","are"],"answer":2,"explain":"be going to 的疑問句要把 be 動詞移到主詞前面。weather 是不可數名詞、視為單數，所以用 is：What is the weather going to be like tomorrow?。(A)(B) 句中已有 be going to，不需要助動詞 do/does。(D) are 用於複數主詞，weather 不是複數。"},{"level":"basic","topic":"天氣形容詞：humid（潮濕悶熱）","q":"In summer, Taiwan is not only hot but also ___. There is a lot of water in the air, and our clothes never dry fast.","choices":["dry","foggy","snowy","humid"],"answer":3,"explain":"空氣中水氣多、衣服不易乾，就是 humid（潮濕的、悶濕的）。(A) dry 乾燥的，與句意相反。(B) foggy 指起霧，強調看不清楚，不等於整個季節潮濕。(C) snowy 下雪的，與 summer 矛盾。"},{"level":"basic","topic":"回答天氣的句型：It's + 天氣形容詞","q":"A: How's the weather in Kaohsiung now?  B: ___","choices":["It's sunny and hot.","It's sun and hot.","There is sunny and hot.","It has sunny and hot."],"answer":0,"explain":"回答天氣用虛主詞 it 加 be 動詞，後面接天氣形容詞：It's sunny and hot.。(B) sun 是名詞，不能和形容詞 hot 並列。(C) There is 後面要接名詞（如 There is a lot of sunshine.），不能接形容詞。(D) have/has 不能用來描述天氣狀態。"},{"level":"adv","topic":"辨析：現在簡單式（常態）vs 現在進行式（此刻）","q":"Amy: Does it rain a lot in Taipei?  Ben: Yes, ___ In fact, look outside — it's raining right now!","choices":["it is raining a lot in winter.","it rain a lot in winter.","it rains a lot in winter.","it rainy a lot in winter."],"answer":2,"explain":"回答「是不是常下雨」是在講長期的常態，要用現在簡單式，主詞 it 後動詞加 -s：it rains a lot in winter.。後半句 it's raining right now 描述此刻，正好對比兩種用法。(A) 現在進行式表示此刻正在發生，不能表達長期習慣。(B) 主詞 it 後不能用原形動詞。(D) rainy 是形容詞，句中沒有 be 動詞，文法錯誤。"},{"level":"adv","topic":"地點介系詞：the weather in + 城市","q":"A: How's the weather ___ Tainan in July?  B: It's very hot and sunny almost every day.","choices":["at","in","on","to"],"answer":1,"explain":"提到城市、國家等較大的地點時用介系詞 in，所以是 the weather in Tainan。(A) at 用於明確的小地點（at the bus stop）。(C) on 用於平面或街道（on the desk / on Main Street）。(D) to 表示方向，不能表示所在地。"},{"level":"adv","topic":"問天氣句型辨析：What ... like? 與 How ...? 不可混用","q":"You want to ask about the weather in Japan in April. Which question uses the \"What ... like?\" or \"How ...?\" pattern correctly?","choices":["What is the weather like in Japan in April?","How is the weather like in Japan in April?","What does the weather like in Japan in April?","How the weather is like in Japan in April?"],"answer":0,"explain":"問天氣有兩個正確句型：What is the weather like...? 和 How is the weather...?。用 What 時句尾一定要有 like；用 How 時就不能再加 like。(B) How 和 like 重複，是最常見的錯誤。(C) 這個句型用 be 動詞，不用助動詞 does。(D) 疑問句語序錯誤（be 動詞應放主詞前），且 How 不能配 like。"},{"level":"adv","topic":"未來天氣預測：be going to + 原形動詞","q":"Weather reporter: Dark clouds are coming from the sea, and the wind is getting stronger. It ___ in an hour.","choices":["rains","is going to rainy","will rainy","is going to rain"],"answer":3,"explain":"根據眼前的跡象（烏雲、風變大）預測即將發生的事，用 be going to + 原形動詞：It is going to rain.。(A) rains 是現在簡單式，表示常態，不能表示「一小時後」。(B) be going to 後面必須接原形動詞，不能接形容詞 rainy。(C) will 後面也要接原形動詞，正確說法是 will rain 或 will be rainy。"},{"level":"adv","topic":"季節特徵與季節活動的情境判斷","q":"Judy: I love this season! The flowers come out, the weather gets warm after the cold months, and my family goes on a picnic every weekend. Which season is Judy talking about?","choices":["Fall","Winter","Spring","Summer"],"answer":2,"explain":"「花開了」「寒冷的月份之後天氣變暖」都是春天 spring 的特徵。(A) fall（秋天）是天氣由熱轉涼、樹葉變色的季節。(B) winter（冬天）就是那段寒冷的月份。(D) summer（夏天）是最熱的季節，通常會說 hot，而不是 gets warm after the cold months。"},{"level":"adv","topic":"辨析：snow 過去式動詞 vs snowy 形容詞","q":"Ken: Look at the mountain! It's white everywhere.  Lisa: Yes, it ___ all night, and now the top of the mountain is ___.","choices":["snows / snow","snowed / snowy","snowy / snowed","was snow / snowing"],"answer":1,"explain":"第一格 all night 指昨晚一整夜，是過去發生的動作，用過去式動詞 snowed。第二格在 be 動詞 is 之後描述現在的狀態，用形容詞 snowy（積雪的）。(A) snows 是現在簡單式，與 all night 的過去時間不合，且 the top of the mountain is snow 語意不通。(C) 兩格詞性完全顛倒。(D) was snow 文法錯誤，be 動詞後不能直接接原形動詞。"},{"level":"adv","topic":"降溫情境與形容詞比較級 colder","q":"Yesterday the temperature was 30°C, but today it's only 12°C. It's much ___ today, so put on your jacket.","choices":["colder","hotter","warmer","drier"],"answer":0,"explain":"溫度從 30°C 掉到 12°C 是明顯變冷，又要穿外套，所以用 cold 的比較級 colder；much 可用來加強比較級。(B) hotter 更熱、(C) warmer 更暖，都與降溫矛盾。(D) drier 指更乾燥，句中談的是溫度而不是濕度。"},{"level":"adv","topic":"天氣預報的情境理解與物品選擇","q":"Weather report: \"Tomorrow will be cloudy in the morning, and it will start to rain in the afternoon. The temperature will drop to 14°C at night.\" What should you take with you tomorrow?","choices":["Sunglasses and a swimsuit.","A kite and short pants.","An umbrella and a jacket.","A fan and a beach towel."],"answer":2,"explain":"預報說下午會開始下雨（rain），晚上溫度降到 14°C（很涼），所以需要雨傘 umbrella 和外套 jacket。(A) 太陽眼鏡和泳衣適合晴朗炎熱的天氣。(B) 風箏和短褲適合有風又溫暖的日子。(D) 電扇和海灘毛巾適合炎熱的夏天，都與陰雨轉涼的預報不符。"},{"level":"adv","topic":"描述今日風大又寒冷：形容詞與名詞不可混用","q":"Ben wants to say that the wind is strong and the temperature is low today. Which sentence is correct?","choices":["It is wind and cold today.","The weather is windy and cold today.","There is windy and cold today.","It has windy and cold today."],"answer":1,"explain":"描述天氣時，be 動詞後面必須放形容詞，所以 The weather is windy and cold today. 正確（也可以說 It is windy and cold today.）。(A) wind 是名詞，不能和形容詞 cold 並列放在 is 後面。(C) There is 後面要接名詞，例如 There is a strong wind today.。(D) has 不能用來描述天氣狀態。"},{"level":"adv","topic":"There is + 不可數名詞 snow 的單複數判斷","q":"Hokkaido is famous for its winter. There ___ a lot of snow there every year, and people ski from December to March.","choices":["are","have","has","is"],"answer":3,"explain":"snow（雪）是不可數名詞，即使前面有 a lot of，仍視為單數，所以用 There is a lot of snow。(A) are 用於複數可數名詞，例如 There are a lot of clouds.。(B)(C) 表達「有」的存在句要用 there be，不能用 have/has。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

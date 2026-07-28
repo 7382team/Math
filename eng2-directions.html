@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>問路與指引方向 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng2-directions",
+  "title": "問路與指引方向",
+  "subject": "英文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "directions · 方位介系詞",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>問路與指引方向</h1><div class="sub">英文 · directions · 方位介系詞 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"問路句型 how can I get to","q":"Excuse me, how can I ___ to the train station from here?","choices":["arrive","get","reach","visit"],"answer":1,"explain":"get to + 地點 表示「到達某地」，How can I get to...? 是最常見的問路句型。(A) arrive 後面要接 at（小地方）或 in（大地方），不能說 arrive to。(C) reach 是及物動詞，後面直接接地點（reach the train station），不加 to。(D) visit 是「拜訪、參觀」，語意不合且不接 to。"},{"level":"basic","topic":"指路動詞片語 go straight ahead","q":"A: Where is the hospital?  B: ___ for about three minutes, and you will see it on your right.","choices":["Go straight ahead","Go straightly ahead","Go to straight ahead","Go ahead straightly"],"answer":0,"explain":"go straight (ahead) 是「一直往前走」的固定說法，straight 在這裡當副詞，不可加 -ly。(B) straightly 不是自然的英文用法。(C) go 之後不加 to 再接 straight。(D) 語序錯誤，ahead 應放在 straight 之後。"},{"level":"basic","topic":"祈使句指路 turn left at the corner","q":"___ left at the corner, and the police station will be on your right.","choices":["Turning","To turn","Turn","Turns"],"answer":2,"explain":"指路時用祈使句，句首動詞用原形：Turn left at the corner。(A) 動名詞、(B) 不定詞、(D) 第三人稱單數形都不能當祈使句的開頭。此句型為「祈使句 + and + 未來結果」。"},{"level":"basic","topic":"Is there ... near here? 存在句問句","q":"A: Excuse me, ___ a bookstore near here?  B: Yes, there is one next to the post office.","choices":["is there","are there","there is","has there"],"answer":0,"explain":"a bookstore 為單數，問句要把 be 動詞移到 there 前面：Is there a bookstore near here?。(B) are there 用於複數名詞。(C) there is 是直述句語序，不能當問句。(D) 存在句不用 have/has，中文的「這附近有沒有」不可直譯成 has there。"},{"level":"basic","topic":"方位介系詞 next to","q":"The bookstore and the coffee shop share the same wall, so the bookstore is ___ the coffee shop.","choices":["next of","next from","next by","next to"],"answer":3,"explain":"「在……隔壁、緊鄰」用 next to，是固定片語。(A)(B)(C) next of／next from／next by 都不是正確的英文片語。若兩家店隔著馬路相對，則要用 across from（= opposite）。"},{"level":"basic","topic":"方位片語 across from","q":"The hospital is ___ the park. You have to cross the street to get there.","choices":["across of","cross from","across from","across to"],"answer":2,"explain":"across from 表示「在……的對面（隔著街道相望）」，也可用 opposite。(A) 沒有 across of 的用法。(B) cross 是動詞「橫越」，不能當介系詞用。(D) across to 表示「橫越到……」，語意與句子不合。"},{"level":"basic","topic":"between A and B","q":"The post office is between the library ___ the department store.","choices":["or","with","to","and"],"answer":3,"explain":"between A and B 是固定用法，表示「在 A 和 B 之間」，中間必須用 and。(A)(B)(C) 都不能與 between 搭配。between 用於兩者之間；三者以上（不特指個別對象）則用 among。"},{"level":"basic","topic":"距離與時間 on foot","q":"The bus stop is not far. It is only about five minutes ___.","choices":["by foot","on foot","with foot","in feet"],"answer":1,"explain":"英語慣用 on foot 表示「步行」，例：ten minutes on foot。(A) by 之後接交通工具（by bus, by train），習慣上不說 by foot。(C)(D) with foot、in feet 都不是英文的表達方式。"},{"level":"basic","topic":"距離表達 two blocks away","q":"A: How far is the night market?  B: It is about two ___ from here. You can walk there in five minutes.","choices":["block away","blocks far away","block far","blocks away"],"answer":3,"explain":"block 是可數名詞，two 之後要用複數 blocks；two blocks away 表示「距離兩個街區」。(A) 單數 block 不能接在 two 之後。(B) away 本身已表示距離，再加 far 是贅述。(C) 既漏掉複數，far 的用法也不對。"},{"level":"basic","topic":"序數 + traffic light","q":"Turn right at the ___ traffic light, and the department store is right there.","choices":["two","second","twice","secondly"],"answer":1,"explain":"指第幾個紅綠燈要用序數：the first/second/third traffic light。(A) two 是基數，不能接在 the 之後修飾單數名詞。(C) twice 是「兩次」。(D) secondly 是「第二點（說明順序）」，不能修飾名詞。"},{"level":"basic","topic":"cross the street 動詞用法","q":"The library is on the other side of the road. You have to ___ the street at the traffic light.","choices":["across","crossing","crossed","cross"],"answer":3,"explain":"have to 之後接原形動詞，cross 為及物動詞「穿越」，cross the street 即「過馬路」。(A) across 是介系詞／副詞，不能當動詞。(B)(C) 動名詞與過去式都不能接在 have to 後面。"},{"level":"basic","topic":"地點名詞 post office","q":"Kevin wants to send this birthday card to his cousin in Japan. He should go to the ___.","choices":["bus stop","police station","post office","bookstore"],"answer":2,"explain":"寄信、寄卡片要去 post office（郵局）。(A) bus stop 是公車站。(B) police station 是警察局。(D) bookstore 是書店，都與寄卡片無關。"},{"level":"basic","topic":"禮貌用語 You are welcome","q":"A: Thank you so much for showing me the way.  B: ___","choices":["You're welcome.","Thank you anyway.","Here you are.","Long time no see."],"answer":0,"explain":"別人道謝時回答 You're welcome.（不客氣）。(B) Thank you anyway. 是「還是謝謝你」，用在對方幫不上忙時，由問路的人說。(C) Here you are. 是遞東西給對方時說的。(D) Long time no see. 是久別重逢的招呼語。"},{"level":"basic","topic":"方位片語 in front of","q":"Many students wait for the school bus ___ the school gate every morning.","choices":["in the front of","in front of","front of","in a front of"],"answer":1,"explain":"in front of 表示「在……（外部的）前面」，此處學生站在校門外，故用 in front of。(A) in the front of 指「在某空間內部的前段」，如 in the front of the classroom。(C)(D) 缺少 in 或多加冠詞 a，皆非正確片語。"},{"level":"adv","topic":"間接問句 Could you tell me + 名詞子句","q":"Excuse me, could you tell me ___?","choices":["where is the train station","where the train station is","the train station is where","where does the train station"],"answer":1,"explain":"間接問句（名詞子句）要用「疑問詞 + 主詞 + 動詞」的直述句語序：where the train station is。(A) 保留了問句語序 is the station，是最常見的錯誤。(C) 疑問詞不可放句尾。(D) 有助動詞卻沒有主要動詞，句子不完整。"},{"level":"adv","topic":"禮貌用語 Thank you anyway","q":"A: Excuse me, is there a hospital near here?  B: I'm sorry. I'm new here, too.  A: ___","choices":["You're welcome.","That's very kind of you.","Thank you anyway.","Never mind, I'll show you."],"answer":2,"explain":"對方幫不上忙時，仍要客氣地說 Thank you anyway.（還是謝謝你）。(A) You're welcome. 是回應別人道謝。(B) That's very kind of you. 用在對方確實幫了忙時。(D) A 自己正在問路，不可能說「我帶你去」，語意矛盾。"},{"level":"adv","topic":"on the corner of A and B","q":"The bank stands right where Park Road meets First Street, so we say it is ___ Park Road and First Street.","choices":["on the corner of","in the corner of","at corner of","on corner between"],"answer":0,"explain":"兩條街交會的轉角用 on the corner of A and B。(B) in the corner of 指房間、盒子等「內部的角落」，例：in the corner of the room。(C) 少了冠詞 the。(D) corner 前需加 the，且此片語固定用 of ... and ...，不用 between。"},{"level":"adv","topic":"疑問詞辨析 How far vs. How long","q":"A: ___ is it from here to the department store?  B: It's about two blocks away.","choices":["How long","How often","How far","How much"],"answer":2,"explain":"回答是 two blocks away（距離），所以要問 How far（多遠）。(A) How long 問時間長度或長短，如 How long does it take?。(B) How often 問頻率。(D) How much 問價錢或數量，皆與答句不合。"},{"level":"adv","topic":"It takes + 時間 + on foot","q":"A: How long does it take to walk to the library?  B: ___","choices":["It costs about ten minutes on foot.","It takes about ten minutes by walk.","It spends about ten minutes on foot.","It takes about ten minutes on foot."],"answer":3,"explain":"花費時間的句型是 It takes + 時間，「步行」用 on foot。(A) cost 用於花費金錢（It cost me 100 dollars），不用於時間。(B) 沒有 by walk 的說法，應說 on foot 或 to walk there。(C) spend 的主詞必須是人（I spent ten minutes...），不能用 It 當主詞。"},{"level":"adv","topic":"交通工具 take a bus / by bus","q":"The museum is too far to walk to. You should ___ there.","choices":["take bus","by a bus","take a bus","by bus to go"],"answer":2,"explain":"take a bus 中的 bus 是可數名詞，必須加冠詞 a；也可說 go there by bus。(A) 漏掉冠詞。(B) by 之後的交通工具不加冠詞，且 by a bus 本身不成句（缺動詞）。(D) 語序錯誤，應為 go there by bus。"},{"level":"adv","topic":"Could you tell me the way to...? 情境應答","q":"A: Excuse me, could you tell me the way to the police station?  B: ___","choices":["Yes, I could tell you the way of it.","Sure. Go along this street and turn left at the second corner.","No, the police station is not new here.","Sorry, I have no way to the police station."],"answer":1,"explain":"對方請你指路，最自然的回答是先答應（Sure.）再給方向指示：go along this street, turn left at the second corner。(A) the way of it 不是英文說法，且沒有提供任何指引。(C) 答非所問。(D) I have no way to... 為中式英文，正確說法應是 I'm sorry. I'm new here.。"},{"level":"adv","topic":"I am new here 情境判斷","q":"A: Excuse me, where is the city library?  B: ___ Maybe you can ask the police officer over there.","choices":["I'm sorry. I'm new here.","I'm sorry. You're welcome.","I'm fine. Thank you anyway.","I'm sorry. The library is new here."],"answer":0,"explain":"由後句「你可以去問那邊的警察」可知 B 幫不上忙，故說 I'm sorry. I'm new here.（我剛搬來這裡）。(B) You're welcome. 是回應道謝，語意不合。(C) Thank you anyway. 應由問路的人說。(D) 說圖書館「剛來這裡」不合邏輯。"},{"level":"adv","topic":"take the second turn 指令理解","q":"A man tells Sam, \"Go down this street and take the second turn on your left.\" What should Sam do?","choices":["Walk down the street and turn left at the second street he comes to.","Walk down the street and turn left two times at the same corner.","Walk two minutes down the street and then turn right.","Walk to the end of the street and turn left twice."],"answer":0,"explain":"take the second turn on your left 意思是「走到第二個（左邊的）路口再左轉」。(B)(D) 把 second 誤解成「轉兩次」，但序數指的是第幾個路口。(C) 方向錯誤（是左轉不是右轉），也與時間無關。"},{"level":"adv","topic":"方位關係綜合判斷 between / across from / next to","q":"The bookstore is between the bank and the post office, and the hospital is across from the bank. Which sentence is true?","choices":["The post office is across from the bank.","The hospital is between the bank and the bookstore.","The bookstore is behind the hospital.","The bank is next to the bookstore."],"answer":3,"explain":"書店在銀行和郵局「之間」，表示銀行就緊鄰書店，故 The bank is next to the bookstore. 正確。(A) 題目只說醫院在銀行對面，並未提到郵局在銀行對面。(B) 在銀行與郵局之間的是書店，不是醫院。(C) 題目未提及書店在醫院後面，across from（對面）與 behind（後面）意思不同。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

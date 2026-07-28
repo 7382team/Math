@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迢迢牽牛星 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi2-tiaotiao",
+  "title": "迢迢牽牛星",
+  "subject": "國文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古典詩·五言古詩",
+  "ready": true,
+  "author": "古詩十九首"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>迢迢牽牛星</h1><div class="sub">國文 · 古典詩·五言古詩 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"字詞解釋：擢","q":"〈迢迢牽牛星〉中「纖纖擢素手」的「擢」，依詩句文意應解釋為下列何者？","choices":["伸出、舉起","洗滌、清洗","拔除、剷去","遮掩、藏起"],"answer":0,"explain":"「擢」在此作「伸出、舉起」解。白話翻譯：（織女）伸出纖細白皙的雙手。「擢」另有「拔取、提拔」之義（如「拔擢」「擢升」），但在本句中須依上下文解為「伸出」。"},{"level":"basic","topic":"字詞解釋：機杼","q":"「札札弄機杼」中的「機杼」是指什麼？","choices":["織布時發出的聲響","織布機（杼即織布用的梭子）","舂米用的石臼","縫補衣物的針線"],"answer":1,"explain":"「機」指織布機，「杼」是織布時來回穿梭引線的梭子，合稱代指織布的器具。白話翻譯：織布機發出札札的聲響，織女不停地擺弄著織機。句中的「札札」則是摹寫機杼聲的疊字（狀聲）。"},{"level":"basic","topic":"字詞解釋：章","q":"「終日不成章」的「章」，在詩中應解釋為下列何者？","choices":["詩文的段落","官印、信物","織成的布帛花紋，引申為成匹的布","規章、法度"],"answer":2,"explain":"「章」本指織品上的紋理花樣，此處引申為織成的布匹。白話翻譯：（織女）織了一整天，卻織不成一匹有花紋的布。此句正寫出織女因相思而心神不寧、無心織作。"},{"level":"basic","topic":"字詞解釋：零","q":"「泣涕零如雨」的「零」，意思是什麼？","choices":["數目上的空無","零星、稀少","凋謝的花朵","落下、掉落"],"answer":3,"explain":"「零」在古文中常作「落下」解（如「涕零」「凋零」）。白話翻譯：眼淚像下雨一樣不停地落下來。"},{"level":"basic","topic":"字詞解釋：幾許","q":"「相去復幾許」的「幾許」，意思是什麼？","choices":["多少","幾次","或許","幾乎"],"answer":0,"explain":"「幾許」即「多少」，多用於問距離、數量。白話翻譯：兩人相隔又能有多遠呢？此句以問句寫出距離其實不遠，反襯不得相見的悲哀。"},{"level":"basic","topic":"字詞解釋：盈盈","q":"「盈盈一水間」的「盈盈」，依課本注釋主要用來形容什麼？","choices":["織女笑容滿面的樣子","銀河水清澈的樣子","淚水積滿眼眶將要落下","星光閃爍不定的樣子"],"answer":1,"explain":"「盈盈」在此形容銀河之水清澈的樣子（另有一說兼指織女儀態美好）。白話翻譯：只隔著清澈的一道銀河水。與上句「河漢清且淺」呼應，強調阻隔其實極為短淺。"},{"level":"basic","topic":"字詞解釋：脈脈","q":"「脈脈不得語」的「脈脈」，是形容怎樣的情態？","choices":["血脈相連、關係親密","斷斷續續、時有時無","含情凝視、默默相望","山勢綿延不絕"],"answer":2,"explain":"「脈脈」形容含情注視、默默用眼神傳情的樣子。白話翻譯：只能含情脈脈地相望，卻無法互相說話。此句是全詩情感最含蓄深沉之處。"},{"level":"basic","topic":"字詞解釋：素手","q":"「纖纖擢素手」的「素手」，應如何解釋？","choices":["空無一物的手","終日勞動而粗糙的手","靈巧熟練的手","白皙潔淨的手"],"answer":3,"explain":"「素」為白色，「素手」即白皙的手。白話翻譯：伸出纖細白皙的雙手。「纖纖」寫手的細長柔美，與「素」相配，塑造織女柔美的形象。"},{"level":"basic","topic":"字詞解釋：河漢","q":"「皎皎河漢女」的「河漢」是指什麼？","choices":["銀河","黃河與漢水","天邊的雲霞","人間的江河湖泊"],"answer":0,"explain":"「河漢」即天河、銀河，「河漢女」指銀河邊的織女星。白話翻譯：明亮皎潔的是銀河邊的織女星。首二句以「迢迢」寫牽牛星之遠、「皎皎」寫織女星之明，一開篇便點出天各一方。"},{"level":"basic","topic":"文學常識：出處","q":"《古詩十九首》最早被完整收錄於下列哪一部典籍中？","choices":["《詩經》","《昭明文選》","《樂府詩集》","《古文觀止》"],"answer":1,"explain":"《古詩十九首》最早由南朝梁昭明太子蕭統編入《昭明文選》，並以「古詩十九首」為題保存下來，〈迢迢牽牛星〉即為其中一首。《樂府詩集》為宋代郭茂倩所編，時代較晚。"},{"level":"basic","topic":"文學常識：古詩十九首","q":"關於《古詩十九首》，下列敘述何者正確？","choices":["為唐代近體詩的代表作品","作者姓名與寫作年代皆明確可考，為一人一時之作","作者姓名不詳，約產生於東漢末年，內容多寫遊子思婦的離愁別緒","全部以七言為主，且句句押韻"],"answer":2,"explain":"《古詩十九首》非一人一時之作，作者不詳，約成於東漢末年，是五言詩成熟的代表，劉勰《文心雕龍》譽為「五言之冠冕」。內容多寫離別相思、人生短暫的感慨。"},{"level":"basic","topic":"文學常識：體裁判別","q":"〈迢迢牽牛星〉全詩共十句、每句五字，就體裁而言應歸屬於下列何者？","choices":["唐代新興的七言絕句","漢代樂府中長短句相雜的歌行","依詞牌格律填寫的詞","五言古詩（古體詩）"],"answer":3,"explain":"本詩每句五字、共十句，句式整齊而句數不限，屬五言古詩。五言古詩在漢代已趨成熟，《古詩十九首》正是代表；它不像唐代近體詩須嚴守平仄格律與對仗。"},{"level":"basic","topic":"文意理解：不成章的原因","q":"依詩意判斷，織女「終日不成章」最主要的原因是什麼？","choices":["因思念牛郎、心神恍惚，無心專注織布","因織布機損壞而無法運作","因天色昏暗看不清絲線","因觸怒天帝被禁止織布"],"answer":0,"explain":"由「終日不成章，泣涕零如雨」可知，織女整日織不成布，接著便落淚如雨，可見是相思之苦使她心緒紛亂。白話翻譯：織了一整天卻織不成布，淚水像雨一樣落下。"},{"level":"basic","topic":"文意理解：取材傳說","q":"〈迢迢牽牛星〉全詩是藉哪一則流傳民間的故事來抒情？","choices":["嫦娥奔月","牛郎織女","后羿射日","精衛填海"],"answer":1,"explain":"詩中「牽牛星」與「河漢女」（織女星）隔銀河相望，正是牛郎織女傳說。作者藉此神話寫人間離別相思，是「借他人酒杯，澆自己塊壘」的手法。"},{"level":"adv","topic":"寫作手法：疊字的效果","q":"本詩使用「迢迢、皎皎、纖纖、札札、盈盈、脈脈」六組疊字，其藝術效果何者說明最恰當？","choices":["使詩句字數整齊，方便隨時換韻","刻意堆砌華麗辭藻，以炫耀作者的學養","兼具摹寫形象與聲音的作用，使音韻和諧流暢，並層層加深纏綿的相思之情","把抒情轉為敘事，用來交代故事的來龍去脈"],"answer":2,"explain":"六組疊字或狀物（迢迢、皎皎、纖纖、盈盈）、或摹聲（札札）、或寫情態（脈脈），既使聲調迴環和諧，富有音樂性，又使景物與情感更加鮮明真切，是本詩最受稱道的藝術特色。"},{"level":"adv","topic":"修辭：譬喻","q":"「泣涕零如雨」一句主要運用了何種修辭手法？","choices":["設問","轉化","借代","譬喻"],"answer":3,"explain":"句中以「如」為喻詞，用「雨」比喻眼淚落下之多而不停，屬明喻。白話翻譯：眼淚像雨水一樣不斷落下。此句把抽象的悲傷化為具體可見的形象。"},{"level":"adv","topic":"修辭綜合判斷","q":"下列修辭手法，何者是〈迢迢牽牛星〉全詩「未」曾使用的？","choices":["疊字","譬喻","映襯","頂真"],"answer":3,"explain":"全詩六組疊字（如「迢迢」「札札」），「泣涕零如雨」為譬喻，「河漢清且淺」的近與「脈脈不得語」的不得相見形成映襯；但全詩並無「以前句末字作為後句起首字」的頂真句式，故答案為頂真。"},{"level":"adv","topic":"寫作手法：映襯（反襯）","q":"「河漢清且淺，相去復幾許？盈盈一水間，脈脈不得語。」四句最主要的寫法與用意是什麼？","choices":["以河水清淺、相隔不遠，反襯兩人可望而不可即的極度痛苦","說明銀河水位變淺，暗示兩人不久之後即可相會","單純描寫銀河夜景之美，抒發對自然的讚嘆","藉水勢洶湧險惡，強調空間阻隔無法跨越"],"answer":0,"explain":"白話翻譯：銀河又清又淺，兩人相隔能有多遠呢？只隔著清澈的一道水，卻只能含情相望而不能交談。距離愈近、愈顯得不得相見之苦，這種以近寫遠、以樂景寫哀情的手法即為映襯（反襯），使悲情更深。"},{"level":"adv","topic":"修辭：借代","q":"「纖纖擢素手」以「素手」來指稱織女其人，這種以事物的一部分或特徵代替本體的手法，稱為什麼？","choices":["誇飾","借代","排比","頂真"],"answer":1,"explain":"借代是不直接說出本名，而用相關的特徵、部分或所屬事物來代替。以「素手」（白皙的手）代指織女，既點出人物，又暗示其柔美，較直說「織女」更含蓄生動。"},{"level":"adv","topic":"人物形象分析","q":"由「纖纖擢素手，札札弄機杼。終日不成章，泣涕零如雨」四句，可看出織女怎樣的形象？","choices":["貪懶怠惰，終日不願動手織布","剛強果決，勇於反抗天帝的安排","形貌柔美、本應勤於織作，卻因相思而失神落淚的思婦形象","性情冷漠寡言，對牛郎的情感已然轉淡"],"answer":2,"explain":"白話翻譯：伸出纖細白皙的手，札札地擺弄織機；織了一整天仍織不成布，眼淚像雨一樣落下。「纖纖」「素手」寫其美，「弄機杼」寫其勤，「不成章」「泣涕」則寫其因思念而心神俱亂，形象具體感人。"},{"level":"adv","topic":"含蓄手法：結句","q":"就情感表達方式而言，「脈脈不得語」作為全詩結句，最大的特色是什麼？","choices":["直接痛斥天帝拆散有情人的無情","以誇張的哭喊盡情宣洩內心不滿","改用議論方式，說明離別的人生道理","全無一字怨言，僅以含情凝望作結，餘韻無窮地寫盡相思與無奈"],"answer":3,"explain":"白話翻譯：只能含情相望，卻連一句話也說不出口。作者不作激烈控訴，而以「不得語」的沉默收束，把千言萬語留在言外，正是《古詩十九首》「情深而語含蓄」的典型風格。"},{"level":"adv","topic":"情景交融","q":"下列關於本詩「情景交融」表現的說明，何者最為恰當？","choices":["藉牽牛、織女二星與銀河等景物寄託離愁，寫景即是寫情，景中含情","前半以大量篇幅議論愛情，最後才點綴寫景","全詩純粹客觀寫景，未寄託任何個人情感","以四季景物的更迭變化，象徵人生的無常短暫"],"answer":0,"explain":"詩中「迢迢」寫距離之遠即寫思念之深，「皎皎」寫星光之明亦襯孤寂之冷，「盈盈一水」既是實景又是阻隔的象徵，景與情融為一體，難以分割。"},{"level":"adv","topic":"比較分析：古體詩與近體詩","q":"將〈迢迢牽牛星〉所屬的五言古詩與唐代的五言律詩相比較，下列敘述何者正確？","choices":["五言古詩必須固定八句，五言律詩則句數不限","五言古詩句數不限、不必嚴守平仄與對仗；五言律詩固定八句，須講求平仄且中間兩聯須對仗","兩者都必須一韻到底並嚴守平仄格律","五言古詩產生的時代晚於五言律詩"],"answer":1,"explain":"五言古詩屬古體詩，形式自由：句數不限、可換韻、不要求對仗與嚴格平仄；五言律詩屬近體詩，限八句四十字，講究平仄黏對，頷聯、頸聯須對仗。時代上，五言古詩在漢代已成熟，遠早於唐代成型的律詩。"},{"level":"adv","topic":"主旨深究","q":"〈迢迢牽牛星〉表面上寫牛郎織女的天上情事，實際上所寄託的主旨為何？","choices":["諷刺當時朝政腐敗、賦稅沉重，民不聊生","讚美織女織布技藝的精湛靈巧","抒寫東漢末年遊子思婦離別相思、可望而不可即的深沉哀怨","勸人應當順天知命，不可對感情強求"],"answer":2,"explain":"《古詩十九首》產生於東漢末年，戰亂頻仍、遊子離鄉，內容多寫離愁別緒。本詩藉天上雙星隔河相望的傳說，寫的正是人間夫婦（情人）分離、近在咫尺卻無法相見的苦痛，是「託物寄情」的典型。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

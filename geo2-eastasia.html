@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>東亞的文化與經濟 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo2-eastasia",
+  "title": "東亞的文化與經濟",
+  "subject": "地理",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2課 東亞的文化與經濟",
+  "tag": "日韓產業·高齡少子化",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>東亞的文化與經濟</h1><div class="sub">地理 · 日韓產業·高齡少子化 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"日本戰後經濟奇蹟的成因","q":"第二次世界大戰後，日本經濟快速復甦與成長，被稱為「經濟奇蹟」。下列何者是當時日本經濟得以快速發展的重要條件？","choices":["國內鐵礦與石油蘊藏豐富，工業原料完全自給","政府主導產業政策，並擁有素質良好的勞動力與引進改良的技術","以出口稻米、蔗糖等熱帶農產品作為主要外匯來源","依靠廣大的海外殖民地市場傾銷工業產品"],"answer":1,"explain":"戰後日本在政府主導的產業政策下，配合教育普及所培養的高素質勞動力，並積極引進、改良歐美技術，加上美國的援助與市場，使工業快速發展。日本礦產與能源貧乏，須大量進口；農產品並非出口主力；戰後日本已失去海外殖民地。"},{"level":"basic","topic":"加工貿易的定義","q":"日本的貿易型態常被稱為「加工貿易」，其最主要的特徵是","choices":["進口原料與能源，加工製成工業產品後出口","進口工業產品，出口原料與能源","進出口貨品都以農產品與水產品為主","產品只在國內生產與銷售，很少對外貿易"],"answer":0,"explain":"日本天然資源貧乏，須自海外進口原油、鐵礦砂等原料與能源，再以進步的技術加工製成汽車、機械、電子產品等高附加價值工業產品外銷，賺取外匯，此即加工貿易。其餘選項與日本進出口結構相反或不符。"},{"level":"basic","topic":"太平洋沿岸工業帶的分布","q":"日本最重要的工業區稱為「太平洋沿岸工業帶」，此工業帶主要分布於下列哪一地帶？","choices":["日本海沿岸與北海道內陸","本州中央的高山地區","由東京、名古屋、大阪延伸到北九州一帶的沿海平原","沖繩群島及其周邊的南方離島"],"answer":2,"explain":"太平洋沿岸工業帶自關東（東京、橫濱）向西，經名古屋、大阪、神戶，延伸至瀨戶內海沿岸與北九州，呈帶狀分布於沿海平原。日本海沿岸、內陸山地與沖繩皆非日本工業的核心地帶。"},{"level":"adv","topic":"日本工業區位（臨海設廠）的原因","q":"日本的重工業與大型工廠多集中在太平洋沿岸，而非分布於內陸山區，最主要的原因是","choices":["內陸山區氣候乾燥，嚴重缺乏工業用水","沿海便於原料進口與產品輸出，且有平原可供設廠、人口市場集中","內陸地區人口過於稠密，土地取得不易","太平洋沿岸完全沒有地震，設廠比較安全"],"answer":1,"explain":"日本屬加工貿易國家，原料進口與成品出口都仰賴海運，臨海設廠可大幅降低運輸成本；且日本平原多分布於沿海，人口與消費市場亦集中於此。日本內陸山區降水豐沛並不缺水、人口反而稀少；太平洋沿岸位於板塊交界帶，地震頻繁。"},{"level":"basic","topic":"日本的代表性工業產品","q":"下列哪一組工業產品，是日本在世界市場占有重要地位、並大量在海外設廠生產的代表性產業？","choices":["棉紡織與成衣加工","咖啡與可可的加工製造","石油開採與原油輸出","汽車與精密電子產品"],"answer":3,"explain":"日本的汽車與精密電子、光學、機械產品品質精良，外銷量居世界前列，並在北美、歐洲、東南亞廣設工廠。棉紡織、成衣屬勞力密集工業，多已外移；咖啡、可可為熱帶作物，非日本產物；日本石油幾乎全數仰賴進口，並非產油輸出國。"},{"level":"adv","topic":"日韓企業海外設廠的原因","q":"近年日本、韓國的汽車與電子廠商大量前往東南亞等地設廠生產，其最主要的考量是","choices":["當地擁有比日、韓更先進的研發技術與人才","當地緯度較高、氣候涼爽，適合精密產品生產","當地工資較低廉，且可就近供應當地及鄰近市場、減少貿易障礙","當地石油與鐵礦產量豐富，原料可完全自給"],"answer":2,"explain":"日、韓國內工資與地價高昂，前往東南亞設廠可降低生產成本，並就近供應快速成長的當地市場、避開關稅等貿易障礙。東南亞的研發技術並不領先日韓；東南亞位處低緯，氣候濕熱；當地資源也無法讓工業原料完全自給。"},{"level":"basic","topic":"韓國的財閥企業","q":"韓國經濟由少數跨足汽車、電子、造船、建築等多種產業的家族式大型企業集團所主導，這類企業集團一般稱為","choices":["財閥","公社","合作社","經濟特區"],"answer":0,"explain":"韓國在政府扶植下形成規模龐大、家族色彩濃厚且跨足多種產業的企業集團，稱為「財閥」，是韓國經濟發展的重要推手。公社為公營事業、合作社為互助性組織、經濟特區則是政策劃設的區域，皆非企業集團的稱呼。"},{"level":"basic","topic":"韓國的優勢產業","q":"下列哪一組產業，是韓國在世界市場上具有領先地位的代表性工業？","choices":["鐘錶、精密機械與乳酪加工業","橡膠、棕櫚油加工與熱帶木材業","羊毛紡織與小麥加工業","造船業與電子業（半導體、手機、面板）"],"answer":3,"explain":"韓國的造船以及半導體、手機、顯示面板等電子產品產量均居世界前列，是其外銷主力。鐘錶與乳酪加工是歐洲國家的特色；橡膠與棕櫚油屬東南亞熱帶栽培業；羊毛與小麥加工則以澳洲、美洲等地為代表。"},{"level":"basic","topic":"韓流文化輸出","q":"近年韓國的流行音樂、電視劇、電影與線上遊戲風行東亞乃至世界各地，這種文化輸出的現象通稱為","choices":["和風","韓流","華流","南洋風"],"answer":1,"explain":"韓國政府與企業長期投資文化創意產業，將影視、流行音樂（K-POP）等推向國際，形成「韓流」。和風指日本風格，華流泛指華語圈的流行文化，南洋風則與東南亞地區有關。"},{"level":"adv","topic":"文化產業輸出的經濟效益","q":"韓國政府積極推動影視、流行音樂等文化產業輸出，除提升國家形象外，對其經濟最主要的影響是","choices":["使韓國由工業國轉變為以農業為主的國家","使韓國不必再發展製造業與對外貿易","帶動觀光、美妝、服飾與電子產品等相關產業的外銷","使韓國人口快速成長，順利解決少子化問題"],"answer":2,"explain":"文化輸出會產生帶動效果：外國民眾因喜愛韓劇、韓國流行音樂而前往韓國觀光，並消費韓國的美妝、服飾、食品與電子產品，擴大整體外銷市場。文化產業並未取代製造業，也不會使韓國轉為農業國，更無法直接提高生育率。"},{"level":"basic","topic":"高齡化的成因","q":"日本與韓國的老年（65歲以上）人口占總人口的比率不斷上升，社會邁入高齡化。造成高齡化的主要原因是","choices":["死亡率上升，使平均壽命縮短","大量外籍移工移入，改變人口結構","都市人口大量遷往鄉村居住","醫療與生活水準提高使平均壽命延長，加上出生率持續下降"],"answer":3,"explain":"高齡化是「老年人口增加」與「幼年人口減少」共同造成的：醫療進步與生活條件改善使平均壽命延長，同時出生率下降使幼年人口比率降低，老年人口比率因而上升。死亡率上升、移工移入（多為青壯年）與人口遷往鄉村，都不是高齡化的成因。"},{"level":"basic","topic":"少子化的成因","q":"日本與韓國近年出生人數持續減少，「少子化」現象十分明顯。下列何者最可能是造成此現象的原因？","choices":["育兒與教育費用高昂、工作壓力大，晚婚、不婚者增加","政府以法令嚴格限制每個家庭的生育子女數","因長期戰爭導致大量青壯年人口傷亡","醫療水準落後，嬰兒死亡率居高不下"],"answer":0,"explain":"日、韓生活與居住成本高，育兒與教育費用沉重、職場工時長，加上女性就業普遍與價值觀改變，晚婚、不婚與不生育者增加，導致出生率下降。日韓並未以法令限制生育，戰後亦無長期戰爭，且兩國醫療水準先進、嬰兒死亡率極低。"},{"level":"adv","topic":"少子化與高齡化的社會經濟影響","q":"若日本、韓國的少子化與高齡化持續發展，最可能出現的社會經濟影響是","choices":["勞動力逐漸減少，年金、社會福利與醫療支出的負擔加重","中小學校數量與教師需求將大幅增加","青壯年人口的扶養負擔將明顯減輕","因總人口減少而使國家稅收大幅增加"],"answer":0,"explain":"幼年人口減少使未來投入職場的勞動力縮減，老年人口增加則使年金與醫療支出上升，青壯年的扶養負擔加重而非減輕。學齡人口減少會使學校面臨減班、廢校，教師需求下降；勞動人口減少也會使稅收成長趨緩。"},{"level":"adv","topic":"勞動力不足的因應對策","q":"面對勞動力不足的問題，日本與韓國的政府和企業普遍採取的因應方式是","choices":["禁止女性外出就業，要求其在家專心生育","全面關閉工廠，改以農業作為主要產業","嚴格限制外籍人士入境，以保障本國人就業機會","推動自動化與機器人生產，並鼓勵女性、高齡者就業及引進外籍勞動力"],"answer":3,"explain":"為彌補勞動力缺口，日韓一方面以工業機器人與自動化提高生產效率，一方面透過友善職場、托育政策鼓勵女性與高齡者投入職場，並逐步放寬外籍移工與專業人才的引進。禁止女性就業、關廠務農或緊縮外勞，都會使勞動力短缺更加嚴重。"},{"level":"basic","topic":"日本的都市一極集中（東京）","q":"日本的政治、經濟、金融、文化與媒體機能高度集中於首都及其周邊都會區，形成「一極集中」現象。此一都市是","choices":["大阪","名古屋","東京","札幌"],"answer":2,"explain":"東京不僅是日本首都，也是全國政治決策、金融、企業總部與大眾傳播的核心，東京都會區集中了相當高比率的人口，形成典型的一極集中。大阪、名古屋雖為重要都會區，札幌則為北海道中心，機能集中程度均不及東京。"},{"level":"basic","topic":"韓國的都市一極集中（首爾首都圈）","q":"南韓（大韓民國）的人口與產業高度集中於首都及其周邊，形成規模龐大的「首都圈」。此一首都為","choices":["釜山","首爾","仁川","平壤"],"answer":1,"explain":"首爾是南韓的首都，與周邊的京畿道、仁川共同構成首都圈，集中了全國相當高比率的人口與大部分企業總部。釜山為南部最大港市，仁川為首都圈的門戶港與機場所在，平壤則是北韓的首都。"},{"level":"adv","topic":"一極集中造成的都市與鄉村問題","q":"東京與首爾長期出現「一極集中」的現象，最可能帶來下列哪一組問題？","choices":["都市地價與房價高漲、交通擁擠且通勤時間長，鄉村則人口老化、人力外流","都市勞動力嚴重不足，鄉村地區工商業高度發達","都市人口稀少，使公共設施大量閒置浪費","全國人口分布趨於平均，城鄉差距明顯縮小"],"answer":0,"explain":"人口與產業過度集中於首都圈，會推升地價與房價、造成交通擁擠與長時間通勤、環境負荷加重；相對地，鄉村因青壯年外移而人口老化、勞動力不足、學校與商店關閉，城鄉差距因而擴大。其餘選項所述與一極集中的實際情形相反。"},{"level":"adv","topic":"人口金字塔的判讀","q":"某國的人口結構呈現：幼年人口比率低、老年人口比率高，人口金字塔上寬下窄。此種人口結構最符合下列哪一個國家的現況？","choices":["印度","日本","菲律賓","寮國"],"answer":1,"explain":"上寬下窄的人口金字塔代表出生率低、平均壽命長，是少子化與高齡化並存的結果，日本是最典型的例子。印度、菲律賓與寮國目前出生率仍較高、幼年人口比率大，人口金字塔多呈下寬上窄的形狀。"},{"level":"adv","topic":"由貿易結構推論國家類型","q":"某國進口貨品以原油、天然氣、鐵礦砂、煤等為主，出口貨品則以汽車、機械與電子零組件為大宗。由此貿易結構最可以推論該國","choices":["天然資源豐富，工業原料能夠自給自足","以初級產業為主，工業並不發達","天然資源貧乏但工業技術發達，屬於典型的加工貿易國家","對外貿易依賴度低，經濟以內需市場為主"],"answer":2,"explain":"進口以能源與礦產原料為主，代表本國資源不足；出口以汽車、機械、電子零組件等高附加價值製品為主，代表工業技術先進，兩者合起來正是加工貿易國家（如日本）的典型特徵。資源自給、工業不發達或不依賴貿易的推論，都與資料矛盾。"},{"level":"adv","topic":"東亞的跨國生產分工","q":"日本、韓國的廠商提供關鍵技術與零組件，交由中國、東南亞的工廠組裝，成品再行銷世界各地。此一現象最能反映東亞地區出現下列何種發展趨勢？","choices":["各國的產業型態完全相同，彼此互相取代而少有往來","各國工業普遍沒落，改以初級產業為主要經濟活動","各國貿易往來大幅減少，經濟逐漸走向封閉自足","各國依技術、工資與市場等條件相互分工，形成跨國的生產分工體系"],"answer":3,"explain":"日、韓擁有技術與研發優勢，中國與東南亞則有較低廉的工資與土地，各自承擔生產過程中的不同環節，形成跨國的生產分工（區域分工）體系。東亞各國產業型態並不相同，工業也未沒落，彼此的貿易往來反而更為密切。"},{"level":"basic","topic":"東亞（漢字）文化圈","q":"日本、韓國與越南在歷史上都曾使用漢字，並深受中國典章制度與文化的影響，因而與中國同屬","choices":["印度文化圈","伊斯蘭文化圈","東亞文化圈（漢字文化圈）","斯拉夫文化圈"],"answer":2,"explain":"以漢字、儒家思想、律令制度與大乘佛教為共同要素，中國、日本、韓國、越南構成東亞文化圈，又稱漢字文化圈。印度文化圈以南亞為核心，伊斯蘭文化圈分布於西亞、北非，斯拉夫文化圈則在東歐與俄羅斯一帶。"},{"level":"basic","topic":"儒家思想的影響","q":"東亞各國社會普遍重視家庭倫理、長幼有序、尊師重道與勤奮向學，這些觀念主要受到下列何種思想影響？","choices":["印度教的種姓觀念","伊斯蘭教教義","基督教教義","儒家思想"],"answer":3,"explain":"儒家強調倫理綱常、孝道、長幼尊卑與教育的重要性，隨漢字與典籍傳入日本、韓國、越南，深深影響東亞社會的家庭觀與教育觀。種姓觀念屬印度教，伊斯蘭教與基督教則分別是西亞、北非與歐美地區的主要信仰。"},{"level":"basic","topic":"日、韓文字使用的差異","q":"日本與韓國雖同屬漢字文化圈，但兩國現今的文字使用情形並不相同。下列敘述何者正確？","choices":["日本至今仍在文章中漢字與假名並用，韓國現今則以諺文（韓文字母）書寫為主","日本已完全廢除漢字，韓國則仍全面使用漢字","兩國都完全以漢字書寫，未曾發展出自己的文字","兩國歷史上都不曾使用過漢字"],"answer":0,"explain":"日本在漢字的基礎上創造假名，現今文章中漢字與假名混用；韓國創制諺文（韓文字母）後逐漸取代漢字，今日以諺文書寫為主，漢字僅在少數場合（如姓名、辨義）使用。兩國歷史上都曾長期使用漢字，也都發展出自己的文字系統。"},{"level":"adv","topic":"教育傳統與少子化的關聯","q":"有學者認為，東亞社會重視教育與文憑的傳統，與日、韓的少子化問題有關。此一推論最合理的說明是","choices":["重視教育使國民壽命延長，老年人口因而增加","家庭為子女投入高額的補習與教育費用，養育成本升高，降低生育意願","重視教育使青年大量移居鄉村，都市人口隨之減少","重視教育使婦女普遍不願外出就業，家庭收入因而減少"],"answer":1,"explain":"受儒家重視教育的傳統影響，日、韓家庭普遍投入大量補習與升學費用，養育一個孩子的成本極高，使許多家庭選擇少生或不生，加重少子化。教育與壽命延長無直接因果；重視教育反而促使人口往教育資源集中的都市移動，且女性教育程度提高後就業比率上升而非下降。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>過去式 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng2-past",
+  "title": "過去式",
+  "subject": "英文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "文法總複習",
+  "tag": "be過去式·規則與不規則",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>過去式</h1><div class="sub">英文 · be過去式·規則與不規則 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"be動詞過去式 was","q":"My brother ___ sick yesterday, so he stayed home all day.","choices":["was","is","were","am"],"answer":0,"explain":"句中有過去時間副詞 yesterday，且主詞 My brother 是第三人稱單數，be 動詞過去式要用 was。(B) is 是現在式，與 yesterday 的過去時間衝突。(C) were 用於複數主詞或 you。(D) am 只能搭配主詞 I，而且是現在式。"},{"level":"basic","topic":"be動詞過去式 were","q":"Tom and I ___ in the same class last year.","choices":["was","were","are","is"],"answer":1,"explain":"主詞 Tom and I 是複數，加上 last year 表示過去，be 動詞過去式複數要用 were。(A) was 只用於單數主詞 I/he/she/it。(C) are 是現在式，與 last year 衝突。(D) is 既是現在式又是單數，雙重錯誤。"},{"level":"basic","topic":"was 的否定 wasn't","q":"The movie ___ boring at all. Everyone loved it.","choices":["didn't","isn't","wasn't","weren't"],"answer":2,"explain":"主詞 The movie 是單數，句子在講已看過的電影(過去)，且 boring 是形容詞，必須用 be 動詞的否定，故選 wasn't。(A) didn't 後面一定要接原形「動詞」，不能直接接形容詞。(B) isn't 是現在式，與後句 loved 的過去時態不合。(D) weren't 是複數用法，不能配 The movie。"},{"level":"basic","topic":"be動詞過去式疑問句","q":"___ you at home last night when I called you?","choices":["Was","Did","Are","Were"],"answer":3,"explain":"at home 是介系詞片語，句中沒有一般動詞，要把 be 動詞移到句首形成疑問句；主詞 you 的 be 動詞過去式是 were。(A) Was 不能搭配 you。(B) Did 用於一般動詞的過去疑問句，後面要接原形動詞，此句沒有動詞可接。(C) Are 是現在式，與 last night 衝突。"},{"level":"basic","topic":"規則變化 直接加-ed","q":"We ___ TV for two hours last night.","choices":["watched","watch","watches","watching"],"answer":0,"explain":"last night 表過去，watch 是規則動詞，字尾直接加 -ed → watched。(B) watch 是原形／現在式，沒有表現出過去。(C) watches 是現在式第三人稱單數，時態錯誤，也不能搭配主詞 We。(D) watching 是現在分詞，前面必須有 be 動詞才能使用。"},{"level":"basic","topic":"規則變化 去e加-ed","q":"He ___ the door quietly and went out.","choices":["close","closeed","closed","closing"],"answer":2,"explain":"與後面的 went 時態一致，須用過去式；close 字尾已有 e，只要再加 -d → closed。(A) close 是原形，沒有變化。(B) closeed 拼字錯誤，字尾是 e 時不可再加完整的 -ed。(D) closing 是現在分詞，不能單獨當過去式動詞。"},{"level":"basic","topic":"規則變化 重複字尾+ed","q":"The bus ___ in front of the school ten minutes ago.","choices":["stoped","stopped","stopping","stops"],"answer":1,"explain":"ago 表示過去。stop 是「短母音＋單子音」結尾的單音節字，要重複字尾子音再加 -ed → stopped。(A) stoped 少了一個 p，拼字錯誤。(C) stopping 是現在分詞，前面必須有 be 動詞。(D) stops 是現在式第三人稱單數，時態錯誤。"},{"level":"basic","topic":"規則變化 子音+y改ied","q":"Emily ___ hard for the math test last week.","choices":["studyed","studies","studied","studying"],"answer":2,"explain":"last week 表示過去。study 字尾是「子音＋y」，要去 y 改 i 再加 -ed → studied。(A) studyed 違反子音＋y 的變化規則，拼字錯誤。(B) studies 是現在式第三人稱單數，與 last week 衝突。(D) studying 是現在分詞，需搭配 be 動詞。"},{"level":"basic","topic":"不規則動詞 go-went","q":"They ___ to the beach last Sunday.","choices":["goed","gone","go","went"],"answer":3,"explain":"go 是不規則動詞，過去式為 went，正好搭配 last Sunday。(A) goed 是把規則變化誤用在不規則動詞上。(B) gone 是過去分詞，不能單獨當過去式動詞。(C) go 是原形，沒有表現出過去時態。"},{"level":"basic","topic":"不規則動詞 buy-bought","q":"My mom ___ me a new bike for my birthday last month.","choices":["buyed","bought","buys","buying"],"answer":1,"explain":"buy 的過去式是不規則變化 bought，搭配 last month。(A) buyed 誤把規則變化用在不規則動詞上。(C) buys 是現在式，與 last month 衝突。(D) buying 是現在分詞，前面缺少 be 動詞。"},{"level":"basic","topic":"過去式否定 didn't+原形","q":"I ___ my homework last night because I was very tired.","choices":["didn't did","don't do","didn't do","wasn't do"],"answer":2,"explain":"一般動詞的過去式否定用「didn't＋原形動詞」，did 本身已表示過去，故用 didn't do。(A) didn't did 錯在助動詞後面又用過去式。(B) don't do 是現在式否定，與 last night 不合。(D) wasn't 是 be 動詞否定，後面不能直接接原形動詞。"},{"level":"basic","topic":"過去式疑問句 Did+原形","q":"___ Jack ___ breakfast yesterday morning?","choices":["Did / ate","Does / eat","Was / eat","Did / eat"],"answer":3,"explain":"一般動詞的過去疑問句公式是「Did＋主詞＋原形動詞」，did 已表過去，故用 Did...eat。(A) 錯在助動詞後面又用過去式 ate。(B) Does 是現在式助動詞，與 yesterday morning 衝突。(C) Was 是 be 動詞，後面不可直接接原形動詞 eat。"},{"level":"basic","topic":"過去時間副詞","q":"I met your sister at the bookstore ___.","choices":["two days ago","tomorrow","next week","right now"],"answer":0,"explain":"met 是 meet 的過去式，時間副詞必須表示過去，「數字＋時間＋ago」表示「…之前」，故選 two days ago。(B) tomorrow 與 (C) next week 都指未來，要搭配未來式。(D) right now 指「此刻」，要搭配現在式或現在進行式。"},{"level":"basic","topic":"不規則動詞 see-saw","q":"We ___ a beautiful rainbow after the rain yesterday.","choices":["seen","saw","see","seed"],"answer":1,"explain":"see 的過去式是不規則變化 saw，搭配 yesterday。(A) seen 是過去分詞，不可單獨當過去式動詞。(C) see 是原形，沒有表現過去。(D) seed 是把規則變化硬加在不規則動詞上，而且 seed 本身是名詞「種子」。"},{"level":"adv","topic":"習慣現在式vs過去事件","q":"Kevin usually walks to school, but he ___ the bus yesterday.","choices":["took","takes","take","is taking"],"answer":0,"explain":"前半句 usually＋walks 表示現在的習慣，but 之後有 yesterday，指昨天發生的過去事件，take 的過去式是不規則的 took。(B) takes 是現在式，與 yesterday 矛盾。(C) take 完全沒有變化，也不符合第三人稱單數。(D) is taking 是現在進行式，與過去時間 yesterday 衝突。"},{"level":"adv","topic":"改錯 過去式否定句","q":"Which sentence is correct?","choices":["She didn't went to the party last night.","She not went to the party last night.","She didn't go to the party last night.","She doesn't go to the party last night."],"answer":2,"explain":"過去式否定的正確結構是「主詞＋didn't＋原形動詞」，故 (C) didn't go 正確。(A) 錯在助動詞 did 之後又用過去式 went。(B) 一般動詞的否定不可只加 not，必須有助動詞 didn't。(D) doesn't go 是現在式，與 last night 的過去時間衝突。"},{"level":"adv","topic":"過去式簡答","q":"A: Did you finish your homework last night? B: ___ I finished it before dinner.","choices":["Yes, I did.","Yes, I was.","Yes, I do.","Yes, I am."],"answer":0,"explain":"問句用助動詞 Did 開頭，簡答就要用同一個助動詞 did，故答 Yes, I did.。(B) 與 (D) 用 be 動詞回答，只適用於 Was/Were 開頭的問句。(C) Yes, I do. 是現在式的回答，與 Did 及 last night 不符。"},{"level":"adv","topic":"be動詞vs助動詞did","q":"___ your father a teacher ten years ago?","choices":["Did","Were","Does","Was"],"answer":3,"explain":"a teacher 是名詞補語，句中沒有一般動詞，要用 be 動詞造疑問句；主詞 your father 是單數，時間 ten years ago 表過去，故用 Was。(A) Did 後面必須接原形動詞，此句沒有動詞可接。(B) Were 用於複數主詞或 you。(C) Does 是現在式助動詞，時態與用法皆錯。"},{"level":"adv","topic":"規則與不規則混合","q":"Last night, Jenny ___ her homework and then ___ to bed.","choices":["finish / go","finished / went","finished / goed","finishes / went"],"answer":1,"explain":"Last night 表過去，兩個動詞都要用過去式：finish 是規則動詞→finished；go 是不規則動詞→went。(A) 兩個動詞都是原形，沒有表現過去。(C) goed 誤把規則變化套用在不規則動詞上。(D) finishes 是現在式第三人稱單數，與後面的 went 時態不一致。"},{"level":"adv","topic":"wh-疑問句過去式","q":"A: What ___ you ___ last weekend? B: I visited my grandmother.","choices":["do / do","was / doing","did / did","did / do"],"answer":3,"explain":"答句用 visited，可知問的是過去；wh- 疑問句結構是「疑問詞＋did＋主詞＋原形動詞」，故用 did...do。(A) do / do 是現在式，與 last weekend 不合。(B) 主詞 you 不可搭配 was，人稱錯誤。(C) 錯在助動詞 did 之後又用過去式 did。"},{"level":"adv","topic":"There was/were","q":"There ___ a lot of people at the night market last night.","choices":["were","was","is","are"],"answer":0,"explain":"There be 句型的 be 動詞要跟著後面的真主詞變化；people 是複數名詞，加上 last night 表過去，故用 were。(B) was 是單數用法，容易被 a lot of 的 a 誤導。(C) is 是現在式又是單數。(D) are 雖是複數，但為現在式，與 last night 衝突。"},{"level":"adv","topic":"不規則動詞 teach-taught","q":"Mr. Lin ___ English at our school from 2015 to 2020, but now he works in Taichung.","choices":["teached","teaches","taught","was teach"],"answer":2,"explain":"from 2015 to 2020 是已經結束的過去期間(由 but now 可知他現在已不在此工作)，teach 的過去式是不規則的 taught。(A) teached 誤用規則變化。(B) teaches 是現在式，與已結束的過去時間矛盾。(D) was teach 錯在 be 動詞後面不可直接接原形動詞。"},{"level":"adv","topic":"wasn't與didn't辨析","q":"Andy ___ at school yesterday because he ___ a bad cold.","choices":["didn't / had","weren't / had","wasn't / didn't have","wasn't / had"],"answer":3,"explain":"第一格 at school 是介系詞片語，要用 be 動詞的否定，主詞 Andy 是單數且時間為過去，故用 wasn't；第二格 have a cold(感冒)是肯定敘述，過去式為 had。(A) didn't 後面缺原形動詞，也不能直接接介系詞片語。(B) weren't 是複數用法，不能配 Andy。(C) didn't have 變成「沒有感冒」，與 because 前後的因果語意矛盾。"},{"level":"adv","topic":"不規則動詞 put(原形過去式同形)","q":"Kevin ___ his keys on the table yesterday, but now he can't find them.","choices":["puted","put","putted","puts"],"answer":1,"explain":"yesterday 表過去，put 是「原形與過去式同形」的不規則動詞，過去式仍寫作 put。(A) puted 誤把規則變化直接加 -ed。(C) putted 誤用重複字尾加 -ed 的規則，put 的過去式並不變化。(D) puts 是現在式第三人稱單數，與 yesterday 衝突。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

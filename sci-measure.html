@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>科學測量與實驗室安全 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "sci-measure",
+  "title": "科學測量與實驗室安全",
+  "subject": "理化",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1章 基本測量與科學素養",
+  "tag": "科學方法·儀器·安全",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>科學測量與實驗室安全</h1><div class="sub">理化 · 科學方法·儀器·安全 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"科學方法的步驟","q":"小明觀察到教室窗邊的盆栽比角落的盆栽長得茂盛。依照科學方法的一般步驟，他在「觀察」之後緊接著應進行的步驟是什麼？","choices":["提出問題：「植物的生長是否與光線有關？」","提出假設：「光線越強，植物長得越好」","設計並進行實驗，每天記錄植物的高度","下結論：「光線一定會使植物長得比較好」"],"answer":0,"explain":"科學方法的一般順序為：觀察現象→提出問題→提出假設→設計並進行實驗（含變因控制）→分析數據→歸納結論。觀察到「窗邊比角落茂盛」後，必須先把疑惑明確化成可探究的問題。「提出假設」與「設計實驗」都要等問題確立後才進行；「下結論」更須等實驗數據出來才能做，還沒實驗就下結論違反科學方法的精神。"},{"level":"basic","topic":"操縱變因","q":"在「澆水量是否影響豆苗高度」的實驗中，實驗者刻意讓甲、乙、丙三組每天分別澆 10 mL、20 mL、30 mL 的水。這個被實驗者刻意改變的因素稱為什麼？","choices":["應變變因","操縱變因","控制變因","實驗誤差"],"answer":1,"explain":"實驗者「主動、刻意改變」的因素稱為操縱變因，此處即為澆水量。應變變因是隨操縱變因改變而被測量的結果（豆苗高度）；控制變因是必須保持相同的其他條件（如日照、土壤、品種）；實驗誤差則是測量本身的偏差，與變因的分類無關。"},{"level":"basic","topic":"應變變因","q":"在「不同濃度的鹽水是否影響馬鈴薯塊質量」的實驗中，最後用天平測量得到的「馬鈴薯塊質量變化量」屬於下列何者？","choices":["操縱變因","控制變因","應變變因","假設"],"answer":2,"explain":"隨著操縱變因改變而被觀察、測量出來的結果，稱為應變變因。本題的操縱變因是鹽水濃度；控制變因是馬鈴薯塊大小、浸泡時間、溫度等必須相同的條件；假設則是實驗前的推測，並非實驗後測得的數據，最容易與應變變因混淆。"},{"level":"basic","topic":"控制變因","q":"想探討「不同材質的杯子保溫效果是否不同」，下列何者應該是這個實驗的控制變因？","choices":["杯子的材質","一段時間後熱水降低的溫度","每個杯子分別放在冷氣口、窗邊與桌上","各杯一開始裝入熱水的體積與溫度都相同"],"answer":3,"explain":"控制變因是「除了操縱變因以外，必須保持相同」的條件，例如熱水的初始體積與溫度、放置環境、測量時間長短。杯子的材質是本實驗刻意改變的操縱變因；降溫幅度是測量所得的應變變因；把三個杯子分別放在冷氣口、窗邊與桌上，等於讓環境條件不同，破壞了控制變因，將無法判斷差異是否由材質造成。"},{"level":"basic","topic":"實驗室安全設備－洗眼器","q":"做實驗時不小心有藥品噴濺入眼睛，應立即使用實驗室中的哪一項設備處理？","choices":["滅火器","通風櫥","上皿天平","洗眼器"],"answer":3,"explain":"洗眼器是專門在藥品噴入眼睛時，以大量緩和水流持續沖洗眼球的緊急設備，沖洗後應立即告知老師並就醫。滅火器用於滅火、通風櫥用於排除有毒或刺激性氣體、上皿天平是測量質量的儀器，三者都不能用來沖洗眼睛。"},{"level":"basic","topic":"實驗室安全設備－通風櫥","q":"下列關於實驗室安全設備用途的敘述，何者正確？","choices":["洗眼器是用來撲滅桌面上的火焰","滅火器可用來沖洗噴到皮膚上的藥品","會產生有毒或刺激性氣體的實驗，應在通風櫥內進行","通風櫥是用來存放砝碼與量筒的櫃子"],"answer":2,"explain":"通風櫥能把有毒、刺激性或易揮發的氣體抽走排出，避免人員吸入，因此這類實驗必須在通風櫥內操作。「洗眼器滅火」與「滅火器沖洗皮膚」把兩者的功能完全誤用；通風櫥是操作空間，不是存放砝碼、量筒的儲藏櫃。"},{"level":"basic","topic":"實驗室安全規則","q":"關於在理化實驗室中應遵守的規則，下列何者正確？","choices":["未經老師許可，不可擅自取用或任意混合藥品","實驗進行時可以一邊吃東西、喝飲料","實驗剩下的藥品可以帶回家繼續研究","加熱試管時，臉要盡量靠近試管口正上方觀察"],"answer":0,"explain":"藥品可能具有毒性或會劇烈反應，任意混合可能產生有毒氣體或爆沸，必須依老師指示取用。實驗室內嚴禁飲食以免誤食藥品；藥品一律不得攜出實驗室；加熱時試管口不可對著自己或他人，更不能把臉靠近管口，以免液體爆沸噴濺灼傷。"},{"level":"basic","topic":"藥品取用原則","q":"關於實驗藥品的取用，下列敘述何者正確？","choices":["為了節省藥品，取出後沒用完的藥品應倒回原試劑瓶","取用時應「取用適量」，多取而未用完的藥品不可倒回原瓶，須依老師指示處理","想知道藥品的氣味時，應把鼻子靠近瓶口用力吸氣","取用固體藥品時，直接用手抓取最方便"],"answer":1,"explain":"取出的藥品可能已被污染，倒回原瓶會使整瓶試劑變質報廢，所以只能取用適量，剩餘藥品依老師指示處理。聞氣味時必須用手在瓶口上方「搧氣」到鼻前，不可直接靠近用力吸；固體藥品應以乾燥的藥匙取用，用手抓取可能灼傷皮膚並污染藥品。"},{"level":"basic","topic":"量筒的正確讀數方式","q":"用量筒量取 50 mL 的水時，正確的讀數方式為何？","choices":["視線由上往下俯視液面後讀出刻度","視線由下往上仰視液面後讀出刻度","將量筒放平，視線與凹液面最低處保持齊平（水平）再讀出刻度","讀取貼近管壁、凹液面最高處的刻度"],"answer":2,"explain":"水在量筒中因附著力形成凹液面，讀數時必須把量筒放在水平桌面上，使視線與凹液面最低處齊平。俯視會使讀數偏大、仰視會使讀數偏小；讀取貼壁的凹液面最高處也不是規定讀法，這些做法都會造成系統性誤差。"},{"level":"basic","topic":"排水法測不規則固體體積","q":"要測量一顆形狀不規則的小石頭的體積，最適當的方法是下列何者？","choices":["用直尺量出長、寬、高再相乘","用天平測出質量，直接把質量的數值當作體積","量出石頭最長的一邊，再自乘三次（立方）當作體積","用排水法：將石頭放入裝水的量筒中，以放入前後的體積讀數相減"],"answer":3,"explain":"不規則固體無法用長寬高相乘或邊長立方來計算體積，因為它並非規則的方體。可利用「物體沒入水中會排開等體積的水」的原理，以量筒放入前後的讀數相減求得體積。質量與體積是不同的物理量，單位也不同，不能互相取代。"},{"level":"basic","topic":"天平的使用步驟","q":"使用上皿天平測量物體質量時，下列哪個動作必須在「放上待測物之前」先完成？","choices":["先把砝碼全部放上右盤","先把天平放在水平桌面上並做零點（歸零）校正，使空盤時指針指在刻度中央","先用手指把砝碼一顆顆排在秤盤上","先用嘴對著秤盤吹氣去除灰塵"],"answer":1,"explain":"天平使用前必須放在水平桌面上，再調整平衡（定盤）螺絲做零點校正，使空盤時指針指在刻度中央，否則每次測量都會有固定的偏差。砝碼一律用鑷子夾取，用手拿會沾附油污與汗水而改變質量；對秤盤吹氣會使秤盤擺動並帶入水氣，都是錯誤操作。"},{"level":"basic","topic":"測量的估計值","q":"用最小刻度為 0.1 公分（1 公釐）的直尺測量一支鉛筆的長度，下列記錄方式何者最恰當？","choices":["12 公分","12.3 公分","12.3456 公分","12.35 公分"],"answer":3,"explain":"測量時要讀到儀器的最小刻度，並在最小刻度以下「再估計一位」。最小刻度為 0.1 cm，因此應記錄到 0.01 cm，例如 12.35 cm，最後一位即為估計值。12.3 cm 少了估計位、12 cm 連最小刻度都沒讀出，12.3456 cm 則遠超過直尺的精密度，屬於捏造出來的位數。"},{"level":"basic","topic":"單位與單位換算","q":"下列單位換算何者正確？","choices":["1 公升 = 100 毫升","1 毫升 = 1 立方公分","1 公斤 = 100 公克","1 公尺 = 10 公分"],"answer":1,"explain":"1 毫升（mL）的定義正好等於 1 立方公分（cm³），這是量筒體積讀數與長度單位互換的重要關係。其餘皆錯：1 公升 = 1000 毫升、1 公斤 = 1000 公克、1 公尺 = 100 公分，三個錯誤選項分別把 1000 倍誤寫成 100 倍、或把 100 倍誤寫成 10 倍。"},{"level":"basic","topic":"密度的定義","q":"在理化課中，「密度」的定義是下列何者？","choices":["物質單位體積所含的質量","物質單位質量所占的體積","物體所受地球引力的大小","物體所含物質的總量"],"answer":0,"explain":"密度＝質量÷體積，也就是單位體積所含的質量，常用單位為 g/cm³ 或 kg/m³。「單位質量所占的體積」是把公式上下顛倒（屬於比容的概念）；「所受地球引力的大小」是重量（一種力）；「所含物質的總量」是質量，三者都與密度不同，是常見的混淆點。"},{"level":"adv","topic":"變因控制與實驗設計評估","q":"小華想探討「施肥是否會增加番茄的產量」。他把甲盆番茄施肥後放在陽台，乙盆不施肥放在室內書桌上，其餘條件相同。這個實驗設計最主要的問題是什麼？","choices":["番茄的產量不能當作應變變因","光照條件沒有保持相同，控制變因未控制好，無法確定產量差異是否由施肥造成","操縱變因應該改成番茄的品種","只要甲、乙兩盆都重複做很多次，設計上就沒有問題"],"answer":1,"explain":"一次只能改變一個操縱變因（是否施肥），其他條件如光照、水量、土壤、品種都必須是保持相同的控制變因。此設計同時改變了施肥與光照，即使兩盆產量不同，也無法判斷是哪一項造成的。番茄產量正是合理的應變變因；本實驗要探討的是施肥而非品種；而重複次數再多，變因混淆的設計缺陷依然存在。"},{"level":"adv","topic":"意外處理－藥品接觸皮膚","q":"實驗時不慎將稀鹽酸潑灑到手臂皮膚上，最正確的處理方式是？","choices":["立即以大量清水沖洗患部，並立刻報告老師做後續處理","立刻倒上氫氧化鈉溶液把鹽酸中和掉","先塗一層厚厚的乳液蓋住，再繼續做實驗","用抹布把手臂擦一擦，等實驗結束再說"],"answer":0,"explain":"皮膚沾到酸或鹼，第一時間都應以大量清水持續沖洗，把藥品稀釋並沖走以降低傷害，再立即報告老師。用強鹼中和強酸會放出大量熱並造成二次灼傷；塗乳液或用抹布擦拭都無法移除已附著的藥品，還可能把藥品抹散到更大範圍並延誤處理時機。"},{"level":"adv","topic":"意外處理－失火與滅火","q":"實驗中酒精燈不慎打翻，少量酒精在桌面上燃燒，下列處理方式何者最恰當？","choices":["用嘴用力吹，把火焰吹熄","立刻潑一大桶水，讓火隨著水流散開","用濕抹布或滅火器覆蓋火焰，使其隔絕空氣而熄滅，並立即告知老師","用手直接拿起燃燒中的酒精燈衝到水槽沖水"],"answer":2,"explain":"滅火的原理是移除燃燒三要素（可燃物、助燃的氧氣、達到燃點的溫度）之一；覆蓋濕抹布或使用滅火器可隔絕氧氣並降溫。酒精能與水互溶且會隨水流擴散，潑水反而使火勢蔓延；用嘴吹容易把火焰與燃燒中的酒精吹散；徒手搬動燃燒中的酒精燈極易灼傷並再度打翻，都是危險做法。"},{"level":"adv","topic":"廢液處理原則","q":"實驗結束後，關於廢液的處理，下列做法何者正確？","choices":["所有廢液都可直接倒入水槽，再開大水沖走","廢液應依性質分類，倒入指定的廢液回收桶，不可任意倒入水槽","把酸性與鹼性廢液倒在一起後，就可以直接倒到校園的花圃","把廢液倒回原來的試劑瓶，下次實驗再使用"],"answer":1,"explain":"廢液可能含重金屬、強酸鹼或有機溶劑，會污染水源與土壤，必須依性質分類倒入標示清楚的回收桶，交由專責單位處理。酸鹼混合會劇烈放熱且不保證恰好完全中和，仍不可倒入土壤；廢液已被污染，倒回原瓶會使整瓶試劑報廢。"},{"level":"adv","topic":"溫度計的原理與使用","q":"關於實驗室常用的液體溫度計，下列敘述何者正確？","choices":["測量液體溫度時，應先把溫度計取出液體後再讀數","可以用溫度計當作攪拌棒來攪動液體，使溫度較快均勻","感溫玻璃球應緊貼容器的底部或側壁，讀數才會準確","溫度計是利用管內液體受熱膨脹、遇冷收縮的性質來指示溫度"],"answer":3,"explain":"液體溫度計的原理是「熱脹冷縮」：管內液體受熱體積膨脹而上升、遇冷收縮而下降，再由刻度讀出溫度。讀數時感溫球必須留在被測液體中（取出後液體會與空氣交換熱而改變讀數），且不可碰到容器底部或側壁，否則量到的是容器的溫度；溫度計玻璃薄而易破，絕不可當作攪拌棒使用。"},{"level":"adv","topic":"誤差與估計值的判讀","q":"甲、乙、丙三人用同一支最小刻度 1 公釐的直尺，測量同一支筆的長度，分別記錄為 15.24 cm、15.25 cm、15.23 cm。關於這個結果，下列敘述何者最合理？","choices":["測量必定有誤差，記錄的最後一位是估計值，三人出現微小差異是正常的","長度的真值只有一個，所以三人中一定有兩人量錯了","為了避免誤差，應該把讀數只記到 15.2 cm","這代表直尺已經損壞，應改用量筒來測量長度"],"answer":0,"explain":"最小刻度為 1 mm（0.1 cm）時，讀數要估計到 0.01 cm，最後一位本來就是估計值，不同人估計略有差異屬於正常現象，可用多次測量取平均來減小誤差。誤差不等於「量錯」，也無法完全消除；只記到 15.2 cm 反而漏掉了應有的估計位；量筒是測體積的儀器，不能用來量長度。"},{"level":"adv","topic":"量筒讀數時視線造成的誤差","q":"小美用量筒量水時，眼睛位置比液面高，以「由上往下俯視」的方式讀刻度。她讀到的體積數值與實際體積相比會如何？","choices":["讀到的數值比實際體積大","讀到的數值比實際體積小","讀到的數值與實際體積相同","讀到的數值一定等於量筒的最大容量"],"answer":0,"explain":"俯視時視線由上斜向下，與量筒刻度相交的位置比真正的凹液面最低處高，因此讀到的刻度數值偏大（實際的水量比讀數少）；仰視則相反，讀數會偏小。只有視線與凹液面最低處齊平時，讀數才等於實際體積，這與量筒本身的最大容量無關。"},{"level":"adv","topic":"密度作為物質鑑定的依據","q":"甲、乙兩塊金屬外觀相似，在相同溫度下測得甲的密度為 2.7 g/cm³、乙的密度為 8.9 g/cm³。下列推論何者最合理？","choices":["甲、乙一定是同一種金屬，只是體積大小不同","密度會隨物體的大小而改變，所以無法用來比較","甲、乙是不同的物質，因為同溫度下純物質有固定的密度，可作為物質鑑定的依據","乙的密度較大，所以乙的體積一定比甲大"],"answer":2,"explain":"同一種純物質在相同溫度下密度是固定值，不隨物體的大小、形狀而改變，因此密度是鑑定物質的重要特性。兩者密度相差很多，必為不同物質。認為「密度會隨大小改變」是錯誤觀念；「密度大體積就大」則把密度與體積混為一談，體積還要看質量多少才能決定。"},{"level":"adv","topic":"排水法的操作判斷","q":"阿華想用排水法測量一塊塑膠積木的體積，卻發現積木會浮在水面上。下列做法何者最恰當？","choices":["直接讀取水面上升的刻度，因為浮沉不會影響測得的體積","改用天平測出質量，直接把質量的數值當作體積","把積木剪成兩半，體積就會變成原來的一半","用細鐵絲（或細針）把積木完全壓入水面下，再讀取上升的體積"],"answer":3,"explain":"排水法量到的是「物體沒入水中的部分」所排開的水體積。物體浮著時只有一部分沒入，讀數會小於真正的體積，必須用細針或細鐵絲把它完全壓入水面下（細針本身體積極小可忽略）再讀數。質量不能當作體積；剪成兩半後量到的只是半塊的體積，且剩下的半塊仍然會浮起，並沒有解決問題。"},{"level":"adv","topic":"浮沉與密度大小的關係","q":"已知水的密度約為 1 g/cm³。若把密度 0.9 g/cm³ 的蠟塊與密度 2.5 g/cm³ 的玻璃珠分別放入一杯水中（兩者皆不吸水），可預期的現象是？","choices":["蠟塊沉入水底，玻璃珠浮在水面","兩者都會浮在水面上","蠟塊浮在水面，玻璃珠沉入水底","兩者都會沉入水底"],"answer":2,"explain":"物體在液體中的浮沉取決於「物體密度與液體密度的比較」：密度小於水者上浮（蠟塊 0.9 < 1），密度大於水者下沉（玻璃珠 2.5 > 1）。把兩者浮沉對調，或認為兩者行為相同，都忽略了與水密度比較這個關鍵；浮沉與物體的大小、質量多寡無關。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

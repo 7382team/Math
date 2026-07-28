@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>中國的經濟與社會發展 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo2-china-econ",
+  "title": "中國的經濟與社會發展",
+  "subject": "地理",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第4課 中國的經濟與社會發展",
+  "tag": "人口分布·改革開放·產業轉型",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>中國的經濟與社會發展</h1><div class="sub">地理 · 人口分布·改革開放·產業轉型 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"中國人口總量與世界地位","q":"中國是世界上人口最多的國家之一，人口總數長期居世界前列。下列哪一項最能說明此一人口特徵在改革開放初期所帶來的經濟優勢？","choices":["勞動力供給充足，且國內消費市場龐大","每人平均可耕地面積十分寬廣","都市的住宅與交通等公共設施壓力較小","人口自然增加率長期居世界之冠"],"answer":0,"explain":"人口眾多代表勞動力來源充沛、工資相對低廉，同時內需市場龐大，是改革開放後吸引外資到沿海設廠的重要條件。人口多反而使每人平均耕地與資源偏少、都市公共設施壓力大；且中國推行計畫生育後，人口自然增加率已明顯下降，並非世界最高。"},{"level":"basic","topic":"黑河—騰衝線(胡煥庸線)與人口分布","q":"中國的人口分布常以「黑河—騰衝線」(胡煥庸線)作為分界。關於此線兩側的人口分布，下列敘述何者正確？","choices":["線的西側人口稠密，東側人口稀疏","線的東側人口稠密，西側人口稀疏","兩側的人口密度大致相當，差異不大","此線以西完全沒有人口居住"],"answer":1,"explain":"黑河—騰衝線大致由東北的黑河連到西南的騰衝，是中國人口分布的重要分界：線的東南側面積較小，卻集中了絕大多數人口；線的西北側面積廣大，但人口稀疏，形成「東多西少」的格局。西側雖人口稀少，仍有綠洲、河谷等聚落分布，並非無人居住。"},{"level":"basic","topic":"人口分布東多西少的自然因素","q":"中國人口呈現「東多西少」的分布，造成此一現象的主要自然因素為何？","choices":["西部因緯度過高而終年冰封，完全無法居住","東部的礦產與能源蘊藏量遠多於西部","東部平原廣布、季風帶來充沛雨水；西部多高原山地且氣候乾燥","西部河川氾濫過於頻繁，不適合人類定居"],"answer":2,"explain":"東部以平原、丘陵為主，受季風影響雨量充足，農業發達，因而人口稠密；西部多高山、高原與內陸盆地、沙漠，深居內陸、水資源不足，人口稀疏。西部人口稀少是因地勢高峻、氣候乾燥，而非緯度過高終年冰封；礦產與能源反而以西部、北部較豐富，西部河川流量也普遍偏小。"},{"level":"basic","topic":"一胎化政策的實施背景","q":"中國自1970年代末起推行「一胎化政策」(計畫生育)，其最主要的實施背景為何？","choices":["人口成長過於快速，糧食、就業與教育等資源壓力沉重","國內出現嚴重的勞動力短缺，急需補充人口","為了吸引外國移民入境定居以增加人口","因為出生率長期低於死亡率，人口不斷減少"],"answer":0,"explain":"一胎化政策是在人口快速增加、糧食與就業等資源負擔沉重的背景下推行，希望以行政手段抑制人口成長。當時中國並無勞動力短缺或人口減少的問題，勞動力短缺與人口老化反而是政策長期實施後才浮現的結果。"},{"level":"basic","topic":"一胎化政策與性別失衡","q":"一胎化政策實施期間，中國新生嬰兒出現「男多女少」的性別失衡現象。此現象與下列何者的關係最密切？","choices":["沿海城市大量引進男性外籍勞工","傳統重男輕女觀念影響下的生育選擇","女性的平均壽命明顯短於男性","大量女性移民到海外定居工作"],"answer":1,"explain":"在只能生育一胎的限制下，傳統重男輕女、傳宗接代的觀念使部分家庭出現偏好生男的生育選擇，導致出生性別比失衡。外籍勞工與海外移民屬於遷移現象，不會改變新生兒的性別比；且中國女性平均壽命普遍高於男性。"},{"level":"basic","topic":"一胎化政策與人口老化","q":"長期實施一胎化政策使中國出生率大幅下降，最直接造成下列哪一項人口結構的改變？","choices":["幼年人口所占比例明顯上升","人口金字塔轉為底部寬大的擴張型","老年人口所占比例上升，人口老化加速","全國人口總數在短期內急速倍增"],"answer":2,"explain":"出生率下降使幼年人口比例縮減，相對之下老年人口比例上升，人口老化因而加速。幼年人口比例上升、底部寬大的擴張型金字塔與人口倍增，都是高出生率社會的特徵，與一胎化的結果相反。"},{"level":"basic","topic":"生育政策的放寬","q":"近年中國政府陸續放寬生育限制，開放生育二胎、三胎。此一政策轉變的主要目的為何？","choices":["提高勞動成本，促使產業加速外移","配合都市化政策，減少農村人口數量","增加糧食出口以賺取更多外匯","緩和人口老化並改善未來勞動力不足的問題"],"answer":3,"explain":"長期低生育率造成人口老化加速、勞動年齡人口減少，因此中國逐步放寬生育限制，希望提高生育率以維持勞動力供給並減輕高齡化壓力。其餘選項與生育政策的目的無關，政府也不會刻意推高勞動成本或減少人口。"},{"level":"basic","topic":"改革開放政策的內涵","q":"1970年代末，中國開始推動「改革開放」政策。下列何者最能說明其主要內容？","choices":["全面推行人民公社，強化集體化的農業生產","引進市場經濟機制，並對外開放以吸引外資與技術","關閉沿海通商口岸，恢復閉關自守的政策","將全國工業重心一律遷往西部內陸地區"],"answer":1,"explain":"改革開放的核心是對內改革(放寬計畫經濟、引進市場機制、農村實施生產責任制)與對外開放(設立經濟特區、引進外資與技術)。人民公社正是改革開放後逐步廢除的制度；閉關自守與工業全面西遷則與政策方向相反。"},{"level":"basic","topic":"經濟特區—深圳","q":"中國最早設立的經濟特區中，因緊鄰香港、外資大量進入，而由小漁村迅速發展為現代化大都市的是哪一個？","choices":["深圳","重慶","蘭州","哈爾濱"],"answer":0,"explain":"深圳位於珠江三角洲、緊鄰香港，是最早設立的經濟特區之一，藉由香港的資金、技術與轉口貿易條件迅速發展為現代化都市。重慶位於長江上游內陸，蘭州位於西北，哈爾濱位於東北，皆非最早設立的經濟特區。"},{"level":"basic","topic":"經濟特區的區位條件","q":"中國早期設立的經濟特區多集中在東南沿海地區，主要是考量下列哪一項條件？","choices":["內陸地區地形平坦且對外交通便利","沿海地區的礦產與能源蘊藏量全國最豐富","沿海港口海運便利，又鄰近港澳與海外華僑，便於引進外資與技術","沿海地區人口稀少，土地取得成本相對低廉"],"answer":2,"explain":"經濟特區選在東南沿海，是因為港口海運便利、接近國際市場，並鄰近港澳與東南亞僑鄉，容易引進僑資、外資與技術。中國的礦產與能源多分布在內陸與北方；東南沿海人口稠密，土地成本並不低廉。"},{"level":"basic","topic":"世界工廠的形成","q":"改革開放後，中國一度被稱為「世界工廠」，其主要原因為何？","choices":["擁有全球最先進的研發技術與國際知名品牌","以豐沛而低廉的勞動力大量生產各類工業產品外銷全球","成為全球最大的農產品輸出國","以觀光與金融等服務業作為經濟主力"],"answer":1,"explain":"「世界工廠」指中國憑藉充沛且工資低廉的勞動力、廣大的廠房用地與外資投入，大量代工生產成衣、鞋類、玩具、電子產品等外銷全球。當時中國並非以自有品牌與尖端研發見長，也不是以農產外銷或服務業為主力。"},{"level":"basic","topic":"沿海產業由勞力密集轉向技術密集","q":"近年中國沿海地區的工業逐漸由勞力密集轉向技術密集。下列何者最可能是促成此一轉變的原因？","choices":["沿海地區的工資與土地成本上漲，勞力密集產業的成本優勢下降","沿海地區的人口大量外移到國外，出現嚴重人口流失","政府全面禁止外國企業在沿海地區設廠","海運費用大幅下降，使沿海地區失去港口的區位優勢"],"answer":0,"explain":"沿海地區經濟發展後工資、地價與環保成本上升，低利潤的勞力密集加工業難以維持，於是政府與企業轉而發展電子、資訊、生技等附加價值較高的技術密集產業。沿海仍是人口移入區，外資也未被禁止，港口區位優勢更未消失。"},{"level":"basic","topic":"西部大開發的目的","q":"中國推動「西部大開發」政策，其主要目的為何？","choices":["將沿海地區的人口全部強制遷往西部定居","限制西部的資源開發，將西部全面劃為保育區","縮小東西部的發展差距，帶動內陸地區的建設與經濟成長","把西部建設成為以外銷為主的加工出口區核心"],"answer":2,"explain":"改革開放後沿海優先發展，東西部差距擴大，因此中國推動西部大開發，透過交通、能源等基礎建設與資源開發帶動內陸成長，縮小區域差距。政策並非強制遷移人口或禁止開發；西部深居內陸、距港口遙遠，也不利於發展外銷加工出口。"},{"level":"basic","topic":"農民工的定義","q":"中國社會所稱的「農民工」，是指下列哪一群人？","choices":["在都市近郊專門經營精緻農業的農民","由外國引進、專門從事農業工作的移工","政府派往農村指導耕作技術的專業人員","由農村移往都市，從事工廠、建築或服務業工作的勞動者"],"answer":3,"explain":"農民工指戶籍仍在農村，卻離鄉到都市從事製造業、營建業或服務業的勞工，是中國工業化與都市化過程中的特殊現象。他們主要從事非農工作，並非經營農業，也不是外籍移工或農業技術人員。"},{"level":"adv","topic":"人口密度圖判讀與東西部差異","q":"阿明在中國人口密度圖上，由東南沿海往西北內陸方向移動，並跨越黑河—騰衝線(胡煥庸線)。下列敘述何者最符合他沿途所見的變化？","choices":["人口密度由稀疏轉為稠密，農業由旱作轉為水田","人口密度由稠密轉為稀疏，土地利用由農耕地逐漸轉為草原與荒漠","人口密度與土地利用型態沿途大致維持不變","人口密度由稠密轉為稀疏，但沿途的年降水量逐漸增加"],"answer":1,"explain":"由東南沿海往西北內陸，距海漸遠、季風影響減弱，年降水量遞減，地形由平原轉為高原與山地，人口密度隨之下降，土地利用也由水田、旱作農業轉為草原放牧，最後成為荒漠。選項4錯在降水量應遞減而非增加；選項1所述方向恰好相反。"},{"level":"adv","topic":"人口金字塔判讀與未來推論","q":"比較一胎化政策實施初期與近年的中國人口金字塔，可發現近年金字塔的塔底明顯縮減、塔頂逐漸加寬。據此推論，未來中國最可能面臨下列哪一項問題？","choices":["勞動年齡人口比例逐漸下降，扶養老年人口的負擔加重","幼兒園與小學嚴重不足，必須大量增建校舍","勞動力供給過剩，工資水準將持續下跌","人口總數快速倍增，糧食供應出現嚴重不足"],"answer":0,"explain":"塔底縮減代表出生人數長期減少，未來進入勞動年齡的人口將減少；塔頂加寬代表醫療進步、平均壽命延長，老年人口比例上升。兩者合併使勞動力供給趨緩、老年扶養負擔加重，社會福利與長期照護壓力隨之升高。出生人數減少會使幼兒園與中小學需求下降；勞動力減少會推升而非壓低工資；低生育率下人口總數也不會倍增。"},{"level":"adv","topic":"性別失衡的社會影響","q":"出生性別比長期失衡，最可能為中國社會帶來下列哪一項後果？","choices":["幼兒園與國民小學的校數快速增加","女性的勞動參與率因而大幅下降","適婚年齡男性擇偶困難，跨區域或跨國婚姻的情形增多","都市房價因人口總數減少而全面崩跌"],"answer":2,"explain":"男多女少使適婚年齡男性相對過剩，擇偶困難，因而出現向外地或跨國尋求婚配的現象，並衍生相關社會問題。出生率下降反而使中小學校數減少；性別失衡與女性勞動參與率高低、房價全面崩跌並無直接因果關係。"},{"level":"adv","topic":"沿海優先發展與區域差距的成因","q":"深圳設立經濟特區後，人口與產值快速成長；同一時期許多內陸省分的成長卻相對緩慢。造成此一差距的主要原因為何？","choices":["內陸省分的氣候完全不適合發展任何工業","國家政策優先開放沿海並給予優惠，加上沿海具備港口與引進外資的區位優勢","內陸省分幾乎沒有勞動力可供工廠雇用","沿海地區的礦產與能源蘊藏量遠多於內陸地區"],"answer":1,"explain":"沿海地區率先設立經濟特區與開放城市，享有租稅減免等政策優惠，又鄰近港澳、海運便利，容易吸引外資與外銷訂單，因而快速成長。內陸並非沒有勞動力，礦產與能源反而多分布於內陸與北方；氣候也不是限制工業發展的關鍵因素。"},{"level":"adv","topic":"民工潮的推拉力分析","q":"改革開放後，大量農民工由內陸農村流向沿海都市，形成規模龐大的「民工潮」。下列關於此現象的推論，何者最合理？","choices":["沿海都市工作機會多、工資較高，形成強大的拉力；農村所得偏低、就業機會不足則構成推力","農村耕地不足是唯一的原因，與沿海都市就業機會的多寡完全無關","沿海都市的生活成本相當低廉，是吸引人口移入的主要原因","中國政府強制規定農村人口必須遷往沿海地區工作"],"answer":0,"explain":"人口遷移可用推拉力解釋：農村耕地有限、所得偏低、就業機會不足形成推力；沿海都市工廠林立、工資較高、機會較多形成拉力，兩者共同造成民工潮。沿海都市的生活成本其實較高；此一遷移屬自願性的經濟性移動，並非政府強制。"},{"level":"adv","topic":"農民工外移對農村的影響","q":"農民工長期在外地都市工作，最可能在其家鄉農村造成下列哪一項社會現象？","choices":["農村人口結構明顯年輕化，勞動力更加充沛","農村的高等教育機構因需求增加而大量增設","農村土地價格因人口大量回流而急速上漲","農村出現老年人與孩童留守、青壯年勞動力不足的現象"],"answer":3,"explain":"外移者以青壯年為主，使農村留下老人與兒童，形成「留守老人、留守兒童」的現象，並產生農業勞動力不足、隔代教養等問題。人口外移只會使農村人口老化、地價缺乏支撐，也不會帶動高等教育機構增設。"},{"level":"adv","topic":"產業外移與中南半島的區位條件","q":"近年原本設在中國沿海的成衣、製鞋工廠，陸續遷往越南、柬埔寨等中南半島國家設廠。這些國家吸引工廠前往的最主要條件為何？","choices":["當地已擁有全球最先進的研發技術與國際知名自有品牌","當地的消費市場規模已超越中國，內需十分龐大","當地工資水準較低、勞動力供給充沛，可有效降低生產成本","當地全屬內陸國家，工廠不必依賴海運即可外銷歐美"],"answer":2,"explain":"成衣、製鞋屬勞力密集產業，工資在生產成本中所占比重高，對勞動成本最為敏感。中國沿海工資與地價上漲後，業者便轉往工資較低、勞動力充沛的越南、柬埔寨等地設廠，是產業區位隨生產成本改變而移動的典型例子。這些國家的研發技術與內需市場規模均不及中國；中南半島山河相間、多數國家瀕臨海洋，工業產品仍主要透過海運出口。"},{"level":"adv","topic":"西部大開發的重大工程","q":"為推動西部大開發，中國興建「西氣東輸」、「西電東送」等跨區域工程。下列關於這類工程的推論，何者最合理？","choices":["主要目的是把東部生產的工業產品運銷到西部市場","顯示西部地區的能源需求量遠大於東部地區","代表東部地區的工業活動已經完全停止","可將西部豐富的能源輸送至東部，同時帶動西部的基礎建設與就業"],"answer":3,"explain":"西部天然氣、水力等能源蘊藏豐富但當地需求有限；東部工業與都市集中、能源需求龐大卻供給不足，因此以管線與電網把資源由西輸往東，達成資源互補。工程本身也帶動西部的建設投資與就業，有助縮小區域差距。工程輸送的是能源而非工業產品，東部至今仍是工業重心。"},{"level":"adv","topic":"沿海與內陸區域發展差異的比較","q":"下列關於中國沿海地區與內陸地區發展差異的比較，何者最為正確？","choices":["內陸地區的外資投入與對外貿易額普遍高於沿海地區","沿海地區以第一級產業為主，內陸則以第二、三級產業為主","內陸地區的都市化程度普遍高於沿海地區","沿海地區平均所得與都市化程度較高，內陸相對落後，形成明顯的區域差距"],"answer":3,"explain":"沿海因政策優先開放與港口區位優勢，工商業發達、外資集中，都市化程度與平均所得皆較高；內陸交通較不便、產業結構偏重農業與資源開採，發展相對落後，區域差距因而擴大。其餘三個選項所述情形均與事實相反。"},{"level":"adv","topic":"由世界工廠轉向世界市場","q":"有人形容中國正由「世界工廠」逐漸轉變為「世界市場」。下列何者最能支持此一說法？","choices":["中國境內的出口加工廠已全部關閉，工業生產歸零","中國已完全停止引進任何外國資金與技術","中國勞動人口持續快速增加，工資水準不斷下降","中國國民所得提高、中產階級人口增加，龐大的內需消費吸引各國企業前來銷售商品"],"answer":3,"explain":"「世界市場」強調的是消費端：所得提高後中產階級擴大，汽車、家電、精品與觀光等內需大幅成長，使各國企業競相把商品銷往中國。中國並未停止生產或引進外資；而勞動人口成長趨緩、工資上漲，正是它必須由代工生產轉向內需與技術密集產業的原因。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

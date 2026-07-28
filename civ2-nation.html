@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>國家與民主政治 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ2-nation",
+  "title": "國家與民主政治",
+  "subject": "公民",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1課 國家與民主政治",
+  "tag": "國家四要素·民主原則",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>國家與民主政治</h1><div class="sub">公民 · 國家四要素·民主原則 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"國家組成四要素","q":"下列何者是構成一個國家不可或缺的四項要素？","choices":["人民、領土、政府、主權","人民、國旗、國歌、貨幣","領土、軍隊、法院、政黨","政府、憲法、稅收、外交"],"answer":0,"explain":"國家組成的四要素為人民、領土、政府與主權，缺一不可。國旗、國歌、貨幣、軍隊、政黨是國家常見的象徵或組織，並非成立國家的必要條件；憲法、稅收、外交則是國家運作的制度或政府職權的展現，不可與四要素混為一談。"},{"level":"basic","topic":"主權的意義","q":"「對內是國家最高的權力，對外則能獨立自主、不受其他國家干涉」，這段話描述的是國家四要素中的哪一項？","choices":["人民","領土","政府","主權"],"answer":3,"explain":"主權具有「對內最高、對外獨立」的特性。人民是國家的成員，領土是國家權力行使的空間範圍，政府是行使國家權力的組織，三者都不具備「對外不受他國干涉」這項定義性特徵，屬於相近概念的誘答。"},{"level":"basic","topic":"領土的範圍","q":"關於國家「領土」的敘述，下列何者正確？","choices":["只包含陸地，不包括海域與空域","包括領陸、領海與領空","是指人民實際居住的房屋與私有土地","由國際組織統一劃定後分配給各國"],"answer":1,"explain":"領土是國家主權所及的空間範圍，包含領陸、領海與領空。選項0漏掉領海與領空；選項2把國家領土窄化為私有財產，混淆「國家領土」與「個人所有權」；選項3錯誤，領土範圍並非由國際組織分配給各國。"},{"level":"basic","topic":"人民在國家中的地位","q":"下列關於國家組成要素中「人民」的敘述，何者最適當？","choices":["人民必須屬於同一族群、信仰同一宗教才能組成國家","只要人口數量夠多，該群體就自動成為一個國家","人民是國家的成員，在民主國家也是政府權力正當性的來源","人民只要依法納稅，就可以不受國家法律的拘束"],"answer":2,"explain":"人民是國家的成員；在民主國家，政府權力須經人民同意，故人民也是權力正當性的來源。選項0錯誤，多數國家的人民本就族群、宗教多元；選項1錯誤，僅有人口而無領土、政府、主權仍不成為國家；選項3錯誤，納稅只是義務之一，不能免除守法義務。"},{"level":"basic","topic":"間接民主（代議政治）","q":"我國人民選出立法委員、縣（市）議員，由他們代表人民議決公共事務。這種運作方式屬於下列何者？","choices":["直接民主","獨裁政治","間接民主（代議政治）","中央集權"],"answer":2,"explain":"由人民選出代表、代替人民行使決策權，稱為間接民主或代議政治。直接民主是由人民親自決定公共事務；獨裁政治的權力並非來自人民授權；中央集權談的是中央與地方的權限劃分，與「由誰作成決定」的民主形式不同。"},{"level":"basic","topic":"國家功能：維持社會秩序","q":"政府設置警察維護治安、由法院審理紛爭與犯罪案件，主要在實現國家的哪一項功能？","choices":["拓展國際外交","維持社會秩序","增進人民福利","推廣藝文活動"],"answer":1,"explain":"警察防治犯罪、法院解決紛爭，屬於維持社會秩序的功能。外交是對外主權的展現；增進福利指健保、社會救助等提升生活品質的措施；推廣藝文屬文化行政，皆非本題情境的主要目的。"},{"level":"basic","topic":"國家功能：保障基本人權","q":"憲法明定人民享有言論、集會結社與宗教信仰等自由，政府不得任意加以侵害。這主要展現國家的哪一項任務？","choices":["擴張領土範圍","強化軍事力量","保障基本人權","增加政府稅收"],"answer":2,"explain":"憲法列舉並保障人民的各項自由權，用意在限制政府、保障基本人權，這是現代民主國家最重要的任務之一。擴張領土、強化軍力、增加稅收都與「保護人民不受公權力侵害」的核心意旨無關。"},{"level":"basic","topic":"國家功能：增進人民福利","q":"政府辦理全民健康保險、國民教育與社會救助等措施，最主要是為了達成國家的哪一項功能？","choices":["對外宣示主權","增進人民福利","執行司法審判","維護國防安全"],"answer":1,"explain":"健保、國民教育、社會救助都在提升人民的生活品質與生活保障，屬於增進人民福利。對外宣示主權屬國家對外關係；司法審判由法院負責；國防安全屬維持國家安全的範疇，均非這些措施的主要目的。"},{"level":"basic","topic":"民主政治與獨裁政治的差異","q":"民主政治與獨裁政治最根本的差異在於下列何者？","choices":["是否擁有固定的領土範圍","是否設有中央政府機關","是否制定成文的法律條文","是否由人民授權而取得政治權力"],"answer":3,"explain":"民主政治的權力來自人民授權（主權在民），獨裁政治的權力則由個人或少數人壟斷。領土、政府、法律是任何國家都會具備的，獨裁國家同樣有政府與成文法律，因此都不能作為區分兩者的根本標準。"},{"level":"basic","topic":"民主原則：主權在民","q":"「國家主權屬於全體國民，政府的權力必須經由人民授權才具有正當性」，這是民主政治的哪一項基本原則？","choices":["主權在民","責任政治","政黨政治","法治政治"],"answer":0,"explain":"權力屬於全體國民、由人民授權，即「主權在民」。責任政治強調執政者須對人民負責；政黨政治指政黨公平競爭以取得政權；法治政治強調依法行政、依法而治。三者同為民主原則，但描述的重點與本題不同。"},{"level":"basic","topic":"民主原則：法治政治","q":"「政府的組織與權力行使必須依照憲法與法律，人民的權利義務也應由法律規定」，這符合民主政治的哪一項基本原則？","choices":["政黨政治","法治政治","多數決原則","主權在民"],"answer":1,"explain":"依憲法與法律行使公權力，是法治政治的核心。政黨政治著重政黨競爭與政權更替；多數決是作成決定的方法；主權在民說明權力的來源，三者都沒有直接點出「行使權力須有法律依據」這個重點。"},{"level":"basic","topic":"民主原則：責任政治","q":"行政首長與民意代表若施政或問政不當，必須接受民意監督，甚至因此去職。這體現民主政治的哪一項基本原則？","choices":["法治政治","政黨政治","責任政治","多數決與尊重少數"],"answer":2,"explain":"掌握權力者必須為施政成敗向人民負責，即責任政治。法治政治強調權力行使須有法律依據；政黨政治強調政黨間的公平競爭；多數決與尊重少數是作成決定的方法與人權保障原則，皆非本題所述重點。"},{"level":"basic","topic":"民主原則：政黨政治","q":"下列關於民主國家「政黨政治」的敘述，何者最適當？","choices":["政黨透過公平競爭爭取人民支持，依選舉結果決定政權歸屬","民主國家只能存在一個政黨，才能維持政局穩定","執政黨可以要求法院依照該黨立場作出判決","在野黨應避免批評執政黨，以免影響國家形象"],"answer":0,"explain":"政黨政治的核心是多個政黨在公平規則下競爭，由選舉結果決定政權歸屬。選項1是一黨專政，屬獨裁政治的特徵；選項2違反司法獨立；選項3否定在野黨的監督功能，都與民主政治的精神相牴觸。"},{"level":"basic","topic":"民主原則：多數決與尊重少數","q":"民主社會以多數決作成決定時，還必須同時注意下列何者？","choices":["少數人此後不得再表達不同意見","只要贊成人數較多就可剝奪少數人的權利","應由學歷或財力較高者擁有較多決定權","尊重少數，保障其表達意見的機會與基本權利"],"answer":3,"explain":"多數決必須以尊重少數為前提，少數人的基本權利與發言機會不會因表決結果而消失。選項0、1把多數決絕對化，容易形成「多數暴力」；選項2違反票票等值與平等原則，皆不符民主精神。"},{"level":"adv","topic":"國家組成四要素的案例判斷","q":"某地區有穩定居住的居民與固定範圍的土地，也成立了管理內部事務的自治機關，但其國防與對外簽訂條約仍須經他國同意才能進行。依國家組成四要素判斷，該地區最欠缺下列何者？","choices":["人民","領土","政府","主權"],"answer":3,"explain":"題幹中已具備人民（居民）、領土（固定土地）與政府（自治機關），但對外事務受制於他國，缺乏「對外獨立自主」的主權。選項0、1、2都能在題幹中直接找到對應敘述，是未仔細比對情境時容易誤選的誘答。"},{"level":"adv","topic":"民主與獨裁的綜合比較","q":"甲國人民可自由組織政黨、公開批評政府，行政部門的施政受國會與法院監督；乙國僅允許單一政黨存在，公開批評領導人者會遭逮捕。關於兩國的比較，下列敘述何者最適當？","choices":["甲國權力受制衡且保障人權，屬民主政治；乙國則相反，屬獨裁政治","兩國都是民主政治，差別僅在政黨數目的多寡","乙國決策較迅速，因此更能保障人民的權利","甲國存在反對意見，代表其政府已喪失統治權"],"answer":0,"explain":"民主與獨裁可從權力來源、政治參與、人權保障與權力是否受制衡四方面比較：甲國四項均符合民主特徵，乙國則相反。選項1忽略人權與制衡的關鍵差異；選項2把「效率」誤當成人權保障；選項3混淆「容許反對意見」與「政府失去統治權」。"},{"level":"adv","topic":"責任政治的案例判斷","q":"某市發生重大公共安全事故，調查後發現主管機關長期未依規定進行檢查。市長公開道歉、相關首長去職，市議會並要求提出改善報告並到會備詢。此一過程最能展現民主政治的哪一項原則？","choices":["政黨政治","直接民主","多數決原則","責任政治"],"answer":3,"explain":"首長為施政缺失公開道歉、去職並接受民意機關監督，正是責任政治的展現。政黨政治著眼於政黨間的競爭；直接民主指人民親自決策；多數決是表決的方法，三者都無法說明「為施政成敗負責」這個核心。"},{"level":"adv","topic":"多數決的界線與尊重少數","q":"某班班會以舉手表決通過「禁止少數同學在校內使用自己的母語交談」的班規。依民主政治的原則判斷，下列敘述何者最適當？","choices":["只要經多數決通過，決議內容一律具有正當性","表決結果既已產生，少數同學便不得再表示意見","該決議雖經多數決，仍因侵害少數人基本權利而不具正當性","少數同學若不同意，就應自行退出班級活動"],"answer":2,"explain":"多數決是作成決定的方法，但不得用來剝奪少數人的基本權利（如語言使用與表達自由），否則將形成多數暴力。選項0、1把多數決當成絕對權威；選項3以排除異己取代溝通協商，都違反尊重少數的原則。"},{"level":"adv","topic":"法治政治的案例判斷","q":"某機關人員表示：「這項管制措施雖然沒有法律依據，但因為對社會有好處，所以可以先執行再說。」依法治政治的原則，下列評論何者最適當？","choices":["說法正確，行政效率應優先於法律程序","說法正確，只要出發點良善就可以實施","說法錯誤，政府行使公權力須有法律依據，否則可能侵害人民權利","說法錯誤，因為所有公共政策的內容都應該由法院決定"],"answer":2,"explain":"法治政治要求政府依法行政，凡限制人民權利的措施都須有法律依據，以防公權力恣意擴張。選項0、1以效率或善意為由跳過法律，正是法治所要防止的情形；選項3雖然結論說「錯誤」，理由卻不正確——法院負責審判，政策的形成屬立法與行政機關的職權。"},{"level":"adv","topic":"權力分立與制衡的目的","q":"我國中央政府設有行政、立法、司法、考試、監察五院，各有職權並相互監督。此種制度設計最主要的目的是？","choices":["增加政府部門數量，以創造更多公職名額","使決策權集中於單一機關，以加快施政速度","讓人民直接管理五院的日常業務","藉由權力分立與相互制衡，避免權力濫用而侵害人權"],"answer":3,"explain":"權力分立與制衡的目的在防止權力過度集中與濫用，進而保障人權。選項0誤解制度目的；選項1的「權力集中」正好與權力分立相反，是獨裁政治的特徵；選項2錯誤，人民是透過選舉與民意機關監督政府，而非直接管理機關業務。"},{"level":"adv","topic":"五院職權的歸屬","q":"下列關於我國中央政府五院職權的敘述，何者正確？","choices":["立法院負責議決法律案與預算案","監察院負責審理民事與刑事訴訟案件","司法院負責辦理公務人員的考試與銓敘","考試院負責對失職公務人員提出彈劾與糾舉"],"answer":0,"explain":"議決法律案、預算案是立法院的職權。其餘三項都是把各院職權互相調換的誘答：審理民、刑事訴訟屬司法院所屬各級法院，公務人員考試與銓敘屬考試院，彈劾與糾舉失職公務人員則屬監察院。"},{"level":"adv","topic":"地方自治的意義","q":"我國實施地方自治，直轄市、縣（市）的行政首長與地方民意代表均由當地居民選舉產生，並在法律規定的範圍內處理地方公共事務。下列敘述何者最適當？","choices":["地方自治由居民參與決定地方事務，是主權在民在地方的實踐","地方自治代表地方可以脫離國家主權而獨立","地方自治團體可制定與憲法、法律相牴觸的自治法規","地方自治屬於直接民主，因此不需要地方民意代表"],"answer":0,"explain":"居民選出首長與民意代表處理地方事務，正是主權在民與代議政治在地方層級的落實。選項1混淆「自治」與「獨立」，自治仍在國家主權之下；選項2違反法律位階原則；選項3與題幹「地方民意代表由居民選舉產生」矛盾，地方自治仍以代議方式運作。"},{"level":"adv","topic":"選舉四大原則：平等選舉","q":"我國選舉採「普通、平等、直接、無記名」四大原則。其中「平等選舉」的主要意義是？","choices":["所有選民必須在同一時段完成投票","每位選民所投票數相同，且每一票價值相等","每位候選人最後應獲得相同的票數","選民投票後應公開自己所投的對象"],"answer":1,"explain":"平等選舉即「票票等值」，每位選民票數相同、每票效力相同。選項0只是投票時間的安排，不是平等原則的意涵；選項2誤把平等當成結果平均；選項3恰好與「無記名（秘密）選舉」原則相牴觸。"},{"level":"adv","topic":"直接民主與間接民主的比較","q":"關於直接民主與間接民主（代議政治）的比較，下列敘述何者最適當？","choices":["間接民主之下，人民除投票選舉外便無法再參與任何政治活動","直接民主由人民親自決定公共事務，間接民主則由選出的代表議決","現代國家人口眾多，因此完全不採用任何直接民主的方式","直接民主必然比間接民主更能兼顧專業判斷與決策效率"],"answer":1,"explain":"兩者的關鍵差異在於「由誰作成決定」：直接民主由人民親自決定，間接民主由選出的代表代為議決。選項0錯誤，人民仍可透過參加公聽會、陳情、集會結社、輿論監督等方式參與；選項2錯誤，現代國家多以代議為主並輔以公民投票等直接民主方式；選項3過度推論，人民直接決定不必然更專業或更有效率。"},{"level":"adv","topic":"政黨與利益團體的差異","q":"關於民主社會中「政黨」與「利益團體」的比較，下列敘述何者最適當？","choices":["政黨與利益團體都以取得執政權為唯一目的","利益團體須先加入某一政黨，才能向政府表達訴求","政黨以取得政權為目標；利益團體不求執政，而在影響政策以維護成員利益","民主國家禁止利益團體對公共政策表示意見"],"answer":2,"explain":"兩者最主要的差別在於是否以取得政權為目標：政黨提名候選人參選、爭取執政；利益團體（如工會、職業公會、環保團體）不以執政為目的，而是透過遊說、陳情、形成輿論等方式影響政府決策，維護成員權益。選項0忽略兩者目的不同；選項1錯誤，利益團體可自行向政府表達訴求；選項3錯誤，表達意見受言論與結社自由保障。"},{"level":"adv","topic":"總統制與內閣制的特徵","q":"關於民主國家「總統制」與「內閣制」的比較，下列敘述何者最適當？","choices":["兩種制度的行政首長都由國會議員互選產生","總統制行政首長由人民選舉、任期固定；內閣制內閣由國會多數黨組成並對國會負責","內閣制之下行政權與立法權完全分離，內閣不必向國會負責","總統制國家不設國會，法律由總統一人制定"],"answer":1,"explain":"總統制由人民選舉總統擔任行政首長，任期固定，行政與立法分立並相互制衡；內閣制則由國會多數黨（或政黨聯盟）組成內閣，內閣須對國會負責，國會得以不信任投票使內閣去職。選項0只部分近似內閣制，並不適用於總統制；選項2把總統制「行政立法分立」的特徵誤植於內閣制；選項3錯誤，總統制國家仍設國會行使立法權。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

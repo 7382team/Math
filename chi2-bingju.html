@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>語病與修改 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi2-bingju",
+  "title": "語病與修改",
+  "subject": "國文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "語文常識與應用",
+  "tag": "成分殘缺·搭配不當·贅餘",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>語病與修改</h1><div class="sub">國文 · 成分殘缺·搭配不當·贅餘 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"贅詞","q":"下列句子中，何者犯了「用詞重複、疊床架屋」的語病？","choices":["這棟大樓大約高三十層左右。","這棟大樓高約三十層。","這棟大樓有三十層那麼高。","這棟大樓是全市最高的建築。"],"answer":0,"explain":"「大約」和「左右」都用來表示不確定的概數，同時出現造成重複贅餘，應刪去其一，改為「大約三十層」或「三十層左右」。"},{"level":"basic","topic":"贅詞","q":"「將士們英勇作戰，終於凱旋歸來。」這句話的語病是什麼？","choices":["成分殘缺，缺少主詞","用詞重複贅餘","前後語意矛盾","關聯詞語誤用"],"answer":1,"explain":"「凱旋」本已包含「得勝歸來」的意思，後面再加「歸來」便造成語意重複，應改為「終於凱旋」或「終於得勝歸來」。"},{"level":"basic","topic":"成分殘缺","q":"「經過這次的失敗，使他明白了謙虛的重要。」這句話應如何修改才通順？","choices":["把「明白」改成「明瞭」","在句末加上「了」","刪去「使」字","把「謙虛」改成「驕傲」"],"answer":2,"explain":"原句「經過……」是介詞結構，再用「使」字，會使全句失去主詞。刪去「使」字後，「他」就成為主詞，句子便完整通順。"},{"level":"basic","topic":"成分殘缺","q":"下列何者因「缺少受詞（中心語）」而句意不完整？","choices":["弟弟養成了早睡早起的好習慣。","早睡早起是一種好習慣。","他過著規律的生活。","我們從小就要養成早睡早起的。"],"answer":3,"explain":"「養成」是及物動詞，後面需要受詞。（3）句只說到「早睡早起的」就結束，缺少中心語，應補上「習慣」，改為「養成早睡早起的習慣」。"},{"level":"basic","topic":"語序不當","q":"「我把作業已經全部寫完了。」這句話的毛病在哪裡？","choices":["「已經」的位置不當，語序有誤","成分殘缺，缺少主詞","用詞重複贅餘","關聯詞語誤用"],"answer":0,"explain":"副詞「已經」不宜放在「把」字結構之後。應改為「我已經把作業全部寫完了」，語序才正確。"},{"level":"basic","topic":"前後矛盾","q":"下列何者犯了「前後語意矛盾」的語病？","choices":["展覽會場人潮眾多，非常熱鬧。","他一定是大概把鑰匙忘在家裡了。","這道菜的味道十分可口。","老師的講解既清楚又生動。"],"answer":1,"explain":"「一定」表示肯定、確定，「大概」表示推測、不確定，兩者語意相互矛盾，不能同時使用，應刪去其一。"},{"level":"basic","topic":"搭配不當","q":"「天氣很冷，他戴上手套，又戴上了一件毛衣。」這句話的語病是什麼？","choices":["成分殘缺，缺少主詞","語序不當","動詞和受詞搭配不當","用詞重複贅餘"],"answer":2,"explain":"「戴」用於手套、帽子、眼鏡等物；「毛衣」應該用「穿」。「戴上毛衣」動詞與受詞搭配不當，應改為「穿上一件毛衣」。"},{"level":"basic","topic":"關聯詞誤用","q":"「雖然天氣非常寒冷，因此大家依然堅持晨跑。」這句話的關聯詞應如何修改？","choices":["把「雖然」改成「因為」","把「因此」改成「所以」","把「雖然」改成「即使」","把「因此」改成「但是」"],"answer":3,"explain":"「天氣寒冷」與「堅持晨跑」是轉折關係，應用「雖然……但是（還是）……」。原句誤用表因果的「因此」，改為「但是」語意才通順。"},{"level":"basic","topic":"指代不清","q":"「哥哥和弟弟一起去逛書店，他買了一本漫畫。」這句話有什麼語病？","choices":["「他」指代不清，不知是哥哥還是弟弟","成分殘缺，缺少受詞","用詞重複贅餘","前後語意矛盾"],"answer":0,"explain":"「他」可能指哥哥，也可能指弟弟，指代對象不明確，容易造成誤解。應把「他」改成明確的稱呼，如「哥哥買了一本漫畫」。"},{"level":"basic","topic":"一面對兩面","q":"下列何者犯了「一面對兩面（前後不相對應）」的語病？","choices":["用功讀書，是取得好成績的重要原因。","是否用功讀書，是取得好成績的重要原因。","只要用功讀書，就能取得好成績。","他非常用功，所以取得了好成績。"],"answer":1,"explain":"「是否」包含「是」與「否」兩面，「取得好成績」卻只有一面，前後無法相對應。應刪去「是否」，或把後半改為「會影響成績的好壞」。"},{"level":"basic","topic":"成分殘缺","q":"「從他的這番話裡，說明了他早有準備。」這句話的語病是？","choices":["用詞重複贅餘","前後語意矛盾","成分殘缺，缺少主詞","關聯詞語誤用"],"answer":2,"explain":"「從他的這番話裡」是介詞結構，不能充當主詞，導致「說明了……」沒有主詞。應刪去「從」與「裡」，改為「他的這番話說明了他早有準備」。"},{"level":"basic","topic":"綜合辨識","q":"下列句子中，何者完全「沒有」語病、表達正確無誤？","choices":["我們要及時糾正並發現自己的缺點。","通過這次活動，使大家更加團結。","他大概一定是生病了，才沒來上課。","這本書內容豐富，值得我們細細品味。"],"answer":3,"explain":"（0）應先「發現」再「糾正」，語序顛倒；（1）「通過……使……」缺少主詞；（2）「大概」與「一定」語意矛盾。只有（3）沒有語病。"},{"level":"basic","topic":"贅詞","q":"下列句子中，何者有「用詞重複贅餘」的毛病？","choices":["這場演講深深地吸引了許多聽眾們。","這場演講十分精彩，令人回味。","台下的聽眾聽得津津有味。","演講結束後，響起熱烈的掌聲。"],"answer":0,"explain":"「許多」已表示人數眾多，「們」也用來表示複數，兩者重複贅餘，應刪去「們」，改為「許多聽眾」。"},{"level":"basic","topic":"搭配不當","q":"下列句子中，何者的「動詞與受詞搭配不當」？","choices":["他認真地完成了老師交代的作業。","我們要不斷提高身體的健康。","農夫辛勤地耕種田地。","護士細心地照顧病人。"],"answer":1,"explain":"「提高」多與「水準、效率、能力」等搭配，不能和「健康」相配。「健康」應該用「增進」，改為「增進身體的健康」才正確。"},{"level":"adv","topic":"綜合辨識","q":"下列四個句子中，只有一句「完全沒有語病」，其餘三句各犯不同毛病，請問正確的是哪一句？","choices":["為了防止這類事故不再發生，工廠加裝了警報器。","經過大家的努力，使公園變得更加美麗。","這件事給了我一個深刻的教訓。","他基本上完全贊成這個提議。"],"answer":2,"explain":"（0）「防止」已含否定，再加「不再」形成雙重否定，語意矛盾；（1）「經過……使……」缺少主詞；（3）「基本上」與「完全」語意矛盾，應刪去其一。只有（2）完全正確。"},{"level":"adv","topic":"搭配不當","q":"「同學們踴躍地發表了自己寶貴的意見和豐富的經驗。」此句有搭配不當的毛病，下列修改何者最恰當？","choices":["同學們踴躍地發表了自己寶貴的意見和經驗。","同學們發表了自己豐富的意見和寶貴的經驗。","同學們踴躍地發表和交流了意見。","同學們踴躍地發表了寶貴的意見，交流了豐富的經驗。"],"answer":3,"explain":"「發表」可與「意見」搭配，卻不能與「經驗」搭配。（3）把「經驗」另配上動詞「交流」，使動詞與受詞各自相配，修改最恰當；其餘各句搭配不當仍未解決或改變了原意。"},{"level":"adv","topic":"一面對兩面","q":"下列各句都與「一面對兩面」有關，何者前後相對應、「完全沒有語病」？","choices":["學習成績的好壞，取決於是否用心努力。","學習成績的提高，取決於是否用心努力。","能不能考上理想的學校，關鍵在於他很努力。","做好防颱準備，是能否減少損失的關鍵。"],"answer":0,"explain":"（0）「好壞」與「是否」都是兩面，前後相對應，完全正確；（1）「提高」一面對「是否」兩面；（2）「能不能」兩面對「很努力」一面；（3）「做好」一面對「能否」兩面，皆不相對應。"},{"level":"adv","topic":"成分殘缺","q":"「聽了老師的教誨後，使我們深受感動，並且決心改過。」關於這句話的語病，下列敘述何者正確？","choices":["沒有語病，句子完全通順。","因「使」字而缺少主詞，應刪去「使」字。","「深受感動」與「決心改過」語意矛盾。","「並且」屬於關聯詞語誤用，應改為「但是」。"],"answer":1,"explain":"「聽了老師的教誨後」是狀語，再加「使」字，全句便沒有主詞。刪去「使」字後，「我們」即成為主詞，句子才完整。「深受感動」與「決心改過」語意連貫，「並且」用於順接也正確。"},{"level":"adv","topic":"語序不當","q":"下列四句話中，只有一句「有語病」，其餘三句皆通順正確，請問有語病的是哪一句？","choices":["春天到了，公園裡的花都開了。","他的建議得到了大家的支持。","我一定要努力學習，改正並發現自己的缺點。","讀書可以增長我們的知識。"],"answer":2,"explain":"（2）應先「發現」缺點，才能「改正」缺點，原句「改正並發現」語序顛倒、不合邏輯，應改為「發現並改正自己的缺點」。其餘三句皆無語病。"},{"level":"adv","topic":"成分殘缺","q":"「他那種刻苦耐勞，值得我們每個人學習。」此句缺少中心語，下列修改何者最恰當？","choices":["他刻苦耐勞，我們每個人學習。","他那種刻苦耐勞，我們要學習他。","我們每個人都值得學習他那種刻苦耐勞。","他那種刻苦耐勞的精神，值得我們每個人學習。"],"answer":3,"explain":"原句「刻苦耐勞」後缺少中心語（受詞）。（3）補上「的精神」，使「值得學習」的對象明確，修改最恰當；（2）「我們值得學習他」誤用「值得」且仍缺中心語，其餘各句語意不清。"},{"level":"adv","topic":"綜合辨識","q":"下列各句都在描寫「讀書」，其中「完全沒有語病」的是哪一句？","choices":["只要肯用心讀書，就能體會其中的樂趣。","能不能讀好書，全靠他平時很用功。","通過大量的閱讀，使他的作文進步了。","他把這本書已經反覆讀了好幾遍。"],"answer":0,"explain":"（1）「能不能」兩面對「很用功」一面，前後不對應；（2）「通過……使……」缺少主詞；（3）「已經」應放在「把」字之前，改為「他已經把這本書反覆讀了好幾遍」。只有（0）完全正確。"},{"level":"adv","topic":"否定失當","q":"「防止類似的悲劇不再重演，是我們共同的責任。」這句話的語病，與下列哪一句「相同」？","choices":["春天的公園裡，開滿了各種美麗的花。","我們要避免類似的錯誤不要再犯。","他的臉上露出了滿意的笑容。","這篇文章的內容十分深刻感人。"],"answer":1,"explain":"題幹「防止……不再重演」中，「防止」已含否定，再加「不再」形成雙重否定，語意反而相反。（1）「避免……不要再犯」同樣是「避免」加「不要」的雙重否定，語病類型相同。"},{"level":"adv","topic":"成分殘缺","q":"「聽了這則感人的故事，讓在場的每個人都流下了眼淚。」下列修改方式，何者最能使句子完整、沒有語病？","choices":["把「感人的」三字刪去。","把「都」字刪去。","把「讓」字刪去，使「在場的每個人」成為主詞。","把「流下了」改成「流下」。"],"answer":2,"explain":"「聽了這則感人的故事」是狀語，若再加「讓」字，全句便沒有主詞。刪去「讓」字後，「在場的每個人」即成為主詞，句子才完整；刪去「感人的」「都」或更動「流下了」，都無法補足殘缺的主詞。"},{"level":"adv","topic":"搭配不當","q":"下列四個句子中，哪一句因「詞語搭配不當」而有語病，需要修改？","choices":["經過一番努力，他終於完成了這幅畫。","老師的鼓勵給了我很大的信心。","我們應該珍惜寶貴的時間。","這次的旅行，讓我增長了不少的見聞和眼界。"],"answer":3,"explain":"（3）「增長」可與「見聞」搭配，卻不能與「眼界」搭配（眼界應用「開闊」）。可改為「增長了不少見聞，開闊了眼界」。其餘三句皆無語病。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

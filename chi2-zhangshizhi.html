@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>張釋之執法 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi2-zhangshizhi",
+  "title": "張釋之執法",
+  "subject": "國文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古文·史記",
+  "ready": true,
+  "author": "司馬遷"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>張釋之執法</h1><div class="sub">國文 · 古文·史記 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"重要字詞：廷尉","q":"「於是使騎捕，屬之廷尉」句中的「廷尉」，在秦漢時期是掌管什麼事務的官員？","choices":["掌管宮廷車馬與出巡儀仗","掌管刑獄司法的最高長官","掌管祭祀與宗廟禮儀","掌管糧倉賦稅與國庫收支"],"answer":1,"explain":"廷尉是秦漢九卿之一，職掌刑獄審判，為當時最高司法官。「於是使騎捕，屬之廷尉」白話：於是（文帝）派騎士把那人捉住，交給廷尉查辦。張釋之當時正擔任此職，所以才由他審理並判決。"},{"level":"basic","topic":"重要字詞：乘輿","q":"「有一人從橋下走出，乘輿馬驚」句中的「乘輿」，是指什麼？","choices":["天子所乘坐的車駕","隨行士兵所騎的戰馬","市集上運貨的牛車","渡河所用的木船"],"answer":0,"explain":"「乘輿」是天子所乘坐的車駕（連同駕車的馬）。「乘輿馬驚」白話：拉天子車駕的馬受到驚嚇。因為驚動的是天子的車馬，此案才交由廷尉審理，也才引出後面君臣的爭論。"},{"level":"basic","topic":"重要字詞：蹕","q":"「縣人來，聞蹕，匿橋下」句中的「蹕」，意思是什麼？","choices":["軍隊操練時的號令","市集開市的鐘聲","帝王出行時清道戒嚴、禁止行人通行","橋樑年久失修而崩塌的聲響"],"answer":2,"explain":"「蹕」指帝王出行時清道戒嚴、禁止人車通行。「縣人來，聞蹕，匿橋下」白話：（我是）外縣的人來到京城，聽見清道戒嚴的命令，就躲在橋下。後文「犯蹕」即觸犯清道禁令之罪。"},{"level":"basic","topic":"重要字詞：當（法律用語）","q":"「一人犯蹕，當罰金」句中的「當」字，是什麼意思？","choices":["抵擋、擋住","面對、對著","理所當然、應該如此的語氣詞","判定罪刑、判處"],"answer":3,"explain":"「當」在此是法律專用語，指判定罪刑、判處。全句白話：這個人觸犯清道禁令，應判處罰金。前文「廷尉奏當」的「當」指所擬定的判決，文末「廷尉當是也」白話：廷尉的判決是對的，用法相同。"},{"level":"basic","topic":"重要字詞：屬","q":"「於是使騎捕，屬之廷尉」句中的「屬」（音ㄓㄨˇ），意思是什麼？","choices":["交付、移送","隸屬、統轄","歸屬於某一類","接連、連續"],"answer":0,"explain":"「屬」讀作ㄓㄨˇ，是交付、移送的意思。全句白話：於是（文帝）派騎士把那人捉住，把他交給廷尉處理。這一「交付」的動作很重要，張釋之後來正是以「今既下廷尉」為理由，主張案件既已進入司法程序，就必須依法判決。"},{"level":"basic","topic":"重要字詞：頃之","q":"「頃之，上行出中渭橋」句首的「頃之」，是什麼意思？","choices":["從前、很久以前","過了不久","傾盡全力、竭盡所能","一瞬間即崩塌"],"answer":1,"explain":"「頃之」是過了不久、沒多久的意思，「之」為湊足音節的助詞。全句白話：過了不久，文帝出巡，車駕經過中渭橋。這是全文事件的起點。"},{"level":"basic","topic":"文言字詞：走","q":"「有一人從橋下走出」與「見乘輿車騎，即走耳」兩句中的「走」，意思是什麼？","choices":["緩步散步","走訪、拜訪","奔跑","走投無路"],"answer":2,"explain":"文言中的「走」是跑，「行」才是走路。「有一人從橋下走出」白話：有一個人從橋下跑了出來；「見乘輿車騎，即走耳」白話：看見天子的車馬隨從，就趕快跑開罷了。正因為他突然跑出來，才驚嚇了御馬。"},{"level":"basic","topic":"重要字詞：賴","q":"「此人親驚吾馬，吾馬賴柔和」句中的「賴」，意思是什麼？","choices":["幸虧、幸好","誣賴、栽贓","拖延不肯離去","依戀不捨"],"answer":0,"explain":"「賴」在此是幸虧、幸好。「此人親驚吾馬，吾馬賴柔和，令他馬，固不敗傷我乎？」白話：這個人親自驚嚇了我的馬，幸好我的馬性情溫馴，假使換成別的馬，難道不會讓我摔傷嗎？這是文帝認為判罰太輕的理由。"},{"level":"basic","topic":"文言虛詞：令","q":"「令他馬，固不敗傷我乎」句中的「令」，應解釋為下列何者？","choices":["下命令、命令","美好的、善良的","一縣的長官","假使、假如"],"answer":3,"explain":"「令」在此作連詞，是假使、假如的意思。全句白話：假使換成別的馬，難道不會讓我摔傷嗎？文帝用假設語氣強調後果嚴重，藉此質疑罰金之刑太輕。"},{"level":"basic","topic":"文意理解：句意翻譯","q":"「民安所措其手足」一句，最恰當的白話解釋是什麼？","choices":["人民將不知該把手腳安放在哪裡，比喻無所適從","人民會親手拆毀橋樑以洩憤","人民的手腳受傷，無法從事勞動","人民將互相攙扶，逃離京城"],"answer":0,"explain":"「安所」是「何處」，「措」是安放。全句白話：人民要把手腳放到哪裡去呢？意即執法標準若隨人主的喜怒而變動，人民便不知如何自處、無所適從。這是張釋之論證中最有力的一句反問。"},{"level":"basic","topic":"文意理解：事件經過","q":"依課文所述，那名驚動天子車馬的人，其行為經過為何？","choices":["他埋伏橋下，意圖行刺文帝","他聽到清道戒嚴就躲在橋下，久候後以為車駕已過而走出，一見車騎便奔跑","他酒醉誤闖御道，並與衛士發生爭執","他為了向文帝申冤告狀，故意攔阻車駕"],"answer":1,"explain":"依張釋之審問所得，那人自述：「縣人來，聞蹕，匿橋下。久之，以為行已過，即出，見乘輿車騎，即走耳。」白話：我是外縣來的人，聽見清道戒嚴就躲在橋下，過了很久以為車駕已經過去，才走出來，一看見天子車馬就趕快跑開。可見他並非蓄意冒犯，只是誤判時機。"},{"level":"basic","topic":"文意理解：文帝發怒的原因","q":"漢文帝聽到廷尉的判決後大怒，他生氣的原因是什麼？","choices":["認為張釋之偏袒權貴、收受賄賂","認為張釋之沒有親自捉拿犯人","認為只判罰金太輕，不足以懲罰驚嚇御馬的人","認為張釋之未先請示皇帝就擅自定罪"],"answer":2,"explain":"文帝說：「此人親驚吾馬，吾馬賴柔和，令他馬，固不敗傷我乎？而廷尉乃當之罰金！」白話：這人驚嚇了我的馬，幸好馬性溫馴，若換成別的馬，難道不會摔傷我嗎？廷尉竟然只判他罰金！可見文帝是站在個人受驚、可能受傷的立場，覺得刑罰太輕。"},{"level":"basic","topic":"文學常識：《史記》","q":"下列關於《史記》一書的敘述，何者正確？","choices":["它是我國第一部編年體通史，作者為司馬光","它是我國第一部紀傳體通史，位居二十四史之首，魯迅譽為「史家之絕唱，無韻之離騷」","它記事止於秦朝滅亡，完全不涉及漢代人物","它與《漢書》同屬斷代史的代表作"],"answer":1,"explain":"《史記》為西漢司馬遷所著，記黃帝至漢武帝約三千年史事，是我國第一部紀傳體通史，列二十四史之首，魯迅在《漢文學史綱要》中譽為「史家之絕唱，無韻之離騷」。編年體通史的代表是司馬光《資治通鑑》；斷代史的代表是班固《漢書》。本文寫的是漢文帝時的張釋之，可知《史記》確有記載漢代人物。"},{"level":"basic","topic":"文學常識：《史記》體例","q":"本文選自《史記·張釋之馮唐列傳》。依《史記》的體例，下列敘述何者正確？","choices":["「列傳」記載帝王事蹟，「本紀」則記載一般官員","「本紀」記帝王，「世家」記諸侯，「列傳」記其他重要人物，張釋之屬臣子故收於列傳","《史記》全書只有「本紀」與「列傳」兩種體例，並無其他分類","「表」用來記載典章制度，「書」用來排列歷代大事年代"],"answer":1,"explain":"《史記》分為本紀（記帝王）、世家（記諸侯）、列傳（記其他重要人物）、表（以表格排列大事年代）、書（記典章制度）五種體例。張釋之是漢文帝時的臣子，因此與馮唐合傳，收在〈張釋之馮唐列傳〉中。選項四把「表」與「書」的功能對調了。"},{"level":"adv","topic":"主旨深究","q":"綜觀全文，〈張釋之執法〉最主要想表達的旨意是什麼？","choices":["說明漢代刑罰嚴苛，百姓動輒得咎","記述漢文帝出巡的排場與帝王威儀","強調馬匹訓練與騎術對行車安全的重要","強調法律是公共的準則，執法應公平不阿，即使天子也不可任意加重刑罰"],"answer":3,"explain":"全文以「犯蹕」小案為引子，藉張釋之與文帝的爭辯，凸顯「法者天子所與天下公共也」的核心觀念——法律是天下人共同遵守的公器，量刑須依既定標準，不能隨執政者的一時喜怒而加重或減輕，這正是法律之前人人平等、執法公正不阿的精神。"},{"level":"adv","topic":"關鍵語句：法者天子所與天下公共也","q":"「法者天子所與天下公共也」一句，最能表達張釋之的哪一種主張？","choices":["法律是天子與天下人共同遵守的公器，天子也不能任意更動","法律既由天子制定，天下人便只有服從的義務","法律應由全國百姓公開投票共同制定","天子可以隨時與大臣商議，更改已定的判決"],"answer":0,"explain":"此句白話：法律是天子和天下人共同遵守的（公共準則）。張釋之強調法律的「公共性」——它不是皇帝私人的工具，天子既然也在法的範圍之內，就不能因為受害者是自己而任意加重刑罰。這正是全文最關鍵的一句話。"},{"level":"adv","topic":"論證推演：法不信於民","q":"張釋之說「今法如此而更重之，是法不信於民也」，其論證重點在於什麼？","choices":["法律條文本來就應隨時勢隨時修改","加重刑罰才能收到殺一儆百的效果","若在法定刑度之外隨意加重，法律就無法取信於人民","廷尉應當隨時配合皇帝的旨意調整判決"],"answer":2,"explain":"此句白話：現在法律的規定就是如此，卻要加重處罰他，這樣法律就無法取信於人民了。張釋之點出：法律的價值在於可預期、可信賴，一旦執法者能隨意超出法條加重刑罰，人民便不再相信法律，法的威信也隨之瓦解。"},{"level":"adv","topic":"關鍵語句：廷尉，天下之平也","q":"「廷尉，天下之平也」一句，張釋之藉此強調廷尉這個職位具有什麼性質？","choices":["廷尉必須負責平定天下的叛亂","廷尉是天下公平的準則所在，必須持平執法","廷尉的地位可以與天子平起平坐","廷尉負責平均分配天下的財富"],"answer":1,"explain":"此句白話：廷尉是天下（衡量）公平的準則。張釋之把司法官比作天下的一把公平的尺，尺若歪了，量出來的結果就全都不準。他先自我定位，再推出下一句「一傾而天下用法皆為輕重」的嚴重後果，論理層層相扣。"},{"level":"adv","topic":"詞語活用：輕重","q":"「一傾而天下用法皆為輕重」句中的「輕重」，在此的用法與意思是什麼？","choices":["名詞，指事情的主次緩急","形容詞，形容刑具的重量","動詞，指執法者隨意加重或減輕刑罰","副詞，形容說話語氣的輕柔或嚴厲"],"answer":2,"explain":"全句白話：（作為天下準則的廷尉）一旦有了偏差，天下執法的人就都會任意加重或減輕刑罰。「輕重」本為形容詞，此處活用為動詞，指隨意加重或減輕刑度。張釋之由一件小案推論到整個司法體系的崩壞，說理由小而大，極具說服力。"},{"level":"adv","topic":"人物形象：張釋之","q":"從張釋之面對文帝震怒仍堅持原判的表現，可看出他是怎樣的人？","choices":["圓融通達，善於揣摩上意以求自保","沉默寡言，凡事聽從皇帝裁決","貪功好名，藉機博取百姓的稱讚","守法盡職、不畏權勢，能據理力爭"],"answer":3,"explain":"文帝盛怒之下責問「而廷尉乃當之罰金」，張釋之並未改口迎合，反而條理分明地從「法為公器」講到「法不信於民」，再講到「天下用法皆為輕重」，最後懇切地說「唯陛下察之」（白話：希望陛下明察）。可見他守法盡職、不畏權貴，且善於就事論理、據理力爭。"},{"level":"adv","topic":"人物形象：漢文帝","q":"文中「良久，上曰：『廷尉當是也。』」這一結尾，最能表現漢文帝的什麼特質？","choices":["雖曾一時震怒，最終仍能省思是非、接納諫言","始終堅持己見，最後仍強迫廷尉改判重刑","因為害怕輿論指責，才勉強表面上屈服","對案情毫不關心，隨口敷衍打發臣子"],"answer":0,"explain":"此句白話：（文帝沉思了）好一會兒，說：「廷尉的判決是對的。」「良久」二字寫出他內心的掙扎與思索，最後仍以理性壓過怒氣，公開肯定廷尉。這是史家用最簡潔的筆法襯出文帝能納諫、尊重法治的明君形象。"},{"level":"adv","topic":"論辯技巧：以退為進","q":"張釋之說「且方其時，上使立誅之則已」，這句話在他整段論辯中的作用是什麼？","choices":["承認自己判決失當，藉此向文帝謝罪","建議文帝以後遇到這類人直接處死，不必送交廷尉","先退一步承認皇帝當場處置的可能，再轉而強調案件既已交付廷尉，就必須依法而斷","諷刺文帝濫殺無辜，暗中加以譏刺"],"answer":2,"explain":"此句白話：況且在當時，皇上若下令當場把他殺了，也就算了。張釋之以退為進：先承認事發當下君王另有處置空間，隨即以「今既下廷尉」轉折，指出案件一旦進入司法程序，就只能依法判決。這種「先讓後爭」的說法既保全皇帝顏面，又使論點更難反駁。"},{"level":"adv","topic":"寫作手法","q":"就寫作手法而言，本文最主要的表現方式是下列何者？","choices":["以大量景物描寫烘托案發現場的緊張氣氛","運用譬喻與誇飾層層鋪陳犯人的驚恐心理","採倒敘法，先寫判決結果再回頭交代事件經過","藉事件引出君臣對話，以文帝之怒與張釋之之爭形成對比，凸顯人物性格"],"answer":3,"explain":"本文先以簡潔的敘事交代驚馬事件與判決，隨即讓文帝與張釋之的對話正面交鋒：一方情緒激動、著眼於自身安危，一方冷靜說理、著眼於法的公信。人物形象在對比與對話中自然浮現，這正是《史記》寫人「以言見性」的典型筆法。"},{"level":"adv","topic":"比較分析：君臣立場","q":"比較文帝與張釋之對此案的看法，兩人分歧的根本點在於什麼？","choices":["犯人是否真的聽見了清道的命令","應不應該一併追究隨行護衛的失職之責","罰金應該繳入國庫，還是用來賠償受驚的馬匹","量刑該依皇帝個人的感受與憤怒，還是依既定的法律標準"],"answer":3,"explain":"文帝的理由是「此人親驚吾馬」「令他馬，固不敗傷我乎」，出發點是自身受驚與可能的傷害；張釋之的理由是「法者天子所與天下公共也」「今法如此而更重之，是法不信於民也」，出發點是法律的公共性與公信力。兩人分歧的核心，正是「以人主之意斷罪」與「以既定之法斷罪」的差別，也是本文要闡明的法治精神。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

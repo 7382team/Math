@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我國的地方政府 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ2-local",
+  "title": "我國的地方政府",
+  "subject": "公民",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第4課 我國的地方政府",
+  "tag": "地方自治·首長與民代",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>我國的地方政府</h1><div class="sub">公民 · 地方自治·首長與民代 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"地方自治的意義－住民自治","q":"「地方上的公共事務，由當地居民自己決定、自己負責」，這句話最能說明地方自治的哪一項精神？","choices":["團體自治","權力分立","住民自治","均權制度"],"answer":2,"explain":"住民自治強調地方事務由居民自己參與、決定，是地方自治的民主意義，也呼應主權在民的原則。「團體自治」指地方自治團體具獨立法律地位、可自主處理地方事務，強調的是對中央的自主性；「權力分立」是行政與立法互相制衡的設計；「均權制度」是中央與地方權限劃分的標準，三者都不是本題敘述的重點。"},{"level":"basic","topic":"地方自治的意義－團體自治","q":"下列何者最符合「團體自治」的意涵？","choices":["地方自治團體具有獨立的法律地位，可依法自主處理轄區內的地方事務","居民透過投票選出地方行政首長與地方民意代表","中央政府派員到地方，全面監督地方各項政務","地方居民連署，依法推動地方性公民投票"],"answer":0,"explain":"團體自治著重地方自治團體相對於中央的自主地位，可依法自行處理地方事務。選項2、4是居民參與地方事務，屬於「住民自治」的面向；選項3是中央對地方的全面控制，反而與地方自治的精神相違背。"},{"level":"basic","topic":"我國地方行政層級","q":"依我國現行地方制度，下列哪一組排列符合「由上而下」的地方行政層級？","choices":["縣（市）→ 直轄市 → 鄉（鎮、市）","直轄市／縣（市）→ 鄉（鎮、市）／區 → 村（里）","直轄市 → 縣（市）→ 鄉（鎮、市）→ 村（里）","省 → 直轄市 → 縣（市）→ 村（里）"],"answer":1,"explain":"直轄市與縣（市）同屬地方自治的第一層級；縣下設鄉（鎮、市），直轄市（及市）下設區，最基層為村（里）。選項1順序顛倒；選項3誤把直轄市當成縣（市）的上級，兩者其實同級；選項4的省已虛級化，不再是地方自治團體。"},{"level":"basic","topic":"村（里）與村（里）長的定位","q":"關於村（里）與村（里）長，下列敘述何者正確？","choices":["村（里）是我國最基層的地方自治團體，可以自行制定自治條例","村（里）長由鄉（鎮、市）長指派，協助推動政令","村（里）長是地方民意代表，可在民意機關中對地方首長提出質詢","村（里）長由村（里）民選舉產生，主要協助推行基層公務並反映居民意見"],"answer":3,"explain":"村（里）是最基層的編組，並非地方自治團體，沒有民意機關，也不能制定自治條例（選項1錯）；村（里）長是由村（里）民選出，不是官派（選項2錯）；村（里）長不屬於地方民意機關的成員，沒有議決與質詢的職權（選項3錯，這是鄉（鎮、市）民代表的職權）。"},{"level":"basic","topic":"地方首長與地方民意代表的層級對應","q":"下列「地方行政首長」與「同一層級地方民意代表」的配對，何者正確？","choices":["縣長 — 鄉（鎮、市）民代表","鄉長 — 縣議員","直轄市長 — 立法委員","直轄市長 — 直轄市議員"],"answer":3,"explain":"同一層級才互相對應：直轄市長對直轄市議員、縣（市）長對縣（市）議員、鄉（鎮、市）長對鄉（鎮、市）民代表。選項1、2都跨了層級；選項3的立法委員是中央民意代表，監督的對象是中央行政機關，不是直轄市政府。"},{"level":"basic","topic":"地方議會的職權","q":"下列何者屬於縣（市）議會的職權？","choices":["任命縣（市）政府各局處首長","議決縣（市）的自治條例","指揮縣（市）政府警察人員執行勤務","解釋憲法，並宣告地方自治法規違憲"],"answer":1,"explain":"議決自治條例是地方立法機關最核心的職權之一。選項1的人事任命與選項3的指揮權，都屬於地方行政首長；選項4的憲法解釋屬司法機關（憲法法庭）的職權，此為把司法權誤植給地方議會的誘答。"},{"level":"basic","topic":"地方政府的行政機關與立法機關","q":"我國各級地方自治團體都同時設有行政機關與立法機關。下列配對何者正確？","choices":["直轄市：直轄市政府是行政機關，直轄市議會是立法機關","縣（市）：縣（市）政府是立法機關，縣（市）議會是行政機關","鄉（鎮、市）：鄉（鎮、市）公所是立法機關，鄉（鎮、市）民代表會是行政機關","村（里）：村（里）辦公處是行政機關，村（里）民大會是立法機關"],"answer":0,"explain":"地方政府分為行政與立法兩部分：行政機關為直轄市政府、縣（市）政府、鄉（鎮、市）公所；立法機關為直轄市議會、縣（市）議會、鄉（鎮、市）民代表會。選項2、3都把行政機關與立法機關的性質對調；選項4錯在村（里）不是地方自治團體，並沒有立法機關，村（里）長只是協助推行基層公務。"},{"level":"basic","topic":"直轄市的區與區長","q":"直轄市下設「區」，關於區與區長，下列敘述何者正確？","choices":["區長由區民直接選舉產生，並向區民負責","區設有區民代表會，負責審查區公所預算","區公所是直轄市政府的派出機關，區長由直轄市長依法指派","區是地方自治團體，可自行決定區內開徵哪些地方稅"],"answer":2,"explain":"區並非地方自治團體，沒有民選首長，也沒有民意機關，區公所受直轄市政府指揮監督。選項1、2、4都是誤把「區」當成鄉（鎮、市）——只有鄉（鎮、市）才有民選首長與鄉（鎮、市）民代表會。"},{"level":"basic","topic":"地方自治法規","q":"由地方立法機關（如直轄市議會、縣市議會）議決通過，再由地方行政機關公布施行的地方自治法規，通常稱為什麼？","choices":["法律","自治條例","自治規則","憲法增修條文"],"answer":1,"explain":"經地方立法機關議決通過者稱為「自治條例」。「法律」專指由立法院通過、總統公布者（選項1錯）；「自治規則」是地方行政機關本於職權訂定，不必經議會議決（選項3錯）；憲法增修條文屬憲法層次，須依修憲程序制定（選項4錯）。"},{"level":"basic","topic":"中央與地方的權限劃分","q":"我國憲法對於中央與地方權限的劃分，採取的基本原則是下列何者？","choices":["中央集權制，地方僅能執行中央交辦的事項","地方分權制，中央不得干預地方的任何事務","聯邦制，各地方各自擁有憲法與司法體系","均權制度，依事務的性質決定由中央或地方掌理"],"answer":3,"explain":"我國採均權制度：事務具全國一致性質者由中央掌理，須因地制宜者由地方掌理。我國並非中央集權（選項1錯）；地方仍受憲法與法律規範，中央並非完全不能介入（選項2錯）；我國是單一國而非聯邦國家，地方沒有自己的憲法與獨立司法體系（選項3錯）。"},{"level":"basic","topic":"地方財政","q":"關於我國地方政府的財政，下列敘述何者最正確？","choices":["地方財源除自有稅課收入外，還包括中央統籌分配稅款與補助款","地方政府所有支出都由地方稅收全額支應，與中央財政無關","地方政府可自行發行貨幣，以支應地方建設所需經費","地方預算由中央政府編列後交地方執行，地方議會不得審議"],"answer":0,"explain":"各地稅源多寡差異大，因此除自有收入外，還透過統籌分配稅款與補助款進行財政調節。選項2忽略了中央對地方的財政移轉；選項3的貨幣發行屬中央（中央銀行）職權；選項4錯在地方預算由地方政府編列、地方議會審議。"},{"level":"basic","topic":"四大選舉原則","q":"我國各項地方公職人員選舉所遵守的「四大選舉原則」是指下列何者？","choices":["公開、記名、間接、比例","普通、限制、直接、記名","普通、平等、直接、無記名","平等、政黨、直接、公開"],"answer":2,"explain":"四大選舉原則為普通（符合資格者皆有選舉權）、平等（一人一票、票票等值）、直接（由選民直接選出當選人）、無記名（秘密投票）。選項2的「限制」與「記名」正好違反平等與秘密投票原則；選項1、4混入了非選舉原則的概念。"},{"level":"basic","topic":"住民自治的實踐－罷免","q":"某市市民對市長的施政不滿，於其任期屆滿前依法連署，並交由全體市民投票決定是否解除市長職務。這種由選民直接行使的制度稱為什麼？","choices":["彈劾","覆議","罷免","釋憲"],"answer":2,"explain":"罷免是選民針對自己選出的民選公職人員，在任期屆滿前投票決定是否使其去職，是住民自治中人民直接參與、直接監督的重要管道。「彈劾」是監察機關對違法失職公務人員行使的職權，並非由選民投票（選項1錯）；「覆議」是行政機關對立法機關議決案要求再行審議的程序（選項2錯）；「釋憲」是司法機關（憲法法庭）解釋憲法的職權（選項4錯）。"},{"level":"basic","topic":"地方自治的價值","q":"實施地方自治對民主政治的重要意義，下列敘述何者最適當？","choices":["使公共事務更貼近居民需求，並擴大人民參與公共事務的機會","可以取消中央政府的存在，由各地方各自為政","使地方行政首長不必接受任何監督，行政效率最高","使中央得以直接指揮村（里）長處理所有地方事務"],"answer":0,"explain":"地方自治能因地制宜、貼近民意，並提供人民參與的管道，因此常被稱為「民主的學校」。選項2把自治誤解為國家分裂，我國為單一國；選項3錯在地方首長仍受地方議會與選民監督；選項4違反地方自治的層級運作與自主精神。"},{"level":"adv","topic":"地方議會的預算審議權","q":"某市議會審查市政府提出的年度總預算時，認為某項工程經費編列過高而予以刪減，市長雖不滿意，仍須依議會議決結果辦理。此一過程主要呈現下列何種意涵？","choices":["議會取代市政府，成為實際的行政機關","中央政府藉由議會控制地方的財政運作","市長對議決結果毫無救濟途徑，只能全盤接受","地方民意機關透過預算審議權，制衡地方行政機關"],"answer":3,"explain":"預算審議是議會監督行政的重要工具，展現地方層級的權力分立與制衡。議會只議決與監督，並不執行預算（選項1錯）；這是地方自治團體內部的運作，與中央控制無關（選項2錯）；地方行政首長對議決案依法仍可提出覆議等救濟途徑，並非毫無管道（選項3錯）。"},{"level":"adv","topic":"村（里）長與地方民意代表的職權區分","q":"甲居民因巷道路燈損壞，找住家附近的村（里）長協助反映；乙居民則希望在鄉民代表會上，要求鄉公所說明修繕經費的編列。就兩人所找的對象與管道判斷，下列敘述何者正確？","choices":["兩者都是地方民意代表，職權完全相同","村（里）長主要協助反映與處理基層事務；鄉民代表則在民意機關中審議預算、監督鄉公所","村（里）長可在鄉民代表會中對鄉長提出質詢，鄉民代表反而不行","兩者都由鄉長指派產生，因此都必須聽從鄉公所的指揮"],"answer":1,"explain":"村（里）長雖由村（里）民選出，但村（里）不是地方自治團體，村（里）長不屬於民意機關成員，沒有議決預算與質詢的職權；鄉（鎮、市）民代表才是該層級的地方民意代表。選項3把兩者職權顛倒；選項4錯在兩者皆為民選，並非鄉長指派。"},{"level":"adv","topic":"直轄市的區與縣轄鄉鎮市的比較","q":"小明從甲直轄市搬到乙縣，發現原本住處的「區長」不用選舉，搬家後所在的「鎮」卻要選鎮長。造成這種差異最主要的原因是什麼？","choices":["直轄市人口較多，因此改由市長指派以節省選舉的行政成本","區不是地方自治團體，區長由市府派任；鎮是地方自治團體，鎮長由鎮民選舉產生","兩者位階不同，直轄市屬於中央政府，縣才屬於地方政府","區長屬於地方民意代表，依法本來就不必經由選舉產生"],"answer":1,"explain":"關鍵在於是否為地方自治團體：鄉（鎮、市）具自治團體地位，有民選首長與民意機關；區只是直轄市（或市）的派出單位，區長為派任。選項1把制度差異誤解為經費考量；選項3錯在直轄市仍是地方政府，並非中央；選項4錯在區長是行政人員而非民意代表。"},{"level":"adv","topic":"自治法規與中央法律的關係","q":"某縣議會通過的一項自治條例，其內容與立法院制定的法律相牴觸。依我國法規範位階的原則，下列處理方式何者最適當？","choices":["自治條例代表地方民意，因此效力高於中央制定的法律","兩者效力相同，由該縣居民投票決定要適用哪一個","自治條例牴觸法律的部分無效，因為地方自治須在憲法與法律的範圍內行使","該縣可自行宣布不適用中央法律，一律改依自治條例辦理"],"answer":2,"explain":"我國為單一國，地方自治權源於憲法與法律的授權，自治法規不得牴觸憲法、法律及中央法規，牴觸者無效。選項1、2、4都誤以為地方立法具有等同甚至高於中央法律的地位，混淆了單一國與聯邦國的差別。"},{"level":"adv","topic":"均權制度的事務性質判斷","q":"依「均權制度」以事務性質劃分權限的原則判斷，下列哪一項事務最應由中央政府統一掌理？","choices":["某市市立圖書館的每日開放時間","某縣縣道路面的養護與修補工程","某鄉鄉立幼兒園的招生宣導活動","全國一致適用的國防與外交事務"],"answer":3,"explain":"均權制度的標準是事務性質：具全國一致性質者（如國防、外交、貨幣）歸中央；須因地制宜者歸地方。選項1、2、3都屬於地方性、因地制宜的事務，由地方政府自行規劃即可，不需中央統一決定。"},{"level":"adv","topic":"中央對地方的財政調節","q":"甲縣工商業不發達、稅收有限，乙直轄市則稅源充足。為避免各地方因財源多寡而使公共服務落差過大，中央通常會採取下列何種作法？","choices":["透過統籌分配稅款與補助款等財政調節機制，協助財源不足的地方政府","要求甲縣停止提供教育與社會福利服務，以節省支出","取消甲縣的地方自治團體地位，改由乙直轄市代為管理","要求甲縣居民直接向乙直轄市繳納稅款以取得補助"],"answer":0,"explain":"財政收支劃分制度透過統籌分配稅款與補助款，平衡地方財源差距。選項2會直接損害居民受教育與生存等權益；選項3錯在地方自治團體的地位由憲法與法律規定，不能任意取消；選項4違反租稅法定原則與地方稅制的運作方式。"},{"level":"adv","topic":"住民自治與團體自治的辨別","q":"某鎮居民對鎮公所規劃的垃圾場地點不滿，依法連署推動地方性公民投票；同時，該鎮公所依法自行決定鎮內公有停車場的收費方式，中央並未干涉。上述兩件事分別展現地方自治的哪一面向？","choices":["前者為住民自治，後者為團體自治","前者為團體自治，後者為住民自治","兩者都是住民自治","兩者都是團體自治"],"answer":0,"explain":"判斷關鍵在於「由誰行使」：由居民參與、決定地方事務者為住民自治；由地方自治團體（地方政府）相對中央自主決定者為團體自治。選項2把兩者對調；選項3、4則忽略了兩件事的行使主體並不相同。"},{"level":"adv","topic":"中央與地方民意機關的功能比較","q":"某位同學說：「我們縣的縣議會，就像中央的立法院一樣。」若要指出兩者在功能上的相似之處，下列敘述何者最恰當？","choices":["兩者都負責彈劾、糾舉違法失職的公務人員","兩者都負責審判違法的公務人員並科處刑罰","兩者都由民選代表組成，負責制定法規、審議預算並監督行政機關","兩者都由行政首長指派代表組成，協助推動各項政策"],"answer":2,"explain":"立法院與地方議會同為民意機關，分別掌理法律／自治條例的議決、預算審議與監督行政機關。選項1的彈劾、糾舉是監察院的職權；選項2的審判屬司法機關（各級法院）；選項4錯在兩者成員都由人民選舉產生，並非首長指派。"},{"level":"adv","topic":"地方行政首長與地方民意代表的職權區分","q":"某市推動一項新的市政建設，過程中出現以下四種說法，何者對「地方行政首長」與「地方民意代表」職權的描述最正確？","choices":["市長可以逕行修改市議會已通過的自治條例內容","市長領導市政府執行市政；市議員則議決自治條例、審查預算並監督市政府","市議員可以直接指揮市政府各局處人員執行工程","市長與市議員都由市議會選舉產生，因此職權完全相同"],"answer":1,"explain":"行政首長主管政策執行，民意代表主管議決與監督，兩者分立並互相制衡。選項1錯在自治條例的修正須經議會議決；選項3錯在議員只能監督，不能指揮公務人員執行業務；選項4錯在市長與市議員都由市民直接選舉產生，且職權明顯不同。"},{"level":"adv","topic":"自治事項與委辦事項","q":"某縣政府辦理的業務中，一部分是依中央法律規定代為執行的「委辦事項」，一部分則是自行決定並負責的「自治事項」。下列敘述何者最適當？","choices":["委辦事項與自治事項，都由地方議會決定要不要辦理","我國地方政府只有自治事項，並沒有委辦事項","辦理委辦事項時，地方政府可以完全依自己的意思決定作法","自治事項由地方自行規劃並負責；委辦事項則須依中央規定辦理，並受中央指揮監督"],"answer":3,"explain":"自治事項展現團體自治的自主性；委辦事項是中央將部分業務交由地方執行，地方須依規定辦理並受中央監督。選項1錯在委辦事項並非地方可自行決定辦或不辦；選項2錯在兩類事項並存；選項3則是把委辦事項誤當成自治事項。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>政治參與與選舉 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ2-election",
+  "title": "政治參與與選舉",
+  "subject": "公民",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第5課 政治參與與選舉",
+  "tag": "四大原則·公投·投票",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>政治參與與選舉</h1><div class="sub">公民 · 四大原則·公投·投票 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"政治參與的意義","q":"下列關於「政治參與」的敘述，何者最為正確？","choices":["政府官員依法執行公務、推動行政業務的過程","企業為擴大市場占有率而進行的商業競爭活動","人民為影響政府的人事或公共政策所從事的各種行動","學校為提升學生學業成績所辦理的課後輔導"],"answer":2,"explain":"政治參與是指人民試圖影響政府人事或公共政策的行為，例如投票、參選、加入政黨或公民團體、集會遊行、請願陳情、表達輿論等。政府官員執行公務是政府本身的作為，並非人民的參與；商業競爭與課後輔導分別屬於經濟與教育活動，與影響公共決策無關。"},{"level":"basic","topic":"選舉四大原則－普通選舉（投票資格的普及）","q":"凡是達到法定年齡的公民，不因性別、宗教、種族、階級或黨派而受到限制，都享有選舉權。這符合下列哪一項選舉原則？","choices":["普通選舉","平等選舉","直接選舉","無記名投票"],"answer":0,"explain":"普通選舉強調選舉權的普及，除法定年齡等基本要件外，不因身分背景而受不合理限制。平等選舉指一人一票、票票等值；直接選舉指由選民直接選出當選人；無記名投票指圈選內容保密，三者處理的都不是投票資格問題。"},{"level":"basic","topic":"選舉四大原則－平等選舉（票值相同）","q":"「一人一票，票票等值」所展現的是下列哪一項選舉原則？","choices":["普通選舉","直接選舉","無記名投票","平等選舉"],"answer":3,"explain":"平等選舉要求每位選民所投的票數相同、每一票的價值也相同。普通選舉處理「誰可以投票」的資格問題；直接選舉處理「由誰決定當選人」；無記名投票處理「投票內容是否保密」，均與票值無關。"},{"level":"basic","topic":"選舉四大原則－直接選舉（不經中間人代選）","q":"選民親自投票決定當選人，不必先選出「選舉人團」再由其代為選出，這種做法屬於下列哪一項原則？","choices":["普通選舉","直接選舉","平等選舉","無記名投票"],"answer":1,"explain":"直接選舉指選民的選票直接決定當選人，中間不經由他人代選。普通選舉強調投票資格的普及、平等選舉強調票票等值、無記名投票強調選票保密，都與是否由中間人代選無關。"},{"level":"basic","topic":"選舉四大原則－無記名（秘密）投票","q":"我國選舉時，選民須進入圈票處單獨圈選，選票上也不記載選民姓名。這項設計主要落實的原則及其目的是？","choices":["普通選舉，使更多人能取得投票資格","平等選舉，使每一票的價值都相同","直接選舉，使選民親自決定當選人","無記名投票，使選民不受干預、自由表達意願"],"answer":3,"explain":"選票不記名、單獨圈選是為了保密，避免選民因他人得知投票內容而受到威脅或利誘，屬無記名（秘密）投票原則。其他三項原則分別關乎投票資格的普及、票值的平等，以及是否由選民直接選出當選人，都不是這項設計的主要目的。"},{"level":"basic","topic":"選舉權與被選舉權","q":"關於「選舉權」與「被選舉權」，下列敘述何者正確？","choices":["選舉權是投票選出公職人員的權利，被選舉權是得被選為公職人員的權利","兩者的法定年齡完全相同，所有公職的資格規定也一模一樣","只要享有選舉權，就必然具備擔任各種公職的被選舉權","被選舉權是指人民監督政府施政、要求政府改進的權利"],"answer":0,"explain":"選舉權即投票權；被選舉權則是可以被選為公職人員的資格。一般而言被選舉權的法定年齡高於選舉權，且不同公職可能訂有不同的年齡或資格條件，故「完全相同」「必然具備」的敘述錯誤。監督政府屬於廣義的公民參與，並不是被選舉權的定義。"},{"level":"basic","topic":"公民投票的意義","q":"下列何者最能說明「公民投票」的意義？","choices":["由民意代表在議會中代替全體人民決定重大公共事務","由人民直接就特定的法律或重大政策表達同意或不同意","由行政機關單方面決定政策後，再公告人民遵守","由法院審理政治爭議案件，並作成最終判決"],"answer":1,"explain":"公民投票屬於直接民權，由人民自己就公共事務作成決定，可補充代議政治的不足。由民意代表代為決定屬於代議（間接民主）；行政機關單方決策與法院審判分別是行政權與司法權的行使，都不是公民投票。"},{"level":"basic","topic":"公民投票的適用事項","q":"下列哪一項事務最不適合作為公民投票的提案內容？","choices":["法律的複決","重大政策的創制或複決","政府年度預算與租稅事項","憲法修正案的複決"],"answer":2,"explain":"為避免影響國家財政運作與專業判斷，預算、租稅、薪俸及人事等事項不得作為公民投票的提案。法律之複決、立法原則之創制、重大政策之創制或複決，以及憲法修正案之複決，才屬於公民投票的適用範圍。"},{"level":"basic","topic":"投票流程","q":"在投票所行使投票權時，正確的一般流程順序是？","choices":["圈選選票→領取選票→核對身分→投入票匭","核對身分並領取選票→進入圈票處圈選→投入票匭→投票結束後公開開票","領取選票→核對身分→圈選選票→投入票匭","公開開票→核對身分→領取選票→圈選選票"],"answer":1,"explain":"投票須先由選務人員核對選舉人身分後發給選票，再到圈票處單獨圈選、投入票匭，待投票時間結束才公開開票。其餘選項把「先圈選」「先領票」「先開票」等步驟提前，不僅不符實際流程，也違反身分查核與秘密投票的要求。"},{"level":"basic","topic":"選舉的公正性－公開透明的選務","q":"投票所會設置監察員，開票時也採取當眾唱票、公開計票的方式。這樣做的主要目的是？","choices":["加快開票速度，以節省選務成本","讓候選人能夠知道每一位選民投票給誰","使選務過程公開透明、防止舞弊，讓結果為人民所信服","方便各政黨整理與統計自己的黨員名冊"],"answer":2,"explain":"設置監察員與公開唱票、計票，是確保選舉程序公正、防止作票的重要機制。節省成本並非主要目的；知道每位選民投給誰明顯違反無記名投票原則；統計黨員名冊則與選務工作無關。"},{"level":"basic","topic":"政治冷漠的意義","q":"下列何者屬於「政治冷漠」的現象？","choices":["人民熱烈討論公共議題並踴躍前往投票","各政黨之間相互批評、選戰競爭激烈","政府對人民所提出的陳情內容置之不理","人民對公共事務漠不關心，也不願投票或表達意見"],"answer":3,"explain":"政治冷漠是指人民對政治與公共事務缺乏興趣、不願參與。踴躍討論與投票正好相反；政黨激烈競爭是政治活動熱絡的表現；政府不理會陳情屬於政府回應性不足的問題，並非人民的冷漠。"},{"level":"basic","topic":"政治冷漠的影響","q":"若社會普遍出現政治冷漠，最可能造成下列何種結果？","choices":["公共決策容易被少數人主導，政府也較缺乏人民的監督","政府施政更能充分反映多數民意","各項選舉的投票率因此大幅提高","人民的公民素養與參與能力明顯提升"],"answer":0,"explain":"多數人不參與時，公共事務容易由少數積極者或特定團體主導，政府施政也缺乏監督，民主品質因而下降。民意反映更充分、投票率提高、公民素養提升，都是積極參與而非冷漠所帶來的結果。"},{"level":"basic","topic":"表達意見的管道（請願、陳情、集會遊行、輿論）","q":"關於人民表達意見的各種管道，下列敘述何者正確？","choices":["陳情是指人民向法院提起訴訟，以撤銷不當的行政處分","集會遊行只要參加人數夠多，就不必遵守法律的規範","輿論表達只能透過報紙、電視等大眾傳播媒體，人民不能自行發表意見","請願是人民向民意機關或主管行政機關陳述願望、提出建議"],"answer":3,"explain":"請願是人民向職權所屬的民意機關或主管行政機關陳述願望、提出建議；向法院提起訴訟屬於行政訴訟等司法救濟途徑，與陳情不同。集會遊行仍須依法律規範並和平理性進行；輿論表達的管道相當多元，網路發言、投書、參與民意調查等都是人民可運用的方式。"},{"level":"basic","topic":"參加政黨與公民團體的功能","q":"人民加入政黨或公民團體參與公共事務，其主要功能是？","choices":["取代政府機關，直接行使公權力","代替法院審理與判決案件","匯聚理念相近者的力量，共同表達訴求並影響公共政策","保證參加者一定能夠當選公職人員"],"answer":2,"explain":"政黨與公民團體能集結理念相近的人形成有組織的力量，向政府表達訴求、影響公共政策，是重要的政治參與管道。政黨與團體不能取代政府行使公權力，也沒有審判權；參加團體更不能保證當選。"},{"level":"basic","topic":"政黨與利益團體的差異","q":"「政黨」與「利益團體（壓力團體）」都會影響公共政策，兩者最主要的差異是？","choices":["政黨以提名候選人、取得執政權為主要目標；利益團體多半不直接執政，而是設法影響政策以維護特定權益","政黨只在選舉期間才存在，利益團體則是長期運作的組織","利益團體可以直接指揮政府機關，政黨則只能提出建議","政黨不受法律規範，只有利益團體才須依法設立與活動"],"answer":0,"explain":"政黨的核心目標是透過選舉取得執政權並實現其政見；利益團體通常不推派人選組織政府，而是以遊說、輿論、集會等方式影響決策，維護成員或特定議題的權益。政黨在非選舉期間仍持續運作，利益團體並無指揮政府的權力，兩者也都必須在法律規範內活動。"},{"level":"basic","topic":"公民參政權－罷免的意義","q":"我國憲法規定人民有選舉、罷免、創制、複決等參政權。其中「罷免」指的是？","choices":["人民自行提出法律原則或法律案，交由全體公民表決","人民對立法機關已通過的法律，投票決定是否維持或廢止","人民投票選出各級民意代表與行政首長","在民選公職人員任期屆滿前，由選民依法定程序投票使其去職"],"answer":3,"explain":"罷免是選民對已當選的公職人員表示不信任，依法連署並投票使其解除職務，方向與選舉相反。提出法律原則或法律案交由公民表決屬於創制；對已通過的法律投票決定存廢屬於複決；投票選出公職人員則是選舉，三者與罷免同為參政權，但意義各不相同。"},{"level":"adv","topic":"選舉原則的應用－平等選舉","q":"假設某國規定：住在都市的選民每人有一票，住在鄉村的選民每人有兩票。這項規定最明顯違反下列哪一項選舉原則？","choices":["普通選舉","平等選舉","直接選舉","無記名投票"],"answer":1,"explain":"不同地區的選民擁有的票數不同，使票票不等值，違反平等選舉原則。普通選舉關乎誰有投票資格，該國並未排除某類人投票；直接選舉關乎是否由選民直接選出當選人；無記名投票關乎選票是否保密，都不是本題的爭點。"},{"level":"adv","topic":"選舉原則的應用－普通選舉","q":"假設某地區規定：必須繳納一定金額稅金的人，才可以參加投票。這項規定最直接違反下列哪一項選舉原則？","choices":["普通選舉","平等選舉","直接選舉","無記名投票"],"answer":0,"explain":"以財產或納稅額作為投票資格的門檻，會使部分公民被排除在選舉之外，違反選舉權普及的普通選舉原則。此規定並未使有投票權者的票值不同（平等），也未改變由選民直接選出當選人的方式（直接），更與選票保密（無記名）無關。"},{"level":"adv","topic":"無記名投票原則的應用","q":"投票日當天，甲在圈票處以手機拍下自己已經圈選好的選票，並上傳到社群網站。對此，下列判斷何者最為適當？","choices":["這是言論自由的展現，應予以鼓勵並推廣","只要沒有拍到其他人的選票，就完全沒有問題","選票內容因此外洩，破壞秘密投票，也可能被用來查驗買票，屬不當行為","這符合直接選舉原則，能讓選民更清楚地表達立場"],"answer":2,"explain":"在圈票處攝影會使選票內容外洩，破壞無記名（秘密）投票原則，並可能成為賄選者驗票的工具，因此為法律所禁止。表達政治立場可透過其他合法方式，不必公開自己的選票；此事也與直接選舉原則（是否由選民直接選出當選人）無關。"},{"level":"adv","topic":"政治參與的合法界限","q":"某社區居民反對在住家附近興建垃圾掩埋場。下列哪一種做法最不符合民主法治的精神？","choices":["發起連署並向縣市政府陳情，反映居民的意見","依法申請集會遊行，以和平理性的方式表達訴求","投書媒體或在網路上發表評論，形成輿論壓力","集結群眾包圍工地、毀損施工機具，強行阻止工程進行"],"answer":3,"explain":"民主社會中，人民可以透過陳情、合法集會遊行、輿論等管道表達不同意見，但必須在法律規範內進行。以暴力毀損他人財物、妨害施工，已逾越言論自由與集會自由的界限，不但無助於解決問題，行為人還須負法律責任。"},{"level":"adv","topic":"代議政治與直接民權的比較","q":"關於「代議政治」與「公民投票」的比較，下列敘述何者最為正確？","choices":["公民投票屬於直接民權，可補充代議政治的不足","有了公民投票制度之後，國家就不再需要民意代表與代議機關","代議政治是人民親自行使決定權，屬於直接民權的一種","公民投票的結果僅供參考，是否採納完全由行政機關決定"],"answer":0,"explain":"公民投票是直接民權，與代議政治並行，用來補充間接民主的不足。日常大量的法律制定與預算審查仍須仰賴代議機關，故「不再需要民意代表」錯誤；代議政治是透過民意代表行使權力，屬間接民權；公投通過後依法具有一定拘束力，並非僅供參考。"},{"level":"adv","topic":"選舉權與被選舉權的比較","q":"甲已達法定投票年齡並依法登記為選舉人，但他想參選某項公職時，卻被告知資格不符。下列推論何者最合理？","choices":["凡是享有選舉權的人，必然同時具備所有公職的被選舉權","被選舉權的法定年齡通常低於選舉權的法定年齡","不同公職的被選舉權可能設有不同的年齡或資格條件，甲可能尚未符合","這表示甲連投票的選舉權也一併被剝奪了"],"answer":2,"explain":"選舉權與被選舉權是兩種不同的權利，被選舉權的門檻通常較高，且不同公職可能訂有不同的年齡或資格規定。享有選舉權並不等於可以參選任何公職；參選資格不符也不影響其投票的權利。"},{"level":"adv","topic":"政治冷漠的案例分析","q":"某次地方公職人員選舉投票率偏低，許多民眾表示「反正誰當選都一樣，投不投票沒差」。若這種情形長期持續，下列推論何者最合理？","choices":["政府必然會因此變得更加清廉而有效率","當選者的民意基礎相對薄弱，政府施政也較不容易受到監督","這代表人民對政府施政都非常滿意，是民主成熟的表現","投票率的高低與民主政治的品質完全沒有關係"],"answer":1,"explain":"投票率偏低使當選者所代表的民意有限，人民對政府的監督力量也隨之減弱，這正是政治冷漠的典型影響。冷漠不會自動使政府更清廉有效率；不投票往往源於不信任或無力感，並非滿意的表現；投票率是觀察公民參與與民主品質的重要指標。"},{"level":"adv","topic":"選舉公正性－賄選","q":"某候選人的支持者在選前致贈現金給選民，要求他們投票支持該候選人。對此，下列敘述何者最為適當？","choices":["這是候選人自由運用資源的競選策略，法律不應干涉","只要收錢的選民最後沒有依約投票，行賄者就不算違法","賄選扭曲民意、破壞選舉的公正與平等，行賄與收賄雙方都應受法律制裁","這只是人民自由處分自己財產的行為，與選舉是否公正無關"],"answer":2,"explain":"賄選使選票淪為交易，違反選舉的公正與平等並扭曲民意，因此行賄者與收賄者都要負法律責任。賄選不是正當的競選策略；行賄行為在交付財物、約定投票時即已成立，不因對方是否照約投票而免責；以金錢買票已直接侵害選舉制度，並非單純的財產處分。"},{"level":"adv","topic":"選務中立與身分查核","q":"投票當天，選務人員發現有人持他人的證件想要冒領選票。從維護選舉公正的角度來看，下列處理方式何者最恰當？","choices":["為避免耽誤其他選民的時間，先讓他領票投票，事後再追究","由在場的候選人或其助選人員決定是否讓他領票","交由排隊的民眾舉手表決，以多數決定是否讓他投票","依規定確實核對選舉人身分，拒絕發給選票，並依法定程序處理"],"answer":3,"explain":"核對選舉人身分是落實一人一票與防止冒領的關鍵程序，必須依法辦理。便宜行事會使選舉結果失真；由候選人或現場民眾決定，則違反選務中立與依法行政的原則，選務事項不能以現場多數決取代法律規定。"},{"level":"adv","topic":"權力分立與五院職權","q":"某公民團體認為現行某項法律已不合時宜，希望能加以修正。依我國憲政體制，下列敘述何者最為正確？","choices":["應向監察院提案，因為制定與修改法律是監察院的職權","法律的制定與修正屬立法院的職權，人民可透過民意代表提案、請願或連署等方式表達訴求","修改法律屬於考試院的職權，人民應向考試院陳情","只要人民走上街頭遊行，法律就會自動完成修改"],"answer":1,"explain":"依權力分立原則，法律的制定與修正是立法院的職權；監察院掌彈劾、糾舉、糾正與審計，考試院掌考試、銓敘、保障、撫卹、退休等事務，兩者都沒有立法權。合法遊行可形成輿論壓力、使議題受到重視，但法律仍須經立法程序才能修正，不會自動生效。"},{"level":"adv","topic":"網路時代的政治參與與媒體識讀","q":"選舉期間，網路上流傳一段來源不明的影片，指控某候選人涉及不法。身為公民，最適當的做法是？","choices":["先查證訊息來源與可信度，確認後再決定是否分享或表達意見","立刻大量轉發，讓更多人盡快知道這項消息","只要影片內容符合自己原本的立場，就可以當作事實看待","認為網路訊息一律不可信，因此完全不再關心公共議題"],"answer":0,"explain":"網路是重要的政治參與管道，但訊息真偽難辨，公民應具備媒體識讀能力，先查證來源、比對可信媒體或官方說明後再決定是否轉發，以免成為不實訊息的散布者並可能負擔法律責任。未經查證即大量轉發、以立場取代事實判斷都不理性；因此完全不關心公共事務，則落入政治冷漠。"},{"level":"adv","topic":"多數決與尊重少數","q":"某項公共議題經合法程序投票後，甲所支持的主張並未獲得多數同意。從民主素養的角度來看，甲最適當的做法是？","choices":["拒絕承認投票結果，並以暴力手段阻止決定的執行","尊重依法作成的決定，並持續透過合法管道表達意見、爭取改變","從此不再關心任何公共事務，也不再參與任何投票","要求政府直接推翻投票結果，改依少數人的意見執行"],"answer":1,"explain":"民主政治以多數決作成決定，同時保障少數人繼續表達意見的權利。居於少數者可透過輿論、連署、遊說、依法提案或下次選舉等方式爭取支持，但不能以暴力或要求推翻合法程序的方式否定結果；因挫折而全面退出公共事務，則會形成政治冷漠。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

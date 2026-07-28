@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>政府的組織與功能 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ2-govtype",
+  "title": "政府的組織與功能",
+  "subject": "公民",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2課 政府的組織與功能",
+  "tag": "內閣制·總統制·雙首長制",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>政府的組織與功能</h1><div class="sub">公民 · 內閣制·總統制·雙首長制 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"內閣制的基本特徵","q":"關於「內閣制」的敘述，下列何者正確？","choices":["行政權與立法權完全分立，兩者互不隸屬","內閣通常由國會中占多數席次的政黨組成，並須向國會負責","國家元首由人民直接選舉產生，並兼任最高行政首長","國會不得對內閣提出不信任案，內閣也不能呈請解散國會"],"answer":1,"explain":"內閣制的核心是行政與立法合一，由國會多數黨（或多數聯盟）組閣，內閣須向國會負責。「行政立法完全分立」與「國會不得倒閣、內閣不能解散國會」都是總統制分立制衡、任期固定的特色；「元首由人民直選並兼任最高行政首長」指的是總統制的總統，內閣制的元首多為虛位。"},{"level":"basic","topic":"總統制的基本特徵","q":"下列何者最符合「總統制」的特色？","choices":["總統由國會多數黨的黨魁出任","內閣閣員多由國會議員兼任","總統由人民選舉產生，同時是國家元首與最高行政首長","國會可以通過不信任案，迫使總統立即去職"],"answer":2,"explain":"總統制強調行政、立法分立制衡，總統由人民選舉產生，兼具國家元首與最高行政首長身分，任期固定。「由國會多數黨黨魁出任」「閣員多由國會議員兼任」是內閣制的特徵；「國會通過不信任案迫使總統去職」的倒閣制度也屬內閣制，總統制的國會不能以不信任投票更換總統。"},{"level":"basic","topic":"倒閣與解散國會","q":"下列何者是內閣制有、而典型總統制沒有的制度設計？","choices":["國會可提出不信任案倒閣，行政首長可呈請解散國會重新改選","國會議員由人民定期改選產生","法院依據法律獨立審判，不受干涉","政府編列年度預算並送交國會審查"],"answer":0,"explain":"「倒閣—解散國會」是內閣制中行政與立法相互對抗、彼此制衡的典型設計。定期改選、司法獨立、預算須經國會審查則是民主國家普遍具備的制度，內閣制與總統制國家都看得到，無法用來區分兩種體制。"},{"level":"basic","topic":"雙首長制（半總統制）","q":"關於「雙首長制（半總統制）」的敘述，下列何者正確？","choices":["國家只有總統一位行政首長，不另設總理或行政院院長","總統由國會選出，僅具象徵性地位而無實權","總統與總理（行政院院長）並存，內閣須向國會負責","國會完全無權過問行政部門的施政作為"],"answer":2,"explain":"雙首長制兼具總統制與內閣制的特色：總統由人民選出並握有實權，同時設有總理（我國為行政院院長）領導內閣，內閣須向國會負責。「只有總統一位行政首長」忽略了雙首長並存的關鍵；「總統由國會選出、僅具象徵地位」描述的是內閣制的虛位元首；「國會完全無權過問行政」則違反行政須受立法監督的原則。"},{"level":"basic","topic":"我國中央政府體制","q":"我國總統由人民直接選舉產生並握有實權，行政院院長由總統任命，行政院須向立法院負責。依此判斷，我國中央政府體制較接近下列何者？","choices":["雙首長制（半總統制）","典型的內閣制","典型的總統制","委員制"],"answer":0,"explain":"總統民選且握有實權、另設行政院院長領導內閣並對立法院負責，正是雙首長制的特徵。典型內閣制的行政首長由國會多數黨產生、元首虛位；典型總統制不會另設對國會負責的行政院院長；委員制（合議制）由委員會集體行使行政權，均與我國體制不符。"},{"level":"basic","topic":"權力分立的意義","q":"民主國家採行「權力分立」制度，最主要的目的是什麼？","choices":["提高政府決策效率，使政策能迅速推行","讓執政者能長期連任，維持政局穩定","減少政府的財政支出與人事開銷","避免權力過度集中而遭濫用，以保障人民的權利"],"answer":3,"explain":"權力分立與制衡的核心目的，是把政府權力分開交由不同機關行使並相互監督，防止權力集中被濫用，以保障人民權利。分權往往會降低決策速度、增加協調成本，因此「提高效率」「減少支出」並非其目的；「讓執政者長期連任」更與定期改選、責任政治的精神背道而馳。"},{"level":"basic","topic":"三權分立學說","q":"主張將政府權力分為行政、立法、司法三權，並使其相互制衡的思想家是下列何者？","choices":["洛克","孟德斯鳩","盧梭","霍布斯"],"answer":1,"explain":"孟德斯鳩在《法意》（論法的精神）中提出行政、立法、司法三權分立與相互制衡的主張，成為近代民主國家政府組織的重要基礎。洛克主張立法權與行政（執行）權的分立；盧梭以主權在民、社會契約的主張聞名；霍布斯主張人民將權力交由統治者，並未提出三權分立。"},{"level":"basic","topic":"行政功能","q":"下列何者屬於政府「行政」功能的表現？","choices":["制定並修改法律","審理民事與刑事案件並作成判決","執行法律、推動公共政策並提供公共服務","解釋憲法並審查法律是否違憲"],"answer":2,"explain":"行政功能是依據法律執行政務、推動公共政策與提供公共服務，例如維護治安、辦理教育與衛生事務。「制定並修改法律」屬立法功能；「審理民刑事案件」與「解釋憲法、審查法律是否違憲」都屬司法功能，後者常被誤認為行政作為。"},{"level":"basic","topic":"立法功能","q":"「制定與修改法律、審查政府預算、監督行政部門施政」主要是下列哪一類機關的功能？","choices":["司法機關","考試機關","行政機關","立法機關"],"answer":3,"explain":"立法機關由民意代表組成，代表人民制定法律、審查預算並監督行政部門，是責任政治的重要環節。司法機關負責審判、考試機關負責公務人員考選與銓敘、行政機關負責執行法律與推動政務，職權各不相同。"},{"level":"basic","topic":"司法功能","q":"政府的「司法」功能主要是指下列何者？","choices":["依據法律審理案件、解決紛爭，以保障人民權利","編列並執行國家的年度預算","提出法律案並完成三讀通過法律","辦理公務人員的考試、任用與銓敘"],"answer":0,"explain":"司法功能是由法院依法獨立審判，處理民事、刑事與行政訴訟等爭議，維護法律秩序並保障人民權利。「編列並執行年度預算」屬行政功能，「提案並三讀通過法律」屬立法功能，「公務人員的考試、任用與銓敘」則是考試機關的職權。"},{"level":"basic","topic":"我國五院架構","q":"我國中央政府除了行政院、立法院、司法院之外，還設有哪兩院，形成五院分立的架構？","choices":["監察院、國防院","考試院、監察院","考試院、審計院","主計院、監察院"],"answer":1,"explain":"我國中央政府採五院分立，除行政、立法、司法三院外，另設考試院與監察院，是在三權分立之外再加上考試權與監察權的設計。國防部、主計總處為行政院所屬機關，審計部則隸屬監察院，都不是獨立的「院」，屬位階錯置的誘答。"},{"level":"basic","topic":"五院職權辨識","q":"下列有關我國中央政府各機關職權的敘述，何者正確？","choices":["監察院負責制定法律並審查中央政府總預算","考試院負責審理人民之間的財產糾紛","司法院負責辦理公務人員的考選與銓敘","立法院可以對行政院院長及各部會首長提出質詢"],"answer":3,"explain":"質詢行政部門首長、監督施政，是立法院代表民意行使的職權。其餘選項都把職權張冠李戴：制定法律與審查總預算是立法院的職權，監察院行使的是彈劾、糾舉、糾正與審計；審理財產糾紛是法院的職權，不屬考試院；公務人員的考選與銓敘屬考試院，不屬司法院。"},{"level":"basic","topic":"內閣制的責任政治","q":"在內閣制國家，內閣若失去國會多數的支持而遭倒閣，最可能出現下列何種情形？","choices":["內閣總辭，或呈請解散國會重新舉行大選","內閣不受任何影響，可依固定任期做滿","由最高法院指定新的內閣成員接替","國家元首得直接宣布解散全國所有政黨"],"answer":0,"explain":"內閣制強調行政向立法負責，一旦倒閣案通過，內閣須總辭下台，或呈請元首解散國會、重新由人民選出國會來決定政局。「不受影響、做滿固定任期」是總統制任期固定的特徵；由法院指定內閣違反司法不介入政治任命的原則；元首宣布解散所有政黨則侵害人民結社自由，並非民主國家的作法。"},{"level":"basic","topic":"主權在民與選舉原則","q":"我國人民透過選舉產生總統與各級民意代表，並採行「普通、平等、直接、無記名」四大選舉原則。這最能展現民主政治的哪一項基本理念？","choices":["政黨政治","依法行政","主權在民","地方自治"],"answer":2,"explain":"由人民選舉產生統治者、政府權力來自人民的委託，正是「主權在民」的展現，四大選舉原則則是落實這項理念的具體制度。政黨政治指政黨競爭與輪替；依法行政指行政機關須依法律行事；地方自治強調地方事務由地方居民自主管理，都不是本題現象的核心理念。"},{"level":"adv","topic":"體制判斷：內閣制","q":"甲國的國家元首是虛位君主，實際掌握行政權的首相由國會多數黨黨魁出任，內閣閣員多由國會議員兼任，內閣施政須向國會負責。依此判斷，甲國最可能採行下列何種政府體制？","choices":["總統制","內閣制","雙首長制","委員制"],"answer":1,"explain":"虛位元首、首相由國會多數黨產生、閣員兼具議員身分、內閣向國會負責，都是內閣制「行政立法合一」的典型特徵。總統制的行政首長由人民選出且不得兼任議員；雙首長制的總統握有實權而非虛位；委員制則由合議的委員會共同行使行政權，均與題幹描述不符。"},{"level":"adv","topic":"體制判斷：總統制","q":"乙國總統由人民選舉產生並領導行政部門，任期固定；目前國會多數席次由與總統立場相左的政黨掌握，但國會無法以不信任投票迫使總統去職，總統也不能解散國會。乙國最可能採行下列何種體制？","choices":["內閣制","雙首長制","委員制","總統制"],"answer":3,"explain":"行政與立法各有民意基礎、任期固定，且沒有倒閣與解散國會的機制，是總統制分立制衡的關鍵特徵；縱使出現行政與立法多數不一致，總統仍可做滿任期。內閣制與雙首長制都設有倒閣機制；委員制由合議的委員會集體行使行政權，沒有單一民選行政首長，均與題幹不符。"},{"level":"adv","topic":"內閣制與總統制比較","q":"比較內閣制與總統制的差異，下列敘述何者正確？","choices":["內閣制的行政首長由國會產生，總統制的行政首長由人民選舉產生","內閣制強調行政與立法分立，總統制強調行政與立法合一","兩種體制的行政首長都必須由國會議員兼任","兩種體制的國會都可以隨時以不信任投票更換行政首長"],"answer":0,"explain":"內閣制的首相（總理）出自國會多數黨，總統制的總統則由人民選舉產生，這是兩者最根本的差異。第二個選項把兩者特徵對調（應為內閣制合一、總統制分立）；第三個選項只符合內閣制閣員多由議員兼任的情形，總統制講求人事分立，行政首長與閣員不得兼任議員；第四個選項的倒閣機制在總統制並不存在。"},{"level":"adv","topic":"司法對立法的制衡","q":"某國國會通過一項法律，人民認為該法侵害其基本權利而循程序提出救濟，最後由該國司法機關認定該法律牴觸憲法而不再適用。這個過程最能說明下列何者？","choices":["行政權對立法權的監督","司法權對立法權的制衡","立法權對司法權的制衡","中央政府對地方自治團體的監督"],"answer":1,"explain":"由司法機關進行違憲審查、宣告法律牴觸憲法而不再適用，是司法權制衡立法權、保障人民基本權利的表現。本案並非行政機關介入，方向也不是立法機關監督法院；中央與地方的權限關係則屬另一個層次的問題，與本題的權力分立面向不同。"},{"level":"adv","topic":"立法對行政的監督","q":"立法院審查中央政府總預算時，刪減某部會所編列的部分經費，並要求該部會首長到院說明政策內容。這項運作最能展現下列何種民主原理？","choices":["地方自治的落實","司法獨立的保障","依法納稅的義務","立法權對行政權的監督與制衡"],"answer":3,"explain":"審查預算與質詢首長，都是民意機關代表人民監督行政部門用錢與施政的方式，屬立法對行政的制衡。地方自治指地方事務由地方自主處理；司法獨立指法院審判不受干涉；依法納稅是人民的義務，三者都不是本題現象的核心。"},{"level":"adv","topic":"體制判斷：雙首長制","q":"丙國憲法規定：總統由人民直接選舉產生，主要負責國防、外交等事務；總理由總統任命，領導內閣推動一般政務並須向國會負責，國會亦得對總理提出不信任案。丙國體制最接近下列何者？","choices":["典型的總統制","典型的內閣制","雙首長制（半總統制）","直接民主制"],"answer":2,"explain":"總統民選且有實權，同時另設向國會負責、可被倒閣的總理，形成行政權由兩位首長分工的架構，正是雙首長制的特徵。典型總統制只有總統一位行政首長且無倒閣制度；典型內閣制的元首為虛位；直接民主制指人民直接決定政策，並非中央政府體制的分類。"},{"level":"adv","topic":"政府三種功能的辨識","q":"下列四項政府作為，何者屬於「立法」功能的行使？","choices":["衛生主管機關公布防疫措施並派員稽查違規","民意機關經三讀程序通過一項保障勞工權益的法律案","法院依法判決一件詐欺案件的被告有罪","政府興建捷運等公共運輸設施並開放民眾使用"],"answer":1,"explain":"制定法律是立法功能的核心，須由民意機關依三讀程序完成。公布防疫措施並稽查、興建公共運輸設施，都是行政機關執行法律、提供公共服務的行政功能；法院判決被告有罪則是司法功能，兩者都容易與立法混淆。"},{"level":"adv","topic":"地方層級的權力分立","q":"某市政府提出的都市更新計畫，須送市議會審議通過後才能實施；市議員也在議會中質詢市長的施政成效。這樣的制度設計最主要說明下列何者？","choices":["權力分立與制衡的原理，同樣運用在地方自治的運作中","地方政府不必受任何監督，可自行決定轄區內所有事務","市議會是地方的最高行政機關，可直接指揮市政府執行","中央政府已將立法權完全移轉給地方政府與議會"],"answer":0,"explain":"地方政府負責執行、地方議會負責議決自治法規與預算並監督施政，正是權力分立與制衡在地方自治層級的展現。「不必受任何監督」忽略了民意機關的監督；「議會是最高行政機關、可直接指揮市政府」混淆了民意機關與行政機關的角色；「中央立法權完全移轉地方」則誤解中央與地方的權限劃分。"},{"level":"adv","topic":"行政向立法負責的程度","q":"小華說：「在內閣制國家，行政首長若失去國會的信任就可能下台；但在總統制國家，行政首長與國會各有民意基礎，任期固定。」關於他的說法，下列評論何者最適當？","choices":["說法錯誤，因為內閣制的行政首長是由人民直接選舉產生","說法錯誤，因為總統制的國會可以隨時以不信任投票更換總統","說法正確，這正反映兩種體制在「行政向立法負責」程度上的差異","說法正確，但兩種體制的行政首長其實都由國會產生"],"answer":2,"explain":"小華的比較正確：內閣制的行政權來自國會信任，失去多數支持即須負政治責任；總統制的行政首長與國會分別由人民授權，任期固定、相互制衡。內閣制的行政首長並非人民直選，而是由國會多數黨產生；總統制沒有不信任投票制度；總統制的總統也不是由國會產生。"},{"level":"adv","topic":"司法獨立與權力分立的界線","q":"甲政黨在國會取得多數席次後，有人主張「為提升效率，應由國會直接指揮法院的審判方向」。從權力分立的角度來看，下列評論何者最適當？","choices":["可行，因為國會代表民意，民意最大，法院應予配合","可行，因為法院本來就隸屬於國會，接受指揮理所當然","不可行，但只要行政部門也表示同意，即可依此實施","不可行，因為法院應依法獨立審判，若受國會指揮將破壞權力分立與制衡"],"answer":3,"explain":"司法獨立是權力分立的重要內涵，法官依據法律獨立審判，才能公正保障人民權利；若由立法機關指揮審判，等於權力集中，制衡機制將失效。以「民意最大」為由架空司法，忽略了憲政對多數權力的限制；法院並不隸屬於國會；權力分立也不是機關之間相互同意就能排除的。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

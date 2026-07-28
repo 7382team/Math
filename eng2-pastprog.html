@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>過去進行式 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng2-pastprog",
+  "title": "過去進行式",
+  "subject": "英文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "文法總複習",
+  "tag": "was/were + V-ing",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>過去進行式</h1><div class="sub">英文 · was/were + V-ing · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"was/were + V-ing 基本結構","q":"My brother ___ his homework when I got home last night.","choices":["was doing","were doing","was did","is doing"],"answer":0,"explain":"過去進行式的結構是「was/were + V-ing」，表示過去某個時間點正在進行的動作。主詞 My brother 是單數第三人稱，be 動詞過去式要用 was，後面接 doing，故選 was doing。(B) were 只能配複數主詞或 you。(C) was did 錯誤，be 動詞後面只能接 V-ing，不能接動詞過去式。(D) is doing 是現在進行式，與 last night 這個過去時間點矛盾。"},{"level":"basic","topic":"主詞與 be 動詞的一致","q":"The students ___ singing in the music room at that time.","choices":["was","were","are","being"],"answer":1,"explain":"主詞 The students 是複數，過去進行式的 be 動詞要用 were，形成 were singing。(A) was 只能配單數主詞（I / he / she / it 等）。(C) are 是現在式，與 at that time（過去某一時刻）不合。(D) being 不是限定動詞，不能單獨當句子的主要動詞。"},{"level":"basic","topic":"V-ing 拼字（重複字尾子音）","q":"The children ___ in the pool at three o'clock yesterday afternoon.","choices":["was swimming","were swiming","were swimming","were swim"],"answer":2,"explain":"The children 是複數，be 動詞過去式用 were；swim 是「短母音＋單子音」結尾，加 ing 前要重複字尾子音 m，變成 swimming，故選 were swimming。(A) was 不能配複數主詞。(B) swiming 少了一個 m，拼字錯誤。(D) were swim 缺少 ing，動詞形式錯誤。"},{"level":"basic","topic":"V-ing 拼字（去 e 加 ing）","q":"Amy ___ a letter to her pen pal when I called her.","choices":["were writing","was writeing","was write","was writing"],"answer":3,"explain":"Amy 是單數主詞，be 動詞過去式用 was；write 字尾是不發音的 e，加 ing 時要去 e，變成 writing，故選 was writing。(A) were 不能配單數主詞 Amy。(B) writeing 沒有去掉 e，拼字錯誤。(C) was write 錯誤，be 動詞後面必須接 V-ing。"},{"level":"basic","topic":"過去進行式否定句（wasn't）","q":"Tom ___ studying at nine last night. He was playing computer games.","choices":["didn't","wasn't","weren't","isn't"],"answer":1,"explain":"過去進行式的否定是在 be 動詞後面加 not，主詞 Tom 是單數，所以用 wasn't studying。(A) didn't 是過去簡單式的否定助動詞，後面要接原形動詞（didn't study），不能接 V-ing。(C) weren't 用於複數主詞或 you。(D) isn't 是現在式，與 last night 的過去時間不合。"},{"level":"basic","topic":"Yes/No 疑問句（be 動詞移前）","q":"___ you waiting for the bus at seven this morning?","choices":["Did","Do","Were","Was"],"answer":2,"explain":"過去進行式的疑問句要把 be 動詞移到主詞前面：Was/Were + 主詞 + V-ing？主詞 you 一律搭配 were，故選 Were。(A) Did 和 (B) Do 是助動詞，後面要接原形動詞（Did you wait...），不能接 V-ing。(D) Was 不能與 you 連用。"},{"level":"basic","topic":"Wh- 疑問句中的動詞形式","q":"A: What was your sister ___ when the phone rang? B: She was reading a comic book.","choices":["do","did","does","doing"],"answer":3,"explain":"句中已經有 be 動詞 was，過去進行式的結構是 was/were + V-ing，所以空格要填 doing。(A) do 是原形、(B) did 是過去式、(C) does 是第三人稱單數現在式，這三者都不能直接接在 be 動詞後面；若要用原形 do，句子必須改成 What did your sister do...？"},{"level":"basic","topic":"While + 過去進行式（背景動作）","q":"While I ___ dinner, my phone rang.","choices":["was cooking","cooks","am cooking","was cook"],"answer":0,"explain":"While 引導的子句用過去進行式，表示「當時持續進行中的背景動作」，被打斷的短暫動作 rang 則用過去簡單式，故選 was cooking。(B) cooks 是現在簡單式第三人稱單數，時態與人稱都不合（主詞是 I）。(C) am cooking 是現在進行式，與過去時間 rang 矛盾。(D) was cook 動詞形式錯誤，be 動詞後面要接 V-ing。"},{"level":"basic","topic":"When + 過去簡單式，主句用過去進行式","q":"When I opened the door, my dog ___ on my bed.","choices":["is sleeping","sleeping","was sleeping","were sleeping"],"answer":2,"explain":"When 子句用過去簡單式表示「短暫發生的動作」（I opened the door），主要子句用過去進行式表示「那一刻正在進行的動作」，故選 was sleeping。(A) is sleeping 是現在進行式，與 opened 的過去時態不一致。(B) sleeping 只是分詞，前面缺少 be 動詞，不能單獨當主要動詞。(D) were 不能配單數主詞 my dog。"},{"level":"basic","topic":"複數主詞 + were + V-ing","q":"Ann and I ___ pictures in the classroom at that time.","choices":["was drawing","are drawing","were draw","were drawing"],"answer":3,"explain":"主詞 Ann and I 相當於 we，是複數，be 動詞過去式用 were，後面接 V-ing，故選 were drawing。(A) was 只能配單數主詞。(B) are drawing 是現在進行式，與 at that time 的過去語境不符。(C) were draw 錯誤，be 動詞後面必須接 V-ing，不能接原形動詞。"},{"level":"basic","topic":"簡答句","q":"A: Was David studying in his room? B: No, ___. He was watching TV in the living room.","choices":["he wasn't","he didn't","he weren't","he isn't"],"answer":0,"explain":"問句用哪一個 be 動詞或助動詞發問，簡答就用同一個回答。問句是 Was David...？所以答 No, he wasn't。(B) he didn't 用於 Did 開頭的問句。(C) he weren't 主詞與 be 動詞不一致，he 要配 wasn't。(D) he isn't 是現在式，時態不一致。"},{"level":"basic","topic":"V-ing 拼字（ie 改 y）","q":"The cat ___ on the sofa when I came in.","choices":["was lieing","was lying","were lying","was lie"],"answer":1,"explain":"lie（躺）字尾是 ie，加 ing 時要把 ie 改成 y，變成 lying；主詞 The cat 是單數，be 動詞用 was，故選 was lying。(A) lieing 拼字錯誤。(C) were 不能配單數主詞 The cat。(D) was lie 錯誤，be 動詞後面必須接 V-ing。"},{"level":"basic","topic":"過去進行式否定句（weren't）","q":"We ___ playing basketball at that time. We were doing our homework in the library.","choices":["wasn't","aren't","didn't","weren't"],"answer":3,"explain":"主詞 We 是複數，過去進行式的否定是 were not（weren't）+ V-ing，故選 weren't。(A) wasn't 只能配單數主詞。(B) aren't 是現在式，與 at that time 的過去語境不符。(C) didn't 後面必須接原形動詞（didn't play），不能接 V-ing。"},{"level":"basic","topic":"疑問句中的動詞形式","q":"Were the boys ___ soccer on the playground after school?","choices":["play","played","playing","plays"],"answer":2,"explain":"句首已有 be 動詞 Were，過去進行式疑問句的結構是 Were + 主詞 + V-ing，故空格填 playing。(A) play 是原形，只能接在助動詞 did 之後（Did the boys play...）。(B) played 是過去式，不能接在 be 動詞後面。(D) plays 是現在式第三人稱單數，形式與時態都不符。"},{"level":"adv","topic":"while 子句與主句的時態搭配","q":"While Mary was walking to school, she ___ an old friend.","choices":["was meeting","met","meets","was met"],"answer":1,"explain":"While + 過去進行式表示「持續中的背景動作」，在這個過程中「突然發生」的短暫動作要用過去簡單式，故選 met。(A) was meeting 表示長時間持續，但「遇見」是瞬間動作，不能用進行式。(C) meets 是現在式，與 was walking 的過去時態不一致。(D) was met 是被動語態，意思變成「她被遇見」，語意錯誤。"},{"level":"adv","topic":"過去進行式與過去簡單式並用","q":"Kevin ___ his bike home when it suddenly ___ to rain.","choices":["was riding; started","rode; was starting","was riding; was starting","rode; started"],"answer":0,"explain":"典型句型：持續中的長動作用過去進行式，被 when 引導、突然發生的短動作用過去簡單式，故選 was riding; started。(B) 長短動作顛倒，「開始下雨」是瞬間動作，不宜用進行式。(C) 兩個都用進行式，無法表現「突然打斷」的語意，也與 suddenly 不合。(D) 兩個都用過去簡單式，變成「先騎車再下雨」的先後事件，失去「當時正在騎車」的語意。"},{"level":"adv","topic":"句子改錯（選出正確句）","q":"Which sentence is correct?","choices":["He was watched TV at that time.","They were play games all afternoon.","I was studying English when you called me.","She were reading a book at nine last night."],"answer":2,"explain":"正確答案是 I was studying English when you called me.：主詞 I 配 was，後接 V-ing，when 子句用過去簡單式 called，完全符合過去進行式的用法。(A) was watched 是被動語態的形式，過去進行式應為 was watching。(B) were play 錯誤，be 動詞後面要接 V-ing（were playing）。(D) She 是單數主詞，應該用 was reading，不能用 were。"},{"level":"adv","topic":"V-ing 拼字改錯","q":"Which sentence is WRONG?","choices":["The dog was runing after the cat.","She wasn't listening to the teacher.","Were they waiting outside the store?","We were having lunch at noon."],"answer":0,"explain":"run 是「短母音＋單子音」結尾，加 ing 前必須重複字尾 n，正確拼法是 running，所以 was runing 拼字錯誤。(B) listen 直接加 ing 成為 listening，否定用 wasn't，正確。(C) 疑問句把 were 移到主詞前，waiting 拼字正確。(D) have 去 e 加 ing 成為 having，主詞 We 配 were，正確。"},{"level":"adv","topic":"狀態動詞不用進行式","q":"I ___ Peter's phone number, so I couldn't call him last night.","choices":["wasn't knowing","am not knowing","was not knowing","didn't know"],"answer":3,"explain":"know 屬於「狀態動詞」，表示心理狀態而非進行中的動作，一般不用進行式；過去的否定要用 didn't + 原形動詞，故選 didn't know。(A) 和 (C) 都把狀態動詞誤用成過去進行式。(B) 除了誤用進行式，時態也是現在式，與 last night 不符。類似的狀態動詞還有 like、want、need、have（擁有）、love 等。"},{"level":"adv","topic":"對話語境中的時態判斷","q":"A: I called you at nine last night, but nobody answered. B: Sorry, I ___ a shower at that time.","choices":["take","was taking","am taking","took"],"answer":1,"explain":"at that time 指「你打電話的那個時間點」，要說明當時正在做的事，必須用過去進行式 was taking，才能解釋為什麼沒接電話。(A) take 是原形，句子缺少時態。(C) am taking 是現在進行式，與 last night 的過去語境矛盾。(D) took 只陳述一個完成的動作，無法表達「電話響時人正在洗澡」的同時性，語意不自然。"},{"level":"adv","topic":"句意判斷（同義改寫）","q":"Which sentence has almost the same meaning as \"I was doing my homework when my friend arrived.\"?","choices":["I finished my homework, and then my friend arrived.","My friend arrived while I was doing my homework.","My friend was doing his homework when I arrived.","I started to do my homework after my friend arrived."],"answer":1,"explain":"原句的意思是「朋友到達時，我正在寫功課」：長動作用過去進行式、短動作用過去簡單式。改寫成 while + 過去進行式（My friend arrived while I was doing my homework.）意思完全相同。(A) 表示功課寫完後朋友才來，時間順序不同。(C) 把主詞對調，變成朋友在寫功課，語意錯誤。(D) 表示朋友來了之後我才開始寫，與原句相反。"},{"level":"adv","topic":"while 表示兩個動作同時進行","q":"My mom was cooking dinner while my dad ___ the dishes.","choices":["was washing","washes","is washing","were washing"],"answer":0,"explain":"當過去同一段時間裡有兩個動作同時持續進行時，while 前後兩個子句都可以用過去進行式；主詞 my dad 是單數，所以用 was washing。(B) washes 是現在簡單式，與主句 was cooking 的過去時態不一致。(C) is washing 是現在進行式，時態同樣不合。(D) were 不能配單數主詞 my dad。"},{"level":"adv","topic":"Wh- 疑問句語序","q":"Which question is correct?","choices":["What you were doing at that time?","What did you doing at that time?","What were you do at that time?","What were you doing at that time?"],"answer":3,"explain":"Wh- 疑問句的正確語序是「疑問詞 + be 動詞 + 主詞 + V-ing」，所以 What were you doing at that time? 正確。(A) 沒有把 were 移到主詞前面，語序錯誤。(B) did 與 doing 不能並用，助動詞 did 後面要接原形（What did you do...？）。(C) were 後面必須接 V-ing，不能接原形 do。"},{"level":"adv","topic":"現在進行式 vs 過去進行式","q":"It's eight o'clock now. Jack ___ TV in the living room. Two hours ago, he ___ dinner with his family.","choices":["was watching; is having","watches; was having","is watching; was having","is watching; is having"],"answer":2,"explain":"第一句的時間是 now，表示此刻正在進行，用現在進行式 is watching；第二句的時間是 two hours ago，表示過去某時間點正在進行，用過去進行式 was having，故選 is watching; was having。(A) 兩個時態顛倒。(B) watches 是現在簡單式，表示習慣而非「此刻正在」，與 now 不合。(D) 第二格用現在進行式，與 two hours ago 的過去時間矛盾。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

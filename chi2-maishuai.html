@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>麥帥為子祈禱文 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi2-maishuai",
+  "title": "麥帥為子祈禱文",
+  "subject": "國文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "翻譯文學·應用文",
+  "ready": true,
+  "author": "麥克阿瑟（吳奚真 譯）"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>麥帥為子祈禱文</h1><div class="sub">國文 · 翻譯文學·應用文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"字詞解釋","q":"課文末段以「虛懷若谷」形容真實的智慧。「虛懷若谷」的意思是：","choices":["內心空虛失落，找不到人生的寄託","志向高遠壯闊，有如深谷幽壑一般","胸懷謙虛開闊，能廣納他人的意見","待人冷淡疏遠，不願與他人往來"],"answer":2,"explain":"「虛懷」指心胸謙虛，「若谷」以山谷的空曠深廣作比方，合起來形容人謙沖自牧、能容納不同意見。課文用它說明真實的智慧：真正有智慧的人，反而最不自滿。"},{"level":"basic","topic":"字詞解釋","q":"課文以「樸實無華」形容真實的偉大。「樸實無華」是指：","choices":["質樸實在，不加修飾也不誇耀","生活貧困，缺乏基本的物質資源","外表華美動人，內在卻空洞無物","言語笨拙遲鈍，不擅長表達心意"],"answer":0,"explain":"「樸」是質樸，「華」是華麗浮誇。「樸實無華」指本質純樸真實，不需要外在的裝點。課文藉此說明：真正偉大的人往往平實無華，不靠排場來抬高自己。"},{"level":"basic","topic":"字詞解釋","q":"課文以「溫和蘊藉」形容真實的力量，其中「蘊藉」一詞的意思是：","choices":["積蓄財物，不肯輕易動用","隱藏實力，等待時機報復","心情鬱悶，久久難以排解","含蓄寬厚，不隨意顯露鋒芒"],"answer":3,"explain":"「蘊」是蓄積，「藉」有寬厚含容之意，「蘊藉」形容涵養深厚而含蓄不外露。課文說真正的力量是「溫和蘊藉」的，意即愈有力量的人愈不需要張牙舞爪。"},{"level":"basic","topic":"字詞解釋","q":"課文祈求上帝讓兒子接受困難與挑戰的磨練和「策勵」，「策勵」在此的意思是：","choices":["嚴厲責備並加以懲罰","督促勉勵，使人向上奮發","溫柔保護且細心照顧","巧言引誘而使人順從"],"answer":1,"explain":"「策」本指趕馬的鞭子，引申為督促；「勵」是勉勵。「策勵」即鞭策勉勵，使人不敢懈怠而力求上進。父親不求兒子安逸，正是希望困難能成為鞭策他成長的力量。"},{"level":"basic","topic":"字詞解釋","q":"課文祈求上帝不要引導兒子走上「安逸舒適的道路」，句中「安逸」的意思是：","choices":["安靜隱居，遠離塵世","安分守己，不惹是非","安全牢靠，沒有危險","安閒舒適，沒有勞苦"],"answer":3,"explain":"「安逸」指生活安閒舒適、無須辛勞。父親不願兒子走上這樣的路，因為過於順遂的環境反而磨不出堅強的意志與體察他人的能力。"},{"level":"basic","topic":"文學常識","q":"本文原作者麥克阿瑟的身分是：","choices":["英國首相，領導國人度過第二次世界大戰","美國總統，曾發表著名的〈蓋茲堡演說〉","美國五星上將，第二次世界大戰時任盟軍太平洋戰區統帥","法國飛行員兼作家，著有《小王子》"],"answer":2,"explain":"麥克阿瑟（Douglas MacArthur，1880—1964）為美國五星上將，西點軍校出身，二次大戰時擔任盟軍太平洋戰區統帥，韓戰時任聯合國軍統帥，名言「老兵不死，只是逐漸凋零」廣為流傳。至於領導英國度過二戰的是邱吉爾，發表〈蓋茲堡演說〉的是林肯，《小王子》的作者則是法國的聖修伯里。"},{"level":"basic","topic":"文學常識","q":"本文的譯者吳奚真，其身分背景是：","choices":["臺灣的大學教授兼翻譯家，譯筆典雅流暢","清代考據學者，以訓詁校勘見長","現代鄉土小說家，作品多描寫農村","美籍華裔物理學家，業餘從事散文寫作"],"answer":0,"explain":"吳奚真曾任教於臺灣師範大學，長期從事英文名著中譯，是著名的翻譯家。他的譯筆兼顧原意與中文語感，本文大量運用整齊的四字語詞，正是其譯筆特色的展現。"},{"level":"basic","topic":"文體知識","q":"就文章體裁而言，「麥帥為子祈禱文」應歸入下列何者？","choices":["記敘文，主要記述父子相處的往事","應用文中的祈禱文，並兼具抒情色彩","議論文，逐層論證教育子女的方法","小說，虛構人物與情節以寄託理想"],"answer":1,"explain":"祈禱文是向神明祈求時所使用的文字，有其固定的對象與用途，屬應用文的一類。本文通篇以「求你……」的口吻向上帝陳訴，字裡行間流露父親對兒子的深情與期許，因此又帶有濃厚的抒情性質。"},{"level":"basic","topic":"文意理解","q":"本文一開頭呼喚「主啊！」，這裡的「主」所指的對象是：","choices":["一國之君，即當時的國家元首","軍隊中職位最高的長官","兒子將來就讀學校的師長","上帝，即基督宗教信仰中的造物主"],"answer":3,"explain":"祈禱文的傾訴對象是神。作者為基督徒，全文以「求你塑造我的兒子」向上帝陳訴心願，可知文中的「主」即上帝，而非任何現實中的長官或師長。"},{"level":"basic","topic":"文意理解","q":"課文提到父親祈求上帝引導兒子認識上帝，同時讓兒子明白：認識自己才是一切知識的根基。這樣的說法是指：","choices":["唯有先認清自己，才能奠定真正的智慧與學問","知識必須靠大量閱讀書本才能累積而成","了解別人的長處，遠比了解自己更為重要","學問的高低取決於天生的資質，努力並無用處"],"answer":0,"explain":"「基石」是建築的基礎石塊，比喻根本。人若看不清自己的能力與限度，所學再多也只是空談；唯有先有自知之明，知識才能真正落實為智慧。此意也與前文「堅強到能認識自己的軟弱」互相呼應。"},{"level":"basic","topic":"文意理解","q":"父親在祈求兒子具備種種美德之後，又祈求上帝賜給他充分的幽默感，用意是：","choices":["希望兒子善於說笑，成為眾人注目的焦點","希望兒子能用玩笑話推卸自己應負的責任","希望兒子不致把自己看得太重，能以豁達從容的態度面對人生","希望兒子懂得譏諷他人短處，在爭辯中取勝"],"answer":2,"explain":"一個處處要求自己、事事認真的人，若缺少幽默，容易緊繃苛刻，也容易自視過高。幽默感能讓人保持彈性與寬容，是嚴謹品格的必要調劑，因此父親把它與「謙遜」並列，作為諸美德之外的補充。"},{"level":"basic","topic":"文意理解","q":"父親祈求兒子在「誠實的失敗」之中仍能自豪不屈，在勝利之中則能謙遜溫和。這樣的期許是指：","choices":["失敗時應設法掩飾過錯，勝利時則應廣為宣揚","盡力而為的失敗不必羞愧，獲勝時也不可驕矜自滿","無論失敗或勝利，都應該保持沉默、不動聲色","失敗是可恥的事，唯有勝利才值得受人肯定"],"answer":1,"explain":"「誠實的失敗」指全力以赴、光明磊落卻仍未成功，這樣的失敗無愧於心，故能自豪而不屈。相對地，勝利時容易得意忘形，因此更要謙遜溫和。一敗一勝並列，形成鮮明的對照。"},{"level":"basic","topic":"文意理解","q":"全文結尾，父親說：唯有兒子具備上述種種美德之後，身為父親的他才敢低聲說自己這一生沒有白過。這段話最主要傳達的是：","choices":["父親自認戰功彪炳，一生的成就足以自豪","父親感嘆人生短暫，許多理想都來不及完成","父親期望兒子將來為自己爭光，光耀家族門楣","父親把自己一生的價值，繫於兒子人格的養成"],"answer":3,"explain":"父親不以自己的功業自許，而把生命是否值得，寄託在兒子能否成為堅強、謙遜而富同情心的人。結語又以「低聲說道」的姿態呈現，語氣謙抑，情感卻格外深摯。"},{"level":"basic","topic":"文意理解","q":"課文祈求上帝引導兒子，使他能在「風暴」之中站立起來。「風暴」在文中比喻的是：","choices":["人生中的困境與嚴酷考驗","戰場上猛烈的砲火攻擊","突然來襲的自然災害","家人之間激烈的爭吵"],"answer":0,"explain":"這一段談的正是困難與挑戰的磨練，「風暴」承接上文，以具體的自然現象比喻抽象的人生逆境。能在風暴中站立，就是在艱難中不被擊倒，與下文「對失敗的人加以同情」共同構成磨練的意義。"},{"level":"adv","topic":"主旨深究","q":"下列何者最能概括本文的主旨？","choices":["描寫戰場的險惡艱辛，勸告世人珍惜和平","藉向上帝祈求，表達父親盼望兒子在磨練中養成堅強、謙遜等健全品格的深切期許","敘述作者與兒子相處的種種溫馨往事","說明祈禱的正確方法，強調宗教信仰對人生的重要"],"answer":1,"explain":"本文通篇不敘事、不論理，而是以一連串「求你……」的祈願，具體列出父親希望兒子擁有的品格。祈禱只是形式，父愛與品格教育的理想才是真正的內容。"},{"level":"adv","topic":"修辭手法","q":"「求你塑造我的兒子」這一句在文中一再出現，其表達效果是：","choices":["因為作者詞彙貧乏，只好重複使用相同的語句","為了湊足篇幅，使文章看起來完整而有分量","藉句式的反覆形成迴環的節奏，強化祈求的殷切與莊重","表示作者懷疑上帝是否應允，因此反覆確認"],"answer":2,"explain":"相同語句間隔出現，屬「類疊」中的類句（複沓）。它使全文段落分明，讀來如禱詞般迴環往復，一次次的重複正凸顯父親請求之懇切，也營造出宗教祈禱特有的莊嚴語調。"},{"level":"adv","topic":"修辭手法","q":"課文祈求兒子「堅強」到能認識自己的「軟弱」、「勇敢」到能面對自己的「懼怕」，這種寫法主要運用了何種修辭？","choices":["映襯，將堅強與軟弱、勇敢與懼怕兩相對照並列","譬喻，用具體的事物來比方抽象的道理","誇飾，故意誇大事實以加強讀者的印象","設問，先提出疑問再由作者自行作答"],"answer":0,"explain":"把意義相反的詞語放在一起彼此襯托，是「映襯」（對比）。「堅強／軟弱」「勇敢／懼怕」相反相成，說明真正的堅強不是否認弱點，而是有承認弱點的勇氣，語意因對照而更加深刻。"},{"level":"adv","topic":"修辭手法","q":"文末並列「樸實無華」、「虛懷若谷」、「溫和蘊藉」三個結構相同的四字語詞，分別說明真實的偉大、真實的智慧與真實的力量。這種寫法主要屬於：","choices":["層遞","頂真","借代","排比"],"answer":3,"explain":"三組語詞字數相同、結構一致、語氣一貫地並列，屬「排比」，能使文氣充沛、節奏整齊。三者間並無由小到大或由淺入深的先後次序，故不是層遞；也未以前句的末字作為後句的首字，故非頂真。"},{"level":"adv","topic":"修辭手法","q":"本文開篇即以「主啊！」直接呼喚並非眼前可見的上帝，並向祂傾吐心願。這種寫法所運用的修辭是：","choices":["摹寫","呼告","轉品","雙關"],"answer":1,"explain":"行文中撇開讀者，直接對不在眼前的人、事、物呼喚並傾訴，稱為「呼告」。祈禱文以呼告開篇，既確立了全文向神陳訴的語氣，也使情感的表達更為直接而懇切。"},{"level":"adv","topic":"人物形象","q":"由本文的內容推知，作者是一位怎樣的父親？","choices":["重視品格甚於功名，寧願孩子在磨練中成長茁壯","溺愛孩子，凡事都替他安排妥當，不忍他受苦","嚴厲專制，要求孩子像士兵一樣絕對服從命令","好高騖遠，只期待孩子出人頭地以滿足自己"],"answer":0,"explain":"作者身為名將，卻不求兒子繼承武功或飛黃騰達，反而祈求上帝別讓兒子走上安逸的路。他所列舉的全是內在修養，可見他是一位眼光深遠、以人格為重的父親。"},{"level":"adv","topic":"翻譯文學","q":"關於本文屬「翻譯文學」的說明，下列敘述最恰當的是：","choices":["翻譯文學必須逐字直譯，連語序也不可以調整","翻譯作品只是語言練習的成果，不能算是文學","原作以英文寫成，經譯者以中文再現，譯筆兼顧原意與中文語感，故四字語詞運用純熟","本文原以文言文寫成，後來才由吳奚真譯為白話文"],"answer":2,"explain":"翻譯文學是外國文學經翻譯後進入本國的作品，優秀的譯者須在「信、達、雅」之間求得平衡。吳奚真以「樸實無華」「虛懷若谷」「溫和蘊藉」等中文語詞對譯，既保留原意，又切合中文的節奏之美。"},{"level":"adv","topic":"主旨深究","q":"課文希望兒子在指揮、領導別人之前，先能夠駕馭自己。這樣的期許最主要說明了什麼道理？","choices":["領導的權威是天生的，與能否自制毫無關係","懂得自我約束的人個性拘謹，並不適合擔任領導者","領導者必須先取得眾人的信任，才有資格發號施令","唯有能管好自己的人，才有資格去領導別人"],"answer":3,"explain":"這是「律己而後律人」的道理。若自己都放縱失序，發出的命令便難以服人；先能節制自己的言行與欲望，領導才有真正的說服力。此句也呼應全文重視內在修養甚於外在權位的立場。"},{"level":"adv","topic":"主旨深究","q":"父親不求兒子安逸，反而祈求上帝讓他在困難與挑戰中受到磨練。這樣的教育觀所著眼的是：","choices":["人生的價值就在於避開一切可能的風險","逆境既能鍛鍊堅毅的意志，也能培養體恤他人的同理心","孩子必須在父母的保護之下，才可能順利成長","只要年輕時吃過苦，將來必定能飛黃騰達"],"answer":1,"explain":"課文接著說，要讓兒子藉此學習在逆境中站立，也學習對失敗的人加以同情。可見磨練有雙重意義：對己是鍛鍊意志，對人則因親歷艱難而生出同理心。至於把吃苦與功成名就畫上必然的等號，並非文意。"},{"level":"adv","topic":"比較分析","q":"若將本文與朱自清〈背影〉並列閱讀，兩篇表達父愛的方式差異為何？","choices":["兩篇都以敘事寫父親的行動，情感表達方式相同","〈背影〉以直接祈願坦露心意，本文則以生活事件烘托","〈背影〉藉父親買橘子等具體事件側寫父愛，本文則以直接祈求的方式坦露期許","兩篇同為翻譯文學，寫作背景也十分相近"],"answer":2,"explain":"〈背影〉屬記敘抒情，父愛藏在攀爬月臺、買橘子等動作細節中，含蓄而深沉；本文屬祈禱文，一句句「求你……」把期望和盤托出，直接而莊重。兩者一含蓄、一坦率，卻同樣真摯。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

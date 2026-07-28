@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我國的中央政府 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ2-central",
+  "title": "我國的中央政府",
+  "subject": "公民",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3課 我國的中央政府",
+  "tag": "五院職權·總統職權",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>我國的中央政府</h1><div class="sub">公民 · 五院職權·總統職權 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"國家的四要素","q":"構成一個國家必須具備的四個基本要素，是下列哪一組？","choices":["人民、領土、主權、政府","人民、政黨、軍隊、憲法","領土、貨幣、語言、國旗","政府、國會、法院、警察"],"answer":0,"explain":"國家四要素為人民、領土、主權、政府，四者缺一不可。政黨、軍隊、貨幣、語言、國旗雖與國家運作或象徵有關，卻不是構成國家的必要要素；國會、法院、警察則是政府組織的一部分，不能與政府並列為獨立要素。"},{"level":"basic","topic":"行政院—最高行政機關","q":"依我國憲法規定，全國最高行政機關是下列何者？","choices":["立法院","司法院","行政院","考試院"],"answer":2,"explain":"行政院是我國最高行政機關，負責推動與執行國家政策，並向立法院負責。立法院是最高立法機關、司法院掌理審判與憲法解釋、考試院掌理考選銓敘，三者皆非行政權的最高機關，屬於混淆五院職權的誘答。"},{"level":"basic","topic":"立法院—最高立法機關","q":"代表人民行使立法權，被稱為我國最高立法機關的是下列何者？","choices":["監察院","立法院","考試院","司法院"],"answer":1,"explain":"立法院由人民選出的立法委員組成，代表民意行使立法權，是最高立法機關。監察院行使彈劾、糾舉與審計權，考試院掌考選銓敘，司法院掌審判與釋憲，都不制定法律，是常見的職權張冠李戴誘答。"},{"level":"basic","topic":"司法院—審判與釋憲","q":"掌理民事、刑事、行政訴訟之審判與公務員懲戒，並由大法官解釋憲法的機關是下列何者？","choices":["監察院","考試院","行政院","司法院"],"answer":3,"explain":"司法院為最高司法機關，掌理審判、公務員懲戒，並由大法官行使解釋憲法之權。監察院是監督公務人員違法失職，考試院負責公務人員考選銓敘，行政院負責政策執行，均不具審判與釋憲權。"},{"level":"basic","topic":"考試院—考選與銓敘","q":"負責公務人員考試選拔與任用資格審定（銓敘）等事項的最高機關是下列何者？","choices":["行政院","立法院","監察院","考試院"],"answer":3,"explain":"考試院掌理公務人員的考選與銓敘，確保文官依專業能力任用。行政院是政策執行與用人機關，立法院負責立法與預算審議，監察院負責事後監督公務人員，都不是舉辦國家考試、審定任用資格的機關。"},{"level":"basic","topic":"監察院—彈劾、糾舉與審計","q":"依憲法規定，行使彈劾、糾舉及審計權，以監督公務人員與政府財政的機關是下列何者？","choices":["監察院","司法院","立法院","考試院"],"answer":0,"explain":"監察權由監察院行使，包括彈劾、糾舉與審計。司法院是審判機關；立法院行使的是立法權與預算審議、質詢權，並非彈劾一般公務人員；考試院只管考選銓敘，把立法院與監察院職權混為一談是典型誘答。"},{"level":"basic","topic":"總統—由人民直接選舉產生","q":"關於我國總統的產生方式，下列敘述何者正確？","choices":["由立法院全體立法委員投票選出","由中華民國自由地區人民直接選舉產生","由各縣市首長組成的委員會推選","由司法院大法官會議推舉產生"],"answer":1,"explain":"我國總統、副總統由中華民國自由地區人民直接選舉產生，展現主權在民的精神。由國會選出屬於間接選舉的他國制度或舊制；由地方首長推選、大法官推舉皆無憲法依據，是杜撰的誘答。"},{"level":"basic","topic":"總統—任期與連任","q":"依憲法增修條文，我國總統的任期與連任規定為何？","choices":["任期二年，得無限期連任","任期六年，不得連任","任期四年，連選得連任一次","任期四年，完全不得連任"],"answer":2,"explain":"總統任期四年，連選得連任一次，兼顧施政延續與防止長期執政。其他選項不是任期年數錯誤，就是把「得連任一次」誤寫成完全不得連任或無限期連任。"},{"level":"basic","topic":"行政院院長的產生方式","q":"依憲法增修條文，行政院院長是如何產生的？","choices":["由全體立法委員互選產生","由總統任命","由人民直接選舉產生","由行政院各部會首長互相推舉產生"],"answer":1,"explain":"行政院院長由總統任命。立法委員互選產生的是立法院院長；人民直接選舉產生的是總統、副總統與各級民意代表；各部會首長是由行政院院長提請總統任命，不可能反過來推舉院長。"},{"level":"basic","topic":"立法委員的產生方式","q":"我國立法委員是透過下列何種方式產生？","choices":["由人民依選舉產生","由總統任命","由行政院院長遴選聘任","由各政黨主席直接指派"],"answer":0,"explain":"立法委員由人民選舉產生，代表民意監督政府，符合主權在民原則。由總統任命或行政院院長遴選，會使立法權失去獨立性；不分區立委雖依政黨得票比例分配席次，仍須經由人民投票，並非政黨主席直接指派。"},{"level":"basic","topic":"總統職權—軍事統帥權","q":"依憲法規定，下列何者屬於總統的職權？","choices":["審查中央政府總預算案","統率全國陸海空軍","解釋憲法與統一解釋法令","辦理公務人員高普考試"],"answer":1,"explain":"總統是國家元首，並統率全國陸海空軍（統帥權）。審查總預算案是立法院的職權，解釋憲法與統一解釋法令是司法院大法官的職權，辦理國家考試是考試院的職權，都被誤植到總統身上。"},{"level":"basic","topic":"立法院—預算案審議權","q":"中央政府的年度總預算案，須送交下列哪一個機關審議通過後才能執行？","choices":["監察院","考試院","立法院","司法院"],"answer":2,"explain":"預算案由行政院編列，須送立法院審議通過，這是立法權監督行政權的重要方式。監察院負責的是事後審計（審核決算），並非審議預算；考試院與司法院對總預算案都沒有審議權。"},{"level":"basic","topic":"總統—公布法律","q":"法律案經立法院三讀通過後，依憲法規定應由下列何者公布？","choices":["立法院院長","司法院院長","行政院院長","總統"],"answer":3,"explain":"法律案經立法院通過後，由總統公布施行。立法院院長只負責主持議事，司法院院長掌理司法行政，行政院院長負責執行法律並副署，都不是公布法律的主體。"},{"level":"basic","topic":"總統—緊急命令權","q":"國家或人民遭遇重大緊急危難時，依憲法增修條文，經行政院會議決議後得發布緊急命令的是下列何者？","choices":["總統","立法院院長","監察院院長","司法院大法官"],"answer":0,"explain":"緊急命令由總統經行政院會議決議後發布，且發布後仍須送請立法院追認，可見即使是緊急權力也受到制衡。立法院院長、監察院院長並無此權；大法官負責解釋憲法，不發布命令。"},{"level":"basic","topic":"總統—外交與締約權","q":"代表國家對外締結條約、宣戰及媾和的職權，依憲法屬於下列何者？","choices":["行政院院長","立法院院長","總統","監察院院長"],"answer":2,"explain":"總統為國家元首，對外代表國家，依憲法行使締結條約及宣戰、媾和之權（條約案仍須送立法院議決）。行政院院長負責政策執行，立法院院長主持議事，監察院院長負責監察業務，都不能代表國家對外締約。"},{"level":"adv","topic":"制衡—立法院的質詢權","q":"立法院開議期間，立法委員針對某項政策向行政院院長提出詢問並要求答覆說明。此一情形屬於下列何種權力的行使？","choices":["立法院的質詢權","監察院的糾舉權","司法院的審判權","考試院的銓敘權"],"answer":0,"explain":"立法委員對行政院提出質詢，是立法權監督行政權的制衡設計。糾舉是監察院對違法失職公務人員的處置，審判是司法院處理具體訴訟案件，銓敘是考試院審定任用資格，都不是議場上的政策詢問。"},{"level":"adv","topic":"制衡—不信任案（倒閣）","q":"若立法院多數委員對行政院院長的施政表現高度不滿，依憲法增修條文，立法院可以採取的制衡方式是下列何者？","choices":["由立法院直接罷免行政院院長","對行政院院長提出不信任案","逕行解散行政院並改組內閣","由立法院逕行彈劾行政院院長使其去職"],"answer":1,"explain":"立法院可對行政院院長提出不信任案（倒閣），通過後院長應提出辭職。罷免是選民對民選公職人員行使的權利，行政院院長並非民選；解散內閣不是立法院的權限；對一般公務人員的彈劾權則屬於監察院。"},{"level":"adv","topic":"監察權—彈劾的行使機關","q":"某中央機關的公務員被檢舉利用職務之便違法失職。若要對這名公務員提出彈劾，應由哪一個機關行使此項權力？","choices":["行政院","立法院","監察院","考試院"],"answer":2,"explain":"彈劾違法失職的公務人員是監察院的職權。行政院是該員所屬的行政體系，不能取代外部監察；立法院行使的是立法、預算審議與質詢權；考試院只負責考選與銓敘，這三者常被誤認為擁有彈劾權。"},{"level":"adv","topic":"釋憲—大法官與憲法法庭","q":"甲認為某項法律的規定侵害了憲法所保障的人民權利，希望確認該法律是否違憲。依我國制度，這個爭議最終應由下列何者作成判斷？","choices":["立法院","監察院","行政院","司法院大法官"],"answer":3,"explain":"憲法解釋與法律是否違憲的判斷，由司法院大法官（組成憲法法庭）掌理。立法院是制定該法律的機關，不能自己判定自己違憲；監察院負責監督人事違失與財政；行政院僅負責執行法律，均無釋憲權。"},{"level":"adv","topic":"職權比較—立法院與監察院","q":"下列關於立法院與監察院職權的比較，何者正確？","choices":["立法院可對違法失職的公務人員提出彈劾案，監察院可審議中央政府總預算案","立法院與監察院都可以解釋憲法並宣告法律違憲","立法院可審議法律案與預算案，監察院可對違法失職的公務人員提出彈劾","立法院與監察院都負責公務人員的考試選拔與資格審定"],"answer":2,"explain":"立法院掌立法與預算審議，監察院掌彈劾、糾舉與審計，分工明確。第一個選項把兩院職權對調；解釋憲法是司法院大法官的權限；考選與銓敘則屬考試院，都是常見的混淆點。"},{"level":"adv","topic":"考試權—文官考試制度的用意","q":"我國規定公務人員必須先通過公開競爭的國家考試取得任用資格，才能進入政府機關任職。這項制度設計最主要的用意是下列何者？","choices":["確保依專業能力與公平標準用人，避免因人情或政治關係進用","讓執政者可以優先安排支持自己的人擔任公職","使公務人員的人數能夠逐年穩定增加","由民意機關投票決定每一個職位的錄取人選"],"answer":0,"explain":"考選與銓敘由考試院掌理，透過公開競爭的考試建立專業、公平的用人標準，避免因人情或政治關係進用私人。若由執政者安排人事或由民意機關投票決定人選，文官將失去中立與專業；考試制度的目的也不在增加公務人員人數。"},{"level":"adv","topic":"司法權—行政訴訟的救濟途徑","q":"民眾乙認為某中央機關作成的行政處分侵害其權益，經提起訴願後仍然不服，想進一步循訴訟途徑尋求救濟。此類案件的審判權屬於下列何者？","choices":["監察院","考試院","司法院所屬的各級法院","行政院的訴願審議機關"],"answer":2,"explain":"訴願是向行政機關提出的救濟；對訴願決定仍不服，可提起行政訴訟，由司法院所屬的法院審判，展現司法權對行政權的制衡。監察院只能糾正、彈劾而不能審判；考試院與本案無關；訴願機關則是本題中已走完的前一階段。"},{"level":"adv","topic":"權力分立與制衡的目的","q":"我國採取五權分立並使各院之間相互制衡，其最主要的目的是下列何者？","choices":["讓中央政府的權力集中於一人，以提高決策效率","使五院彼此互不往來，各自完全獨立行動","確保執政者能夠長期穩定地執政","避免權力過度集中而遭濫用，以保障人民的權利"],"answer":3,"explain":"權力分立與制衡的核心目的是防止權力集中與濫用，進而保障人權，與主權在民的精神相呼應。集中權力於一人、確保長期執政都與立憲主義背道而馳；五院分工的同時仍相互監督，並非互不往來。"},{"level":"adv","topic":"主權在民與選舉四大原則","q":"我國總統與立法委員都由人民投票選出，每位選民只有一票且票票效力相同，須親自直接投票，圈選內容也不對外公開。這最能展現下列哪一組概念？","choices":["主權在民，以及普通、平等、直接、無記名的四大選舉原則","權力分立制度中行政權獨大的特色","中央集權下地方完全聽命於中央的制度","法官依法獨立審判、不受干涉的司法獨立原則"],"answer":0,"explain":"人人有票（普通）、票票等值（平等）、親自投票（直接）、不公開圈選內容（無記名）正是四大選舉原則，也體現主權在民。其餘選項分別談行政權、中央與地方關係、司法獨立，與選舉制度無關。"},{"level":"adv","topic":"制衡—覆議制度","q":"行政院對於立法院通過的某項法律案認為窒礙難行，依憲法增修條文，經總統核可後可以採取的作法是下列何者？","choices":["逕行宣告該法律無效，不予施行","將該法律案移送監察院審查後撤銷","要求司法院大法官直接撤銷該法律","移請立法院覆議"],"answer":3,"explain":"行政院認為法律案窒礙難行，得經總統核可移請立法院覆議，是行政權對立法權的制衡管道。行政院無權自行宣告法律無效；監察院負責的是人事與財政監督；大法官須依聲請程序審理，不會應行政院要求直接撤銷法律。"},{"level":"adv","topic":"中央政府體制—兼具總統制與內閣制特徵","q":"我國總統由人民直接選舉產生並掌有重要職權，行政院院長由總統任命，而行政院須向立法院負責、立法院並得對行政院院長提出不信任案。這樣的設計最能說明我國中央政府體制具有下列何種特色？","choices":["完全採行內閣制，總統僅為不掌實權的虛位元首","兼具總統制與內閣制的特徵","完全採行總統制，行政部門不必向國會負責","行政權與立法權合而為一，不再分立制衡"],"answer":1,"explain":"總統由人民直選並掌有實權，是總統制的特徵；行政院須向立法院負責、立法院得提不信任案（倒閣），則是內閣制的特徵，故我國體制兼具兩者。典型內閣制的元首多為虛位；典型總統制沒有倒閣制度、行政部門不對國會負責；而我國行政與立法仍分立制衡，並未合一。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

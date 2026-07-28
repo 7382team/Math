@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>聲音的性質 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "sci-sound",
+  "title": "聲音的性質",
+  "subject": "理化",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3章 波動與聲音",
+  "tag": "樂音三要素·聲速·回聲",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>聲音的性質</h1><div class="sub">理化 · 樂音三要素·聲速·回聲 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"聲音的產生（振動）","q":"下列關於聲音產生原因的敘述，何者正確？","choices":["物體必須發熱到一定溫度才會發出聲音","正在發聲的物體都在振動，振動一停止發聲也停止","物體只要在移動，就一定會發出聲音","聲音是由物體表面顏色改變所產生"],"answer":1,"explain":"聲音由物體振動產生，振動停止發聲即停止：敲響的音叉用手按住後便不再發聲。發熱與發聲沒有必然關係；等速平移而不振動的物體不會因移動而發聲；顏色更與發聲無關。"},{"level":"basic","topic":"聲音的傳播需要介質（鐘罩抽氣實驗）","q":"將正在響的鬧鈴放入密閉玻璃鐘罩內，以抽氣機逐漸抽出罩內空氣，最可能觀察到的現象是？","choices":["鈴聲逐漸變小到幾乎聽不見，但仍可看見鈴槌在振動","鈴聲逐漸變大，因為罩內的空氣阻力變小了","鈴聲大小完全不變，因為聲音不需要介質","鈴聲消失，同時鈴槌也立刻停止振動"],"answer":0,"explain":"聲音必須靠介質（固體、液體或氣體）才能傳播。罩內空氣愈少，可傳聲的介質愈少，聲音就愈弱，接近真空時幾乎聽不見；但鈴槌仍在振動且看得見，代表聲音仍在產生，只是傳不出來。「鈴槌立刻停止振動」是把「聽不到」誤當成「不振動」；其餘兩項則誤以為聲音不必靠介質。"},{"level":"basic","topic":"不同介質中的聲速比較","q":"同一個聲音分別在鋼鐵、水與空氣中傳播，其傳播速率由大到小的排列應為？","choices":["空氣 > 水 > 鋼鐵","水 > 鋼鐵 > 空氣","鋼鐵 > 水 > 空氣","三者的傳播速率完全相同"],"answer":2,"explain":"介質中粒子排列愈緊密、彼此作用力愈強，振動愈容易傳遞，故聲速大致為固體 > 液體 > 氣體。這也是把耳朵貼在鐵軌或桌面上，能較早、較清楚聽到遠處敲擊聲的原因。其餘選項不是把順序顛倒，就是誤以為聲速與介質種類無關。"},{"level":"basic","topic":"空氣中的聲速數值","q":"在常溫（約15 ℃）的空氣中，聲音的傳播速率最接近下列何者？","choices":["每秒34公尺","每秒3400公尺","每秒30萬公里","每秒340公尺"],"answer":3,"explain":"常溫空氣中的聲速約為340 m/s。34 m/s 太小；3400 m/s 已接近固體中的聲速；每秒30萬公里（3×10⁸ m/s）是光在真空中的速率，常被誤當成聲速。"},{"level":"basic","topic":"溫度對空氣中聲速的影響","q":"關於空氣溫度與空氣中聲速的關係，下列敘述何者正確？","choices":["氣溫愈高，聲音在空氣中傳播得愈快","氣溫愈高，聲音在空氣中傳播得愈慢","聲速只與發聲體的大小有關，與氣溫無關","氣溫降到0 ℃時，空氣就完全無法傳聲"],"answer":0,"explain":"氣溫升高時空氣分子運動較快，振動傳遞較容易，聲速隨之變大（課本常以每升高1 ℃約增加0.6 m/s 表示此趨勢），因此夏天的聲速比冬天大。發聲體只決定音調、響度與音色，不決定聲速；0 ℃的空氣仍能傳聲，只有真空才不能傳聲。"},{"level":"basic","topic":"頻率的意義與單位（赫茲）","q":"關於聲波「頻率」的敘述，下列何者正確？","choices":["頻率是發聲體振動的幅度大小，單位為分貝（dB）","頻率是聲音在介質中傳播的距離，單位為公尺（m）","頻率是發聲體在1秒內振動的次數，單位為赫茲（Hz）","頻率是聲音從發出到被聽見所經過的時間，單位為秒（s）"],"answer":2,"explain":"頻率＝每秒振動的次數，單位是赫茲（Hz），1 Hz 表示每秒振動1次，頻率決定音調。把「振幅」與「分貝」套到頻率上是最常見的混淆，那其實是響度的性質；距離與時間的單位則分別是公尺與秒。"},{"level":"basic","topic":"響度與振幅、分貝","q":"關於樂音三要素中的「響度」，下列敘述何者正確？","choices":["由發聲體振動的頻率決定，常以赫茲表示大小","由發聲體振動的振幅決定，常以分貝表示大小","由發聲體的材質與結構決定，無法用數值比較","由傳播介質的種類決定，常以公尺表示大小"],"answer":1,"explain":"響度就是聲音的大小聲，由振幅決定：振幅愈大，響度愈大，常以分貝（dB）表示。頻率與赫茲是音調的內容；材質與結構決定的是音色；介質種類影響的是聲速，都不是響度。"},{"level":"basic","topic":"音調與頻率","q":"女高音的歌聲聽起來比男低音「高亢」，這主要是兩人聲音的哪一項性質不同？","choices":["響度不同，因為女高音一定唱得比較大聲","音色不同，因為兩人的聲帶材質完全不同","音調不同，因為女高音發聲時聲帶振動的頻率較高","聲速不同，因為女高音的聲音在空氣中傳得比較快"],"answer":2,"explain":"聲音的高亢或低沉指的是音調，由頻率決定，頻率愈高音調愈高。大聲或小聲是響度（由振幅決定），與高低音無關；音色是用來分辨「誰在唱、什麼樂器在響」；在同一空氣中任何聲音的聲速都相同，不會因音調而改變。"},{"level":"basic","topic":"音色的意義","q":"閉上眼睛時，仍能分辨同時奏出同一個音（音調相同、聽起來一樣大聲）的小提琴與長笛，這主要是依據聲音的哪一項性質？","choices":["響度不同","音調不同","聲速不同","音色不同"],"answer":3,"explain":"音色由發聲體的材質與結構（形狀、發聲方式）決定；即使音調與響度都相同，不同樂器的波形形狀仍不同，因此能被分辨。題目已言明音調與響度相同，而在同一空氣中聲速也相同。"},{"level":"basic","topic":"人耳可聽見的頻率範圍","q":"一般人耳能聽見的聲音，其頻率範圍約為下列何者？","choices":["2 ～ 200 赫茲","20 ～ 20000 赫茲","200 ～ 2000 赫茲","20000 ～ 200000 赫茲"],"answer":1,"explain":"人耳的可聽範圍約為20 Hz 至 20000 Hz；低於20 Hz 是次聲波、高於20000 Hz 是超聲波，兩者人耳都聽不見。200～2000 Hz 只是人聲較集中的區段，不是可聽範圍的極限；20000 Hz 以上整段都超出人耳可聽上限。"},{"level":"basic","topic":"超聲波（超音波）的定義與應用","q":"關於超聲波（超音波）的敘述，下列何者正確？","choices":["頻率高於20000 赫茲，人耳聽不見，可用於醫學影像檢查","頻率低於20 赫茲，人耳聽不見，主要用於偵測地震","是響度特別大（分貝數特別高）的聲音，與頻率高低無關","可以在真空中傳播，且速率比一般聲音快"],"answer":0,"explain":"超聲波是頻率高於20000 Hz 的聲波，人耳聽不見，常用於超音波影像檢查、超音波洗淨與聲納測距。頻率低於20 Hz 的是次聲波；超聲波的特徵是「頻率高」而不是「響度大」；它仍是聲波，在真空中一樣不能傳播。"},{"level":"basic","topic":"次聲波","q":"大象之間的長距離溝通，以及地震、火山爆發時，常伴隨產生人耳聽不見的「次聲波」。次聲波是指？","choices":["頻率高於20000 赫茲的聲波","響度低於0 分貝的聲波","只能在水中傳播、無法在空氣中傳播的聲波","頻率低於20 赫茲的聲波"],"answer":3,"explain":"次聲波是頻率低於20 Hz 的聲波，低於人耳可聽下限，所以聽不見。頻率高於20000 Hz 的是超聲波，高低正好相反；聽不見是因為頻率超出可聽範圍，而不是響度太小；次聲波在空氣、水與地層中都能傳播。"},{"level":"basic","topic":"噪音的定義","q":"關於「噪音」的判定，下列敘述何者最恰當？","choices":["聲音一定要超過100 分貝，才能稱為噪音","凡是干擾生活、令人不舒服而不想聽的聲音都算噪音","噪音必定是頻率很高、音調很尖銳的聲音","樂器演奏出的聲音是樂音，任何情況都不會成為噪音"],"answer":1,"explain":"噪音的判定帶有主觀性與情境性：半夜隔壁的鋼琴聲雖是樂音，對想睡覺的人而言仍是噪音。噪音沒有固定的分貝門檻，也不限定音調高低，更不能只看聲源是不是樂器。"},{"level":"basic","topic":"共鳴（共振）的概念","q":"關於「共鳴（共振）」現象的敘述，下列何者正確？","choices":["兩個物體必須互相接觸，才可能發生共鳴","發生共鳴時，被帶動物體的振幅會愈來愈小，最後不再振動","外來聲波的頻率與物體的自然頻率相同或相近時，物體會被帶動而大幅振動","共鳴在真空中最容易發生，因為沒有空氣阻礙"],"answer":2,"explain":"共鳴是指外來振動的頻率與物體本身的自然頻率相同或相近時，物體不斷被推動而振幅明顯增大。兩物體不必接觸，可藉由空氣傳遞振動（如兩支同頻率的音叉）；共鳴時振幅是變大而非變小；真空不能傳聲，聲音的共鳴自然無法發生。"},{"level":"adv","topic":"回聲測距（來回距離除以2）","q":"小明面對遠處的峭壁大喊一聲，2秒後聽到回聲。若當時空氣中的聲速為340 m/s，則小明與峭壁的距離約為多少？","choices":["170公尺","340公尺","680公尺","1360公尺"],"answer":1,"explain":"2秒是聲音「去程＋回程」所花的時間，來回距離＝340×2＝680公尺，單程距離＝680÷2＝340公尺。680公尺是忘了除以2的典型錯誤；170公尺是誤把聲速直接除以2；1360公尺則是又多乘了一次2。"},{"level":"adv","topic":"聲納測量海深","q":"海洋研究船由船底向正下方發出聲波，4秒後接收到由海底反射回來的聲波。若聲波在海水中的傳播速率為1500 m/s，則該處海水深度約為多少？","choices":["375公尺","750公尺","3000公尺","6000公尺"],"answer":2,"explain":"聲納利用回聲原理：4秒是聲波往返海底的總時間，往返距離＝1500×4＝6000公尺，海深＝6000÷2＝3000公尺。6000公尺是漏掉「除以2」；750與375公尺則是把時間或距離重複除了2。另外，聲納無法在真空中使用，因為聲波必須靠介質傳播。"},{"level":"adv","topic":"實驗變因判斷（鐘罩抽氣實驗的操縱與應變變因）","q":"為探討「聲音的傳播是否需要介質」，同學將正在響的鬧鈴放入密閉鐘罩中逐步抽氣，並記錄各階段聽到的聲音大小。此實驗的操縱變因與應變變因分別是？","choices":["操縱變因是罩內空氣的多寡；應變變因是聽到聲音的大小","操縱變因是聽到聲音的大小；應變變因是罩內空氣的多寡","操縱變因是鬧鈴聲音的音調；應變變因是鐘罩的體積","操縱變因是鐘罩的材質；應變變因是抽氣所花的時間"],"answer":0,"explain":"操縱變因是實驗者主動改變的條件，此處為罩內空氣（介質）的多寡；應變變因是隨之改變、被觀察測量的結果，此處為聽到的聲音大小。鬧鈴本身、鐘罩的材質與體積等屬控制變因，必須保持不變。把操縱變因與應變變因對調是最常見的錯誤。"},{"level":"adv","topic":"響度與音調的區辨（打擊樂器）","q":"敲擊同一面鼓時，「改用更大的力氣敲擊」與「把鼓面調得更緊」，分別主要改變了聲音的哪一項性質？","choices":["前者改變音調，後者改變響度","兩者都只改變音色","兩者都只改變響度","前者改變響度，後者改變音調"],"answer":3,"explain":"敲擊力氣愈大，鼓面振動的振幅愈大，聲音愈大聲，改變的是響度；鼓面調緊後振動頻率提高，聲音變得較尖高，改變的是音調。把音調與響度對調是典型誤解；鼓的材質與結構未變，音色大致不變。"},{"level":"adv","topic":"弦的長度與音調","q":"吉他手把手指按在較靠近琴橋的琴格上（使可振動的弦長變短）再撥弦，與撥動整條長弦相比，所發出的聲音會？","choices":["弦振動的頻率變高，音調變高","弦振動的頻率變低，音調變低","振幅變大，響度變大而音調不變","只有音色改變，音調與響度都不變"],"answer":0,"explain":"弦愈短（或愈細、愈緊），振動頻率愈高，音調就愈高，這正是吉他、小提琴按弦變換音高的原理。響度取決於撥弦的力道（振幅），與按弦位置無關；同一條弦、同一把琴，音色不會因按弦位置而明顯改變。"},{"level":"adv","topic":"波形圖判讀（振幅、波數與波形）","q":"以示波器觀察甲、乙兩個聲音的波形：兩者波形的形狀完全相同，相同時間內出現的波數也相同，但甲的波峰高度是乙的兩倍。下列判斷何者正確？","choices":["甲的音調比乙高","甲、乙的音色一定不同","甲的響度比乙大，但兩者音調相同","甲的聲速比乙快"],"answer":2,"explain":"波峰高度代表振幅，振幅大則響度大，故甲比乙大聲；相同時間內波數相同代表頻率相同，音調也相同；波形形狀相同代表音色相同。把振幅誤當頻率就會答成音調較高；在同一介質中聲速相同，與振幅無關。"},{"level":"adv","topic":"噪音防治的途徑","q":"某校位於車流量大的馬路旁，下列防治噪音的做法中，屬於「從傳播途徑」著手的是？","choices":["設置標誌，要求行經車輛不得任意按喇叭","上課時讓靠窗的同學戴上耳塞","要求機車加裝性能良好的消音器","在校園與馬路之間種植濃密樹林並加裝隔音牆"],"answer":3,"explain":"噪音防治可從音源（禁按喇叭、加裝消音器）、傳播途徑（隔音牆、樹林、雙層窗）與接收者（耳塞、耳罩）三方面著手。樹林與隔音牆是在聲音行進的路徑上加以阻隔或吸收，屬傳播途徑。"},{"level":"adv","topic":"超聲波的生活與醫學應用","q":"下列各項應用中，哪一項「不是」利用超聲波（超音波）的原理？","choices":["婦產科醫師以超音波掃描觀察胎兒的影像","以超音波洗淨機清洗眼鏡鏡片與精密零件","蝙蝠在漆黑的洞穴中飛行仍能避開障礙物","路口以紅綠燈的燈號來管制車流"],"answer":3,"explain":"紅綠燈利用的是光訊號，與聲波完全無關。超音波影像檢查、超音波洗淨與蝙蝠的回聲定位（發出超聲波並接收反射波判斷障礙物位置），都是利用超聲波頻率高、指向性佳且能被反射的特性。"},{"level":"adv","topic":"共鳴實驗的分析","q":"甲、乙兩支頻率相同的音叉分別架在共鳴箱上並排放置，敲響甲數秒後用手按住甲，仍可聽見乙持續發聲；若改用與甲頻率明顯不同的音叉當作乙重做，則幾乎聽不到乙發聲。此實驗最能說明？","choices":["聲音在固體中的傳播速率比在空氣中快","兩者頻率相同或相近時才容易共鳴，使另一物體被帶動而振動發聲","音叉發聲的響度由材質決定，與敲擊力道無關","空氣無法傳播音叉所發出的聲音"],"answer":1,"explain":"本實驗的操縱變因是乙音叉的頻率，應變變因是乙是否被帶動發聲，結果顯示只有頻率相同（或相近）時才產生明顯共鳴。甲的振動是經由空氣（與共鳴箱）傳到乙，正說明空氣可以傳聲；實驗中既未比較不同介質的聲速，也未探討敲擊力道與響度的關係。"},{"level":"adv","topic":"聲速與光速的比較","q":"夏日午後雷雨時，人們總是先看到閃電，隔了一段時間才聽到雷聲，其主要原因是？","choices":["光在空氣中的傳播速率遠大於聲音在空氣中的傳播速率","閃電發生的時間本來就比打雷早很久","雷聲必須繞過厚厚的雲層才能傳到地面，因此耽誤了時間","人的眼睛比耳朵靈敏，所以先看到閃電"],"answer":0,"explain":"閃電與雷聲幾乎同時發生，但光速約3×10⁸ m/s，空氣中的聲速僅約340 m/s，兩者差距極大，因此光先到達、聲音後到達。也正因如此，可用「看到閃電後所數的秒數×340」估算打雷處的大約距離；其餘選項都是把時間差誤歸因於發生時刻、傳播路徑或感官靈敏度。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

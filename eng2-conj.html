@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>連接詞與附加問句 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng2-conj",
+  "title": "連接詞與附加問句",
+  "subject": "英文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "文法總複習",
+  "tag": "and/but/because/if · tag questions",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>連接詞與附加問句</h1><div class="sub">英文 · and/but/because/if · tag questions · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"對等連接詞 but","q":"I studied hard for the English test, ___ I still didn't pass it.","choices":["and","but","or","so"],"answer":1,"explain":"前後兩句語意相反（努力讀書 vs. 沒通過），且有 still 加強「出乎意料」的語氣，要用表轉折的對等連接詞 but。(0) and 表並列或順接，用在語意一致的兩句；(2) or 表選擇；(3) so 表結果，用了會變成「所以我沒通過」，因果不合理。"},{"level":"basic","topic":"對等連接詞 so","q":"It was very cold outside, ___ we stayed at home all day.","choices":["because","but","or","so"],"answer":3,"explain":"「前面是原因、後面是結果」要用 so（所以）。(0) because 後面必須接原因，若要用 because 得改寫成 We stayed at home because it was very cold.，前後順序相反；(1) but 表轉折，兩句語意並不衝突；(2) or 表選擇，語意不通。"},{"level":"basic","topic":"對等連接詞 or","q":"A: Would you like tea ___ coffee? B: Coffee, please.","choices":["or","and","but","so"],"answer":0,"explain":"提供兩個選項讓對方二選一，用 or（或者）；由 B 只選了其中一項可以確認。(1) and 表「兩者都要」，Would you like tea and coffee? 是問「茶和咖啡兩樣都要嗎」，與 B 的回答不合；(2) but 表轉折；(3) so 表結果，都不能用來並列選項。"},{"level":"basic","topic":"從屬連接詞 because","q":"We didn't go to the beach ___ the weather was really bad.","choices":["so","but","because","or"],"answer":2,"explain":"空格後的 the weather was really bad 是「沒去海邊」的原因，用 because（因為）。(0) so 後面要接結果，不能接原因；(1) but 表轉折；(3) or 表選擇，語意皆不通。because 引導的原因子句可放句中，也可放句首（Because the weather was really bad, we didn't go to the beach.）。"},{"level":"basic","topic":"時間連接詞 when","q":"___ I was ten years old, I lived in Tainan with my grandparents.","choices":["When","Because","Although","So"],"answer":0,"explain":"兩件事發生在同一段時間，用時間連接詞 When（當…的時候）。(1) Because 表原因，「十歲」不是住台南的理由；(2) Although 表讓步，但前後語意並不相反；(3) So 是對等連接詞，只能放在兩個句子中間，不能放句首引導子句。"},{"level":"basic","topic":"條件連接詞 if","q":"___ it rains tomorrow, we won't go hiking.","choices":["Although","Because","If","So"],"answer":2,"explain":"「如果明天下雨，就不去健行」是尚未發生的假設條件，用 If。(0) Although 表讓步、(1) Because 表原因，都與「假設」不符；(3) So 是對等連接詞，不可置於句首引導子句。另外注意 if 條件子句用現在式 rains 代替未來式。"},{"level":"basic","topic":"讓步連接詞 although","q":"___ Mr. Lin is over seventy, he still runs three kilometers every morning.","choices":["Because","So","If","Although"],"answer":3,"explain":"前後語意相反（年紀大卻仍每天長跑），句中又有 still，要用讓步連接詞 Although（雖然）。(0) Because 表原因，「超過七十歲」不是每天跑步的理由；(2) If 表條件，但這是既成事實；(1) So 是對等連接詞，不可放句首引導子句。"},{"level":"basic","topic":"because 與 so 不可並用","q":"Which sentence is correct? (because 與 so 不可並用)","choices":["Because it was raining hard, so we took a taxi.","Because it was raining hard, we took a taxi.","It was raining hard, so because we took a taxi.","Because of it was raining hard, we took a taxi."],"answer":1,"explain":"中文說「因為…，所以…」，但英文的 because 與 so 只能擇一，不可同時出現，故 (0) 是最典型的中式英文錯誤。(2) so 與 because 兩個連接詞連用同樣錯誤。(3) because of 是介系詞片語，後面只能接名詞或動名詞（如 because of the heavy rain），不能接完整句子。正確寫法也可以是 It was raining hard, so we took a taxi."},{"level":"basic","topic":"附加問句：be 動詞","q":"Your sister is a nurse at that hospital, ___?","choices":["is she","doesn't she","didn't she","isn't she"],"answer":3,"explain":"附加問句的原則是「前肯後否」。主要子句的 is 是肯定的 be 動詞現在式，附加問句就用否定縮寫 isn't，主詞 your sister 改成代名詞 she，故為 isn't she。(0) 前肯後也肯，違反規則；(1)(2) 句中是 be 動詞，不可改用助動詞 do/did，且 didn't 時態也錯。"},{"level":"basic","topic":"附加問句：情態助動詞","q":"Tom can't swim very well, ___?","choices":["can he","can't he","does he","is he"],"answer":0,"explain":"主要子句 can't 是否定，依「前否後肯」附加問句用肯定的 can，主詞 Tom 用 he，故為 can he。(1) 前否後也否，違反規則；(2)(3) 句中的助動詞是 can，附加問句必須沿用同一個助動詞，不能換成 does 或 be 動詞 is。"},{"level":"basic","topic":"附加問句：一般動詞現在式","q":"Emma works at a bank in Taipei, ___?","choices":["isn't she","doesn't she","didn't she","does she"],"answer":1,"explain":"主要子句是一般動詞現在式 works（第三人稱單數），附加問句要借助助動詞 does，並依「前肯後否」用 doesn't she。(0) 句中沒有 be 動詞，不可用 isn't；(2) didn't 是過去式，時態不合；(3) 前肯後也肯，違反規則。"},{"level":"basic","topic":"附加問句：過去式","q":"They visited Tainan with their classmates last summer, ___?","choices":["don't they","weren't they","didn't they","did they"],"answer":2,"explain":"visited 是一般動詞過去式，附加問句用過去式助動詞 did，並依「前肯後否」寫成 didn't they。(0) 時態錯誤，句中 last summer 表過去；(1) 句中是一般動詞，不能改用 be 動詞 weren't；(3) 前肯後也肯，違反規則。"},{"level":"basic","topic":"祈使句的附加問句","q":"Please close the door, ___?","choices":["do you","don't you","shall we","will you"],"answer":3,"explain":"祈使句（原形動詞或 Please + 原形動詞開頭）的附加問句固定用 will you（語氣更客氣時也可用 won't you 或 would you）。(0)(1) 祈使句表面上沒有主詞，不能用 do you/don't you；(2) shall we 只用在 Let's 開頭的句子。"},{"level":"basic","topic":"Let's 的附加問句","q":"Let's play basketball on the playground after school, ___?","choices":["will we","shall we","don't we","will you"],"answer":1,"explain":"Let's（= Let us）開頭表「邀請對方一起做」，附加問句固定用 shall we。(3) will you 是一般祈使句的用法（如 Open the window, will you?）；(0) will we 與 (2) don't we 都不是附加問句的固定說法。"},{"level":"adv","topic":"aren't I 特殊用法","q":"I'm the tallest student in our class, ___?","choices":["aren't I","am not I","amn't I","are I"],"answer":0,"explain":"I am 的否定附加問句是必須背下來的例外，固定寫成 aren't I。(1) am not I 語序錯誤，正式用法是 am I not?，而附加問句習慣用縮寫，因此只能用 aren't I；(2) 英文中沒有 amn't 這個縮寫；(3) are I 主詞與動詞不一致。"},{"level":"adv","topic":"when 與 while 的區別","q":"My brother was playing computer games ___ I got home yesterday evening.","choices":["while","because","when","although"],"answer":2,"explain":"主要子句是過去進行式（持續中的長動作），空格後 I got home 是過去簡單式的短暫動作，「長動作進行中，短動作突然發生」要用 when。(0) while 後面通常接進行式的長動作（如 While I was walking home, I met Amy.），接瞬間動詞 got home 並不自然；(1) because 表原因、(3) although 表讓步，語意都不通。"},{"level":"adv","topic":"if 條件子句的時態","q":"If the weather ___ nice this weekend, we will go camping in the mountains.","choices":["will be","is","was","be"],"answer":1,"explain":"這是條件副詞子句，規則是「主要子句用未來式（will go），if 子句用現在簡單式代替未來式」，故用 is。(0) if 子句中不可以出現 will；(2) was 是過去式，與 this weekend 的未來語意不合；(3) be 是原形，主詞 the weather 為第三人稱單數，動詞形式錯誤。"},{"level":"adv","topic":"否定副詞 never 的附加問句","q":"Kevin never eats breakfast before he goes to school, ___?","choices":["doesn't he","isn't he","did he","does he"],"answer":3,"explain":"含 never、seldom、hardly、nothing 等字的句子雖然沒有 not，仍視為否定句，依「前否後肯」附加問句要用肯定的 does he。(0) 把句子誤當肯定句處理，是最常見的錯誤；(1) 主要動詞是一般動詞 eats，不能用 be 動詞；(2) did 時態錯誤，主要子句是現在式。"},{"level":"adv","topic":"there be 句型的附加問句","q":"There aren't any cookies in the box, ___?","choices":["aren't there","are they","are there","is there"],"answer":2,"explain":"there be 句型的附加問句，主詞仍沿用 there，不可換成 they 或 it；原句 aren't 為否定，依「前否後肯」用 are there。(0) 前否後也否，違反規則；(1) 主詞誤用 they；(3) 動詞須與原句的 aren't 一致，用複數 are 而非 is。"},{"level":"adv","topic":"although 與 but 不可並用","q":"Which sentence is correct? (although 與 but 不可並用)","choices":["Although she is only ten years old, but she cooks very well.","Although she is only ten years old, she cooks very well.","Although she is only ten years old, so she cooks very well.","She is only ten years old, although but she cooks very well."],"answer":1,"explain":"中文說「雖然…，但是…」，英文卻不能把 although 和 but 放在同一句，只能擇一使用，因此 (0)(3) 都是典型的中式英文錯誤。(2) although 表讓步、so 表結果，兩者語意互相衝突。正確句子也可以寫成 She is only ten years old, but she cooks very well."},{"level":"adv","topic":"unless 表「除非」","q":"You won't pass the final exam ___ you study harder from now on.","choices":["unless","if","because","although"],"answer":0,"explain":"unless = if...not（除非、如果不），用來表示「唯一的例外條件」，本句意為「除非你從現在起更用功，否則不會通過期末考」。(1) if 會變成「如果你更用功，你就不會通過」，語意完全相反；(2) because 表原因，但「更用功」不是「不會通過」的原因；(3) although 表讓步，語意不通。注意 unless 子句同樣用現在式代替未來式，不可寫成 unless you will study。"},{"level":"adv","topic":"have 為一般動詞時的附加問句","q":"Judy has two younger brothers, ___?","choices":["hasn't she","isn't she","has she","doesn't she"],"answer":3,"explain":"這裡的 has 是表「擁有」的一般動詞，不是助動詞，附加問句要借助 does，依「前肯後否」寫成 doesn't she。(0) 把 has 誤當助動詞是常見錯誤，只有現在完成式（如 Judy has finished her homework, hasn't she?）才用 hasn't；(1) 句中沒有 be 動詞；(2) 前肯後也肯，違反規則。"},{"level":"adv","topic":"附加問句的主詞代名詞","q":"Your parents' house is near the MRT station, ___?","choices":["isn't it","aren't they","doesn't it","isn't he"],"answer":0,"explain":"句子真正的主詞是單數名詞 house，your parents' 只是所有格修飾語，代名詞要用 it；動詞沿用 be 動詞 is 並改否定，故為 isn't it。(1) 誤把 parents 當主詞；(2) 句中是 be 動詞，不可換成助動詞 does；(3) 主詞是物不是人，不能用 he。"},{"level":"adv","topic":"對話中用 Because 回答 Why","q":"A: Why didn't you answer my call last night? B: ___ I was taking a shower at that time.","choices":["So","Although","Because","If"],"answer":2,"explain":"回答 Why 開頭的問句要說明原因，用 Because 引導。(0) So 是對等連接詞，用來接結果，不能單獨放在句首回答 Why；(1) Although 表讓步、(3) If 表條件，都無法回答「為什麼」。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

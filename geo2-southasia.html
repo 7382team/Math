@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>南亞 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo2-southasia",
+  "title": "南亞",
+  "subject": "地理",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第6課 南亞",
+  "tag": "印度半島·季風·軟體產業",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>南亞</h1><div class="sub">地理 · 印度半島·季風·軟體產業 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"南亞的範圍","q":"南亞又稱印度半島或南亞次大陸。下列哪一個國家「不」屬於南亞？","choices":["孟加拉","斯里蘭卡","尼泊爾","泰國"],"answer":3,"explain":"南亞主要包括印度、巴基斯坦、孟加拉、尼泊爾、不丹、斯里蘭卡、馬爾地夫等國。泰國位於東南亞的中南半島，是東協成員國，不在南亞範圍內；孟加拉、斯里蘭卡、尼泊爾皆為南亞國家。"},{"level":"basic","topic":"印度半島三大地形區的排列","q":"印度半島的地形可分為三大區，若「由北而南」排列，正確的順序為何？","choices":["德干高原→恆河與印度河平原→喜馬拉雅山區","喜馬拉雅山區→恆河與印度河平原→德干高原","恆河與印度河平原→喜馬拉雅山區→德干高原","喜馬拉雅山區→德干高原→恆河與印度河平原"],"answer":1,"explain":"南亞北部為高聳的喜馬拉雅山區，中部為印度河、恆河沖積而成的大平原，南部則為古老的德干高原。其餘選項的排列順序皆與實際南北位置不符。"},{"level":"basic","topic":"中部平原的形成與主要河川","q":"印度半島中部的廣大平原，主要是由下列哪兩條大河沖積而成？","choices":["湄公河與昭披耶河","長江與黃河","印度河與恆河","底格里斯河與幼發拉底河"],"answer":2,"explain":"印度河與恆河皆發源於喜馬拉雅山區，攜帶大量泥沙在中部堆積成肥沃的沖積平原，是南亞人口最密集、農業最發達的區域。湄公河、昭披耶河位於中南半島；長江、黃河在中國；兩河流域則在西亞。"},{"level":"basic","topic":"德干高原的土壤與作物","q":"位於印度半島南部的德干高原，其表層土壤特性與適種作物為何？","choices":["以黑色土壤（黑棉土）為主，適合種植棉花","以黃土為主，適合種植小麥","以泥炭土為主，適合種植水稻","以冰河堆積的礫石土為主，適合種植葡萄"],"answer":0,"explain":"德干高原西北部由火山熔岩（玄武岩）風化形成黑色土壤（黑棉土），保水力佳，最適合棉花生長，是印度重要的棉花產區。黃土、泥炭土與冰河礫石土皆非德干高原的土壤特徵。"},{"level":"basic","topic":"季風氣候：雨季成因","q":"南亞的雨季主要出現在什麼季節？是由哪一個風向的季風所帶來？","choices":["冬季；東北季風","夏季；西南季風","冬季；西南季風","夏季；東北季風"],"answer":1,"explain":"夏季陸地增溫快、氣壓較低，氣流由印度洋吹向陸地形成西南季風，挾帶大量水氣而造成雨季。東北季風出現於冬季，是乾季的成因，故其餘組合皆錯誤。"},{"level":"basic","topic":"季風氣候：乾季特徵","q":"每年冬季南亞吹東北季風時，當地的天氣狀況為何？","choices":["季風由海洋吹向陸地，帶來全年最多的降水","季風勢力最強，常引發大規模水患","季風由內陸吹向海洋，水氣稀少，形成乾季","受赤道低壓帶控制，全日多對流雨"],"answer":2,"explain":"冬季陸地降溫快、氣壓較高，氣流由亞洲內陸吹向海洋，一路經過陸地而水氣稀少，因此降水少、形成乾季。帶來大量降水與水患的是夏季的西南季風。"},{"level":"basic","topic":"恆河與印度教信仰","q":"南亞哪一條河川被印度教徒視為聖河，信徒常在河中沐浴以洗滌罪惡，並舉行宗教儀式？","choices":["印度河","布拉馬普特拉河","薩爾溫江","恆河"],"answer":3,"explain":"恆河被印度教徒尊為聖河，沿岸有瓦拉納西等重要聖城。印度河主要流經巴基斯坦，是古印度文明的發源地但非印度教聖河；布拉馬普特拉河與恆河在孟加拉會合入海；薩爾溫江位於中南半島。"},{"level":"basic","topic":"印度河的流經國家","q":"印度河發源於喜馬拉雅山區，主要流經下列哪一個國家的境內後注入阿拉伯海？","choices":["巴基斯坦","孟加拉","尼泊爾","斯里蘭卡"],"answer":0,"explain":"印度河中下游主要流經巴基斯坦，是該國最重要的灌溉水源與農業命脈。孟加拉境內是恆河與布拉馬普特拉河形成的三角洲；尼泊爾是內陸山國；斯里蘭卡為島國，皆無印度河流經。"},{"level":"basic","topic":"南亞人口特色","q":"關於南亞人口特色的敘述，下列何者正確？","choices":["人口密度是世界各大區域中最低的","印度人口居世界前列，人口壓力大","人口幾乎全部集中在德干高原內部的乾燥地區","因少子化與人口老化，勞動人口嚴重不足"],"answer":1,"explain":"南亞是世界人口最稠密的地區之一，印度人口居世界前列，糧食、就業與資源負擔沉重。南亞人口密度高而非最低；人口主要集中在水源充足的恆河平原與沿海地帶，而非德干高原內部；南亞青壯年人口比例仍高，並非勞動力不足。"},{"level":"basic","topic":"宗教起源：佛教","q":"下列哪一個宗教起源於南亞，其創始者為釋迦牟尼？","choices":["基督教","伊斯蘭教","佛教","猶太教"],"answer":2,"explain":"佛教發源於南亞，由釋迦牟尼創立，後來向外傳播到東亞與東南亞。基督教、伊斯蘭教與猶太教皆起源於西亞，不是南亞本土宗教。"},{"level":"basic","topic":"印度的主要宗教","q":"今日印度境內信仰人口最多的宗教是下列何者？","choices":["伊斯蘭教","佛教","錫克教","印度教"],"answer":3,"explain":"印度是宗教多元的國家，其中以印度教信徒最多，伊斯蘭教次之，另有錫克教、佛教、耆那教等。佛教雖起源於南亞，但在印度本土的信徒比例已相對少數。"},{"level":"basic","topic":"種姓制度","q":"關於印度種姓制度的敘述，下列何者最恰當？","choices":["與印度教信仰有關，將人分為不同階級，雖已立法禁止歧視，仍影響社會地位與職業選擇","源自伊斯蘭教教義，規定信徒每日須向聖地祈禱五次","是英國殖民時期為方便統治而創立的地方行政制度","僅存在於古代文獻中，對今日印度社會已完全沒有影響"],"answer":0,"explain":"種姓制度源於印度教，把人依世襲身分分成不同階級，影響婚姻、職業與社會地位。印度獨立後已立法禁止種姓歧視，但在鄉村與日常生活中影響仍在，故不能說「完全沒有影響」；它也不是伊斯蘭教教義或英國創立的行政制度。"},{"level":"basic","topic":"資訊產業城市：班加羅爾","q":"印度軟體與資訊產業最集中、被稱為「印度矽谷」的城市是下列何者？","choices":["加爾各答","孟買","新德里","班加羅爾"],"answer":3,"explain":"班加羅爾聚集大量軟體研發與資訊服務公司，有「印度矽谷」之稱。加爾各答以黃麻工業與港口機能著名；孟買為棉紡織與金融中心；新德里是首都與政治中心。"},{"level":"basic","topic":"南亞主要農產：茶葉","q":"印度東北部的阿薩姆、大吉嶺一帶，以及斯里蘭卡的中央高地，都以生產下列何種作物聞名於世？","choices":["茶葉","可可","橡膠","椰棗"],"answer":0,"explain":"這些地區地形起伏、排水良好，且雨量豐沛、雲霧多，非常適合茶樹生長，所產茶葉行銷世界。可可主要產於西非與中南美洲；橡膠以東南亞為主要產區；椰棗則盛產於西亞乾燥地區。"},{"level":"adv","topic":"氣溫雨量圖判讀與氣候類型","q":"某同學查閱南亞一座城市的氣溫雨量圖，發現各月均溫都在攝氏20度以上，降水明顯集中在6至9月，其餘月份雨量稀少。該城市最可能屬於下列哪一種氣候類型？","choices":["溫帶地中海型氣候（夏乾冬雨）","熱帶季風氣候（全年高溫、乾濕季分明）","熱帶雨林氣候（全年高溫多雨、無明顯乾季）","溫帶大陸性氣候（冬冷夏熱、年溫差大）"],"answer":1,"explain":"全年高溫而乾濕季分明，是熱帶季風氣候的典型特徵：6至9月西南季風自印度洋吹來形成雨季，其餘月份改吹來自內陸的東北季風而少雨。地中海型氣候雨季在冬季；熱帶雨林氣候全年多雨、無明顯乾季；溫帶大陸性氣候冬季寒冷、年溫差大，皆與圖中特徵不符。"},{"level":"adv","topic":"季風不穩定與旱澇災害","q":"印度農民常形容「農業是一場季風的賭博」，最能解釋這句話的原因是下列何者？","choices":["印度耕地面積狹小，農民只能仰賴進口糧食維生","西南季風到來的早晚與強弱並不穩定，雨量過多易成水患、過少則釀成乾旱","印度緯度偏高，作物生長期過短，收成因此不穩定","印度河川多為內流河，無法提供任何灌溉用水"],"answer":1,"explain":"南亞農業高度依賴季風雨，但季風的來臨時間與雨量年年不同，雨季延遲或雨量不足會造成乾旱，雨勢過猛則造成水患，收成因此極不穩定。印度耕地面積廣大；印度多位於熱帶與副熱帶，作物生長期長；恆河、印度河皆為外流河且是重要灌溉水源。"},{"level":"adv","topic":"南亞與東南亞自然環境比較","q":"小華比較南亞與東南亞（中南半島、南洋群島）的自然環境，下列比較何者正確？","choices":["南亞島嶼眾多、火山地震頻繁；南洋群島則以高大褶曲山脈與內陸相隔","兩地皆屬溫帶大陸性氣候，年溫差大而降水稀少","兩地大部分地區均位於低緯，終年高溫；南亞北緣有喜馬拉雅山成為天然屏障，南洋群島則多火山與地震","南亞國家共同組成東協，中南半島國家則多未加入"],"answer":2,"explain":"南亞與東南亞同處低緯，終年高溫（南亞與中南半島多熱帶季風氣候，南洋群島則多熱帶雨林氣候）；主要差異在於南亞北緣有喜馬拉雅山成為天然屏障，南洋群島則位於板塊交界帶，火山與地震活動頻繁。火山地震頻繁的是南洋群島而非南亞；兩地皆非溫帶大陸性氣候；東協是東南亞國家組成的區域組織，南亞國家並非成員。"},{"level":"adv","topic":"印度軟體業的區位優勢","q":"許多歐美企業將軟體研發與客服工作外包到印度，印度所具備的主要優勢組合為何？","choices":["石油與天然氣蘊藏豐富，能源成本低廉","位於歐美航線的中點，海運運費最低","曾受英國殖民而英語普及、理工人才眾多，加上與歐美時差明顯，可日夜接力作業","國內資訊產品市場為世界最大，靠內需帶動技術輸出"],"answer":2,"explain":"軟體與客服屬於高度依賴語言溝通與人才的產業，印度因英語普及、理工人才多、工資相對低廉而具優勢；又因與歐美有明顯時差，歐美下班後印度正好上班，可全天候接力完成工作。軟體業以網路傳輸為主，與海運運費、能源成本關係不大。"},{"level":"adv","topic":"棉花產地與工業區位","q":"印度西部的孟買一帶棉紡織工業十分發達，主要與下列何項條件關係最密切？","choices":["鄰近德干高原西北部的黑棉土產棉區，原料取得便利","位於喜馬拉雅山麓，可就近取得豐富的水力發電","位於恆河三角洲，可就近取得黃麻原料","當地為印度教聖地，宗教觀光帶動紡織品需求"],"answer":0,"explain":"孟買位於德干高原西北側的沿海地帶，緊鄰黑棉土棉花產區，原料運輸距離短，加上港口機能便於進出口，因此棉紡織業發達。喜馬拉雅山麓距孟買遙遠；黃麻產於恆河三角洲的加爾各答一帶；宗教觀光並非棉紡織工業的區位因素。"},{"level":"adv","topic":"喜馬拉雅山脈的環境影響","q":"喜馬拉雅山脈對南亞自然環境的影響，下列敘述何者最正確？","choices":["山勢低緩、冰雪稀少，難以成為大河的源頭","山脈呈南北走向，使西南季風可長驅直入中亞內陸","由火山噴發形成，山區廣布熔岩台地與溫泉","大致呈東西走向，冬季可阻擋北方冷空氣南下，使印度北部冬季較同緯度地區溫和"],"answer":3,"explain":"喜馬拉雅山脈大致呈東西走向且高聳，冬季能阻擋來自亞洲內陸的冷空氣，使印度北部冬季不致過於寒冷；同時也迫使西南季風抬升而在南坡降下大量雨水。該山脈是印度河、恆河等大河的源頭，並由板塊碰撞擠壓抬升而成，並非火山作用形成。"},{"level":"adv","topic":"地形雨與迎風坡","q":"西南季風登陸南亞後，遇到西高止山及東北部山地被迫抬升，最可能在山地的哪一側形成何種降水？","choices":["背風側；氣流下沉增溫，同時帶來大量降水","迎風側；空氣被迫抬升冷卻凝結，形成地形雨","背風側；冷暖氣團相遇，形成鋒面雨","迎風側；冷鋒過境而形成大量降雪"],"answer":1,"explain":"潮濕氣流遇山被迫抬升，因高度上升而降溫、水氣凝結成雲致雨，這種降水稱為地形雨，發生在迎風側；背風側氣流下沉增溫，反而較為乾燥。鋒面雨由冷暖氣團交會造成，與地形抬升機制不同；南亞低地終年高溫，不會形成降雪。"},{"level":"adv","topic":"印度河平原的灌溉農業","q":"印度河中下游平原年雨量偏少，卻能成為重要的農業區，主要憑藉下列何者？","choices":["引印度河的河水灌溉，河水來自上游高山冰雪融水與山區降水","全年受西南季風影響，雨量豐沛而穩定","大量抽取海水淡化後供應農田使用","闢建梯田攔蓄山坡逕流，發展雨水農業"],"answer":0,"explain":"印度河中下游雖然雨量少，但上游高山的冰雪融水與山區降水提供較穩定的水源，居民開鑿渠道引水，成為重要的灌溉農業區。該區位於內陸且水氣較少，降水並不豐沛；海水淡化成本高、規模有限；當地為平原地形，並非梯田農業。"},{"level":"adv","topic":"宗教分布與印巴分治","q":"南亞脫離英國殖民統治後，因宗教信仰差異而分別建國。今日巴基斯坦、孟加拉與印度的主要宗教依序為何？","choices":["佛教、佛教；印度教","印度教、印度教；伊斯蘭教","伊斯蘭教、伊斯蘭教；印度教","錫克教、佛教；伊斯蘭教"],"answer":2,"explain":"英國殖民結束後，南亞依宗教分治：以伊斯蘭教徒為主的地區成立巴基斯坦（其中東巴基斯坦後來獨立為孟加拉），印度則以印度教徒居多，雙方長期因宗教與領土問題衝突不斷。其餘選項的宗教與國家對應皆錯誤。"},{"level":"adv","topic":"人口壓力的影響","q":"印度人口居世界前列且仍持續成長，這樣的人口壓力最可能造成下列哪一組現象？","choices":["勞動力嚴重不足，工資因而大幅上漲","耕地大量休耕，糧食長期過剩而外銷","都市人口大量外移，鄉村人口反而暴增","糧食與就業需求大增，都市住宅、交通與環境負擔加重"],"answer":3,"explain":"人口眾多且持續成長，會使糧食、飲水、就業與教育需求同時增加；鄉村人口大量湧入都市後，也造成住宅不足、交通壅塞與環境污染等問題。人口多代表勞動力充沛而非不足；糧食供應吃緊而非過剩；人口流動方向是由鄉村往都市，而非相反。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>未來式 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng2-future",
+  "title": "未來式",
+  "subject": "英文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "文法總複習",
+  "tag": "will · be going to",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>未來式</h1><div class="sub">英文 · will · be going to · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"will + 原形動詞","q":"Don't worry. I ___ you with your homework tonight.","choices":["will helped","will helping","will help","will helps"],"answer":2,"explain":"未來式的基本公式是 will + 動詞原形，所以 will help 正確。will helped 在 will 後面誤用過去式；will helping 誤用 V-ing；will helps 多加了第三人稱單數 -s。will 是助動詞，後面永遠接原形，本身也不會隨主詞變化。"},{"level":"basic","topic":"won't 否定句","q":"Amy is very busy, so she ___ come to the party tomorrow.","choices":["doesn't","isn't","wasn't","won't"],"answer":3,"explain":"未來式否定用 will not，縮寫為 won't，後面接原形 come，正好搭配 tomorrow 的未來時間。doesn't 是現在式否定、wasn't 是過去式否定，時態都不合；isn't 是 be 動詞否定，後面不能直接接原形動詞 come。"},{"level":"basic","topic":"Will 疑問句","q":"___ you visit your grandparents next Monday?","choices":["Will","Do","Are","Did"],"answer":0,"explain":"未來式疑問句要把助動詞 will 移到主詞前面：Will + 主詞 + 原形動詞？Do 是現在式助動詞、Did 是過去式助動詞，都與 next Monday 的未來時間衝突；Are 是 be 動詞，後面不能直接接原形動詞 visit。"},{"level":"basic","topic":"未來式簡答","q":"A: Will your brother join us tomorrow? B: ___","choices":["Yes, he does.","Yes, he is.","Yes, he did.","Yes, he will."],"answer":3,"explain":"問句用哪個助動詞，簡答就用同一個助動詞回答。問句是 Will your brother join...?，所以答 Yes, he will.。does 是現在式助動詞、did 是過去式助動詞、is 是 be 動詞，都不能用來回答 will 開頭的問句。"},{"level":"basic","topic":"I'll 縮寫","q":"A: This box is really heavy. B: ___ carry it for you.","choices":["I'll","I'm","I've","I was"],"answer":0,"explain":"I'll 是 I will 的縮寫，後面接原形動詞 carry，表示看到箱子很重、當下臨時決定要幫忙。I'm 後面要接 V-ing 或形容詞、I've 後面要接過去分詞、I was 是過去式 be 動詞，三者後面都不能直接接原形動詞 carry。"},{"level":"basic","topic":"be going to + 原形","q":"We ___ visit the science museum this weekend.","choices":["are going","are going to","is going to","going to"],"answer":1,"explain":"be going to 的公式是 be 動詞 + going to + 原形動詞，主詞 We 用 are，所以 are going to visit 正確。are going 少了 to；is going to 的 be 動詞與主詞 We 不一致；going to 前面漏掉 be 動詞。"},{"level":"basic","topic":"be going to 的 be 動詞一致","q":"My sister ___ going to study in Taipei next year.","choices":["are","be","is","will"],"answer":2,"explain":"主詞 My sister 是第三人稱單數，be 動詞要用 is。are 與主詞不一致；be 是原形，前面沒有助動詞時不能單獨當句子的動詞；will going to 則是把 will 和 be going to 兩種未來式混用的典型錯誤。"},{"level":"basic","topic":"be going to 表跡象預測","q":"Look at the dark clouds in the sky! It ___ rain soon.","choices":["is going to","goes to","will going to","is go to"],"answer":0,"explain":"眼前已有明顯跡象（烏雲密布）而做的預測，用 be going to + 原形動詞。goes to 是現在簡單式，無法表達此處的預測；is go to 的 be 動詞後面不能接原形 go；will going to 把兩種未來式混在一起，是最常見的錯誤寫法。"},{"level":"basic","topic":"in + 一段時間","q":"My father will come back from Japan ___ three days.","choices":["for","on","at","in"],"answer":3,"explain":"未來式表示「再過一段時間之後」用 in + 一段時間，in three days 是「三天後」。for 表示持續多久（for three days 是長達三天）；on 後面接星期或日期；at 後面接鐘點時刻，都不符合語意。"},{"level":"basic","topic":"未來時間副詞","q":"Kevin will move to a new house ___.","choices":["last week","two days ago","next month","yesterday"],"answer":2,"explain":"句中用了 will，就必須搭配未來的時間副詞，四個選項中只有 next month 指未來。last week、two days ago、yesterday 都是過去時間，要搭配過去式動詞 moved，不能和 will 並用。"},{"level":"basic","topic":"改錯：will 句型","q":"Which sentence is correct?","choices":["She will goes to Japan next year.","She will be a doctor in the future.","She will going to Japan next year.","She wills go to Japan next year."],"answer":1,"explain":"will 是助動詞，後面一定接動詞原形，She will be a doctor in the future. 用了原形 be，完全正確。will goes 多加了第三人稱單數 -s；will going to 把 will 和 be going to 混用；wills 把 will 當一般動詞加 -s，助動詞不會有字形變化。"},{"level":"adv","topic":"時間副詞子句用現在式","q":"When my father ___ home tonight, I will tell him the good news.","choices":["gets","will get","is getting","got"],"answer":0,"explain":"when、if 引導的時間或條件副詞子句，即使指未來也要用現在簡單式代替未來式，只有主要子句用 will；主詞 my father 是第三人稱單數，動詞用 gets。will get 犯了在時間副詞子句中用 will 的錯誤；is getting 是現在進行式，在此不表未來，語意不通；got 是過去式，與 tonight 的未來時間衝突。"},{"level":"basic","topic":"be going to 疑問句","q":"A: What ___ you going to do this Sunday? B: I'm going to clean my room and do my homework.","choices":["do","are","will","did"],"answer":1,"explain":"be going to 的疑問句是把 be 動詞移到主詞前面：What + are + 主詞 + going to + 原形動詞？主詞 you 用 are。do 是現在式助動詞、did 是過去式助動詞、will 是未來助動詞，後面都不能再接 going to 的結構，What do/did/will you going to do 全都不成立。"},{"level":"basic","topic":"現在進行式表未來","q":"Don't call me at eight tonight. I ___ dinner with my grandparents.","choices":["have","am have","having","am having"],"answer":3,"explain":"已經安排好的近期活動可用現在進行式表未來，am having dinner 表示今晚已約好要吃飯。have 是現在簡單式，表習慣或狀態；am have 的 be 動詞後面不能接原形；having 前面漏掉 be 動詞，V-ing 不能單獨當句子的動詞。"},{"level":"adv","topic":"will 表當下決定","q":"A: Listen! The phone is ringing. B: ___","choices":["I'm answering it.","I'll answer it.","I answer it.","I answered it."],"answer":1,"explain":"電話突然響起，說話者是在當下臨時決定去接，這種即時決定要用 will（口語常縮寫成 I'll）。I'm answering it. 表示正在接電話或早已安排好的事；I answer it. 是現在簡單式，表習慣；I answered it. 是過去式，與電話正在響的情境矛盾。"},{"level":"adv","topic":"be going to 表既定計畫","q":"I bought some eggs and sugar yesterday because I ___ make a cake this afternoon.","choices":["will","am going","am going to","go to"],"answer":2,"explain":"昨天就先把材料買好，代表做蛋糕是事先決定好的計畫，這種先前的打算要用 be going to + 原形動詞。will 用於說話當下才決定或單純預測，與「昨天已先準備」的既定計畫語境不合；am going 後面漏掉 to；go to 是現在簡單式，後面也不能直接接原形 make。"},{"level":"adv","topic":"There will be","q":"There ___ a big concert at our school next Friday.","choices":["will be","will have","is going to have","will is"],"answer":0,"explain":"表示「將會有」用 There will be，there 句型的動詞是 be，接在 will 後面要用原形。把中文的「有」直譯成 will have 是最常見的錯誤；There is going to have 同樣錯誤，應改成 There is going to be；will is 則是在助動詞後面又用了 be 動詞的變化形。"},{"level":"adv","topic":"找出錯誤句","q":"Which sentence is NOT correct?","choices":["Will you be at home tomorrow?","She isn't going to join the club.","We won't to be late.","I'm going to see a movie tonight."],"answer":2,"explain":"won't 就是 will not，後面直接接原形動詞，不可以加 to，應改成 We won't be late.，所以這句不正確。其餘三句分別是正確的 Will 疑問句、be going to 否定句與 be going to 肯定句，文法都沒有問題。"},{"level":"adv","topic":"句意理解：be going to","q":"\"Sam is going to open a restaurant next year.\" What does this sentence mean?","choices":["Sam opened a restaurant last year.","Sam is looking for a restaurant right now.","Sam doesn't want to open a restaurant.","Sam has already planned to open a restaurant."],"answer":3,"explain":"be going to 表示已經計畫、打算要做的事，所以句意是 Sam 已經計畫明年要開餐廳。Sam opened a restaurant last year. 講的是過去已發生的事，與 next year 不符；Sam is looking for a restaurant right now. 說的是現在正在進行的動作；Sam doesn't want to open a restaurant. 意思與原句相反。"},{"level":"adv","topic":"現在進行式表未來 vs 現在","q":"Which sentence talks about a future plan?","choices":["I'm doing my homework right now.","I'm flying to Tokyo next Tuesday.","I'm reading a comic book at the moment.","I fly to Tokyo every summer."],"answer":1,"explain":"現在進行式若搭配未來時間副詞（next Tuesday），就是表示已安排好的未來計畫。right now 和 at the moment 都指此刻正在進行的動作，不是未來計畫；I fly to Tokyo every summer. 是現在簡單式加 every summer，表示反覆的習慣。"},{"level":"adv","topic":"時態對比","q":"Last summer we went to Kenting, and next summer we ___ there again.","choices":["go","went","are going","will going"],"answer":2,"explain":"next summer 指未來，而且是已經計畫好的行程，可用現在進行式表未來 are going。go 是現在簡單式，表習慣；went 是過去式，只能搭配 last summer；will going 在 will 後面誤接 V-ing，will 後面必須接原形動詞。"},{"level":"adv","topic":"疑問詞 + will 語序","q":"Which question is correct?","choices":["When will the party start?","When the party will start?","When will start the party?","When does the party will start?"],"answer":0,"explain":"疑問詞開頭的未來式問句語序是「疑問詞 + will + 主詞 + 原形動詞」，所以 When will the party start? 正確。When the party will start? 沒有把 will 移到主詞前面；When will start the party? 把動詞放到主詞前，語序錯誤；When does the party will start? 一個句子裡同時出現 does 和 will 兩個助動詞。"},{"level":"adv","topic":"綜合對話填空","q":"A: ___ you free this Saturday? My family and I ___ have a picnic in the park. B: Sounds great!","choices":["Do; will","Are; are going to","Will; are going","Are; will going to"],"answer":1,"explain":"free 是形容詞，問有沒有空要用 be 動詞：Are you free this Saturday?；第二格是全家事先計畫好的活動，用 are going to + 原形動詞 have。Do you free 和 Will you free 都缺了 be 動詞；are going have 少了 to；will going to 是兩種未來式混用的錯誤。"},{"level":"adv","topic":"現在進行式 vs 未來式","q":"My brother ___ TV now, but he ___ his homework after dinner.","choices":["watches; will do","is watching; will does","watches; is going do","is watching; will do"],"answer":3,"explain":"now 表示此刻正在進行，用現在進行式 is watching；after dinner 指未來，用 will + 原形動詞 do。watches 是現在簡單式表習慣，和 now 不合；will does 在助動詞後面多加了 -s；is going do 漏掉 to，應為 is going to do。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>政黨與利益團體 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ2-party",
+  "title": "政黨與利益團體",
+  "subject": "公民",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第6課 政黨與利益團體",
+  "tag": "政黨功能·兩黨多黨·利益團體",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>政黨與利益團體</h1><div class="sub">公民 · 政黨功能·兩黨多黨·利益團體 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"政黨的意義","q":"下列關於「政黨」的敘述，何者最符合其定義？","choices":["由政府依法設立，專門辦理各項公職人員選舉投開票事務的機關","由法官組成，負責解釋憲法與審理各類訴訟案件的司法機關","由政治理念相近的人民自願組成，希望透過選舉取得執政權，以實現其政見的團體","由具有共同利益的人組成，只希望影響政府政策，並不以取得執政權為目的的團體"],"answer":2,"explain":"政黨的核心特徵是「以取得執政權為目標」，由理念相近的人民自願結合，透過選舉爭取執政以實現政見。「辦理投開票事務的機關」是選務機關，屬行政體系；「由法官組成的司法機關」是法院，與政黨性質完全不同；「只希望影響政策、不以取得執政權為目的」描述的是利益團體（壓力團體），不是政黨。"},{"level":"basic","topic":"政黨功能－提名候選人","q":"甲政黨在選舉前舉辦黨內初選，決定由哪一位黨員代表該黨參選市長。這最能展現政黨的哪一項功能？","choices":["提名候選人","制定與修改法律","審理選舉相關訴訟","辦理投票與開票事務"],"answer":0,"explain":"政黨提名候選人，使選民在投票時有明確的選擇對象，是政黨最基本的功能之一。「制定與修改法律」是立法機關（立法院、地方議會）的職權；「審理選舉訴訟」屬法院；「辦理投開票」是選務機關的工作，三者都不是政黨的功能。"},{"level":"basic","topic":"政黨功能－匯集民意","q":"甲政黨把社會上分歧的各種意見加以整理歸納，形成具體的政策主張與政見向社會提出。這屬於政黨的哪一項功能？","choices":["責任政治","政治甄補","監督制衡","匯集民意"],"answer":3,"explain":"匯集民意是指政黨整合人民分歧的意見，凝聚成具體政見與政策主張。「政治甄補」是培養並輸送政治人才；「監督制衡」多指在野黨對執政者的監督；「責任政治」是「執政者須為施政成敗負責」的民主原則，並非整合意見的功能。"},{"level":"basic","topic":"政黨功能－政治溝通","q":"甲政黨透過政見說明會、記者會與網路社群向民眾說明政策內容，同時把民眾的反應與需求反映給政府。這主要屬於政黨的哪一項功能？","choices":["政治甄補","政治溝通","提名候選人","監督制衡"],"answer":1,"explain":"政治溝通是指政黨扮演人民與政府之間的橋樑，雙向傳達政策與民意，本題「向民眾說明政策」並「把民意反映給政府」正是雙向溝通。「政治甄補」是為國家培養、輸送政治人才；「提名候選人」是決定參選人選；「監督制衡」是在野黨對執政者的監督，均與本題情境不同。"},{"level":"basic","topic":"政黨功能－監督制衡","q":"在野黨的民意代表在議會中質詢首長、審查政府預算，並公開指出施政缺失。這最能展現政黨的哪一項功能？","choices":["政治甄補","提名候選人","匯集民意","監督制衡"],"answer":3,"explain":"在野黨透過質詢、審查預算等方式監督執政者，防止權力濫用，正是監督制衡功能的展現，也符合權力分立的精神。要特別注意：質詢與審查預算是立法機關（立法院、地方議會）的職權，不可誤認為監察院；監察院行使的是彈劾、糾舉與審計權。其餘選項分別是培養政治人才、決定參選人選、整合人民意見，都不是本題情境的重點。"},{"level":"basic","topic":"政黨功能－政治甄補","q":"甲政黨長期培養年輕黨員擔任幕僚、參與地方公職選舉，再逐步栽培為中央層級的政治人物。這展現政黨的哪一項功能？","choices":["政治甄補","責任政治","監督制衡","政治溝通"],"answer":0,"explain":"政治甄補是指政黨為國家發掘、培養並輸送政治人才，使公職人員的來源穩定。「責任政治」強調執政者須對施政成敗負責；「監督制衡」主要由在野黨行使；「政治溝通」是政府與人民間意見的傳達，都與「培養人才」不同。"},{"level":"basic","topic":"責任政治","q":"執政黨若施政未達人民期待，選民可在下次選舉中以選票使其失去政權；執政者也必須為施政成敗負責。這種民主政治的運作原則稱為？","choices":["權力分立","責任政治","地方自治","中央集權"],"answer":1,"explain":"責任政治指執政者必須為施政成敗負責，並由選民以選票決定其去留，是民主政治的重要原則。「權力分立」是指國家權力分由不同機關（如我國五院）行使並相互制衡；「地方自治」指地方自主處理自治事項；「中央集權」是中央與地方權限劃分的方式，均非本題描述的「負責」原則。"},{"level":"basic","topic":"執政黨","q":"下列關於「執政黨」的敘述，何者正確？","choices":["指在選舉中得票最少、完全無法進入議會的政黨","指專門負責審判官員是否違法失職的司法機關","指在選舉中獲勝而取得執政權，負責組成政府、推動政策的政黨","指不以取得執政權為目的、只推動特定議題的人民團體"],"answer":2,"explain":"執政黨是取得執政權、負責組成政府並推動政策的政黨，同時必須承擔施政成敗的責任。「得票最少、無法進入議會」不是執政黨的意思；「審判官員是否違法失職」是法院的職權，政黨不是司法機關；「不以取得執政權為目的」描述的是利益團體。"},{"level":"basic","topic":"在野黨","q":"在民主國家中，在野黨最主要的角色是什麼？","choices":["依法審判執政黨官員是否觸犯法律並加以判刑","代替執政黨執行國家預算並指揮各級公務人員","負責辦理選舉、開票作業並公告當選名單","監督執政黨的施政、提出不同政策主張，並準備在下次選舉爭取執政"],"answer":3,"explain":"在野黨是未取得執政權的政黨，主要角色是監督執政黨、提供不同的政策選擇，並爭取下次執政，使政黨政治產生良性競爭。「審判並判刑」是法院的職權；「執行預算、指揮公務人員」屬行政機關；「辦理選舉開票」是選務機關的工作，都不是在野黨的角色。"},{"level":"basic","topic":"政黨制度－一黨制","q":"某國家長期只允許一個政黨合法存在，其他政黨無法自由組成，也不能與之公平競爭。這種政黨制度稱為？","choices":["一黨制","兩黨制","多黨制","聯邦制"],"answer":0,"explain":"一黨制是指國內僅有一個政黨能合法存在或長期壟斷政權，人民缺乏其他政治選擇。「兩黨制」是兩大政黨輪流執政；「多黨制」是多個政黨相互競爭；「聯邦制」是國家權力在中央與各邦（州）之間垂直劃分的方式，屬國家結構的分類，不是政黨制度。"},{"level":"basic","topic":"政黨制度－兩黨制","q":"某國長期以來由兩個勢均力敵的主要政黨相互競爭、輪流取得執政權，其他小黨很難取得執政機會。這種政黨制度稱為？","choices":["一黨制","兩黨制","多黨制","內閣制"],"answer":1,"explain":"兩黨制是指國內有兩個勢均力敵的主要政黨長期輪流執政。「一黨制」只有一個政黨可合法存在；「多黨制」是三個以上政黨都有機會取得席次；「內閣制」是政府體制（行政與立法關係）的分類，與政黨制度的分類不同，不可混為一談。"},{"level":"basic","topic":"政黨制度－多黨制","q":"某國國內有三個以上具影響力的政黨相互競爭，各政黨都有機會取得部分席次並影響政局。這種政黨制度稱為？","choices":["一黨制","兩黨制","多黨制","中央集權制"],"answer":2,"explain":"多黨制是指國內有三個以上具影響力的政黨相互競爭，民意的反映較為多元。「一黨制」僅允許一個政黨存在；「兩黨制」由兩大黨輪流執政；「中央集權制」是中央與地方權限劃分的方式（與地方自治相對），屬國家權力的垂直分配，並非政黨制度。"},{"level":"basic","topic":"利益團體的意義","q":"下列關於「利益團體」（又稱壓力團體）的敘述，何者最正確？","choices":["由政府依法設立，負責執行國家政策並管理公務人員的行政機關","由具有共同利益或理念的人自願組成，透過各種方式影響政府政策，但不以取得執政權為目的","以推派候選人、贏得選舉、組成政府為主要目標的政治組織","由各國政府共同組成，用來處理國際爭端的國際組織"],"answer":1,"explain":"利益團體由具共同利益或理念的人自願組成，向政府施加壓力以影響政策，但並不打算自己執政，故又稱壓力團體。「推派候選人、組成政府」描述的是政黨；「執行國家政策的機關」是行政機關；「由各國政府組成」是國際組織，性質都不相同。"},{"level":"basic","topic":"政黨與利益團體的差異","q":"政黨與利益團體最主要的差別在於？","choices":["政黨只關心單一議題，利益團體則關心全面性的國家政策","政黨由人民自願組成，利益團體則一律由政府指派人員成立","政黨可以公開表達政治意見，利益團體則依法不得公開表達意見","政黨以取得執政權、組成政府為目標；利益團體只求影響政策，不直接執政"],"answer":3,"explain":"兩者都會表達意見、影響政治，但政黨的目標是取得執政權並組成政府，利益團體則只希望政策朝有利於自己的方向調整，不直接執政。「政黨只關心單一議題」說反了，政黨關心的政策面向較全面，利益團體常聚焦特定議題；利益團體同樣是人民自願結社，並非政府指派；人民享有言論與結社自由，利益團體當然可以公開表達意見。"},{"level":"adv","topic":"利益團體類型－職業團體","q":"某醫師公會為了爭取更合理的醫療給付制度，多次拜會民意代表說明立場，並提出修法建議。就利益團體的分類而言，該公會屬於下列何者？","choices":["職業團體","公益團體","政黨","政府機關"],"answer":0,"explain":"職業團體以維護成員的職業利益為主要目的，如各種工會、公會、農會、商業同業公會等，本題的醫師公會正是為成員爭取有利的給付制度。「公益團體」以促進不特定多數人的公共利益為目的（如環保、消保團體）；該公會並未推派候選人爭取執政，故不是政黨；它由專業人員自願組成，也不是政府機關。"},{"level":"adv","topic":"利益團體類型－公益團體","q":"某團體長期關心河川汙染，舉辦淨溪活動，並要求政府加強稽查工廠排放廢水，但從不推派候選人參與選舉。依其性質判斷，該團體最可能是？","choices":["政府依法設立的環境保護主管機關","以維護成員職業利益為主的職業團體","以維護公共利益為訴求的公益團體","以推派候選人、取得執政權為目標的政黨"],"answer":2,"explain":"該團體訴求的環境品質屬於全體民眾共享的公共利益，且不推派候選人、不爭取執政，符合公益團體的特徵。「環保主管機關」是政府機關，本身即負責稽查，不會反過來要求政府加強稽查；「職業團體」是為自身成員的職業利益發聲；「政黨」則會提名候選人以取得執政權，都與題幹敘述不符。"},{"level":"adv","topic":"利益團體影響政策的方式－遊說","q":"某團體派代表直接拜訪民意代表與相關部會官員，提供研究資料並當面說明自身立場，希望影響法案內容。這種影響政策的方式最接近下列何者？","choices":["示威","請願","罷免","遊說"],"answer":3,"explain":"遊說是直接向民意代表或政府官員陳述意見、提供資訊，以影響其決策，正符合題幹的「拜會、當面說明」。「示威」是以集會遊行等公開行動表達訴求；「請願」是依法向政府機關或民意機關陳情，多以書面提出，並非面對面遊說；「罷免」是選民以投票解除民選公職人員職務，屬人民的參政權，不是利益團體影響政策的方式。"},{"level":"adv","topic":"請願與示威的比較","q":"下列哪一項最能說明「請願」與「示威」的差異？","choices":["請願必須透過政黨代為提出，示威則只能由人民自行發動","請願是向政府機關或民意機關陳述意見（多以書面方式）；示威則是以集會遊行等公開行動表達訴求，形成輿論壓力","請願與示威都必須先取得執政黨的書面同意才可以進行","請願是政府對人民進行的政令宣導，示威則是政府對人民的懲罰措施"],"answer":1,"explain":"請願與示威都是人民表達意見、影響政策的合法途徑，差別在於管道與形式：請願是向機關陳情，示威則以公開集會遊行造成壓力。人民可自行提出請願，不須經由政黨；行使權利也不需要執政黨同意，否則違反民主原則；至於「政令宣導」與「懲罰措施」完全顛倒了主體，請願與示威都是人民對政府的行動。"},{"level":"adv","topic":"利益團體影響政策的方式－輿論宣傳","q":"某消費者保護團體透過記者會、社群媒體與投書報紙，讓更多民眾了解商品標示不清的問題，促使政府檢討相關規定。此團體主要運用下列何種方式影響政策？","choices":["輿論宣傳","提名候選人參與選舉","直接組成政府並推動政策","行使司法審判權"],"answer":0,"explain":"透過媒體與社群喚起社會關注、形成輿論，進而促使政府調整政策，屬於輿論宣傳。「提名候選人」是政黨的功能，利益團體不推派候選人；「組成政府」是執政黨的角色，利益團體不直接執政；「司法審判權」專屬法院，任何團體都不得行使。"},{"level":"adv","topic":"兩黨制的優缺點","q":"關於兩黨制的評價，下列敘述何者最為適當？","choices":["政黨數目眾多，政府往往須由多黨聯合組成，政局較不穩定","國內只有一個政黨能合法存在，人民缺乏其他選擇","政局相對穩定、施政責任歸屬明確，但少數或多元的意見較不易被充分反映","選民難以判斷施政責任的歸屬，責任政治不易落實"],"answer":2,"explain":"兩黨制由兩大黨輪流執政，執政者權責清楚，有利於落實責任政治，政局也較穩定；缺點是小黨與少數群體的意見較難進入政治舞台。「多黨聯合組成政府」描述的是多黨制的特徵；「只有一個政黨」是一黨制；「責任歸屬難以判斷」剛好說反了，兩黨制的責任歸屬其實相當明確。"},{"level":"adv","topic":"多黨制的特點","q":"某國採行多黨制，選舉後沒有任何政黨的席次超過半數，必須由數個政黨協商合組聯合政府。此情形最能說明多黨制的哪一項特點？","choices":["不可能發生政黨輪替，人民也無從監督執政者","民意反映較為多元，但政黨之間必須協商妥協，政局可能較不穩定","執政黨可以完全不理會其他政黨與少數族群的意見","國家只允許一個政黨存在，其他政黨一律被禁止"],"answer":1,"explain":"多黨制的優點是各種意見都有代表發聲、民意反映多元；缺點是常無單一政黨掌握過半席次，須靠協商組成聯合政府，一旦協商破裂就可能造成政局動盪，正符合題幹情境。「不可能政黨輪替」與「只允許一個政黨存在」是一黨制才會出現的情況；「可以完全不理會其他政黨」則與多黨制須協商妥協的現實相反。"},{"level":"adv","topic":"一黨制的缺點","q":"相較於兩黨制與多黨制，一黨制最可能出現下列哪一項問題？","choices":["政黨數目過多，政策難以整合，內閣容易更迭","政黨輪替過於頻繁，使政策無法延續","政府必須由多黨聯合組成，容易因協商破裂而垮台","缺乏其他政黨的競爭與監督，人民的選擇與意見表達受到限制"],"answer":3,"explain":"一黨制下沒有其他政黨可以競爭與制衡，執政者不易受到監督，人民也缺乏選擇，較難落實責任政治。其餘三項描述的都是多黨制（或政黨競爭激烈）可能出現的現象，與一黨制「只有一黨、缺乏競爭」的特徵正好相反。"},{"level":"adv","topic":"利益團體的限制","q":"某利益團體為了爭取對自己成員有利的法案，投入大量資源影響決策，最後通過的政策雖使該團體獲益，卻讓多數民眾的負擔增加。這個例子最能說明利益團體可能出現的哪一項問題？","choices":["利益團體不得向政府表達任何意見，此舉已經違反法律","利益團體必須先提名候選人並贏得選舉，否則無法影響政策","若過度追求成員的特殊利益，可能因而損害多數人的公共利益","利益團體只要成功影響政策，就會自動取得執政權並組成政府"],"answer":2,"explain":"利益團體具有反映多元意見、提供專業資訊、監督政府的正面功能；但若一味追求少數成員的特殊利益，甚至以不當手段影響決策，就可能犧牲公共利益，這是利益團體常被批評之處。人民享有結社與表達意見的自由，向政府表達意見並不違法；利益團體不提名候選人，也不會因影響政策成功而取得執政權。"},{"level":"adv","topic":"政黨與利益團體的共同點","q":"就政黨與利益團體的比較而言，下列何者是兩者共同具備的特徵？","choices":["都是人民基於自願結社而成立，並會設法影響政府的政策","都以取得執政權、組成政府作為最主要的目標","都由政府依法設立，成員必須由主管機關指派","都可以行使審判權，直接裁決各種政策爭議"],"answer":0,"explain":"政黨與利益團體都是人民行使結社自由所組成的民間團體，也都會透過各種方式表達意見、影響政府決策，這是兩者的共同點。差別在於：只有政黨以取得執政權、組成政府為目標，利益團體則否；兩者都不是政府設立的機關，成員自願加入而非由主管機關指派；審判權專屬法院，任何團體都不得行使。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

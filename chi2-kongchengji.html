@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>空城計 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi2-kongchengji",
+  "title": "空城計",
+  "subject": "國文",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "古典小說·三國演義",
+  "ready": true,
+  "author": "羅貫中"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>空城計</h1><div class="sub">國文 · 古典小說·三國演義 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者","q":"〈空城計〉選自《三國演義》，這部小說的作者是元末明初的哪一位小說家？","choices":["施耐庵","羅貫中","吳承恩","曹雪芹"],"answer":1,"explain":"《三國演義》作者為元末明初的羅貫中，全名《三國志通俗演義》。他根據陳壽《三國志》的史事，再融合民間傳說與說書材料改寫，成為我國第一部長篇章回歷史演義小說。其餘三人：施耐庵著《水滸傳》、吳承恩著《西遊記》、曹雪芹著《紅樓夢》。"},{"level":"basic","topic":"文學常識－文體","q":"就文學體裁而言，〈空城計〉所出自的《三國演義》屬於下列何者？","choices":["文言筆記小說","唐代傳奇","長篇章回歷史演義小說","元代雜劇"],"answer":2,"explain":"《三國演義》全書分回敘事、每回標有對偶回目，屬長篇章回小說；因以三國歷史為題材鋪演成書，故又稱「歷史演義小說」。〈空城計〉即出自第九十五回「馬謖拒諫失街亭　武侯彈琴退仲達」。"},{"level":"basic","topic":"文學常識－四大古典小說","q":"下列哪一部作品「不」屬於一般所稱的「中國四大古典小說」（四大名著）？","choices":["《三國演義》","《水滸傳》","《西遊記》","《儒林外史》"],"answer":3,"explain":"四大古典小說指《三國演義》《水滸傳》《西遊記》《紅樓夢》。《儒林外史》是清代吳敬梓所著的長篇諷刺小說，不在四大名著之列。（另有「四大奇書」之說，指三國、水滸、西遊與《金瓶梅》。）"},{"level":"basic","topic":"字詞解釋－鶴氅","q":"課文寫孔明登上城樓時「披鶴氅」，「鶴氅」是指下列何者？","choices":["用鳥羽織成的寬大外衣","白色的鐵製戰甲","繫在腰間的絲帶","遮陽避雨的斗笠"],"answer":0,"explain":"鶴氅，音ㄏㄜˋ　ㄔㄤˇ，本指用鳥羽（鶴羽）製成的外套，後泛指道家或文士所穿的寬大外衣。白話：孔明披著羽衣。大敵當前卻不著戰袍，正見其從容悠閒，與「大軍壓境」的緊張氣氛形成強烈落差。"},{"level":"basic","topic":"字詞解釋－綸巾","q":"孔明「戴綸巾」的「綸巾」，其形制最接近下列何者？","choices":["以鐵片綴成的頭盔","以竹篾編成的斗笠","以青色絲帶編成的頭巾","以獸皮縫製的暖帽"],"answer":2,"explain":"綸巾，音ㄍㄨㄢ　ㄐㄧㄣ，以青色絲帶編成的頭巾，相傳為諸葛亮所常用，故又稱「諸葛巾」。「鶴氅」「綸巾」皆為文士裝束，作者藉服飾描寫刻畫孔明儒雅鎮定的形象。"},{"level":"basic","topic":"字詞解釋－操","q":"「焚香操琴」的「操」，在此的意思是？","choices":["操練、訓練","掌握、控制","憂慮、擔心","彈奏"],"answer":3,"explain":"「操琴」即彈琴，「操」為彈奏之意。白話：點起香、彈起琴來。孔明以焚香撫琴的悠閒姿態示人，正是空城計的關鍵一著。"},{"level":"basic","topic":"字詞解釋－弄險","q":"司馬懿判斷孔明「平生謹慎，不曾弄險」，句中「弄險」的意思是？","choices":["玩弄權術","做冒險的事","布置陷阱","譏笑他人"],"answer":1,"explain":"「弄險」即行險、做冒險的事。白話：諸葛亮一生行事謹慎，不曾冒過險。司馬懿因為認定孔明絕不冒險，才會把「空城」看成「有埋伏」，反而中計。"},{"level":"basic","topic":"字詞解釋－駭然","q":"孔明說明自己用計的緣由後，文中寫眾官「駭然」，「駭然」是形容什麼？","choices":["非常驚訝的樣子","非常憤怒的樣子","非常疲倦的樣子","非常恭敬的樣子"],"answer":0,"explain":"駭，驚嚇、驚訝。「眾官無不駭然」白話為：眾官員沒有一個不感到驚訝。眾人聽了才恍然大悟，這一筆側面寫出孔明料敵之準、用計之奇。"},{"level":"basic","topic":"文意理解－情節起因","q":"依課文內容，孔明之所以不得不施用「空城計」，最主要的原因是什麼？","choices":["城中糧草全被魏軍燒毀","他想藉機試探司馬懿是否忠於魏國","西城兵力極少，身邊多是文官，根本無法迎戰","他要替姜維製造立功的機會"],"answer":2,"explain":"街亭失守後，孔明所引五千兵已分一半去搬運糧草，城中只剩二千五百軍，身邊又「別無大將，只有一班文官」。面對司馬懿十五萬大軍，既不能戰，棄城而走又必被追擒，只能設計退敵。"},{"level":"basic","topic":"文意理解－情節轉折","q":"司馬懿最後下令退兵，他所持的直接理由是？","choices":["接到魏主召他班師的命令","軍中糧草不足，難以久戰","城樓上突然萬箭齊發，魏軍傷亡慘重","判斷孔明生平謹慎，城中必有埋伏"],"answer":3,"explain":"司馬懿認為孔明一向謹慎、從不冒險，如今竟大開城門，必定另有埋伏，貿然進兵就是中計，因此下令急速退兵。白話：諸葛亮一生謹慎，不曾冒險；今天大開城門，一定有伏兵，我軍若進去，就中了他的計了。"},{"level":"basic","topic":"文意理解－情節布置","q":"孔明下令「大開四門」後，命留在城中的軍士做什麼，以營造「空城」的假象？","choices":["在城牆上遍插旌旗，虛張聲勢","扮作百姓，在城門內外灑掃街道","在城外連夜挖掘壕溝","在城中擂鼓吶喊，作出迎戰姿態"],"answer":1,"explain":"孔明下令把旌旗全部隱匿、大開四面城門，每一門派二十名軍士扮作百姓灑掃街道，營造城中毫無戒備、一如平日的假象，以引發司馬懿的疑心。注意旌旗是「藏起來」而非「插滿城頭」，正好與虛張聲勢的作法相反。"},{"level":"basic","topic":"文意理解－人物反應","q":"魏軍遠去之後，孔明立即出現的反應是？","choices":["撫掌而笑（拍手而笑）","伏地痛哭失聲","下令全軍出城追擊","因驚嚇過度而昏倒"],"answer":0,"explain":"孔明見魏軍遠去，撫掌而笑，接著才向不解的眾官說明用計的道理。這一「笑」既顯出料敵如神後的暢快，也化解了先前緊繃的氣氛；但他隨即決定退回漢中，可見並未因此輕敵。"},{"level":"basic","topic":"文學常識－小說三要素","q":"閱讀小說時常從「三要素」入手，小說的三要素是指下列何者？","choices":["主題、結構、語言","人物、情節、環境","起、承、轉、合","時間、地點、人物"],"answer":1,"explain":"小說三要素為人物、情節、環境。以〈空城計〉為例：人物是孔明與司馬懿；情節是設空城計退敵的經過；環境則是街亭失守、大軍壓境的緊張局勢與城門洞開的空城景象。"},{"level":"basic","topic":"詞語理解－成語","q":"後人常以「空城計」作為成語使用，它用來比喻什麼？","choices":["兵力雄厚，以多勝少正面強攻","堅守城池、拒不出戰的戰法","掩飾內部的空虛，虛張聲勢使對方不敢輕舉妄動","見情勢不利，立刻棄城逃走"],"answer":2,"explain":"「空城計」由本篇故事而來，比喻在實力空虛時故作鎮定、虛張聲勢，使對方心生疑懼而不敢進犯。今日也常用「唱空城計」形容人手或東西全空的情況。"},{"level":"adv","topic":"情節結構","q":"若將本文情節依「起因—發展—高潮—結局」畫分，下列敘述何者最恰當？","choices":["高潮是孔明在城樓憑欄焚香操琴，與城下的司馬懿形成對峙","起因是孔明撫掌而笑，向眾官說明用計之由","發展是司馬懿引兵退去，孔明急返漢中","結局是司馬懿大軍望西城蜂擁而來"],"answer":0,"explain":"起因：街亭已失、司馬懿大軍逼近西城，孔明無兵可用；發展：藏旗、開門、掃街，孔明登樓操琴；高潮：司馬懿兵臨城下，一在樓上撫琴、一在城下觀望，兩人智謀正面交鋒；結局：魏軍退去，孔明說明用計之由，眾官駭然。其餘三個選項分別把「結局」誤標為起因、把「結局及其後續」誤標為發展、把「起因」誤標為結局，階段全部錯置。"},{"level":"adv","topic":"寫作手法－側面烘托","q":"作者用相當多的筆墨描寫司馬懿的觀察、猜疑與退兵，其主要用意是什麼？","choices":["說明魏軍軍紀嚴明、行動迅速","表現司馬昭年少氣盛、不知輕重","補敘街亭失守的前因後果","以司馬懿的多疑與誤判，從側面烘托孔明的膽識與智謀"],"answer":3,"explain":"這是「側面烘托」的手法：作者不直接讚美孔明多聰明，而是藉對手司馬懿如何細看、如何猜疑、如何倉皇退兵，讓讀者自行感受孔明之智。愈寫司馬懿老練謹慎，愈能突顯能騙過他的孔明高明。"},{"level":"adv","topic":"人物形象－諸葛亮","q":"大軍壓境之際，孔明仍披鶴氅、戴綸巾，憑欄而坐、焚香操琴。這樣的描寫最能表現他何種形象？","choices":["好大喜功，貪圖虛名","優柔寡斷，臨事猶疑","臨危不亂、鎮定自若而智計過人","恃才傲物，輕視部屬"],"answer":2,"explain":"服飾與動作描寫都在傳達「從容」二字：不著戰袍、不設守備，反而焚香彈琴，這是刻意演給司馬懿看的「鎮定」。愈危急愈不亂，正見其膽識與足智多謀。"},{"level":"adv","topic":"人物形象－司馬懿","q":"關於司馬懿在本文中的形象，下列說明何者最為貼切？","choices":["並非無能之輩，只因過度多疑，又以自己對孔明的成見去推想，才會中計","有勇無謀，只憑一時衝動便下令攻城","貪生怕死，一聽到孔明之名便棄軍逃走","心地仁厚，不忍攻打手無寸鐵的百姓"],"answer":0,"explain":"司馬懿是能與孔明抗衡的名將，謹慎正是他的長處；但他把「孔明平生謹慎」當成不變的準則，以己度人，反而被這份多疑所誤。人物的長處成為敗因，形象因而立體，也使孔明的勝利更顯高明。"},{"level":"adv","topic":"人物對比","q":"文中安排司馬昭質疑「莫非諸葛亮無軍，故作此態」，這一筆的作用最可能是？","choices":["暗示司馬昭日後將取代父親統領魏軍","說明魏軍將領彼此不和、軍心渙散","為孔明日後再度使用空城計預作伏筆","讓一語道破真相的少年之見與父親的固執判斷形成對比，更凸顯司馬懿的多疑"],"answer":3,"explain":"白話：莫非是諸葛亮沒有兵，故意裝出這副樣子？司馬昭的猜測其實完全命中事實，偏偏經驗老到的司馬懿不肯採信。真相被說破卻不被接受，讀者看得分明而當事人執迷不悟，戲劇張力與諷刺意味因此大增。"},{"level":"adv","topic":"寫作手法－對比映襯","q":"本文一面寫眾官聽聞魏兵將至而「盡皆失色」，一面寫孔明在城樓上「笑容可掬」地焚香操琴。這樣的安排主要運用了什麼手法？","choices":["誇飾，凸顯魏軍聲勢之浩大","對比（映襯），以眾人的驚慌反襯孔明的鎮定","譬喻，把孔明比作技藝高超的琴師","倒敘，先寫結果再交代原因"],"answer":1,"explain":"作者把兩種截然相反的情態並置：眾官驚慌失色、孔明笑容可掬。愈顯出旁人之慌，愈襯出主角之定，這正是對比（映襯）的效果，也讓孔明「臨危不亂」的形象在讀者心中更為鮮明。"},{"level":"adv","topic":"主旨深究","q":"綜觀全文，空城計能夠成功，最關鍵的因素是下列何者？","choices":["孔明準確掌握司馬懿的性格與心理，料定他必因多疑而不敢進兵","西城城牆高厚，本來就易守難攻","魏軍長途行軍，士兵疲憊不堪","孔明事先已在城外埋伏了大批兵馬"],"answer":0,"explain":"孔明事後自道：司馬懿料他生平謹慎、必不弄險，見了這番模樣就疑有伏兵，所以退去。可見勝負關鍵不在兵力，而在「知彼」——摸透對手的性格與思路，讓對方按照自己預設的判斷去行動。這也是本文最重要的主旨：智謀之戰，比的是對人心的掌握。"},{"level":"adv","topic":"伏筆與懸念","q":"孔明布置完畢後叮囑眾人「如魏兵到時，不可擅動，吾自有計」。這句話在情節安排上的作用是？","choices":["直接揭示謎底，讓讀者預先知道結局","顯示孔明對部屬缺乏信任","暗示孔明其實已打算放棄西城","製造懸念，使讀者急於知道孔明究竟有何妙計，增強閱讀興味"],"answer":3,"explain":"白話：如果魏兵來到，不可擅自行動，我自有計策。作者藉孔明口中「吾自有計」四字按下不表，計策內容不說破，讀者只能隨情節前進，直到司馬懿退兵後才由孔明解謎。這種先設疑、後解答的安排即為「懸念」。"},{"level":"adv","topic":"文學常識－歷史演義與正史","q":"清代學者章學誠曾以「七分實事，三分虛構」評《三國演義》。下列理解何者正確？","choices":["書中所有情節都能在《三國志》中找到根據","全書以三國歷史為骨幹，但加入不少想像與藝術加工，「空城計」即屬虛構成分","這句話是批評作者史料考證不足，全書內容毫不可信","意指全書七分抄自民間說書，三分為作者自撰"],"answer":1,"explain":"歷史演義小說取材於史事，卻不等同史書。「七分實事，三分虛構」說明《三國演義》大體依循史實脈絡，但人物性格、對話與許多精采情節（如空城計、草船借箭）多為藝術加工，目的在塑造人物、增強故事性。陳壽《三國志》並未記載空城計，讀時須分辨小說與正史之別。"},{"level":"adv","topic":"寫作手法－環境描寫","q":"「將旌旗盡皆隱匿」「大開四門」以及命軍士「扮作百姓，灑掃街道」等描寫，對情節發展最主要的作用是？","choices":["說明西城百姓生活安定，未受戰事影響","交代孔明治軍嚴謹、講求城中整潔","營造與「大軍壓境」極不相稱的反常景象，使司馬懿心生疑懼","暗示城中確實藏有大批伏兵，只是尚未現身"],"answer":2,"explain":"大敵當前卻旗幟不見、城門洞開、街上有人從容打掃——這樣的景象太過反常，正好戳中司馬懿「孔明不弄險」的成見，使他把反常解讀為陷阱。環境描寫在此不只是背景，更是推動司馬懿做出錯誤判斷的直接動力。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>亞洲概述與東亞環境 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo2-asia",
+  "title": "亞洲概述與東亞環境",
+  "subject": "地理",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1課 亞洲概述與東亞環境",
+  "tag": "亞洲地形氣候·日韓環境",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>亞洲概述與東亞環境</h1><div class="sub">地理 · 亞洲地形氣候·日韓環境 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"亞洲的位置與範圍－亞歐洲界","q":"亞洲與歐洲同屬歐亞大陸，兩洲之間傳統上主要以哪一列山脈作為分界？","choices":["烏拉山","喜馬拉雅山脈","興都庫什山脈","阿爾卑斯山脈"],"answer":0,"explain":"亞、歐兩洲位於同一塊大陸上，傳統上以烏拉山、烏拉河、裏海、高加索山、黑海一線作為洲界，其中最主要的山脈界線就是烏拉山。喜馬拉雅山脈位於亞洲內部（中國與南亞之間）；興都庫什山脈位於中亞與南亞之間；阿爾卑斯山脈則完全位於歐洲，皆非亞歐分界。"},{"level":"basic","topic":"亞洲的面積與人口","q":"下列關於亞洲面積與人口在世界各洲中地位的敘述，何者正確？","choices":["面積居世界第二，僅次於非洲；人口居世界第一","面積居世界第一，人口也是各洲中最多","面積居世界第一，但人口少於非洲","面積居世界第三，人口居世界第二"],"answer":1,"explain":"亞洲是世界面積最大的洲，同時也是人口最多的洲，兩項都居各洲之首。非洲的面積與人口都居各洲第二，因此「僅次於非洲」或「人口少於非洲」的說法都不正確。"},{"level":"basic","topic":"亞洲的位置與範圍－亞非洲界","q":"亞洲西南方與非洲相鄰，兩洲之間的分界是下列何者？","choices":["麻六甲海峽","直布羅陀海峽","蘇伊士運河","巴拿馬運河"],"answer":2,"explain":"亞洲西南端的西奈半島與非洲之間，以蘇伊士地峽（蘇伊士運河）為界。麻六甲海峽位於中南半島與蘇門答臘島之間，屬東南亞海運要道；直布羅陀海峽分隔歐洲與非洲；巴拿馬運河則分隔南、北美洲。"},{"level":"basic","topic":"亞洲主要地形－山脈","q":"世界第一高峰聖母峰（珠穆朗瑪峰）位於下列哪一山脈？","choices":["阿爾泰山脈","天山山脈","崑崙山脈","喜馬拉雅山脈"],"answer":3,"explain":"喜馬拉雅山脈位於青藏高原南緣，是印澳板塊與歐亞板塊擠壓抬升而成，世界第一高峰聖母峰即位於此山脈上。阿爾泰山、天山位於中國西北與中亞交界；崑崙山脈位於青藏高原北緣，都不是聖母峰所在。"},{"level":"basic","topic":"亞洲主要地形－高原","q":"有「世界屋脊」之稱、平均海拔為世界各大高原中最高的是下列何者？","choices":["青藏高原","德干高原","蒙古高原","伊朗高原"],"answer":0,"explain":"青藏高原平均海拔在四千公尺以上，是世界上最高且面積廣大的高原，故有「世界屋脊」之稱。德干高原位於印度半島，蒙古高原位於東亞內陸，伊朗高原位於西亞，海拔都遠低於青藏高原。"},{"level":"basic","topic":"亞洲地勢特徵－中高周低","q":"下列關於亞洲整體地勢的敘述，何者正確？","choices":["地勢西高東低，最高處集中於中亞西部","中央高聳、四周低平，具有「中高周低」的特徵","全洲地勢平坦，各地高低差距很小","北部最高、南部最低，由北向南呈階梯狀下降"],"answer":1,"explain":"亞洲中部聚集了青藏高原、帕米爾高原與喜馬拉雅山、崑崙山、天山等高山高原，四周則多為平原、丘陵與海岸低地，形成「中高周低」的地勢。亞洲並非單純西高東低或北高南低，且是世界地勢起伏最大的洲，並不平坦。"},{"level":"basic","topic":"亞洲分區－東南亞的範圍","q":"中南半島與南洋群島合起來，屬於亞洲的哪一個分區？","choices":["南亞","東亞","東南亞","西亞"],"answer":2,"explain":"東南亞包含大陸部分的中南半島與海洋部分的南洋群島（如印尼、菲律賓等島群）。南亞主體為印度半島；東亞包含中國、日本、南北韓、蒙古；西亞則以阿拉伯半島、伊朗高原一帶為主。"},{"level":"basic","topic":"亞洲主要地形－半島與高原的配置","q":"德干高原位於下列哪一個半島上？","choices":["中南半島","阿拉伯半島","朝鮮半島","印度半島"],"answer":3,"explain":"德干高原位於南亞印度半島的中南部，是一塊古老的熔岩高原。中南半島以山河相間、縱列分布的地形為特色；阿拉伯半島位於西亞、氣候乾燥；朝鮮半島位於東亞，三者上面都沒有德干高原。"},{"level":"basic","topic":"東亞季風的特性","q":"關於東亞季風「風向與天氣」的敘述，下列何者正確？","choices":["夏季風由海洋吹向陸地，帶來高溫多雨的天氣","冬季風由海洋吹向陸地，帶來溫暖潮濕的天氣","冬、夏季的盛行風向相同，只有風速強弱的差別","季風只在夏季出現，冬季完全沒有盛行風"],"answer":0,"explain":"季風最大的特徵就是風向隨季節相反：夏季風由較涼的海洋吹向較熱的陸地，水氣多而高溫多雨；冬季風則由寒冷的內陸吹向海洋，寒冷乾燥。因此「冬季由海洋吹來」「冬夏風向相同」「冬季無盛行風」都是錯誤敘述。"},{"level":"basic","topic":"北亞的氣候與植被","q":"北亞（西伯利亞）廣大地區分布著針葉林，並有永凍土發育，這裡主要屬於下列哪一種氣候？","choices":["熱帶莽原氣候","寒帶（副極地）氣候","溫帶海洋性氣候","地中海型氣候"],"answer":1,"explain":"北亞緯度高、冬季酷寒漫長、夏季短暫涼爽，屬寒帶（副極地）氣候，發育出耐寒的針葉林並有永凍土分布。熱帶莽原氣候位於低緯；溫帶海洋性氣候冬暖夏涼、雨量平均；地中海型氣候夏乾冬雨，均與西伯利亞不符。"},{"level":"basic","topic":"日本的自然環境－板塊與地震","q":"日本火山活動頻繁、地震特別多，最主要的原因是下列何者？","choices":["日本四面環海，海水長期侵蝕陸地所致","日本國土南北狹長，緯度跨距大所致","日本位於歐亞板塊與太平洋板塊、菲律賓海板塊的交界帶上","日本冬季受強烈西北季風吹襲所致"],"answer":2,"explain":"日本列島位於板塊交界的環太平洋火山地震帶上，板塊互相擠壓、隱沒，因此多火山與地震，也常出現海嘯。四面環海、南北狹長、季風強勁都是日本的特徵，但與地殼變動無關，不是火山地震多的原因。"},{"level":"basic","topic":"日本的自然環境－四大島","q":"日本由北而南主要由四大島構成，其中面積最大、人口最多的是哪一個島？","choices":["北海道","九州","四國","本州"],"answer":3,"explain":"日本四大島由北到南為北海道、本州、四國、九州，其中本州面積最大、人口最多，東京、大阪、名古屋等主要都市都位於本州。北海道面積次之但人口較少，四國則是四大島中面積最小的。"},{"level":"basic","topic":"韓國的自然環境－地勢與河川","q":"南韓（大韓民國）所在的朝鮮半島，其地勢與河川流向的特徵為下列何者？","choices":["地勢東高西低，主要河川多向西流注入黃海","地勢西高東低，主要河川多向東流注入日本海","中央低平如盆地，四周被高山環繞","全境幾乎都是平原，沒有山地與丘陵"],"answer":0,"explain":"朝鮮半島東側有太白山脈等高地緊鄰日本海，西側則多丘陵與平原，形成「東高西低」的地勢，因此漢江等主要河川多由東向西流入黃海，西部平原也成為人口與農業集中的地帶。"},{"level":"basic","topic":"亞洲分區－國家與分區的配對","q":"下列「國家—所屬亞洲分區」的配對，何者正確？","choices":["泰國—南亞","蒙古—東亞","沙烏地阿拉伯—中亞","哈薩克—西亞"],"answer":1,"explain":"蒙古與中國、日本、南韓、北韓同屬東亞。泰國位於中南半島，屬東南亞而非南亞；沙烏地阿拉伯位於阿拉伯半島，屬西亞而非中亞；哈薩克位於內陸，屬中亞而非西亞。"},{"level":"adv","topic":"季風的成因－海陸性質差異","q":"亞洲東部與南部的季風現象在全球最為顯著，其形成的最主要原因為何？","choices":["沿岸有寒流與暖流交會，帶動空氣大規模流動","境內山脈多呈東西走向，阻擋氣流南北移動","亞洲大陸與太平洋（印度洋）的比熱差異，使冬、夏氣壓分布相反","亞洲南北跨越緯度廣，各地日照時數長短不同"],"answer":2,"explain":"陸地比熱小、海洋比熱大：夏季大陸增溫快形成低壓、海洋相對為高壓，風由海洋吹向陸地；冬季相反，風由大陸吹向海洋。亞洲是世界最大的洲又臨世界最大的海洋，海陸性質差異最懸殊，季風因此最明顯。洋流、山脈走向、緯度差異雖會影響氣候，但不是季風的成因。"},{"level":"adv","topic":"中亞乾燥氣候的成因","q":"中亞地區沙漠與草原廣布、年雨量稀少，最主要的原因是下列何者？","choices":["緯度太高，終年低溫使水氣早已凝結降落","沿岸有寒流經過，空氣穩定而不易成雲致雨","位於板塊交界，地熱旺盛使地表水分蒸發殆盡","深居內陸、距海遙遠，海洋水氣不易到達"],"answer":3,"explain":"中亞位於歐亞大陸內部，四周又有高山阻隔，來自海洋的水氣難以深入，形成大陸性的乾燥氣候，發育出沙漠與溫帶草原。中亞為內陸地區並無海岸，寒流之說不成立；緯度高低與板塊地熱也不是造成乾燥的關鍵。"},{"level":"adv","topic":"日本地形對人口分布的影響","q":"日本山地丘陵占國土的大部分，平原僅零星分布於沿海且面積狹小。此一地形條件最直接造成下列何種現象？","choices":["人口與都市高度集中在沿海狹小的平原地帶","人口平均分布於全國各地，城鄉差距極小","內陸高原成為人口最密集、農業最發達的地區","全國以大規模放牧業作為最主要的產業"],"answer":0,"explain":"平原是最適合聚落、農業與交通發展的地形，日本平原少又集中在沿海，加上人口眾多，於是形成「地狹人稠」、人口與都市高度集中於東京、大阪、名古屋等沿海平原的現象，也造成用地不足而向海爭地。日本內陸多為山地，並非人口密集區。"},{"level":"adv","topic":"日本氣候的區域差異－冬季降雪","q":"冬季時，日本本州「日本海側」的降雪量遠多於「太平洋側」，下列何者是最合理的解釋？","choices":["日本海側長期受夏季西南季風吹拂，水氣特別多","日本海側位於山脈的背風側，氣流下沉增溫而多雪","來自大陸的冬季季風越過日本海時挾帶大量水氣，遇脊梁山脈抬升而降雪","日本海側的緯度比太平洋側高出許多，氣溫特別低"],"answer":2,"explain":"冬季由亞洲大陸吹出的乾冷季風經過相對溫暖的日本海時獲得大量水氣，登陸後被本州中央的脊梁山脈抬升，在迎風的日本海側形成豐沛降雪；氣流越過山脈後下沉，太平洋側反而乾燥晴朗。可見日本海側是迎風側而非背風側，且此現象發生於冬季而非夏季。"},{"level":"adv","topic":"日、韓氣候比較－海陸位置","q":"首爾與日本本州沿海都市的緯度相近，但首爾冬季均溫明顯較低、氣溫年溫差也較大，最主要的原因是？","choices":["首爾的海拔高度遠高於日本本州各都市","首爾位在半島上緊鄰亞洲大陸，冬季直接受大陸冷氣團影響，海洋調節作用較弱","首爾位於板塊交界，地形起伏使冷空氣不易散去","首爾四周終年有寒流環繞，海水溫度極低"],"answer":1,"explain":"朝鮮半島與亞洲大陸相連，冬季受來自內陸的冷高壓（大陸冷氣團）直接侵襲，大陸性較強，冬冷夏熱、年溫差大；日本為島國，四面環海，海洋的調節使冬季較溫和、年溫差較小。兩地雖同受季風影響，差別主要來自海陸位置，而非海拔或板塊構造。"},{"level":"adv","topic":"亞洲氣候多樣性的原因","q":"亞洲的氣候類型是各大洲中最複雜多樣的，下列何者是最主要的原因？","choices":["人口最多、國家數量最多，人類活動大幅改變氣候","海岸線平直、島嶼稀少，各地受海洋影響一致","全洲皆位於北半球中緯度地區，四季分明","面積廣大、南北跨越緯度大，且各地距海遠近與地形高低差異顯著"],"answer":3,"explain":"亞洲面積世界第一，南北從赤道附近延伸到北極海沿岸，東西又從沿海到深居內陸，加上有青藏高原等巨大高地，緯度、海陸位置與地形三大因素差異都極大，因此從熱帶雨林、季風、乾燥到寒帶、高地氣候一應俱全。亞洲海岸線曲折、島嶼半島眾多，且並非全在中緯度，人口多寡也不是氣候分類的成因。"},{"level":"adv","topic":"氣候資料判讀－溫帶季風氣候","q":"某地氣候資料顯示：最冷月均溫在 0°C 以下，最暖月約 25°C，全年降水明顯集中在 6～8 月。此地最可能是下列何者？","choices":["印尼的雅加達","南韓的首爾","沙烏地阿拉伯的利雅德","俄羅斯西伯利亞的雅庫次克"],"answer":1,"explain":"冬冷（最冷月低於 0°C）、夏熱（最暖月約 25°C）、年溫差大且雨量集中夏季，是典型的溫帶季風氣候，首爾正符合。雅加達位於赤道附近，全年高溫多雨、沒有寒冷月分；利雅德屬沙漠氣候，全年少雨且夏季酷熱；雅庫次克屬寒帶（副極地）氣候，冬季嚴寒的程度遠超過題目所述。"},{"level":"adv","topic":"南亞的季風與雨季","q":"南亞印度半島夏季常出現連日豪雨而形成明顯的雨季，其水氣的主要來源為何？","choices":["由蒙古高原南下的乾冷氣流","西風帶帶來的溫帶氣旋","由印度洋吹向陸地的西南季風","冬季由陸地吹向海洋的東北季風"],"answer":2,"explain":"夏季南亞大陸增溫形成低壓，來自印度洋的西南季風挾帶豐沛水氣吹向陸地，遇西高止山、喜馬拉雅山等地形抬升而降下大雨，形成雨季。東北季風出現在冬季，是由陸地吹向海洋的乾燥風，帶來乾季；蒙古高原的氣流與西風帶氣旋則不是南亞夏雨的來源。"},{"level":"adv","topic":"中國的地勢－三級階梯與河川流向","q":"中國的長江、黃河等大河多由西向東流入太平洋，這最能反映中國的何種地勢特徵？","choices":["地勢西高東低，大致呈三級階梯狀由西向東下降","地勢東高西低，東部多為高聳的高原與高山","地勢南高北低，河川多由南向北注入北極海","全境地勢平坦，河川流向主要由人工渠道決定"],"answer":0,"explain":"中國地勢西高東低：西部為青藏高原（第一階梯），向東降為內蒙古、黃土、雲貴等高原與盆地（第二階梯），再降為東部的平原與丘陵（第三階梯），因此大河多自西向東奔流入海，也有利於東西向水運與海洋水氣深入內陸。若東高西低，河川應向西流；南高北低與地勢平坦的說法都與事實不符。"},{"level":"adv","topic":"中國的南北分界－秦嶺淮河","q":"中國常以「秦嶺—淮河」一線作為南方與北方的重要地理界線，這條界線大致相當於下列何者？","choices":["一月均溫 20°C 等溫線，也是熱帶與溫帶的分界","中國與蒙古之間的國界線","地勢第一級階梯與第二級階梯的分界","一月均溫 0°C 等溫線，也是南方水稻與北方小麥主要產區的分界"],"answer":3,"explain":"秦嶺、淮河一線大致與一月均溫 0°C 等溫線相符，也是濕潤區與半濕潤區、南方水田（水稻）與北方旱地（小麥）的重要分界。一月均溫 20°C 等溫線遠在華南以南；中蒙國界位於北方乾燥的內陸；第一、二級階梯的分界大致沿崑崙山、祁連山、橫斷山一線，皆非秦嶺淮河所代表的意義。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

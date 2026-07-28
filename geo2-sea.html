@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>東南亞 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo2-sea",
+  "title": "東南亞",
+  "subject": "地理",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第5課 東南亞",
+  "tag": "中南半島·南洋群島·東協",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>東南亞</h1><div class="sub">地理 · 中南半島·南洋群島·東協 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"東南亞的範圍與區域劃分","q":"東南亞在地理位置上，可分為哪兩大部分？","choices":["中南半島（陸地部分）與南洋群島（海島部分）","德干高原與斯里蘭卡","阿拉伯半島與伊朗高原","華北平原與華南丘陵"],"answer":0,"explain":"東南亞位於亞洲東南方，由陸地的中南半島與海上的南洋群島（如印尼、菲律賓等馬來群島）兩部分組成。德干高原、斯里蘭卡屬南亞；阿拉伯半島、伊朗高原屬西亞；華北平原、華南丘陵屬中國，皆不在東南亞範圍。"},{"level":"basic","topic":"中南半島地形特色","q":"中南半島的山脈與河川多由北向南平行排列，這種地形特色最常以下列哪一句話形容？","choices":["千溝萬壑、黃土廣布","山河相間、縱列分布","地勢低平、一望無際","冰河遍布、峽灣曲折"],"answer":1,"explain":"中南半島的山脈自北方山地向南延伸，河川夾在山脈之間，形成「山河相間、縱列分布」。「千溝萬壑、黃土廣布」是中國黃土高原的特色；「地勢低平」不符合半島北部多山的事實；冰河、峽灣則屬高緯地區地形。"},{"level":"basic","topic":"中南半島主要河川（湄公河）","q":"發源於中國青藏高原，向南流經中南半島多國，下游三角洲位於越南並注入南海的河川是？","choices":["恆河","印度河","湄公河","幼發拉底河"],"answer":2,"explain":"湄公河是中南半島最長的河川，上游在中國境內稱瀾滄江，流經寮國、泰國、柬埔寨，在越南南部形成廣大三角洲後注入南海。恆河、印度河位於南亞，幼發拉底河位於西亞。"},{"level":"basic","topic":"南洋群島的板塊位置與地質災害","q":"南洋群島（如印尼、菲律賓）火山與地震特別頻繁，最主要的原因是？","choices":["位於板塊交界帶，地殼活動頻繁","位於古老而穩定的大陸塊中央","長年受副熱帶高壓籠罩，地表乾裂","季風風力強勁，長期侵蝕地表岩層"],"answer":0,"explain":"南洋群島位於板塊互相碰撞擠壓的接觸帶上，地殼不穩定，因此多火山噴發與地震，菲律賓群島即屬環太平洋火山地震帶的一部分。古老穩定的陸塊地殼活動少；氣壓與風力屬氣候因素，並不會造成火山與地震。"},{"level":"basic","topic":"火山土壤與人口分布","q":"印尼爪哇島人口特別稠密，與下列哪一項自然條件的關係最密切？","choices":["島上沙漠中的綠洲便於引水灌溉","緯度高、氣候涼爽，適合人類居住","石油礦藏集中於島嶼內陸山區","火山噴發物風化後形成肥沃土壤，農業發達"],"answer":3,"explain":"爪哇島火山活動頻繁，火山灰風化後形成肥沃的火山土壤，農作物產量高，可養活眾多人口，因此人口密集。爪哇島位於赤道附近，屬濕熱氣候，既非沙漠也非高緯涼爽區。"},{"level":"basic","topic":"熱帶季風氣候特徵","q":"中南半島大部分地區屬熱帶季風氣候，其最主要的氣候特徵是？","choices":["全年高溫，且有明顯的乾季與雨季之分","全年低溫少雨，冬季漫長","夏季乾燥、冬季多雨，適合栽培葡萄與橄欖","四季分明，冬季常降雪"],"answer":0,"explain":"熱帶季風氣候受季風影響，夏季吹來自海洋的季風而多雨，冬季吹來自陸地的季風而少雨，全年氣溫都高，乾濕季分明。夏乾冬雨是地中海型氣候；低溫少雨與冬季降雪皆屬中高緯度氣候。"},{"level":"basic","topic":"熱帶雨林氣候特徵","q":"赤道附近的南洋群島多屬熱帶雨林氣候，其氣溫與雨量的表現是？","choices":["年溫差大，降水集中於夏季","全年高溫，各月雨量都多，年溫差小","全年高溫，但幾乎終年無雨","冬季寒冷、夏季炎熱，雨量分配平均"],"answer":1,"explain":"熱帶雨林氣候位於赤道附近，太陽輻射強且穩定，全年高溫、年溫差小，各月降水都相當豐沛。年溫差大屬中高緯度氣候；終年無雨屬乾燥氣候，與雨林氣候相反。"},{"level":"basic","topic":"稻米生產與出口","q":"東南亞稻米產量豐富，其中稻米出口量長期位居世界前列的兩個國家是？","choices":["印尼與菲律賓","馬來西亞與汶萊","泰國與越南","寮國與柬埔寨"],"answer":2,"explain":"泰國的湄南河三角洲、越南的湄公河與紅河三角洲平原廣大，稻作發達，兩國都是世界重要的稻米出口國。印尼、菲律賓雖然也種稻，但人口多、消費量大，稻米常需進口；馬來西亞、汶萊則以熱帶栽培業與石油為主。"},{"level":"basic","topic":"熱帶栽培業作物","q":"東南亞熱帶栽培業（大農園）最具代表性的作物組合是？","choices":["小麥與甜菜","棉花與黃麻","葡萄與橄欖","橡膠與油棕"],"answer":3,"explain":"東南亞高溫多雨，適合橡膠、油棕生長，馬來西亞、印尼、泰國都是重要產地，並大量外銷。小麥、甜菜為溫帶作物；棉花、黃麻是南亞的重要作物；葡萄與橄欖是地中海型氣候區的代表作物。"},{"level":"basic","topic":"東協（ASEAN）的性質","q":"東南亞各國為促進區域內經濟合作與政治穩定所成立的區域性組織是？","choices":["石油輸出國家組織（OPEC）","北大西洋公約組織（NATO）","歐洲聯盟（EU）","東南亞國家協會（東協，ASEAN）"],"answer":3,"explain":"東協（ASEAN）由東南亞國家組成，推動區域內經濟、貿易與政治合作。OPEC是產油國組成的組織，NATO是歐美的軍事同盟，EU是歐洲的區域統合組織，成員與範圍都不在東南亞。"},{"level":"basic","topic":"東南亞的殖民歷史","q":"東南亞各國近代多曾淪為歐美列強的殖民地，其中未曾被殖民統治的國家是？","choices":["越南","泰國","菲律賓","印尼"],"answer":1,"explain":"泰國（舊稱暹羅）位於英、法勢力範圍之間，成為兩者之間的緩衝地帶，是東南亞唯一未曾淪為歐美殖民地的國家。越南曾受法國統治，菲律賓先後受西班牙、美國統治，印尼則曾受荷蘭統治。"},{"level":"basic","topic":"東南亞宗教分布","q":"下列有關東南亞宗教分布的敘述，何者正確？","choices":["中南半島的泰國、緬甸以印度教為主要宗教","菲律賓因曾受西班牙統治，居民多改信佛教","印尼、馬來西亞以信仰伊斯蘭教的人口最多","新加坡因華人眾多，全國禁止其他宗教活動"],"answer":2,"explain":"印尼、馬來西亞受阿拉伯與印度商人傳教影響，以伊斯蘭教為主要宗教。泰國、緬甸以佛教為主；菲律賓因西班牙統治而以天主教為主；新加坡則是佛教、伊斯蘭教、基督宗教等多元宗教並存的社會。"},{"level":"basic","topic":"華人移民與族群組成","q":"東南亞各國之中，華人（華裔）占全國總人口比例最高的國家是？","choices":["新加坡","泰國","印尼","緬甸"],"answer":0,"explain":"新加坡的居民以華人為最主要族群，占全國人口的多數，比例居東南亞各國之冠，華語也是官方語言之一。泰國、印尼、緬甸雖也有不少華人移民及其後裔，但占各該國總人口的比例遠低於新加坡。"},{"level":"basic","topic":"麻六甲海峽的位置","q":"麻六甲海峽位於下列哪兩地之間？","choices":["中南半島與海南島","呂宋島與臺灣","婆羅洲與新幾內亞島","馬來半島與蘇門答臘島"],"answer":3,"explain":"麻六甲海峽夾在馬來半島與印尼的蘇門答臘島之間，是連接南海（太平洋）與印度洋的重要通道，新加坡即位於其東南出口。呂宋島與臺灣之間為巴士海峽；其餘選項所指海域與麻六甲海峽無關。"},{"level":"adv","topic":"三角洲平原與聚落分布（因果推論）","q":"中南半島的重要都市與人口多分布於大河下游的三角洲及河谷平原，最主要的原因是？","choices":["地勢高聳涼爽，可避開熱帶低地的濕熱","地形平坦、土壤肥沃且水運便利，利於稻作與貨物集散","三角洲金屬礦產豐富，重工業因而發達","位於板塊交界，可大量利用地熱發電"],"answer":1,"explain":"河川下游三角洲由泥沙堆積而成，地勢平坦、土壤肥沃，又有充足的灌溉水源與便利水運，適合發展稻作與商業，因而人口與都市集中。三角洲位於低地而非高地；礦產與地熱都不是三角洲的主要區位優勢。"},{"level":"adv","topic":"氣候資料判讀","q":"某地氣候資料顯示：最冷月均溫約26度、最熱月均溫約28度，且各月雨量都相當豐沛。此地最可能位於下列何處？","choices":["中南半島北部的內陸高山區","蒙古高原的內陸盆地","赤道附近的新加坡一帶","地中海沿岸的港口都市"],"answer":2,"explain":"全年高溫、年溫差極小且各月都多雨，是典型的熱帶雨林氣候，符合赤道附近的新加坡、印尼一帶。中南半島北部山區氣溫較低且有明顯乾季；蒙古高原乾燥且年溫差大；地中海沿岸則是夏乾冬雨。"},{"level":"adv","topic":"雨量圖判讀與農業推論","q":"某中南半島城市的雨量圖顯示：5月至10月雨量豐沛，11月至次年4月雨量稀少，而各月氣溫都很高。根據此資料推論，下列敘述最合理的是？","choices":["該地屬熱帶季風氣候，雨季配合稻作生長，乾季耕作需仰賴灌溉","該地屬熱帶雨林氣候，全年皆有充足自然降雨可供種稻","該地冬季氣溫低，農作物必須以溫室栽培","該地屬乾燥氣候，農業以逐水草而居的游牧為主"],"answer":0,"explain":"氣溫全年高、降水集中在夏半年而冬半年少，是熱帶季風氣候的典型特徵；農民多利用雨季種稻，乾季若要耕作則需灌溉。各月都多雨才是熱帶雨林氣候；資料顯示氣溫全年高，並非冬季低溫；乾季少雨也不等於全年乾燥，該地仍有豐沛的雨季降水。"},{"level":"adv","topic":"中南半島與南洋群島的地形比較","q":"比較中南半島與南洋群島的地形、地質特徵，下列敘述何者正確？","choices":["兩者都以廣大的高原和沙漠為主要地形","中南半島以火山島弧為主，南洋群島則山河相間、縱列分布","中南半島山脈與河川南北縱列，南洋群島則島嶼羅列、多火山與地震","兩者都位於穩定的古老陸塊上，幾乎沒有地震"],"answer":2,"explain":"中南半島是大陸向南延伸的陸地部分，山脈與河川呈南北縱列分布；南洋群島位於板塊交界，島嶼星羅棋布並多火山、地震。把「火山島弧」歸給中南半島、「山河相間」歸給南洋群島是將兩者特徵對調；東南亞高溫多雨並無廣大沙漠；南洋群島也不是穩定的古老陸塊。"},{"level":"adv","topic":"熱帶栽培業的特性與風險","q":"東南亞的橡膠、油棕多以大農園方式經營，並以外銷國際市場為主。此種生產方式最可能帶來的問題是？","choices":["因位於溫帶，作物生長期太短，產量不穩定","因作物種類過於繁多，農民難以取得技術支援","因勞力嚴重不足，必須全面改用大型機械","作物種類單一且依賴外銷，易受國際市場價格波動影響，經濟風險高"],"answer":3,"explain":"熱帶栽培業多為單一作物大規模生產、供應國際市場，一旦國際價格下跌，農民與國家收入即大受衝擊，這是典型的單一經濟風險。東南亞位於熱帶而非溫帶；栽培業的特色正是「作物種類單一」；當地人口眾多，勞力並不短缺。"},{"level":"adv","topic":"東協區域合作的影響","q":"東協成員國近年持續推動降低關稅、便利區內貿易與人員往來。依此推論，最可能產生的影響是？","choices":["各國經濟更加封閉，對外貿易大幅萎縮","區域內市場規模擴大，吸引外資設廠，整體經濟競爭力提升","成員國之間的語言與宗教差異將完全消失","各國一律改用同一種貨幣，並合併成單一聯邦國家"],"answer":1,"explain":"降低關稅、促進商品與人員流通，等於把各國市場整合成更大的區域市場，能吸引外來投資、擴大生產與貿易，提升整體競爭力。經濟整合的結果是更開放而非封閉；區域合作也不會消除各國的文化差異，東協並未使用單一貨幣，更未合併為聯邦國家。"},{"level":"adv","topic":"新加坡的區位條件與產業轉型","q":"新加坡國土狹小、天然資源貧乏，卻能成為東南亞重要的轉口貿易與金融中心，主要原因是？","choices":["境內石油與錫礦蘊藏豐富，可大量加工外銷","位置深居內陸，可免於颱風與海上災害的威脅","農業機械化程度高，糧食不但自給還大量外銷","位居海運要衝並擁有優良深水港，又推行自由港政策，發展金融與服務業"],"answer":3,"explain":"新加坡扼守麻六甲海峽出口，具備優良深水港與自由港制度，再加上金融、航運與商業服務業發達，因而成為區域中心。新加坡礦產與農地都極為缺乏，糧食多仰賴進口，且為海島國家而非內陸國。"},{"level":"adv","topic":"雨林開發的環境影響","q":"近年東南亞部分地區為擴大油棕園與農地，大規模砍伐熱帶雨林。就環境影響推論，下列敘述最合理的是？","choices":["森林減少可使當地雨量大增，水患因而完全消失","雨林砍伐後土壤肥力會不斷累積，可長期反覆耕作","森林覆蓋減少使水土保持變差、生物棲地遭破壞，環境問題加劇","砍伐後當地氣候將由熱帶轉為溫帶，適合改種小麥"],"answer":2,"explain":"熱帶雨林具有涵養水源、保持水土與維持生物多樣性的功能，大規模砍伐後容易造成土壤沖蝕、河川淤積與野生動植物棲地喪失。雨林區的養分多儲存於植物體內而非土壤中，開墾後地力反而迅速衰退；氣候帶取決於緯度與大氣環流，不會因砍伐而由熱帶變成溫帶。"},{"level":"adv","topic":"火山區的災害與資源（利弊權衡）","q":"印尼居民雖然長期面臨火山噴發的威脅，卻仍大量聚居於火山周圍地區。最能解釋此現象的是？","choices":["火山周圍氣溫特別低，是熱帶地區難得的避暑勝地","火山地區地勢平坦寬廣，最適合興建大型工廠","火山灰風化形成的土壤十分肥沃，農作產量高，居民權衡利弊後仍選擇定居","當地火山都已確定不會再噴發，居住其實毫無風險"],"answer":2,"explain":"火山噴發雖具危險性，但火山灰風化後的土壤養分豐富，農作物產量高，加上水源充足，居民因而聚居，是典型的「趨利避害」權衡結果。火山區地勢起伏大而非平坦；印尼境內多活火山，噴發風險依然存在。"},{"level":"adv","topic":"東南亞多元文化的成因","q":"在東南亞各地可以看到中式廟宇、清真寺與天主教堂並存，飲食與服飾也常融合華人與當地習俗。此現象最主要反映的是？","choices":["東南亞長期位居海上交通要道，各族群、宗教與文化在此交會並相互融合","東南亞各國政府規定人民必須同時信仰多種宗教","東南亞地處內陸、交通封閉，文化幾乎不受外界影響","東南亞的文化全部由單一殖民母國一次帶入"],"answer":0,"explain":"東南亞位於太平洋與印度洋之間的交通要衝，歷史上印度、阿拉伯、中國商人與歐洲殖民勢力先後到來，帶來佛教、伊斯蘭教、天主教與華人文化，形成多元並存、彼此融合的社會。宗教信仰並非政府強制；東南亞海運發達並不封閉；其文化來源也不只單一國家。"},{"level":"adv","topic":"人文條件與外資投入","q":"近年有不少外國企業（包括臺商）前往越南、印尼等地設立工廠。就人文條件推論，最主要的吸引力是？","choices":["當地位於高緯度，氣候涼爽有利精密工業生產","當地人口眾多且結構較年輕，勞力充足、工資相對低廉","當地已是全球最大的資本與高科技輸出地","當地毫無交通與港口限制，物流成本可降為零"],"answer":1,"explain":"越南、印尼人口眾多且年輕人口比例高，勞動力供應充足、工資相對低廉，加上東協市場整合，吸引勞力密集產業前往設廠。這兩國位於熱帶而非高緯度；它們主要是吸收外資而非輸出資本與技術；任何地區都仍有交通與物流成本。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

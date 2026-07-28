@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>中國的自然環境 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo2-china-nature",
+  "title": "中國的自然環境",
+  "subject": "地理",
+  "grade": "國二",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3課 中國的自然環境",
+  "tag": "三大階梯·季風·秦嶺淮河",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>中國的自然環境</h1><div class="sub">地理 · 三大階梯·季風·秦嶺淮河 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"中國地勢特徵與三大階梯（地形剖面圖判讀）","q":"若沿著北緯30度左右，由中國西部往東部繪製一條地形剖面圖，最可能呈現下列哪一種高度變化？","choices":["由高而低，呈三大階梯狀逐級下降","由低而高，呈三大階梯狀逐級上升","東、西兩側高聳，中央低平如盆","全境高度相近，地表起伏十分平緩"],"answer":0,"explain":"中國地勢的最大特色是「西高東低，呈三大階梯分布」，由西部的青藏高原（第一階梯）向東降為高原、盆地（第二階梯），再降為平原與丘陵（第三階梯），因此剖面圖呈階梯狀下降。(B)方向相反；(C)、(D)都不符合中國地勢的實際情形。"},{"level":"basic","topic":"第一階梯與青藏高原","q":"中國地勢第一階梯的主體，是平均高度最高、有「世界屋脊」之稱的哪一個地形區？","choices":["內蒙古高原","黃土高原","青藏高原","雲貴高原"],"answer":2,"explain":"青藏高原平均高度在各大高原中居首，素有「世界屋脊」之稱，構成中國地勢的第一階梯。內蒙古高原、黃土高原、雲貴高原高度較低，都屬於第二階梯。"},{"level":"basic","topic":"第三階梯的地形組成","q":"中國地勢第三階梯位於東部沿海一帶，其地表主要由下列何種地形組成？","choices":["高原與盆地相間分布","高聳山地與冰河地形","廣大的沙漠與戈壁","平原與低緩的丘陵"],"answer":3,"explain":"第三階梯高度最低，以東北平原、華北平原、長江中下游平原及東南丘陵為主，屬平原與丘陵地形。(A)是第二階梯的特徵；(B)多見於第一階梯的高山地區；(C)主要分布於西北內陸乾燥區。"},{"level":"basic","topic":"黃土高原與水土流失","q":"黃土高原地表覆蓋深厚黃土，土質疏鬆、植被稀少，夏季又常有集中的暴雨，因此最容易出現下列哪一種環境問題？","choices":["水土流失嚴重，地表溝谷密布","地層下陷，海水倒灌成災","火山頻繁噴發，熔岩流廣布","冰河侵蝕旺盛，冰斗遍布山區"],"answer":0,"explain":"黃土疏鬆且缺乏植被保護，遇夏季暴雨極易被沖刷，形成千溝萬壑的地表，是中國水土流失最嚴重的地區之一，也使黃河成為含沙量極高的河川。(B)多見於超抽地下水的沿海平原；(C)、(D)與黃土高原的環境不符。"},{"level":"basic","topic":"四川盆地","q":"下列哪一個地形區位於第二階梯，四周有山地環繞、盆底土壤肥沃且農業發達，自古有「天府之國」之稱？","choices":["塔里木盆地","準噶爾盆地","四川盆地","柴達木盆地"],"answer":2,"explain":"四川盆地四周群山環抱，盆底地勢低平、水熱條件佳，農業發達而有「天府之國」之稱。塔里木盆地、準噶爾盆地位於西北乾燥區，柴達木盆地位於青藏高原上，均以乾燥荒漠景觀為主。"},{"level":"basic","topic":"秦嶺淮河與等溫線","q":"秦嶺、淮河一線是中國重要的地理分界線，這條線大致與下列哪一條等溫線的通過位置相符？","choices":["一月均溫0°C等溫線","七月均溫0°C等溫線","一月均溫20°C等溫線","年均溫0°C等溫線"],"answer":0,"explain":"秦嶺淮河一線大致與一月均溫0°C等溫線一致，以北冬季均溫低於0°C、河川會結冰，以南冬季均溫在0°C以上。中國七月各地普遍高溫，不會出現七月0°C等溫線；一月均溫20°C等溫線的位置遠在華南沿海與海南島一帶。"},{"level":"basic","topic":"秦嶺淮河與等雨量線","q":"秦嶺、淮河一線除了是重要的溫度界線外，也大致與下列哪一條年等雨量線通過的位置一致？","choices":["約200公釐等雨量線","約400公釐等雨量線","約750～800公釐等雨量線","約1500公釐等雨量線"],"answer":2,"explain":"秦嶺淮河一線大致與年雨量約750～800公釐的等雨量線相符，以南屬濕潤區、以北相對較乾。約200、400公釐等雨量線的位置偏西北內陸，是乾燥區與半乾燥區的界線；約1500公釐等雨量線則偏在華南沿海一帶。"},{"level":"basic","topic":"長江的水文特徵","q":"下列哪一條河川是中國境內流程最長、流域面積最廣，且航運價值最高、有「黃金水道」之稱的河川？","choices":["黃河","長江","珠江","黑龍江"],"answer":1,"explain":"長江發源於青藏高原，由西向東注入東海，是中國最長、流域最廣的河川，水量豐沛且中下游河道平緩，航運便利。黃河長度居次，但下游水量少、不利航運；珠江、黑龍江的長度與流域面積都不及長江。"},{"level":"basic","topic":"黃河下游與地上河","q":"黃河流經黃土高原後挾帶大量泥沙，進入下游平原時流速減緩、泥沙淤積，使河床年年墊高，形成下列何種特殊景觀？","choices":["曲流與牛軛湖遍布","河口三角洲不斷後退","河床高於兩岸地面的「地上河」（懸河）","深邃的峽谷與連續的瀑布"],"answer":2,"explain":"黃河下游泥沙持續淤積抬高河床，人們只好不斷加高堤防，形成河床高於兩岸地面的「地上河」（懸河），一旦潰堤便造成嚴重水患。(A)曲流、牛軛湖並非黃河下游最具代表性的景觀；(B)黃河口因泥沙堆積，三角洲大致向海推進而非後退；(D)峽谷、瀑布多出現在階梯交界處落差大的河段，並非下游平原。"},{"level":"basic","topic":"季風氣候的特徵","q":"中國東部地區夏季盛行來自海洋的偏南風、高溫多雨，冬季盛行來自內陸的偏北風、寒冷乾燥，此種風向與乾濕隨季節明顯轉換的氣候特徵，稱為下列何者？","choices":["地中海型氣候","溫帶海洋性氣候","熱帶莽原氣候","季風氣候"],"answer":3,"explain":"風向與降水隨季節規律轉換，是季風氣候最典型的特徵，中國東部是世界上季風氣候最顯著的地區之一。地中海型氣候為夏乾冬雨；溫帶海洋性氣候全年有雨、溫差小；熱帶莽原氣候分布於熱帶乾濕季分明的地區。"},{"level":"basic","topic":"年雨量的空間分布","q":"觀察中國的年雨量分布圖，其降水多寡大致呈現下列哪一種空間規律？","choices":["由東南沿海向西北內陸遞減","由西北內陸向東南沿海遞減","由北方向南方逐漸遞減","中部地區最多，東、西兩側最少"],"answer":0,"explain":"夏季風由東南方海洋吹入，愈往西北內陸水氣愈少，因此年雨量自東南沿海向西北內陸遞減，天然植被也由森林、草原轉為荒漠。(B)、(C)方向相反；(D)不符合實際分布。"},{"level":"basic","topic":"內蒙古高原與草原游牧","q":"下列哪一個地形區位於中國北部，地面平坦開闊、草原廣布，居民傳統上以逐水草而居的游牧生活為主？","choices":["青藏高原","內蒙古高原","黃土高原","雲貴高原"],"answer":1,"explain":"內蒙古高原地勢平坦、起伏小，屬半乾燥的溫帶草原，傳統上以畜牧（游牧）為主要生產方式。黃土高原以旱作農業與嚴重的水土流失著稱；雲貴高原地表崎嶇、多石灰岩地形；青藏高原以高寒的高地氣候為主。"},{"level":"basic","topic":"華北平原的形成","q":"下列哪一個平原主要由黃河、淮河等河川挾帶泥沙沖積而成，地勢低平、位於第三階梯，是中國北方重要的糧食產區？","choices":["東北平原","長江中下游平原","珠江三角洲","華北平原"],"answer":3,"explain":"華北平原是黃河、淮河等河川長期沖積形成的大平原，土層深厚、地勢低平，以小麥、玉米等旱作為主。東北平原由松花江、遼河等河川沖積而成；長江中下游平原與珠江三角洲則分別由長江、珠江堆積形成。"},{"level":"basic","topic":"雲貴高原與石灰岩（喀斯特）地形","q":"雲貴高原地表崎嶇不平，石灰岩分布廣，長期受含二氧化碳的雨水與地下水溶蝕，最容易發育出下列哪一種地形景觀？","choices":["火山錐與廣大的熔岩台地","石林、溶洞與地下河等喀斯特地形","冰斗與U形谷等冰河地形","新月丘與風蝕蘑菇等風成地形"],"answer":1,"explain":"雲貴高原岩層以石灰岩為主，受溶蝕作用而形成石林、溶洞（鐘乳石）、地下河等喀斯特（岩溶）地形，地表崎嶇、平地少，且地表水容易滲漏而不易保存。(A)為火山活動的產物；(C)出現在高山或高緯冰河作用區；(D)主要分布於西北乾燥區。"},{"level":"basic","topic":"水資源分布與南水北調的目的","q":"中國推動「南水北調」工程，把南方河川的水引往北方，最主要是為了改善下列哪一個問題？","choices":["南方雨量太多，水患過於嚴重","北方人口與耕地多，但水資源相對不足","西部高原缺乏電力，需要興建電廠","東部沿海地層下陷，需要填海造陸"],"answer":1,"explain":"中國水資源分布「南多北少」，但北方耕地廣、人口與工業集中，用水需求大而供給不足，因此以南水北調調節區域間的水資源差異。(A)並非工程的主要目的；(C)、(D)與調水的目標無關。調水只能緩解北方缺水，節約用水與提高用水效率仍不可少。"},{"level":"adv","topic":"階梯交界與水力資源","q":"中國許多大型水力發電廠，多興建在地勢階梯交界附近的河段上，其最主要的原因是？","choices":["該處河水含沙量最低，不會淤積水庫","該處位於平原，施工與交通最為便利","該處河流落差大、水流湍急，水力蘊藏量豐富","該處年雨量最少，較能維持穩定的蓄水量"],"answer":2,"explain":"階梯交界處高度驟降，河流在此形成峽谷、急流與瀑布，落差大、流速快，水力蘊藏最豐富，最適合興建水力發電廠。(B)平原河段落差小、發電效益低；(A)、(D)並非選址的主要考量。"},{"level":"adv","topic":"由東向西的旅行路線與階梯判讀","q":"小明計畫從上海出發，大致沿長江流域一路向西旅行到青藏高原。他沿途所經過的地勢階梯與主要地形，依序最可能是下列何者？","choices":["第三階梯的平原→第二階梯的盆地與高原→第一階梯的高原","第一階梯的高原→第二階梯的盆地→第三階梯的平原","第三階梯的高原→第一階梯的平原→第二階梯的盆地","第二階梯的平原→第三階梯的丘陵→第一階梯的盆地"],"answer":0,"explain":"上海位於長江中下游平原（第三階梯），向西進入四川盆地一帶（第二階梯），最後登上青藏高原（第一階梯），高度愈往西愈高。(B)方向相反；(C)、(D)把各階梯對應的地形類型張冠李戴。"},{"level":"adv","topic":"秦嶺淮河南北的自然與農業差異","q":"甲、乙兩地分別位於秦嶺淮河以北與以南。關於兩地自然環境與農業差異的敘述，下列何者正確？","choices":["甲地一月均溫在0°C以上，河川冬季不會結冰","乙地年雨量少於甲地，農作物以小麥為主","乙地屬溫帶季風氣候，作物一年只能一穫","甲地一月均溫在0°C以下，可利用的水資源相對較少"],"answer":3,"explain":"甲地位於秦嶺淮河以北，一月均溫低於0°C、河川冬季結冰，且年雨量較少，水資源相對不足，農作以小麥等旱作為主。(A)冬季不結冰是南方（乙地）的特徵；(B)南方雨量較多、以稻米為主，敘述顛倒；(C)乙地屬副熱帶季風氣候，熱量充足，作物可一年二穫以上。"},{"level":"adv","topic":"氣溫雨量圖判讀","q":"某地的氣溫雨量圖顯示：一月均溫約-18°C，七月均溫約22°C，年雨量約五、六百公釐且明顯集中於七、八月。此地最可能位於下列哪一個地形區？","choices":["東北平原","長江中下游平原","珠江三角洲","塔里木盆地"],"answer":0,"explain":"冬季嚴寒（一月均溫遠低於0°C）、夏季溫暖多雨、雨量集中夏季，是緯度較高的溫帶季風氣候，符合東北平原的特徵。長江中下游平原與珠江三角洲冬季均溫都在0°C以上且雨量更多；塔里木盆地深居內陸、年雨量極少，不會有五、六百公釐的降水。"},{"level":"adv","topic":"南北溫差的季節變化","q":"中國南、北方的氣溫差異，冬季遠大於夏季。造成此現象的主要原因是下列何者？","choices":["夏季太陽直射南方，使南方氣溫特別高","冬季來自內陸的冷空氣南下，北方降溫幅度遠大於南方","冬季南方雨量特別多，使南方氣溫大幅下降","夏季北方受海洋影響大，氣溫反而偏低"],"answer":1,"explain":"冬季自內陸南下的冷空氣（冬季風）先影響北方且勢力最強，愈往南受秦嶺等山地阻擋而減弱，使南北溫差拉大；夏季全國普遍受熱，各地均溫接近，溫差因而縮小。(A)夏季太陽直射位置在北半球；(C)南方冬季雨量並不多；(D)不符合實際情形。"},{"level":"adv","topic":"西北內陸乾燥的成因","q":"中國西北內陸年雨量稀少，沙漠與戈壁廣布，造成此種乾燥環境的主要原因是？","choices":["緯度過高，全年蒸發特別旺盛","地勢低平，氣流不易抬升凝結","深居內陸、距海遙遠，加上高山阻擋，夏季風水氣難以到達","終年受海洋氣團籠罩，但因氣溫太低而無法降雨"],"answer":2,"explain":"西北內陸距海遙遠，來自海洋的夏季風在長途深入的過程中水氣逐漸耗盡，又受重重山脈阻擋，因此降水稀少而形成乾燥的荒漠景觀。(A)高緯度地區蒸發量小；(B)西北多高原、盆地與山地，並非地勢低平；(D)當地不易受到海洋氣團影響。"},{"level":"adv","topic":"黃河水患的治本之道","q":"若要從根本上減輕黃河下游的泥沙淤積與潰堤水患，下列哪一項治理方向最為有效？","choices":["在下游兩岸不斷加高、加厚堤防","在河口大量開挖新的入海水道","把下游河水抽引到上游地區灌溉","在中游黃土高原推動水土保持與植樹造林"],"answer":3,"explain":"黃河下游的泥沙主要來自中游黃土高原的水土流失，因此在中游植樹造林、修築梯田等水土保持工作，減少泥沙沖入河道，才是治本之道。(A)只能治標，且會使河床與堤防愈來愈高、風險更大；(B)、(C)都無法減少泥沙來源。"},{"level":"adv","topic":"長江與黃河水量差異","q":"長江的水量遠多於黃河，造成兩河水量差異的最主要原因是？","choices":["長江流程較短，沿途蒸發散失的水量較少","長江流域大多位於秦嶺淮河以南，年雨量豐沛且支流眾多","長江源頭位於第三階梯，沿途獲得的補注水源較多","黃河流域全部位於沙漠地區，境內幾乎沒有降水"],"answer":1,"explain":"長江流域主要在秦嶺淮河以南的濕潤區，年雨量多、支流密布，因此水量豐沛；黃河流域多位於半乾燥的北方，雨量較少且蒸發、用水量大。(A)長江流程反而較長；(C)長江發源於第一階梯的青藏高原；(D)黃河流域並非全為沙漠，敘述過於誇大。"},{"level":"adv","topic":"季風進退不穩定與水旱災","q":"中國東部地區常出現同一年「北方乾旱、南方水澇」或水旱災交替發生的現象，這與下列何者的關係最為密切？","choices":["河川流量長年穩定，變化很小","地勢西高東低，河川多由西向東流","冬季風勢力太弱，無法帶來降水","夏季風進退的時間早晚與強弱不穩定"],"answer":3,"explain":"東部降水主要由夏季風帶來，夏季風若來得早、勢力強，雨帶北移快，容易造成北澇南旱；若來得晚、勢力弱，雨帶滯留南方，則形成南澇北旱，因而水旱災頻仍。(A)與事實相反，季風區河川流量季節變化大；(B)、(C)與水旱災的成因無直接關係。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
