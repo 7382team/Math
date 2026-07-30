@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>海水與海洋運動 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0369a1;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "es-ocean",
+  "title": "海水與海洋運動",
+  "subject": "地球科學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第5章 海水與海洋運動",
+  "tag": "鹽度·波浪·潮汐·洋流",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>海水與海洋運動</h1><div class="sub">地球科學 · 鹽度·波浪·潮汐·洋流 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"海水鹽度－平均值","q":"海水中溶解了許多鹽類，全球海水的平均鹽度最接近下列哪一個數值？","choices":["3.5‰","35‰","350‰","0.35‰"],"answer":1,"explain":"鹽度是每1000公克海水中所含溶解鹽類的公克數，以千分比（‰）表示。全球海水平均鹽度約為35‰，即每1000公克海水約含35公克鹽類。3.5‰與0.35‰都太低，已接近淡水或微鹹水；350‰遠超過鹽類能溶解在水中的程度，通常是把千分比與百分比混用造成的換算錯誤。"},{"level":"basic","topic":"海水的組成－主要鹽類","q":"海水所溶解的各種鹽類中，含量最多的是哪一種？","choices":["氯化鎂","硫酸鈣","氯化鈉","碳酸鈣"],"answer":2,"explain":"海水鹽類中含量最多的是氯化鈉（食鹽），約占全部溶解鹽類的四分之三以上，這也是海水嚐起來鹹的主因；含量次多的是氯化鎂等鎂鹽。硫酸鈣與碳酸鈣的含量都很少，碳酸鈣主要是貝殼、珊瑚骨骼的成分，常被誤認為海水中的主要鹽類。"},{"level":"basic","topic":"鹽度影響因素－蒸發旺盛","q":"某海域長年晴朗炎熱、降水稀少而蒸發旺盛，該處表層海水的鹽度變化與原因，下列哪一項正確？","choices":["鹽度上升，因為水分蒸發散失而鹽類留在海水中","鹽度下降，因為鹽類會隨著水蒸氣一起離開海水","鹽度不變，因為蒸發會同時等量帶走水與鹽類","鹽度下降，因為海水體積變小使鹽類被稀釋"],"answer":0,"explain":"蒸發時只有水分子變成水蒸氣離開海面，溶解的鹽類留在海水中，水量減少而鹽量不變，鹽度因此上升（這也是海水蒸發後可以曬鹽的原因）。「鹽類隨水蒸氣一起離開」與「蒸發等量帶走水和鹽」都不符事實；水量減少只會使鹽類更濃，說鹽類被稀釋則是把因果完全顛倒。"},{"level":"basic","topic":"鹽度影響因素－河水注入","q":"台灣西部大河出海口附近的表層海水鹽度，通常明顯低於外海，最主要的原因是什麼？","choices":["河口海水的蒸發量特別大，水分大量減少","河口的海水因為結冰而把鹽類排出","河口水深較深，深層海水鹽度本來就較低","大量淡水由河流注入，把海水沖淡"],"answer":3,"explain":"河水是幾乎不含鹽類的淡水，大量注入後與海水混合，使單位海水中的鹽量被稀釋，鹽度降低。蒸發旺盛反而會使鹽度上升，方向相反；台灣河口不會結冰，而且結冰是把鹽排回周圍海水、使鹽度上升，敘述兩處都錯；河口一帶是表層被淡水沖淡、下層仍為較鹹的海水，並不是「深處鹽度特別低」，也與水深無關。"},{"level":"basic","topic":"海水溫度垂直分布－斜溫層的定義","q":"海水溫度隨深度的垂直分布可分為三層，其中溫度隨深度增加而急遽下降的一層稱為什麼？","choices":["表水層","斜溫層","深水層","對流層"],"answer":1,"explain":"由海面往下依序為表水層（受陽光加熱並經風浪攪拌，水溫高且上下均勻）、斜溫層（水溫隨深度急遽下降）、深水層（水溫低且變化很小）。表水層與深水層的共同特徵都是溫度變化小，不符題意；對流層是大氣的分層名稱，把大氣分層與海水分層的術語混用是常見錯誤。"},{"level":"basic","topic":"海水溫度垂直分布－表水層均溫的原因","q":"海洋表水層的水溫上下幾乎一致，最主要的原因是下列哪一項？","choices":["陽光能穿透到數千公尺深的海底，把海水均勻加熱","風浪與波浪的攪拌使上層海水充分混合","海水的比熱非常小，溫度很容易變得一致","這一層的海水完全靜止不動，所以溫度不會改變"],"answer":1,"explain":"表水層受風吹與波浪擾動，海水上下充分混合，因此溫度上下差異很小。陽光只能穿透海水表層約一百公尺上下，照不到數千公尺的深海；海水的比熱大而不是小，正因比熱大才不易升溫降溫；表水層其實是海水運動最活躍的一層，「完全靜止」的說法與混合均勻的成因自相矛盾。"},{"level":"basic","topic":"波浪的成因","q":"一般海面上常見的波浪，主要是由下列哪一種作用形成？","choices":["風吹拂海面","月球對海水的引力","地球自轉","海底火山噴發"],"answer":0,"explain":"平時海面的波浪是風吹拂海面、把能量傳給海水而形成；風速越大、吹的時間越久、吹送距離越長，波浪就越大。月球引力造成的是潮汐，兩種海水運動不可混淆；地球自轉是影響表層洋流流向的因素之一，不會直接產生波浪；海底火山或地震只在特殊情況下引發海嘯，不是日常波浪的來源。"},{"level":"basic","topic":"波浪的性質－傳遞能量而非搬運海水","q":"當一列波浪由外海向岸邊傳遞時，關於海水水質點的運動與波浪所傳遞的內容，下列敘述正確的是？","choices":["水質點隨波浪一路向前移動，整片海水被搬運到岸邊","水質點在原地附近上下起伏作圓周運動，向前傳遞的是能量","水質點只作水平來回移動，向前傳遞的是海水中的鹽類","水質點完全靜止不動，向前傳遞的是海水本身"],"answer":1,"explain":"波浪通過時，水質點只在原來位置附近作近似圓周的運動，並把能量一波接一波往前傳遞，海水本身並沒有整體被搬到岸邊，這就是「波浪傳遞能量而不是搬運海水」的觀念。「整片海水被搬運到岸邊」是最常見的迷思；水質點不是只作水平來回移動，鹽類也不會被波浪單獨帶走；說水質點完全靜止，則與海面明顯起伏的事實矛盾。"},{"level":"basic","topic":"波浪的變形－碎浪的形成","q":"波浪由外海傳到近岸淺水處時常形成碎浪（浪花翻捲），最主要的原因是什麼？","choices":["近岸海水鹽度突然升高，波浪變得不穩定","近岸的風速一定比外海強，把波浪吹倒","水深變淺，波浪底部受海底摩擦、波形變陡，波峰前傾而傾倒破碎","月球引力在靠岸的地方特別大，把波浪拉倒"],"answer":2,"explain":"波浪進入淺水區後，底部水質點的圓周運動受海底摩擦阻擋，波速變慢、波長縮短而波高增大，波形越來越陡，波峰終於前傾傾倒而形成碎浪。碎浪與鹽度變化無關；近岸的風速並不必然大於外海；月球引力造成的是潮汐，也不會在近岸特別大，這是把潮汐與波浪混用的錯誤。"},{"level":"basic","topic":"潮汐的成因","q":"造成海水每天規律漲落的潮汐現象，主要原因是下列哪一項？","choices":["地球自轉時把海水甩向兩側","盛行風長期吹拂海面推動海水","海水溫度與鹽度不同造成的密度差異","月球（以及太陽）對地球海水的引力作用"],"answer":3,"explain":"潮汐主要是月球對地球海水的引力（引潮力）造成，太陽的引力也有貢獻，但因距離很遠，作用大約只有月球的一半。地球自轉只決定同一地點一天內經過潮汐隆起的次數與時刻，並不是潮汐產生的原因，「潮汐是地球自轉把海水甩出去」是常見迷思；盛行風造成的是表層洋流；溫度與鹽度造成的密度差異驅動的是深層海水的緩慢流動，不會形成每日規律的漲落。"},{"level":"basic","topic":"潮汐的週期與次數","q":"關於潮汐漲落的次數與週期，下列敘述正確的是？","choices":["一天約有兩次滿潮與兩次乾潮，相鄰兩次滿潮相隔約12小時25分","一天只有一次滿潮與一次乾潮，週期約24小時","一天約有四次滿潮與四次乾潮，週期約6小時","滿潮與乾潮沒有固定週期，完全隨當天風向而改變"],"answer":0,"explain":"大多數海岸一天約發生兩次滿潮與兩次乾潮，相鄰兩次滿潮相隔約12小時25分，因此每天的滿潮時刻會比前一天約晚50分鐘。一天一次或一天四次的次數與週期都不符觀測結果；潮汐是由日、月、地相對位置決定的規律現象，可以事先預報，並不會隨當天風向任意改變。"},{"level":"basic","topic":"大潮與月相的對應","q":"潮差最大的大潮，通常發生在下列哪一種月相前後？","choices":["上弦月與下弦月","朔（新月）與望（滿月）","眉月與殘月","月球運行到距離地球最遠的位置時"],"answer":1,"explain":"朔與望時，日、月、地大致連成一直線，月球與太陽的引潮作用互相加強，滿潮特別高、乾潮特別低，潮差最大而形成大潮。上弦、下弦時日、月、地約成直角，兩者的引潮作用互相抵減，形成潮差最小的小潮，剛好與大潮相反；眉月、殘月的位置介於朔望與上下弦之間，潮差並非最大；月球與地球的距離變化雖略有影響，但不是大潮小潮交替出現的主因。"},{"level":"basic","topic":"表層洋流的成因","q":"海洋表層洋流有固定的流向與流路，其形成的主要原因是下列哪一項？","choices":["盛行風長期吹拂海面，再加上地球自轉與海陸分布的影響","月球與太陽對海水的引力","海底火山不斷噴發推動海水","高緯度海水的結冰與融冰"],"answer":0,"explain":"表層洋流主要由盛行風長期吹拂海面帶動，再受地球自轉的偏轉作用與海陸（大陸）分布的阻擋導引，形成大範圍且流向固定的環流系統。日月引力造成的是潮汐；海底火山噴發是局部而短暫的作用，無法造成全球性的洋流；結冰與融冰主要改變局部海水的鹽度與密度，不是表層洋流流向固定的主因。"},{"level":"basic","topic":"黑潮的性質與流路","q":"關於流經台灣附近的黑潮，下列敘述正確的是？","choices":["它是大西洋的一支寒流，由北向南流","它是太平洋的強大暖流，自菲律賓東方向北流，經過台灣東岸","它是由台灣海峽向南流的低溫、低鹽海流","它是只有冬季才出現、夏季就完全消失的季節性海流"],"answer":1,"explain":"黑潮是太平洋西側的強大暖流，自菲律賓東方海域向北流，經台灣東岸再北上日本附近，海水具有高溫、高鹽的特性，對台灣東部沿海的氣候與漁業影響很大。黑潮位於太平洋而不是大西洋，而且是暖流不是寒流；低溫、低鹽的描述與暖流的性質相反；黑潮終年存在，只是流速與流路略有季節變化，並不會夏季消失。"},{"level":"basic","topic":"海洋調節氣候－海水的性質","q":"沿海地區的氣溫日夜與季節變化常比同緯度內陸小，海洋能調節氣候，主要是因為海水具有下列哪一項性質？","choices":["密度比岩石大","鹽度約為35‰","顏色較深，特別容易吸熱","比熱比陸地的岩石與砂土大"],"answer":3,"explain":"海水的比熱比陸地的岩石、砂土大得多，吸收或放出相同的熱量時，海水的溫度變化較小，因此海洋像一個大型的調溫器，使沿海地區的氣溫變化比內陸和緩。海水的密度其實比岩石小，而且與調溫無關；鹽度是成分的描述，不能解釋溫度變化為何較小；顏色深有利吸收陽光，那會使升溫更快，反而無法說明海洋溫度變化小的原因。"},{"level":"adv","topic":"鹽度影響因素－海水結冰排鹽","q":"高緯度海域在冬季海面結冰時，冰塊周圍尚未結冰的海水鹽度會如何變化？原因為何？","choices":["鹽度下降，因為海水結冰時把鹽類一起帶進冰塊中","鹽度不變，因為結冰只是水的狀態改變","鹽度上升，因為結冰時鹽類大多被排出而留在未結冰的海水中","鹽度上升，因為結冰會使海面的蒸發速率變快"],"answer":2,"explain":"海水結冰時，水分子先形成冰晶，大部分鹽類被排出而留在周圍尚未結冰的海水裡，該處鹽量不變而水量減少，鹽度因此上升（這也是海冰融化後的水鹽度很低的原因）。說鹽類被帶進冰塊中，正好把排鹽的方向說反；說鹽度不變則忽略了鹽類與水被分離；結冰時氣溫極低，蒸發反而微弱，該選項雖然結論對，但理由是錯的。"},{"level":"adv","topic":"海水密度－溫度與鹽度的共同影響","q":"甲處海水水溫較低、鹽度較高；乙處海水水溫較高、鹽度較低。若兩處海水相鄰，下列推論最合理的是？","choices":["乙處海水密度較大，會下沉到甲處海水的下方","兩處海水的密度一定相同，不會產生上下移動","海水密度只由深度決定，與溫度、鹽度無關","甲處海水密度較大，會下沉到乙處海水的下方"],"answer":3,"explain":"海水密度隨溫度降低而增大、隨鹽度升高而增大。甲處水溫低又鹽度高，兩個因素都使密度變大，因此甲處海水密度較大而會下沉到乙處海水下方，這也是深層海水多來自高緯度冷而鹹的海水的原因。說乙處密度較大是把溫度對密度的影響說反；說兩處密度必定相同則忽略了溫度與鹽度的作用；深度本身不是決定密度的原因，而是密度大的海水下沉到深處的結果，屬於因果顛倒。"},{"level":"adv","topic":"斜溫層對上下水體交換的影響","q":"斜溫層內海水溫度隨深度急遽下降，密度也隨深度明顯增大。這樣的分層對海水上下交換造成什麼影響？","choices":["使表層與深層海水更容易上下對流，混合得很徹底","像一層阻隔，使表層與深層海水不易上下交換，深層的營養鹽不易被帶到表層","使深層海水的鹽度快速下降到接近淡水的程度","使海面無法形成波浪，海面永遠平靜"],"answer":1,"explain":"下層海水密度大、上層密度小，屬於穩定的分層，不利上下對流，因此斜溫層像一道屏障，阻礙表層與深層海水的交換，深層豐富的營養鹽不容易上升到表層，這也是一般開闊海域表層生物量有限、需靠湧升流補充營養鹽的原因。密度隨深度增大是抑制而不是促進對流；海水鹽度的上下差異很小，深層不會接近淡水；波浪由風造成，與斜溫層無關。"},{"level":"adv","topic":"海水溫度剖面圖表判讀","q":"某研究船在同一海域測得水溫隨深度的變化：0～100公尺約28℃且幾乎不變；100～800公尺由28℃迅速降到約6℃；800公尺以下維持約4℃、變化很小。依此判讀，下列敘述正確的是？","choices":["0～100公尺是斜溫層，因為這一層的水溫最高","100～800公尺是深水層，因為它的深度最深","800公尺以下是表水層，因為這一層溫度最穩定","100～800公尺是斜溫層，該層水溫隨深度急遽下降，海水密度隨深度明顯增大"],"answer":3,"explain":"分層的依據是水溫隨深度的變化情形：0～100公尺水溫高且上下均勻，是表水層；100～800公尺水溫急遽下降，是斜溫層，因水溫下降使密度隨深度明顯增大；800公尺以下水溫低而穩定，是深水層。把「水溫最高」當成斜溫層的條件並不正確；只看深度最深而不看溫度變化，也不能判定為深水層；「溫度穩定」不是表水層的判準，表水層必須位於海面附近且水溫較高。"},{"level":"adv","topic":"小潮的成因","q":"當我們看到上弦月或下弦月時，海邊常出現潮差最小的小潮，其原因為下列哪一項？","choices":["此時月球運行到距離地球最遠的位置，引潮作用特別微弱","此時只有太陽的引力作用在海水上，月球的引力暫時消失","此時日、月、地大約成直角，月球與太陽的引潮作用部分互相抵減","此時日、月、地連成一直線，兩者的引潮作用互相加強"],"answer":2,"explain":"上弦、下弦時，由地球看月球與太陽的方向大約垂直，月球造成的海水隆起處恰好接近太陽造成的低潮處，兩者的引潮作用部分互相抵減，因此滿潮不高、乾潮不低，潮差最小而形成小潮。月球距離的變化不是大潮小潮交替的主因；月球的引力不會消失；「日、月、地連成一直線、引潮作用互相加強」描述的是朔、望的情形，那是大潮的成因，把大潮與小潮的原因對調是常見錯誤。"},{"level":"adv","topic":"潮差、農曆日期與潮間帶判讀","q":"某漁村居民想趁潮差最大、乾潮時潮間帶露出範圍最廣的日子到海邊採集貝類。若他依農曆日期安排，下列哪一天前往最合理？","choices":["農曆初七、初八（可看到半圓形上弦月）前後","農曆二十二、二十三（可看到半圓形下弦月）前後","任何一天都一樣，潮差大小與農曆日期無關","農曆十五、十六（可看到又圓又亮的滿月）前後"],"answer":3,"explain":"農曆十五、十六前後為望（滿月），日、月、地大致連成一直線，月球與太陽的引潮作用互相加強而形成大潮，潮差最大，乾潮時海水退得最遠、潮間帶露出的範圍最廣，最適合採集（農曆初一前後的朔同樣是大潮）。農曆初七、初八約為上弦，二十二、二十三約為下弦，兩者都是潮差最小的小潮，露出的潮間帶最窄；潮差會隨月相在大潮與小潮之間規律變化，並不是每天都相同。"},{"level":"adv","topic":"波浪傳能的應用－漂浮物的運動","q":"海面上漂著一個空寶特瓶，波浪一波接一波往岸邊傳去。若忽略風與海流的直接推動，最可能觀察到的現象是？","choices":["寶特瓶被波浪整體推著走，以和波浪相同的速度快速衝上岸","寶特瓶先沉入海底，再被波浪由海底推上岸邊","寶特瓶大致在原來位置附近上下（前後）起伏，位置變化不大","寶特瓶被帶往外海，因為波浪會把表層海水往外搬運"],"answer":2,"explain":"波浪向前傳遞的是能量，水質點只在原處附近作圓周運動，海水並沒有隨波浪整體前進，因此漂浮物主要是上下起伏，位置變化很小。說漂浮物以波速衝上岸，是「波浪會把海水整體搬運前進」的典型迷思；波浪的擾動只影響表層，不會把漂浮物壓到海底再推上岸；波浪也不會成批把表層海水帶往外海。"},{"level":"adv","topic":"黑潮對台灣的影響","q":"黑潮終年流經台灣東岸，關於它對台灣的影響，下列推論最合理的是？","choices":["帶來高溫、高鹽的海水，使東部沿海冬季較為溫暖，並帶來洄游魚群而形成漁場","帶來低溫、低鹽的海水，使東部沿海冬季比同緯度內陸更寒冷","使台灣東岸的海水鹽度明顯低於同緯度的外海海水","因為黑潮是寒流，所以由北向南流經台灣東岸"],"answer":0,"explain":"黑潮是高溫、高鹽的強大暖流，流經台灣東岸時把低緯度的熱量帶到較高緯度，使東部沿海冬季氣溫較為溫和、水氣充足；同時許多洄游性魚類隨黑潮而來，成為台灣重要的漁場。說它帶來低溫低鹽的海水、或說它是由北向南的寒流，方向與性質都錯；高鹽的暖流也不會使沿岸鹽度低於外海，與黑潮高鹽的特性矛盾。"},{"level":"adv","topic":"湧升流與漁場","q":"某沿海地區在季風長期吹拂下，表層海水被帶離海岸，深層海水上升補充，該海域常成為良好的漁場。最主要的原因是？","choices":["上升的深層海水把大量營養鹽帶到表層，浮游生物大量繁殖，魚群因而聚集","上升的深層海水溫度很高，魚類喜歡聚集在溫暖的海水中","上升的海水鹽度接近淡水，最適合海水魚產卵","上升的海水使海面波浪變小，漁船比較容易作業"],"answer":0,"explain":"這種現象稱為湧升流。深層海水累積了由上層沉降分解而來的營養鹽，湧升到陽光充足的表層後，浮游植物大量繁殖，浮游動物與魚群隨之聚集，形成良好漁場。深層海水的溫度低而不是高；海水鹽度的垂直差異很小，深層不會接近淡水；湧升流形成漁場的關鍵是營養鹽，而不是海面是否平靜，把作業方便當成原因屬於因果錯置。"},{"level":"adv","topic":"海洋汙染與優養化","q":"關於海洋汙染，下列敘述最正確的是？","choices":["海洋面積廣大，任何廢棄物排入後都會被完全稀釋而不造成危害","塑膠垃圾在海水中會迅速分解，不會累積在海洋生物體內","浮在海面的油汙可以增加海水中的溶氧，對魚類有益","含氮、磷的生活與農業廢水大量排入近海，可能使藻類過度繁殖、水中溶氧下降而危害海洋生物"],"answer":3,"explain":"含氮、磷的汙水大量排入近海會使營養鹽過多，藻類與浮游生物暴增，死亡後被分解時大量消耗溶氧，導致水中缺氧、魚貝死亡。海洋的稀釋與自淨能力有限，汙染物還會在生物體內累積並沿食物鏈濃縮；塑膠在海中分解極慢，會碎裂成微小顆粒被生物攝食；油汙覆蓋海面會阻礙氣體交換、降低溶氧並黏附生物體表，對生物有害而非有益。"},{"level":"adv","topic":"比熱與海陸溫差的日常應用","q":"夏季晴朗的午後到海邊，沙灘燙得無法赤腳站立，但海水摸起來卻相對涼爽。此現象與海洋能調節氣候的道理相同，最合理的解釋是？","choices":["沙的密度比海水小，所以升溫比較快","海水會把陽光全部反射掉，完全不吸收熱量","沙的比熱比海水小，吸收相同的熱量時溫度上升較多","海水含有鹽類，所以受熱後溫度不會上升"],"answer":2,"explain":"比熱是使單位質量的物質升高1℃所需的熱量。沙的比熱比水小很多，吸收相同熱量時溫度上升幅度較大，所以沙灘很燙；海水比熱大，升溫慢、降溫也慢，因而能調節沿海地區的氣溫。升溫快慢由比熱決定，不是由密度決定；海水確實會吸收陽光並升溫，只是升幅較小；含有鹽類也不會使海水完全不升溫。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

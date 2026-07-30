@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>靜電現象 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "static-elec",
+  "title": "靜電現象",
+  "subject": "理化",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第4章 基本電學",
+  "tag": "摩擦起電·靜電感應",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>靜電現象</h1><div class="sub">理化 · 摩擦起電·靜電感應 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"摩擦起電－電子轉移方向","q":"用絲布摩擦玻璃棒，摩擦後玻璃棒帶正電。關於此過程，下列敘述何者正確？","choices":["玻璃棒上的質子轉移到絲布上，使玻璃棒帶正電","絲布上的電子轉移到玻璃棒上，使玻璃棒帶正電","玻璃棒上的電子轉移到絲布上，使玻璃棒帶正電","摩擦時創造出新的正電荷附著在玻璃棒上"],"answer":2,"explain":"摩擦起電時只有「電子」會轉移：失去電子的物體帶正電，得到電子的物體帶負電。玻璃棒帶正電，表示它的電子跑到絲布上。「質子轉移」錯在質子被束縛在原子核內，不會因摩擦而移動；「電子由絲布跑到玻璃棒」方向相反，那會使玻璃棒帶負電；「創造出新的正電荷」違反電荷守恆，摩擦只能轉移電荷，不能創造電荷。"},{"level":"basic","topic":"電荷守恆","q":"兩個原本都不帶電的物體A、B互相摩擦後分開，測得A帶負電。下列敘述何者正確？","choices":["B帶正電，且B所帶的電量與A所帶的電量相等","B也帶負電，且兩者電量相等","B仍不帶電，只有A帶電","B帶正電，但兩物體的總電量比摩擦前增加了"],"answer":0,"explain":"A得到電子而帶負電，這些電子正是由B失去的，所以B帶等量的正電，正負相加後總電量仍為零，這就是電荷守恆。「兩者都帶負電」錯在摩擦起電必產生等量異性電；「B仍不帶電」忽略了電子必有來源；「總電量增加」誤以為摩擦會產生電荷。"},{"level":"basic","topic":"同性相斥、異性相吸的判別","q":"用細線懸掛的甲、乙兩個保麗龍球彼此互相排斥，已知甲球帶負電，則乙球的帶電情形為何？","choices":["不帶電，只是受到靜電感應","帶正電","可能帶正電，也可能不帶電","一定帶負電"],"answer":3,"explain":"排斥只發生在同性電荷之間，所以乙球一定也帶負電。不帶電的物體因靜電感應只會被「吸引」，絕不會被排斥，故「不帶電」與「可能不帶電」都不可能；帶正電則會與甲相吸而非相斥。記住：相吸不能斷定電性，相斥才能。"},{"level":"basic","topic":"驗電器的原理－金屬箔張開的原因","q":"以帶電體接觸驗電器的金屬球後，驗電器下方的兩片金屬箔會張開，其主要原因為何？","choices":["兩片金屬箔帶異性電而互相吸引","兩片金屬箔帶同性電而互相排斥","金屬箔被電流加熱後膨脹變長","金屬箔失去電子後質量變小而浮起"],"answer":1,"explain":"電荷經金屬（導體）傳到兩片金屬箔上，兩箔帶同性電互相排斥而張開，張角越大表示帶電量越多。若兩箔帶異性電應互相靠攏而非張開；「加熱膨脹」與靜電現象無關；電子質量極小，張開與輕重也無關。"},{"level":"basic","topic":"導體與絕緣體的差別","q":"導體與絕緣體最主要的差別在於下列何者？","choices":["導體含有電子，絕緣體完全不含電子","導體本身一定帶電，絕緣體本身一定不帶電","導體內部有可以自由移動的電子，絕緣體內的電子不易自由移動","導體的原子含有質子，絕緣體的原子沒有質子"],"answer":2,"explain":"所有物質的原子都含有電子與質子，差別在於電子能否在物體內自由移動：金屬內有自由電子故為導體，塑膠、玻璃內的電子被原子束縛住故為絕緣體。「絕緣體不含電子」「絕緣體沒有質子」都把「有沒有電子（質子）」當成差別；「導體一定帶電」則混淆了「能導電」與「帶電」，導體未接電源時同樣是中性的。"},{"level":"basic","topic":"靜電感應－電荷重新分布","q":"將帶正電的塑膠棒靠近（但不接觸）放在絕緣座上、原本不帶電的金屬球，下列對金屬球的敘述何者正確？","choices":["靠近棒的一端帶正電、遠端帶負電，整體仍不帶電","靠近棒的一端帶負電、遠端帶正電，整體仍不帶電","靠近棒的一端帶負電、遠端帶正電，且整體帶負電","金屬球內的質子被吸引移到近端，使近端帶正電"],"answer":1,"explain":"帶正電的棒會吸引金屬球內的自由電子聚集到近端，使近端帶負電（與棒異性）、遠端因缺少電子而帶正電；電子只是在球內重新分布，並沒有進出金屬球，故整體電量仍為零。「近端帶正電」電性相反；「整體帶負電」誤以為靜電感應會使物體整體帶電；「質子移到近端」錯在固體中能移動的是電子不是質子。"},{"level":"basic","topic":"電荷的種類與基本電荷","q":"關於電荷的敘述，下列何者正確？","choices":["電荷只有一種，只是不同物體帶的多寡不同","電子帶正電，質子帶負電","一個物體所帶的電量可以是一個電子電量的任意分數倍","電荷分為正電與負電兩種，物體所帶的電量都是一個電子電量（基本電荷）的整數倍"],"answer":3,"explain":"自然界的電荷有正、負兩種，一個電子所帶的電量是最小的電量單位（基本電荷）；物體帶電是因為得到或失去「整數個」電子，故電量必為基本電荷的整數倍。「電荷只有一種」忽略了有兩種電性；「電子帶正電、質子帶負電」把電性顛倒；「分數倍」違反電量只能一份一份改變的事實。"},{"level":"basic","topic":"生活中的靜電現象－摩擦與放電","q":"冬天在乾燥的房間裡脫下毛衣時，常聽到「劈啪」聲並看到細小的火花，這是因為","choices":["毛衣與內層衣物、身體摩擦起電，累積的電荷發生放電現象","毛衣的纖維被拉斷而發出聲音與火花","毛衣中的金屬絲被磁化後放出火花","人體的體溫使毛衣局部燃燒"],"answer":0,"explain":"脫毛衣時衣物互相摩擦而帶異性電，電荷累積到一定程度就會擊穿空氣而放電，因而產生聲音與火花。「纖維被拉斷」屬於力學上的斷裂，不會產生火花；「金屬絲被磁化」把靜電與磁現象混為一談；體溫遠低於纖維的燃點，不可能使毛衣燃燒。"},{"level":"basic","topic":"靜電感應－帶電體吸引中性物體","q":"用塑膠梳子梳過乾燥的頭髮後，將梳子靠近桌上的小紙屑，紙屑會被吸起。紙屑原本並不帶電，卻被吸引的主要原因是","choices":["紙屑被摩擦而帶了與梳子相同的電","梳子把紙屑磁化，使紙屑變成小磁鐵","紙屑因靜電感應，靠近梳子的一端出現異性電而被吸引","梳頭時產生的氣流把紙屑吹向梳子"],"answer":2,"explain":"帶電的梳子靠近紙屑時，使紙屑內的電荷重新分布，近端出現異性電、遠端出現同性電；近端距離較近、吸引力較大，合力為吸引，所以紙屑被吸起。「帶相同的電」應該相斥；「磁化」混淆靜電與磁力；「氣流吹動」與事實不符，因為梳子未帶電時同樣有氣流卻吸不起紙屑。"},{"level":"basic","topic":"接地的作用","q":"一個帶負電的金屬球，用手直接觸摸後就不再帶電，其原因為何？","choices":["球上的負電荷被手「消滅」了","球上多餘的電子經由人體流入大地","大地的質子經由人體流到球上與電子結合成中子","球上的質子經由人體流入大地"],"answer":1,"explain":"人體與大地都是導體，接地提供電子流動的路徑：帶負電的球上多餘的電子會經人體流入大地，球因而恢復中性。「電荷被消滅」違反電荷守恆，電荷只會轉移不會消失；另外兩個選項錯在固體導體中能自由移動的只有電子，質子不會流動，也不會與電子結合成中子。"},{"level":"basic","topic":"避雷針的作用","q":"高樓頂端裝設避雷針，並以粗導線連接到地下，其主要作用是","choices":["使雲層不再帶電，從此不會打雷","把閃電反射回天空","把閃電引來後將電荷儲存在建築物內","提供一條良好的導電路徑，把電流安全地引入大地，保護建築物"],"answer":3,"explain":"避雷針利用尖端容易放電的性質，先與雲層下方的電荷中和；即使被雷擊中，也能提供低電阻的路徑，使強大電流沿導線流入大地而不通過建築物。避雷針無法改變雲層的帶電狀態；閃電是放電現象，不是可被反射的光線；把電荷「儲存」在建築物內更與避雷的目的相反，電荷必須導走。"},{"level":"basic","topic":"驗電器的使用－張開能與不能判斷的事","q":"一個金屬箔原本閉合的驗電器，以某物體接觸金屬球後金屬箔張開。由此現象可以判斷","choices":["該物體確實帶電，但單憑金屬箔張開無法判斷它帶正電或負電","該物體一定帶正電","該物體一定帶負電","該物體一定不帶電"],"answer":0,"explain":"不論帶正電或帶負電的物體接觸驗電器，兩片金屬箔都會帶同性電而張開，所以張開只能判斷「有沒有帶電」與「帶電量多寡」，不能直接判斷電性。要判斷電性，須另外用已知電性的帶電體靠近，觀察張角變大或變小。因此「一定帶正電」「一定帶負電」都太武斷，「一定不帶電」則與觀察到的現象矛盾。"},{"level":"basic","topic":"生活中的靜電防範","q":"加油站常要求駕駛人在加油前先觸摸金屬製的「除靜電片」，其主要目的是","choices":["檢查車輛的電路是否漏電","使汽油在油管中流動得更順暢","把人體累積的靜電導入大地，避免放電產生火花點燃油氣","使人體先帶電，才能安全地握住油槍"],"answer":2,"explain":"人體因走動、摩擦座椅而累積靜電，若在充滿油氣的場所放電產生火花，極可能引燃油氣。先觸摸接地的金屬片，可把電荷導入大地。「檢查漏電」「使汽油流動順暢」都與靜電無關；「使人體先帶電」方向完全相反，帶電才是危險的。"},{"level":"basic","topic":"閃電的成因","q":"關於閃電的敘述，下列何者最合理？","choices":["閃電時雲中會創造出新的電荷，因此電荷不守恆","閃電是雲與雲之間或雲與地面之間累積大量異性電荷後產生的放電現象","閃電是空氣因摩擦生熱而燃燒所發出的火焰","閃電只會發生在雲與地面之間，不會發生在雲與雲之間"],"answer":1,"explain":"雲中的水滴、冰晶因碰撞摩擦而分離電荷，使雲的不同部位或雲與地面之間帶異性電，電荷累積到足以擊穿空氣時便放電，即為閃電。「創造新電荷」違反電荷守恆；閃電是放電發光，不是空氣燃燒；事實上雲與雲之間的閃電比雲與地面之間更常見。"},{"level":"adv","topic":"摩擦起電的相對性與推理","q":"甲、乙、丙三種材質互相摩擦，結果如下：甲與乙摩擦後甲帶正電；乙與丙摩擦後丙帶正電。若改將甲與丙互相摩擦，則","choices":["甲帶正電、丙帶負電","丙帶正電、甲帶負電","甲、丙兩者都帶正電","由題目所給的條件無法判斷甲、丙何者帶正電"],"answer":3,"explain":"甲與乙摩擦時甲失去電子，表示甲「失去電子的傾向比乙大」；乙與丙摩擦時丙帶正電，表示丙失去電子的傾向也比乙大。兩項資訊都只把甲、丙分別與乙比較，並未提供甲與丙之間的比較，故無法判斷誰帶正電。至於「兩者都帶正電」更是錯的，互相摩擦的兩物必帶異性電，不可能同時帶正電。"},{"level":"adv","topic":"用驗電器判斷帶電體的電性","q":"某驗電器原本已帶負電，金屬箔微微張開。將一待測物由遠處慢慢靠近（不接觸）驗電器的金屬球時，發現金屬箔的張角變得更大。則該待測物","choices":["帶負電","帶正電","一定不帶電","所帶電量一定比驗電器多"],"answer":0,"explain":"驗電器帶負電時，多餘的電子分布在金屬箔上。靠近的物體若帶負電，會把電子往下排斥到金屬箔，箔上負電增加、張角變大；若帶正電則吸引電子上移，箔上負電減少、張角變小；不帶電的物體靠近時張角不會變大。至於「電量一定比驗電器多」也不能成立，張角變化只反映金屬箔上電量的增減，無法比較兩者電量大小。"},{"level":"adv","topic":"感應起電－先分開再移走帶電體","q":"兩個原本都不帶電、互相接觸的金屬球A、B放在絕緣座上。將帶負電的橡膠棒靠近A球（不接觸），維持棒的位置不動，先把A、B分開，再移走橡膠棒。此時","choices":["A帶負電、B帶正電","A帶正電、B帶負電","A、B都不帶電","A、B都帶負電"],"answer":1,"explain":"帶負電的棒靠近A時，會把兩球（此時可視為同一個導體）內的自由電子排斥到較遠的B，使A端缺少電子而帶正電、B端多出電子而帶負電。在棒尚未移走前就先分開兩球，這些電荷便被「鎖住」，故A帶正電、B帶負電，兩者電量相等、總量仍為零。「A帶負電」誤把近端當成同性電。"},{"level":"adv","topic":"靜電感應的可逆性－先移走帶電體再分開","q":"兩個原本都不帶電、互相接觸放在絕緣座上的金屬球A、B，以帶負電的橡膠棒靠近A球（不接觸）。若改成「先把橡膠棒移走，再將A、B分開」，則結果為","choices":["A帶正電、B帶負電","A帶負電、B帶正電","A、B都恢復為不帶電","A帶正電、B不帶電"],"answer":2,"explain":"靜電感應只是電荷在導體內重新分布，並沒有電荷進出兩球。橡膠棒一移走，失去吸引與排斥的作用，自由電子立刻恢復均勻分布，兩球都回到中性，之後再分開自然都不帶電。可見感應起電成功與否，關鍵在於「分開兩球」與「移走帶電體」的先後順序。"},{"level":"adv","topic":"相吸與相斥的判別（易錯辨析）","q":"帶電的塑膠尺靠近一個用細線懸掛的小鋁箔球，發現鋁箔球被吸引而偏向塑膠尺。由此現象可以推論","choices":["鋁箔球一定帶正電","鋁箔球一定帶負電","鋁箔球一定與塑膠尺帶異性電","鋁箔球可能與塑膠尺帶異性電，也可能原本不帶電"],"answer":3,"explain":"帶電體會吸引帶異性電的物體，也會因靜電感應而吸引不帶電的物體，所以「相吸」有兩種可能，不能斷定鋁箔球的電性。只有觀察到「相斥」，才能確定兩者都帶電且電性相同。其餘三個選項都犯了把相吸直接當成帶異性電（甚至指定電性）的常見錯誤。"},{"level":"adv","topic":"靜電的應用－影印機與雷射印表機","q":"影印機與雷射印表機都利用靜電原理工作，其中碳粉能附著在感光滾筒上形成影像，最主要的原因是","choices":["感光滾筒上帶電的圖文區域以靜電力吸引帶電的碳粉粒，使碳粉附著形成影像","碳粉受滾筒內磁鐵的磁力吸引而排列成影像","碳粉受重力自然落下堆積在滾筒上形成影像","碳粉必須先被高溫熔化成液體後，才能被吸附到滾筒上"],"answer":0,"explain":"感光滾筒經曝光後，圖文部分保留電荷，藉靜電力吸引帶異性電的碳粉粒，再轉印到紙上。「磁力吸引」把靜電力誤認為磁力；若只靠重力落下就無法形成清晰圖案；「先熔化再吸附」則把步驟順序弄反了，加熱熔化碳粉是轉印到紙上「之後」的定影程序。"},{"level":"adv","topic":"導體帶電與接地的綜合判斷","q":"用手直接拿著一根金屬棒去摩擦毛皮，摩擦後金屬棒幾乎顯示不出帶電現象；但若握著金屬棒上的塑膠握柄再做同樣的摩擦，金屬棒就能顯示帶電。造成此差異的主要原因是","choices":["金屬根本不會發生摩擦起電","直接用手拿時，金屬棒上因摩擦而多出（或缺少）的電子會經由人體導入大地","金屬棒內的質子會立刻移動過來中和摩擦產生的電荷","毛皮是導體，摩擦時不會失去電子"],"answer":1,"explain":"金屬與人體都是導體，直接手持時摩擦所產生的電荷會立刻經人體流入大地而無法累積；改握絕緣的塑膠柄後，電荷被絕緣體隔絕，就能留在金屬棒上。「金屬不會摩擦起電」錯在任何物體摩擦都可能起電，關鍵在能否留住電荷；固體中質子不會移動；毛皮則是絕緣體而非導體。"},{"level":"adv","topic":"接觸起電的電荷轉移方向","q":"用帶負電的橡膠棒「接觸」驗電器的金屬球後隨即移開，發現金屬箔張開。此時驗電器的帶電情形與原因為","choices":["帶正電，因為驗電器上的電子跑到橡膠棒上","不帶電，金屬箔只是被移動的空氣吹開","帶負電，因為橡膠棒上的部分電子移到驗電器上","帶正電，因為橡膠棒上的質子移到驗電器上"],"answer":2,"explain":"接觸起電時，帶電體會把部分電荷分給導體，兩者最後帶同性電。橡膠棒上多餘的電子有一部分轉移到驗電器，使驗電器帶負電，兩片金屬箔同帶負電而互相排斥張開。「電子跑到橡膠棒上」方向相反；「空氣吹開」與金屬箔能持續張開的事實不符；質子則不會轉移。"},{"level":"adv","topic":"接觸分電與電荷守恆","q":"金屬球A原本帶正電，金屬球B不帶電，兩球材質、大小完全相同且都放在絕緣柱上。若使兩球互相接觸後再分開，則","choices":["A仍帶原來的正電量，B仍不帶電","A帶正電、B帶負電","A、B都變成不帶電","A、B都帶正電，且兩球所帶電量之和等於原來A的電量"],"answer":3,"explain":"兩球接觸後形成一個導體，B上的部分電子移向A，中和了A的一部分正電，等效於正電荷被兩個相同的球平分；分開後兩球各帶一半的正電，總電量與原來相同，符合電荷守恆。「電量不變」忽略了電荷會重新分配；「A正B負」誤以為接觸會產生異性電（那是靜電感應時的分布情形）；「都不帶電」則誤以為電荷會互相抵消消失。"},{"level":"adv","topic":"環境濕度對靜電現象的影響","q":"同樣的摩擦動作，在乾燥的冬天比在潮濕的夏天更容易觀察到明顯的靜電現象，最主要的原因是","choices":["潮濕空氣中的水分使物體上的電荷容易被導走，電荷不易累積","冬天氣溫較低，電子在物體中移動的速度變快","夏天的物體互相摩擦時不會有電子轉移","冬天的衣物含有比較多的質子"],"answer":0,"explain":"空氣中的水氣會在物體表面形成薄水膜，提供導電路徑使電荷漏走，因此潮濕時靜電不易累積；乾燥時電荷留在物體上，現象就明顯。「低溫使電子移動變快」與事實相反且與本題無關；任何季節摩擦都會有電子轉移，只是潮濕時留不住；質子數目由物質種類決定，不會隨季節改變。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

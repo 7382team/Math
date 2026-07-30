@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>牛頓運動定律 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "newton-laws",
+  "title": "牛頓運動定律",
+  "subject": "理化",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2章 力與運動",
+  "tag": "慣性·F=ma·作用反作用",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>牛頓運動定律</h1><div class="sub">理化 · 慣性·F=ma·作用反作用 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"牛頓第一運動定律（慣性定律）的內容","q":"下列關於牛頓第一運動定律（慣性定律）的敘述，何者正確？","choices":["物體不受外力或所受合力為零時，靜者恆靜、動者恆作等速度直線運動","物體必須持續受力，才能保持等速度直線運動","物體所受合力為零時，必定處於靜止狀態","物體的運動狀態發生改變時，其所受合力必為零"],"answer":0,"explain":"慣性定律指出：合力為零時，物體維持原有的運動狀態（靜止或等速度直線運動）。「必須持續受力才能等速前進」是『有力才有運動』的錯誤直覺，力是改變運動狀態的原因，不是維持運動的原因；「合力為零必定靜止」漏掉了等速度直線運動的情形；「運動狀態改變時合力為零」恰好相反，有加速度時合力必不為零。"},{"level":"basic","topic":"慣性的意義與質量的關係","q":"下列關於「慣性」的敘述，何者正確？","choices":["慣性是一種力，它會把運動中的物體繼續往前推","物體的質量越大，慣性越大，運動狀態越不容易改變","物體運動的速度越快，慣性就越大","靜止的物體沒有慣性，開始運動後才會有慣性"],"answer":1,"explain":"慣性是物體維持原有運動狀態的性質，其大小只由質量決定，質量越大越不容易改變運動狀態。慣性並不是一種力，把它想成「向前推的力」是最常見的迷思；慣性也與速度快慢無關；靜止的物體同樣具有慣性。"},{"level":"basic","topic":"生活中的慣性現象（公車煞車）","q":"公車行進中突然煞車，車上站立的乘客身體會向前傾，其主要原因為何？","choices":["乘客受到一個向前的推力，把身體推向前方","煞車時車子對乘客產生一個向前的反作用力","乘客的上半身比下半身重，重力使身體向前倒","乘客的腳隨車廂一起減速，上半身因慣性仍保持原來的運動狀態"],"answer":3,"explain":"這是慣性現象：車廂與乘客的腳一起減速，上半身因慣性維持原來的速度，於是相對向前傾。過程中並沒有任何「向前的力」，煞車時地面對人的摩擦力方向反而向後，把慣性誤當成推力或反作用力都是常見迷思；重力方向鉛直向下，也不是前傾的原因。"},{"level":"basic","topic":"生活中的慣性現象（拍打除塵）","q":"拍打晾曬的棉被可以除去附著其上的灰塵，其原理為何？","choices":["拍打時灰塵受到向外的離心力而被甩出","拍打使灰塵的質量變小，因此容易掉落","棉被受拍打而突然運動，灰塵因慣性保持原來的靜止狀態，兩者分離而落下","拍打產生的空氣壓力把灰塵從棉被中壓出來"],"answer":2,"explain":"棉被被拍打而突然運動，附著的灰塵因慣性仍留在原處，於是與棉被分離落下。所謂「離心力把灰塵甩出」並非真實存在的力，是最常見的迷思之一；拍打不會改變灰塵的質量；空氣壓力也不是主要原理。"},{"level":"basic","topic":"慣性的應用（安全帶）","q":"汽車上裝設安全帶，主要是為了避免下列哪一種情況所造成的傷害？","choices":["車子突然減速或發生碰撞時，乘客因慣性繼續向前運動而撞擊車內物體","車子加速時，乘客受到反作用力而被推出車外","車子轉彎時，乘客受到離心力而被甩出座位","車子靜止時，乘客因重力作用而從座位上滑落"],"answer":0,"explain":"安全帶對乘客提供向後的作用力，阻止乘客因慣性持續向前衝。車子加速時乘客是被椅背向前推，不會被推出車外，這是誤用反作用力；「離心力」是常見迷思，轉彎時真正需要的是指向圓心的向心力；車子靜止時乘客本來就被座椅支撐，與安全帶的設計目的無關。"},{"level":"basic","topic":"牛頓第二運動定律 F=ma 的基本關係","q":"依牛頓第二運動定律 F = ma，下列敘述何者正確？","choices":["物體加速度的大小與所受合力成反比","物體加速度的方向與所受合力的方向相同","在相同合力作用下，質量越大的物體加速度越大","只要物體正在運動中，其所受的合力必不為零"],"answer":1,"explain":"由 F = ma 可知，加速度與合力同方向、與合力成正比、與質量成反比。說「加速度與合力成反比」或「質量越大加速度越大」都把正比與反比的關係弄反了；說「運動中合力必不為零」則忽略了等速度直線運動時合力為零的情形（運動不需要力來維持）。"},{"level":"basic","topic":"力的單位——牛頓（N）的定義","q":"關於力的單位「牛頓（N）」，下列定義何者正確？","choices":["使質量 1 公斤的物體產生 1 m/s² 加速度所需的力","使質量 1 公克的物體產生 1 m/s² 加速度所需的力","使質量 1 公斤的物體產生 1 m/s 速度所需的力","1 公斤物體在地表所受重力的大小定為 1 牛頓"],"answer":0,"explain":"由 F = ma 定義：1 N = 1 kg × 1 m/s²。把質量單位寫成「公克」者換算錯誤（1 g × 1 m/s² 只有 0.001 N）；把「加速度」寫成「速度」則混淆了力的效果，力造成的是加速度而非速度；1 公斤物體在地表所受重力約為 9.8 N，並非 1 N。"},{"level":"basic","topic":"牛頓第二運動定律（加速度與質量成反比）","q":"以大小相同的合力分別作用在甲、乙兩物體上，已知甲的質量是乙的 3 倍，則甲的加速度是乙的幾倍？","choices":["3 倍","9 倍","相同","1/3 倍"],"answer":3,"explain":"合力相同時 a = F/m，加速度與質量成反比。質量變為 3 倍，加速度即變為 1/3 倍。答「3 倍」是把反比誤認為正比；答「9 倍」是誤以為有平方關係；答「相同」則忽略了質量對加速度的影響。"},{"level":"basic","topic":"牛頓第三運動定律的特性（辨錯）","q":"關於作用力與反作用力的敘述，下列何者「錯誤」？","choices":["兩力的大小相等、方向相反","兩力同時產生、同時消失","兩力作用在同一個物體上，所以會互相抵消","兩力的性質相同，例如同為彈力或同為摩擦力"],"answer":2,"explain":"作用力與反作用力分別作用在「兩個不同的物體」上，因此絕不會互相抵消；把它們誤當成作用於同一物體的平衡力，是本單元最常見的迷思。至於等大反向、同時產生同時消失、性質相同（同為彈力或同為摩擦力），都是作用力與反作用力的正確性質。"},{"level":"basic","topic":"牛頓第三運動定律的生活實例（走路）","q":"人在地面上行走時腳向後蹬地面，真正使人能夠前進的力是下列何者？","choices":["人的腳向後蹬地面的力","地面對腳向前的摩擦力","人本身所受的重力","空氣對人向前的推力"],"answer":1,"explain":"腳向後蹬地面是「作用力」，作用在地面上；地面對腳向前的摩擦力才是「反作用力」，作用在人身上，因此使人前進。腳蹬地的力其受力者是地面，不會使人前進；重力方向鉛直向下；空氣也未提供向前的推力。"},{"level":"basic","topic":"牛頓第三運動定律的生活實例（氣球放氣）","q":"將吹飽的氣球放開，氣球會快速飛出，其原因為何？","choices":["氣球內的空氣把氣球向前吸引","氣球受到外界大氣壓力的推動而前進","氣球不受任何力，只是靠慣性一直前進","氣球把空氣向後噴出，空氣同時對氣球施以向前的反作用力"],"answer":3,"explain":"氣球對氣體施力向後（作用力），氣體同時對氣球施力向前（反作用力），兩力等大反向且作用在不同物體上，使氣球飛出。空氣不會「吸引」氣球，大氣壓力也不是推進來源；更不能說不受力靠慣性前進，因為氣球由靜止開始加速，合力必定不為零。"},{"level":"basic","topic":"合力為零與運動狀態的關係","q":"一物體在水平地面上沿直線作等速度運動，關於此物體的受力，下列敘述何者正確？","choices":["所受合力為零","所受合力的方向與運動方向相同","完全不受任何力的作用","所受合力隨速度增大而增大"],"answer":0,"explain":"等速度直線運動表示加速度為零，由 F = ma 可知合力必為零。若合力與運動方向相同，物體會加速而非等速；「合力為零」也不等於「不受力」，物體仍受重力、正向力、推力與摩擦力，只是彼此抵消；合力更不會隨速度增大而增大。"},{"level":"basic","topic":"作用力與反作用力的作用對象（推牆）","q":"小明用手推牆壁，牆壁同時也推小明。關於這一對力，下列敘述何者正確？","choices":["手推牆的力較大，牆推手的力較小","牆壁是靜止不動的，所以不會施力給小明","兩力大小相等、方向相反，且分別作用在牆壁和手上","兩力在同一直線上且大小相等，因此互相抵消"],"answer":2,"explain":"作用力與反作用力大小相等、方向相反，但分別作用在不同物體上（一個作用在牆、一個作用在手），所以不能互相抵消；把它們誤當成平衡力正是典型迷思。說手推牆的力較大違反牛頓第三運動定律；只要有接觸施力就必定有反作用力，與物體是否運動無關。"},{"level":"basic","topic":"牛頓第一運動定律的應用（太空中的運動）","q":"太空船航行於遠離任何星球的太空中，若關閉引擎後不受任何外力，則太空船將如何運動？","choices":["立刻停止下來","速度逐漸變慢，最後停止","沿著曲線路徑運動","保持原來的速度作等速度直線運動"],"answer":3,"explain":"不受外力時，依慣性定律物體維持原有的運動狀態，故繼續作等速度直線運動。「會停下來」的直覺來自地面經驗（物體停下是因為摩擦力與空氣阻力），太空中沒有這些阻力；而路徑要彎曲必須有不為零的合力。"},{"level":"adv","topic":"平衡力與作用力反作用力的辨別（書置桌面）","q":"一本書靜置於水平桌面上，下列哪一組力互為「作用力與反作用力」？","choices":["書所受的重力　與　桌面對書的支撐力","書對桌面的壓力　與　桌面對書的支撐力","書所受的重力　與　書對桌面的壓力","桌面對書的支撐力　與　桌子所受的重力"],"answer":1,"explain":"「書對桌面的壓力」與「桌面對書的支撐力」分別作用在桌面與書上，符合大小相等、方向相反、作用於不同物體、性質相同（皆為彈力），是一對作用力與反作用力。「書所受的重力」與「桌面對書的支撐力」都作用在書這一個物體上，是使書靜止的平衡力，誤認為作用力與反作用力是最典型的迷思；重力與書對桌面的壓力方向同為向下，也不成對；支撐力與桌子所受的重力則作用對象與性質皆不相配。"},{"level":"adv","topic":"平衡力與作用力反作用力的比較","q":"下列關於「平衡力」與「作用力和反作用力」的比較，何者正確？","choices":["兩者所指的兩個力都作用在同一個物體上","平衡力的大小相等、方向相反；作用力與反作用力的大小則不一定相等","平衡力會互相抵消，作用力與反作用力也會互相抵消，因此物體無法運動","平衡力作用在同一個物體上；作用力與反作用力則分別作用在兩個不同的物體上"],"answer":3,"explain":"兩者都是大小相等、方向相反，關鍵差異在「作用對象」：平衡力作用於同一物體，作用力與反作用力分別作用於兩個不同物體。說兩者都作用在同一物體只符合平衡力；作用力與反作用力必定大小相等；也正因作用於不同物體，作用力與反作用力無法互相抵消。"},{"level":"adv","topic":"作用力與反作用力的常見錯誤推理（馬拉車）","q":"有人說：「馬拉車時，車也以同樣大小的力向後拉馬，兩力互相抵消，所以馬永遠拉不動車。」此推論的錯誤在哪裡？","choices":["錯在馬拉車的力其實大於車拉馬的力","錯在兩力作用於不同物體而不能相加抵消；車能前進是因為作用在「車」上的合力（馬的拉力大於地面阻力）不為零","錯在車拉馬的反作用力其實並不存在","錯在兩力雖然互相抵消，但車靠慣性仍然可以前進"],"answer":1,"explain":"作用力與反作用力分屬兩個不同物體，不可放在同一物體上相加抵消；要判斷車是否加速，只能分析作用在「車」上的所有力。說馬拉車的力較大違反牛頓第三運動定律；反作用力確實存在；慣性只能維持原有狀態，無法使靜止的車自行起動。"},{"level":"adv","topic":"慣性與圓周運動（繩斷後的運動方向）","q":"在光滑水平面上，以繩子綁住小球使其作等速率圓周運動。若繩子突然斷裂，小球接下來會如何運動？（忽略摩擦力）","choices":["沿著半徑方向被離心力甩向外側","立刻停在原地不動","沿著繩斷瞬間的切線方向作等速度直線運動","仍沿著原來的圓形軌跡繼續繞行"],"answer":2,"explain":"繩的張力提供指向圓心的向心力；繩斷後合力為零，小球依慣性沿斷裂瞬間的速度方向（即切線方向）作等速度直線運動。並不存在把物體「向外甩出」的離心力，這是最常見的迷思；小球也不會立刻停止（違反慣性定律）；少了向心力更無法維持圓周運動。"},{"level":"adv","topic":"牛頓第二運動定律的比例關係","q":"某物體所受的合力變為原來的 2 倍，同時它的質量也變為原來的 2 倍，則其加速度變為原來的幾倍？","choices":["4 倍","1/2 倍","1 倍（維持不變）","2 倍"],"answer":2,"explain":"由 a = F/m，分子與分母同時變為 2 倍，比值不變，故加速度不變。答「2 倍」只看到合力加倍而忽略質量也加倍；答「4 倍」是把兩個變化誤乘在一起；答「1/2 倍」則把正比與反比的關係顛倒。"},{"level":"adv","topic":"慣性與質量的關係（情境分析）","q":"甲、乙兩球在光滑水平面上以相同的速度作直線運動，甲球質量 2 公斤、乙球質量 5 公斤。今以大小相同的力分別使兩球減速停止，下列敘述何者正確？","choices":["甲球慣性較大，因為質量較小的物體較難改變運動狀態","兩球的慣性相同，因為它們的速度相同","兩球停止所需的時間相同，與質量無關","乙球慣性較大，較難改變運動狀態，需要較長的時間才能停止"],"answer":3,"explain":"慣性大小由質量決定，乙球質量大則慣性大；受相同大小的力時乙球的加速度較小（a = F/m），由相同速度減速到靜止所需時間較長。說質量小者慣性大是把關係說反；慣性並非由速度決定；忽略質量差異而說時間相同也不正確。"},{"level":"adv","topic":"質量、重量與慣性的區別（月球情境）","q":"太空人將一個物體從地球帶到月球（月球表面的重力約為地球的 1/6）。關於此物體的質量、重量與慣性，下列敘述何者正確？","choices":["質量與重量都變為原來的 1/6，慣性也隨之變小","質量不變，但重量與慣性都變為原來的 1/6","質量不變，慣性也不變，改變的只有重量（約變為原來的 1/6）","質量、重量與慣性都維持不變，因為月球上仍然有重力"],"answer":2,"explain":"質量是物體所含物質的量，不隨所在地點改變；慣性的唯一量度就是質量，故慣性也不變。到月球上真正改變的是「重量」（所受重力），約變為地球上的 1/6。把質量或慣性也跟著打折，是混淆質量與重量的典型錯誤；說重量不變則與月球重力較小的事實不符。"},{"level":"adv","topic":"力與運動的關係（拋出後的受力迷思）","q":"小華將棒球斜向上拋出後，球在空中飛行（忽略空氣阻力）。關於球在空中的受力，下列敘述何者正確？","choices":["球只受到鉛直向下的重力，水平方向不受力，靠慣性維持原來的水平速度","球持續受到手所給的向前推力，才能不斷向前飛行","球到達最高點時速度為零，因此不受任何力的作用","球在水平方向受到一個逐漸變小的向前推力"],"answer":0,"explain":"球一旦離手，手就不再對球施力，忽略空氣阻力時空中只受鉛直向下的重力；水平方向沒有力，速度因慣性保持不變。認為球仍受「向前推力」（不論固定或逐漸變小）都是『運動需要力來維持』的迷思；最高點時鉛直分速度為零但水平分速度不為零，而且此時仍受重力作用。"},{"level":"adv","topic":"作用力與反作用力的性質相同","q":"作用力與反作用力「性質相同」這項特性，其意義為何？","choices":["若作用力是磁力，則反作用力也必定是磁力","若作用力是物體所受的重力，反作用力可以是桌面對它的支撐力","這一對力必定都是接觸之後才產生的接觸力","只要大小相等、方向相反即可，兩力的性質可以不相同"],"answer":0,"explain":"作用力與反作用力是同一種交互作用的兩面，性質必定相同：磁力配磁力、彈力配彈力、摩擦力配摩擦力。把「物體所受的重力」與「桌面的支撐力」當成一對，是最典型的錯誤，這兩力作用在同一物體上，屬於平衡力；重力、磁力等超距力不需接觸也有反作用力；性質可以不同的說法則違反牛頓第三運動定律。"},{"level":"adv","topic":"牛頓第三運動定律（火箭噴射推進）","q":"火箭在沒有空氣的外太空中仍然能夠加速前進，其原理為何？","choices":["火箭噴出的氣體推擠後方的空氣，空氣再把火箭向前推","火箭向後噴出高速氣體，氣體同時對火箭施以向前的反作用力","火箭純粹靠慣性前進，並不需要任何力","太空中沒有重力，所以物體自然會向前加速"],"answer":1,"explain":"火箭與噴出氣體之間是一對作用力與反作用力，不需要外界介質，因此在真空中仍可推進。「必須推到空氣才能前進」是常見迷思；慣性只能維持等速度直線運動，無法產生加速度；沒有合力就不會有加速度，且太空中也並非完全沒有重力。"},{"level":"adv","topic":"等速率圓周運動的速度與加速度方向","q":"小球在光滑水平面上被繩子拉著作等速率圓周運動，下列敘述何者正確？","choices":["小球的速度保持不變，所以加速度為零、合力也為零","小球的速率不變，但速度方向不斷改變，合力與加速度均指向圓心","小球受到一個向外的離心力，才能沿著圓周運動","小球所受合力的方向與運動方向相同，所以速率會愈來愈快"],"answer":1,"explain":"等速率圓周運動中不變的只有「速率」；速度是有方向的量，方向不斷改變，因此加速度不為零。繩的張力提供向心力，合力與加速度都指向圓心。說速度不變、合力為零是混淆速率與速度；「向外的離心力」是常見迷思，真正存在的是指向圓心的向心力；若合力與運動方向相同，物體會沿直線愈跑愈快而不會繞圈。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

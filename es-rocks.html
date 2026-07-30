@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>岩石與地表的變化 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0369a1;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "es-rocks",
+  "title": "岩石與地表的變化",
+  "subject": "地球科學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2章 岩石與地表的變化",
+  "tag": "三大岩類·風化侵蝕·地層化石",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>岩石與地表的變化</h1><div class="sub">地球科學 · 三大岩類·風化侵蝕·地層化石 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"礦物與岩石的區別","q":"關於礦物與岩石「兩者的關係」，下列敘述哪一項正確？","choices":["礦物是由一種或多種岩石聚集堆積而成的","岩石通常由一種或多種礦物組成，而礦物具有固定的化學成分與晶體構造","岩石一定只由單一種礦物組成，含有兩種礦物以上就不能稱為岩石","礦物一定是液態的，岩石一定是固態的"],"answer":1,"explain":"礦物是天然生成、具固定化學成分與晶體構造的無機固體；岩石則是由一種或多種礦物集合而成的固體。選項0把兩者關係顛倒（是礦物組成岩石，不是岩石組成礦物）；選項2錯在多數岩石（如花崗岩）本來就含石英、長石、雲母等多種礦物；選項3錯在礦物與岩石在常態下都是固體。"},{"level":"basic","topic":"火成岩顆粒大小與冷卻速率","q":"小明比較兩塊火成岩：甲的礦物顆粒粗大，肉眼就能分辨出不同礦物；乙的顆粒極細，肉眼幾乎看不出顆粒。下列判斷正確的是？","choices":["甲在地表附近快速冷卻，乙在地下深處緩慢冷卻","甲、乙顆粒大小與冷卻快慢無關，只由岩漿的顏色決定","甲在地下深處緩慢冷卻形成深成岩，乙在地表或近地表快速冷卻形成噴出岩","甲、乙都是沉積岩，顆粒大小由碎屑被搬運的距離決定"],"answer":2,"explain":"岩漿冷卻越慢，礦物結晶有較長時間長大，顆粒越粗（深成岩，如花崗岩）；冷卻越快則顆粒越細（噴出岩，如玄武岩）。選項0把快慢與粗細對調，是常見迷思；選項1忽略冷卻速率這個關鍵因素；選項3誤把火成岩的結晶顆粒當成沉積岩的碎屑顆粒。"},{"level":"basic","topic":"三大岩類的分類辨識","q":"下列「岩石—所屬岩類」的配對，哪一組是正確的？","choices":["砂岩—火成岩","玄武岩—變質岩","大理岩—沉積岩","花崗岩—火成岩"],"answer":3,"explain":"花崗岩由岩漿在地下深處緩慢冷卻凝固而成，屬火成岩（深成岩）。砂岩是碎屑堆積壓密膠結而成的沉積岩；玄武岩是岩漿噴出後快速冷卻的火成岩（噴出岩）；大理岩是石灰岩受高溫高壓變質而成的變質岩——把大理岩當成沉積岩是最常見的錯誤。"},{"level":"basic","topic":"沉積岩的形成過程","q":"砂岩的形成過程，下列排列順序最合理？","choices":["原有岩石風化崩解→碎屑被搬運→逐層堆積→壓密膠結成岩","岩漿上升→噴出地表→快速冷卻→形成層理","岩石受高溫高壓→礦物重新排列成片理→再緩慢冷卻→成為砂岩","碎屑先膠結成岩→再被流水搬運→最後風化成一層一層"],"answer":0,"explain":"沉積岩的形成順序是：風化→侵蝕→搬運→堆積→壓密膠結（成岩）。選項1是火成岩（噴出岩）的形成過程，且層理不是岩漿冷卻造成的；選項2描述的是變質作用；選項3把成岩與搬運的先後顛倒，碎屑必須先堆積才能被壓密膠結。"},{"level":"basic","topic":"沉積岩的特徵（層理與化石）","q":"野外一塊岩石可見明顯一層一層的構造，且岩層中夾有貝殼化石。此岩石最可能屬於哪一類，原因為何？","choices":["花崗岩，層狀構造是岩漿分層冷卻造成的","沉積岩，層理是碎屑逐層堆積形成，沉積時生物遺骸可能一併被埋入而成化石","玄武岩，層理是熔岩流動時氣孔排列所造成","片岩，層狀外觀是片理，片理中常保存完整的貝殼"],"answer":1,"explain":"層理與含化石是沉積岩最典型的特徵，因為碎屑一層一層堆積，生物遺骸容易在低溫的堆積環境中被埋藏保存。花崗岩與玄武岩由岩漿冷卻而成，高溫不利化石保存，也不具沉積層理；片岩的片理由高溫高壓下礦物重新排列造成，變質過程通常會破壞原有化石，不會保存完整貝殼。"},{"level":"basic","topic":"變質岩：大理岩的原岩","q":"台灣東部（如太魯閣一帶）常見的大理岩，是由下列哪一種岩石變質而成？","choices":["石灰岩受高溫高壓變質","砂岩受高溫高壓變質","玄武岩受高溫高壓變質","頁岩受高溫高壓變質"],"answer":0,"explain":"石灰岩（主要成分碳酸鈣）受高溫高壓變質後，方解石顆粒再結晶變粗，形成大理岩。砂岩變質後成為石英岩；玄武岩等火成岩變質後可形成片岩類岩石；頁岩變質依溫壓漸增依序形成板岩、片岩、片麻岩，並非大理岩。"},{"level":"basic","topic":"變質岩辨識：板岩","q":"頁岩受到較高的溫度與壓力後，礦物重新排列，形成質地緻密、容易沿一定方向劈開成薄板的岩石。這種岩石是什麼，屬於哪一岩類？","choices":["砂岩，屬於沉積岩","安山岩，屬於火成岩","板岩，屬於變質岩","石灰岩，屬於沉積岩"],"answer":2,"explain":"頁岩經低度變質作用形成板岩，因礦物受壓定向排列而具板狀劈開性，屬變質岩。砂岩與石灰岩都是未經變質的沉積岩；安山岩是岩漿冷卻形成的火成岩，並無沿一定方向劈開的性質。"},{"level":"basic","topic":"物理風化與化學風化的區別","q":"下列現象中，哪一項主要屬於化學風化作用？","choices":["岩石縫隙中的水結冰體積膨脹，把岩石撐裂","植物的根在岩縫中生長，把岩石撐開","岩石受日夜溫差反覆膨脹收縮，表層一片片剝落","石灰岩被含有二氧化碳的雨水溶解，逐漸形成溶洞"],"answer":3,"explain":"化學風化會改變岩石的組成物質；含二氧化碳的雨水呈弱酸性，可溶解石灰岩中的碳酸鈣，屬化學風化。其餘三項（凍脹、根劈、溫差剝落）只是把岩石破碎成較小顆粒，成分沒有改變，屬物理（機械）風化。"},{"level":"basic","topic":"流水地形：V型谷","q":"河流上游河床坡度陡、流速快，常形成兩側陡峭而狹窄的谷地。此地形名稱與主要的作用方式為何？","choices":["V型谷，河水以向下侵蝕（下切）為主","U型谷，河水以側向侵蝕為主","沖積扇，河水以堆積作用為主","河階，河水以搬運作用為主"],"answer":0,"explain":"上游落差大、流速快，能量集中在向下侵蝕，河谷橫剖面呈V字形。U型谷是冰川侵蝕的典型地形，不是河水造成；沖積扇是河流出山口後流速減慢的堆積地形；河階是河流下切後舊河床相對抬升所成的階狀平台。"},{"level":"basic","topic":"流水堆積地形：沖積扇","q":"河流由山區流出到平原時，坡度突然變緩、流速減慢，於山麓地帶堆積成扇形的地形，稱為什麼？","choices":["三角洲","沖積扇","曲流","海蝕平台"],"answer":1,"explain":"流速減慢後搬運能力下降，碎屑在山麓呈扇形堆積，稱沖積扇。三角洲是河流「注入海（湖）」時在河口堆積形成的地形，位置不同；曲流是彎曲的河道形態而非堆積扇形地；海蝕平台由海浪侵蝕形成，與河流堆積無關。"},{"level":"basic","topic":"冰川作用：U型谷","q":"高山上出現橫剖面呈U字形、谷底寬而平坦的寬大谷地，其形成的主要作用是什麼？","choices":["河水的下切侵蝕","風的吹蝕作用","海浪的侵蝕作用","冰川的侵蝕與搬運作用"],"answer":3,"explain":"冰川體積龐大、以整體緩慢移動並刮磨谷壁與谷底，把原本的V型谷擴大成谷底寬平的U型谷。河水下切形成的是V型谷；風蝕多形成風稜石、蝕溝等小規模地形；海浪作用只發生在海岸帶，不會出現在高山谷地。"},{"level":"basic","topic":"海水作用與海岸地形","q":"海岬前端的岩壁受海浪長期拍打侵蝕，先形成向內凹入的洞穴；退潮時又可在崖腳看到平坦的岩石平台。這兩種地形依序為何？","choices":["海蝕洞與海蝕平台","沙洲與潟湖","海蝕洞與沙丘","潟湖與海階"],"answer":0,"explain":"海浪集中侵蝕岩壁較脆弱處形成海蝕洞；海崖後退後在崖腳留下近水平的岩石面，即海蝕平台，兩者都屬海蝕地形。沙洲、潟湖屬堆積（或堆積圍成）地形；沙丘主要由風堆積而成，都不是題目描述的岩石侵蝕地形。"},{"level":"basic","topic":"地層層序律","q":"在一處未受擾動的水平沉積岩層中，關於各層新舊的判斷，下列哪一項正確？","choices":["上層先沉積，所以上層年代較老","各層是同時沉積的，年代完全相同","下層先沉積，所以下層年代較老","岩層新舊與上下位置無關，只能靠岩層顏色判斷"],"answer":2,"explain":"沉積物由下往上逐層堆積，因此未受擾動時「下老上新」，此即地層層序律。選項0恰好把新舊顛倒，是常見迷思；沉積需要時間，各層不可能同時形成；岩層顏色只反映成分或沉積環境，不能用來判斷年代。"},{"level":"basic","topic":"化石的形成與意義","q":"關於化石的「形成與保存條件」，下列敘述哪一項正確？","choices":["化石是保存在地層中的生物遺體或生活遺跡，較常見於沉積岩中","化石必須是完整的骨骼，足跡與排遺不能算是化石","化石最常保存在花崗岩中，因為花崗岩的礦物顆粒粗大","生物死亡後只要暴露在地表，就很容易形成化石"],"answer":0,"explain":"化石包括遺體（如貝殼、骨骼）與遺跡（如足跡、排遺、生痕），且需被快速埋藏於沉積物中才易保存，故多見於沉積岩。選項1把遺跡化石排除是錯的；花崗岩由高溫岩漿冷卻而成，不利化石保存；暴露地表的遺體會被風化、侵蝕與生物分解，反而不易成為化石。"},{"level":"adv","topic":"岩石循環","q":"關於三大岩類在岩石循環中「互相轉變」的推論，下列哪一項最合理？","choices":["火成岩只能變成沉積岩，絕不可能變成變質岩","沉積岩可因高溫高壓變成變質岩；變質岩若熔融成岩漿後再冷卻凝固，則可形成火成岩","岩石一旦形成就不會再改變，岩石循環只發生在地表","變質岩經風化侵蝕產生的碎屑，只能再堆積成變質岩"],"answer":1,"explain":"岩石循環中三大岩類可互相轉變：任何岩石受高溫高壓可變質、熔融後冷卻可成火成岩、風化侵蝕後的碎屑堆積膠結可成沉積岩。選項0忽略火成岩也能變質；選項2錯在岩石循環同時涉及地表作用與地下的高溫高壓、熔融作用；選項3錯在碎屑堆積膠結後形成的是沉積岩，不是變質岩。"},{"level":"adv","topic":"噴出岩的組織判讀","q":"某岩石標本呈黑色、顆粒極細，表面有許多小氣孔，採集地點在海底火山附近。下列推論最合理？","choices":["它是深成岩，在地下深處緩慢冷卻，氣孔是粗大礦物顆粒脫落留下的","它是沉積岩，氣孔是生物鑽孔留下的化石","它是噴出岩（如玄武岩），岩漿噴出後快速冷卻使顆粒細小，岩漿中氣體逸出形成氣孔","它是變質岩，氣孔是高溫高壓下礦物重新排列所形成的片理"],"answer":2,"explain":"顆粒極細代表冷卻很快，加上位於火山附近與氣孔（氣體逸出的孔洞），可判斷為噴出岩，玄武岩是典型例子。深成岩在地下緩慢冷卻，顆粒粗大且不會有氣體逸出的孔洞；氣孔不是化石；片理是礦物定向排列的構造，並非孔洞。"},{"level":"adv","topic":"地層層序與沉積環境推論","q":"某地未受擾動的水平岩層，由下而上依序為甲、乙、丙三層。甲層與丙層都含有海生貝類化石，乙層則含有陸生植物化石。下列推論最合理？","choices":["三層的沉積環境完全相同，化石不同只是保存條件的差異","乙層最老，因為陸地生物比海中生物更早出現","丙層最老，因為位置較上方的岩層形成時間一定較早","甲層最老，且此地沉積環境曾由海域轉為陸域，之後又變回海域"],"answer":3,"explain":"依層序律「下老上新」，甲層最老、丙層最新；化石可指示沉積環境，故環境變化為海→陸→海。選項0忽略指相化石的環境意義；選項1把化石種類誤當年代依據，且與層序律矛盾；選項2把層序律講反了，上層應較年輕。"},{"level":"adv","topic":"指相化石與標準化石的比較","q":"關於指相化石與標準化石的比較，下列敘述最恰當？","choices":["兩者意義完全相同，都是用來推測沉積時的水深與氣候","指相化石可用來推測當時的沉積環境；標準化石因生存時間短、分布廣，適合判斷地層的相對年代","指相化石因分布極廣、生存時間極長，最適合用來比對不同地區地層的年代","標準化石必須是體型最大的生物，才容易在野外被找到"],"answer":1,"explain":"指相化石對環境（水深、鹽度、氣候）敏感，用來還原沉積環境；標準化石則須「生存時間短、分布廣、數量多」，才能作為特定時代的標誌，用於相對定年與地層對比。選項0混淆兩者功能；選項2把標準化石的條件錯配給指相化石，且生存時間長反而無法界定年代；選項3與體型大小無關。"},{"level":"adv","topic":"曲流的侵蝕與堆積","q":"在河流中下游彎曲的河道中，同一個彎道兩岸所受的作用並不相同。下列判斷正確的是？","choices":["兩岸流速相同，因此兩岸都以堆積作用為主","彎道內側流速較快、以侵蝕為主，河岸因此不斷後退","彎道外側流速較快、以侵蝕為主；內側流速較慢、以堆積為主，久之河道彎曲更明顯","彎道外側因水淺而堆積成沙洲，內側則不斷被侵蝕"],"answer":2,"explain":"水流在彎道外側路徑長、流速快，侵蝕強而河岸後退、水較深；內側流速慢，搬運能力下降而堆積成沙洲，結果使曲流愈來愈彎。選項1、3把內外側的侵蝕與堆積對調，是常見迷思；選項0錯在彎道兩側流速本來就不同。"},{"level":"adv","topic":"河階地形的成因推論","q":"某河谷兩側可見階梯狀的平坦台地，台地表面覆有一層磨圓的礫石。下列推論最合理？","choices":["這些平台是海浪侵蝕形成的海蝕平台，礫石由海浪帶來","這些平台是風把沙粒堆積形成的沙丘，礫石由風搬運而來","這些平台是冰川挖蝕谷底形成的，礫石為冰川融水沉積","磨圓礫石顯示該處曾是河床；後來河流再度下切侵蝕，舊河床相對抬升而成為河階"],"answer":3,"explain":"磨圓的礫石是流水長期搬運磨蝕的證據，代表台地面曾是河床；當地殼抬升或水量改變使河流再下切，舊河床便留在較高處成為河階。選項0與河谷位置及流水礫石不符；風只能搬運沙粒等細小顆粒，無法堆出礫石台地；冰川地形以U型谷、缺乏良好磨圓與分選的堆積物為特徵，與階狀台地加磨圓礫石不合。"},{"level":"adv","topic":"氣候對風化作用的影響","q":"甲地終年高溫多雨，乙地十分乾燥且日夜溫差極大。關於兩地岩石風化作用的比較，下列推論最合理？","choices":["甲地水分多，反而使化學風化速率變得最慢","甲地以化學風化較為明顯，乙地以物理風化較為明顯","乙地因水分很少，化學風化與物理風化都不會發生","兩地風化速率必定相同，因為風化只取決於岩石種類"],"answer":1,"explain":"水與較高的溫度會加速化學反應，故高溫多雨的甲地化學風化旺盛；乙地缺水但溫差大，岩石反覆膨脹收縮而崩解，以物理風化為主。選項0與「水是化學風化的重要條件」相反；選項2過度推論，乾燥地區仍有少量化學風化；選項3忽略氣候（溫度、水分）對風化速率的影響。"},{"level":"adv","topic":"波浪的性質與海水搬運","q":"在海邊觀察時，波浪一波接一波往岸邊前進，但海面上漂浮的浮球大致只在原處上下起伏。下列說明最合理？","choices":["波浪前進時會把整片海水一起搬到岸上，浮球不動是因為被水草固定住","浮球只上下起伏，表示波浪並沒有傳遞能量，向前移動只是視覺上的錯覺","未碎波前水粒子大致在原地做往復（近圓形）的振盪，真正向前傳遞的是波的能量；直到接近岸邊碎波，才會明顯帶動海水與砂石移動","波浪的能量無法傳到岸邊，因此海岸地形的變化與波浪無關"],"answer":2,"explain":"波浪傳遞的是能量而非水體本身，水粒子在原地做往復振盪，所以浮球只上下起伏；波進入淺水碎波後，水的翻騰才會實際搬動海水與砂石，塑造海岸地形。選項0是「海水整體被搬運前進」的典型迷思；選項1誤以為沒有能量傳遞；選項3與海蝕洞、沙洲等地形的形成事實相違。"},{"level":"adv","topic":"風的侵蝕與堆積作用","q":"海濱或沙漠常見迎風面較平緩、背風面較陡的沙丘，附近露出的岩石表面則被磨出光滑的稜面。下列推論最合理？","choices":["砂粒被風搬運後在背風處堆積成沙丘；被風帶動的砂粒不斷磨蝕岩石表面，形成風稜石","沙丘是海浪把砂石堆到陸地上形成的，與風完全無關","岩石上的稜面是雨水溶解岩石造成的化學風化，與風搬運的砂粒無關","風只能搬運水氣，無法搬運砂粒，沙丘是地下岩層隆起形成的"],"answer":0,"explain":"風可搬運細砂，砂粒躍移到背風側因風速減弱而堆積，形成不對稱的沙丘；同時被風帶動的砂粒撞擊、磨蝕岩石，磨出平滑面與稜線，即風稜石。選項1忽略沙丘位在潮線以上、由風堆積；選項2把磨蝕（物理作用）誤判為溶解；選項3錯在風確實能搬運砂粒。"},{"level":"adv","topic":"標準化石與地層對比","q":"甲、乙兩地相距很遠。甲地某一岩層與乙地某一岩層中，都發現同一種「只生存於某一段較短時間、但分布相當廣泛」的生物化石。下列推論最合理？","choices":["兩地這兩個岩層的岩石種類一定完全相同","兩地這兩個岩層必定是同一次火山噴發所形成的火成岩","只能推知兩地當時的水深相同，無法對年代做任何推論","可推論兩地這兩個岩層的形成年代大致相同，可用來進行地層對比"],"answer":3,"explain":"生存時間短、分布廣的化石正是標準化石，同時出現代表兩地岩層形成於相近的年代，可作跨區域的地層對比與相對定年。選項0錯在年代相同不代表岩性相同，沉積環境可能不同；選項1與含化石的沉積岩性質相違；選項2把標準化石誤當指相化石使用。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

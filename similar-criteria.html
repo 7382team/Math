@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>相似三角形的判別 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#2563eb;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "similar-criteria",
+  "title": "相似三角形的判別",
+  "subject": "數學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1章 相似形",
+  "tag": "AA·SAS·SSS 相似",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>相似三角形的判別</h1><div class="sub">數學 · AA·SAS·SSS 相似 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"相似多邊形的定義","q":"下列何者是「兩個多邊形相似」的正確定義？","choices":["對應角都相等，且對應邊都成比例","只要對應角都相等即可","只要對應邊都成比例即可","面積相等且周長相等"],"answer":0,"explain":"相似多邊形必須同時滿足「對應角相等」與「對應邊成比例」，缺一不可。只有角相等不夠（正方形與長方形四個角都是 90°，卻不相似）；只有邊成比例也不夠（正方形與菱形四邊都等比例，角卻不同）。面積或周長相等只是「量」相同，與形狀無關，推不出相似。"},{"level":"basic","topic":"相似符號∽與對應頂點","q":"已知 △ABC ∽ △DEF，下列敘述何者正確？","choices":["∠A = ∠E","∠B = ∠E","AB/DF = BC/DE","△ABC 與 △DEF 的面積必相等"],"answer":1,"explain":"寫成 △ABC ∽ △DEF 時，頂點的書寫順序就代表對應關係：A↔D、B↔E、C↔F，故 ∠B = ∠E。∠A 應等於 ∠D。對應邊比應為 AB/DE = BC/EF = CA/FD，「AB/DF = BC/DE」配錯了對應邊。相似只保證形狀相同、大小可不同，面積不一定相等。"},{"level":"basic","topic":"AA 相似判別","q":"兩個三角形只要滿足下列哪一個條件，就一定相似？","choices":["有一組對應角相等","兩組對應邊成比例","兩組對應角分別相等","兩個三角形的面積相等"],"answer":2,"explain":"三角形內角和為 180°，兩組角對應相等時第三組角必然也相等，故由 AA 即可判定相似。只有一組角相等不足（例如都含 60° 角的三角形形狀可差很多）；只有兩組邊成比例、未指明夾角也無法判定；面積相等與形狀無關。注意 AA 是「相似」的判別法，不是全等——三組角對應相等只保證形狀相同，不保證大小相同。"},{"level":"basic","topic":"SAS 相似判別的敘述","q":"「兩組對應邊成比例，且這兩邊的夾角相等」是下列哪一個判別性質？","choices":["AA 相似","SSS 相似","ASA 全等","SAS 相似"],"answer":3,"explain":"這正是 SAS 相似：兩組對應邊成比例，且「夾角」相等。SSS 相似要求三組邊都成比例；AA 相似只用兩組角；ASA 是「全等」的判別法（兩角夾一邊，邊必須相等而非成比例），全等與相似的判別法不可混用。關鍵在「夾角」二字：角必須夾在那兩組成比例的邊之間才有效。"},{"level":"basic","topic":"SSS 相似判別的應用","q":"△ABC 中 AB = 4、BC = 6、CA = 8；△DEF 中 DE = 6、EF = 9、FD = 12。可用下列何者判定兩三角形相似？","choices":["AA 相似","SAS 相似","SSS 相似","條件不足，無法判定"],"answer":2,"explain":"三組對應邊比為 4/6 = 6/9 = 8/12 = 2/3，三邊都成比例，符合 SSS 相似，可寫成 △ABC ∽ △DEF，相似比 2:3。題目完全沒有角的資訊，故用不到 AA 或 SAS；而三邊成比例已是完整條件，並非資訊不足。"},{"level":"basic","topic":"全等是相似的特例","q":"關於全等與相似，下列敘述何者正確？","choices":["兩個全等三角形一定相似，且相似比為 1","兩個相似三角形一定全等","全等與相似是兩件完全無關的事","相似比為 1 的兩個三角形不一定全等"],"answer":0,"explain":"全等表示對應角相等且對應邊「相等」，而相等就是比為 1 的成比例，所以全等是相似的特例，相似比為 1。反過來不成立：相似只要求形狀相同，大小可以放大或縮小，故相似不一定全等。相似比為 1 代表對應邊都相等，再加上對應角相等，必定全等，最後一個選項也錯。"},{"level":"basic","topic":"平行線截三角形與 AA 相似","q":"△ABC 中，D 在 AB 上、E 在 AC 上，且 DE // BC。下列敘述何者正確？","choices":["△ADE 與 △ABC 一定全等","△ADE ∽ △ACB，理由是 SSS 相似","只有當 AD = DB 時，△ADE 才會與 △ABC 相似","△ADE ∽ △ABC，理由是 AA（共用 ∠A，且 ∠ADE = ∠ABC）"],"answer":3,"explain":"DE // BC 時，以 AB 為截線，同位角 ∠ADE = ∠ABC；又 ∠A 為兩三角形的共用角，由 AA 得 △ADE ∽ △ABC。此結論與 D 是否為中點無關，任何平行位置都成立。△ADE 是 △ABC 的縮小圖形，一般不全等；題目未給邊長，用不到 SSS，且對應順序應為 A↔A、D↔B、E↔C，寫成 △ACB 會把對應頂點配錯。"},{"level":"basic","topic":"相似三角形的面積比","q":"兩個相似三角形的相似比（對應邊長比）為 2:3，則兩者的面積比為？","choices":["2:3","4:9","8:27","3:2"],"answer":1,"explain":"相似圖形的面積比等於相似比的平方：(2:3)² = 4:9。誤以為面積比等於邊長比 2:3 是最常見的迷思；8:27 是相似比的立方（那是相似立體圖形的體積比）；3:2 則把前後順序寫反。記法：長度比為 k，面積比為 k²。"},{"level":"basic","topic":"相似三角形的周長比","q":"兩個相似三角形的對應邊長比為 3:5，則兩者的周長比為？","choices":["9:25","5:3","3:5","無法確定，需知道各邊實際長度"],"answer":2,"explain":"周長是三邊之和，每一組對應邊都是 3:5，相加後比值不變，故周長比仍為 3:5，與相似比相同。9:25 是面積比（相似比的平方），把周長比與面積比混為一談是常見錯誤；5:3 順序寫反；只要知道相似比就能確定周長比，不需各邊實際長度。"},{"level":"basic","topic":"判別方法的選用（SAS 相似）","q":"△ABC 與 △DEF 中，已知 ∠A = ∠D，且 AB/DE = AC/DF。判定兩三角形相似最恰當的理由是？","choices":["AA 相似","SSS 相似","SAS 相似","條件不足，無法判定"],"answer":2,"explain":"AB 與 AC 的夾角正是 ∠A，DE 與 DF 的夾角正是 ∠D，兩組對應邊成比例且夾角相等，符合 SAS 相似。題目只有一組角相等，不足以用 AA；只給兩組邊的比、沒有第三組，用不上 SSS；條件其實已經完整，並非不足。"},{"level":"basic","topic":"哪些圖形一定相似","q":"下列哪一組圖形「一定」互相相似？","choices":["任意兩個直角三角形","任意兩個等腰三角形","任意兩個菱形","任意兩個正三角形"],"answer":3,"explain":"正三角形三個角都是 60°，任兩個正三角形必有兩組角對應相等（AA）；三邊分別為 a、a、a 與 b、b、b，比值都是 a:b，對應邊也成比例，故一定相似。直角三角形只保證有一個 90° 角，另外兩角可不同；等腰三角形的頂角可任意變化；菱形雖四邊等長使對應邊成比例，但角度可從很扁到接近正方形，對應角不一定相等，都不一定相似。"},{"level":"basic","topic":"相似比的意義與寫法","q":"若 △ABC ∽ △PQR，且 AB = 6、PQ = 9，則 △ABC 與 △PQR 的相似比為？","choices":["2:3","3:2","4:9","1:3"],"answer":0,"explain":"依相似符號的頂點順序，AB 對應 PQ，相似比即 AB:PQ = 6:9 = 2:3。3:2 把前後順序寫反（那是 △PQR 對 △ABC 的比）；4:9 是相似比的平方，屬於面積比；1:3 為化簡錯誤。相似比一定要依照 ∽ 兩側書寫的先後順序來寫。"},{"level":"basic","topic":"非判別法的辨識（SSA）","q":"下列何者「不能」用來判定兩個三角形相似？","choices":["三組對應邊成比例","兩組對應角分別相等","兩組對應邊成比例，且其中一邊的對角相等","兩組對應邊成比例，且這兩邊的夾角相等"],"answer":2,"explain":"「兩邊成比例＋其中一邊的對角相等」屬於 SSA，相同條件下可能畫出兩種不同形狀的三角形，因此不能判定相似（全等判別中同樣沒有 SSA）。其餘三者分別是 SSS 相似、AA 相似、SAS 相似，都是課本中正式的判別性質。關鍵在於角必須是那兩組成比例邊的「夾角」，換成對角就失效。"},{"level":"basic","topic":"對應邊成比例求邊長","q":"已知 △ABC ∽ △DEF，AB = 8、DE = 12、BC = 10，則 EF 的長為？","choices":["20/3","14","12","15"],"answer":3,"explain":"由對應順序 AB↔DE、BC↔EF，得 AB/DE = BC/EF，即 8/12 = 10/EF，解得 EF = 15。20/3 是把比例方向寫反（誤算成 10 × 8/12）；14 是把「成比例」誤當成「差固定」（10 + 4）；12 則是誤以為 EF 與 DE 相等。列比例式時務必依 ∽ 的頂點順序配對。"},{"level":"adv","topic":"相似的測量應用－影長問題","q":"同一時刻，小明身高 160 公分、影長 200 公分；旁邊一棵樹的影長為 500 公分。若設樹高為 h 公分，下列哪一個關係式可以正確求出 h？","choices":["160/200 = 500/h","160/200 = h/500","160/500 = h/200","h = 160 + (500 − 200)"],"answer":1,"explain":"同一時刻陽光可視為平行光，人與影、樹與影各形成一個直角三角形，直角相等、陽光與地面的夾角也相等，由 AA 得兩三角形相似，故「人高:人影 = 樹高:樹影」，即 160/200 = h/500，解得 h = 400 公分。160/200 = 500/h 把樹高與樹影對調，會算成 h = 625；160/500 = h/200 把人影與樹影對調，會算成 h = 64；相似是「倍數關係」而非「差固定」，用加減得到的 460 也不對。列式時要讓等號兩邊的上下位置代表同一種量。"},{"level":"adv","topic":"相似的測量應用－河寬原理","q":"某小組要測量無法直接跨越的河寬，他們在岸邊佈點造出 △ABC 與 △ADE，其中 ∠A 為兩三角形的公共角，且 BC // DE。這樣設計的主要原理是？","choices":["平行線會使兩個三角形全等，所以河寬等於可測的線段長","由三邊對應成比例（SSS 相似）判定相似","平行造成同位角相等，再配合公共角 ∠A，由 AA 判定兩三角形相似，即可列比例式求河寬","與相似無關，是直接用畢氏定理求出河寬"],"answer":2,"explain":"BC // DE 使同位角 ∠ABC = ∠ADE，再加上公共角 ∠A，由 AA 得 △ABC ∽ △ADE。於是無法直接測量的河寬可透過「對應邊成比例」，由岸上可測的線段算出。兩三角形一大一小並不全等；設計中根本沒有量三邊，用不到 SSS；畢氏定理需要直角與已知兩邊，並非此法的原理。"},{"level":"adv","topic":"易錯辨析－SSA 不能判定相似","q":"△ABC 中 AB = 8、AC = 6、∠B = 40°；△DEF 中 DE = 12、DF = 9、∠E = 40°。小華說：「兩組對應邊成比例又有一角相等，所以由 SAS 相似可知兩三角形相似。」他的判斷是否正確？","choices":["正確，完全符合 SAS 相似的條件","錯誤，因為 40° 並不是那兩組對應邊的夾角，這屬於 SSA，不能據此判定相似","錯誤，應改用 SSS 相似來判定","錯誤，因為 AB/DE 與 AC/DF 兩個比值並不相等"],"answer":1,"explain":"AB/DE = 8/12 = 2/3、AC/DF = 6/9 = 2/3，比值確實相等，所以最後一個選項錯。但 AB 與 AC 的夾角是 ∠A，∠B 是 AC 的對角，因此給的條件其實是「兩邊成比例＋其中一邊的對角相等」（SSA）。此類條件無法保證三角形形狀唯一——本題中滿足 AB = 8、AC = 6、∠B = 40° 的三角形可以畫出兩種不同形狀，所以不能判定相似。題目未給第三組邊長，也無法改用 SSS。使用 SAS 相似時，角必須恰好夾在那兩組成比例的邊之間。"},{"level":"adv","topic":"由面積比反推相似比","q":"兩個相似三角形的面積比為 9:16，則兩者的對應邊長比（相似比）為？","choices":["9:16","3:4","81:256","無法確定，需知道實際面積"],"answer":1,"explain":"面積比等於相似比的平方，9:16 = 3²:4²，開方後得相似比為 3:4。直接答 9:16 是把面積比誤當長度比；81:256 是把 9:16 再平方一次，運算方向剛好相反；只要知道面積比就能反推相似比，不需要實際面積。長度比 k ⇔ 面積比 k²，兩個方向都要能靈活運用。"},{"level":"adv","topic":"對應頂點順序的正確書寫","q":"已知兩個三角形相似，且 ∠A = ∠E、∠B = ∠F、∠C = ∠D。下列相似式的寫法何者正確？","choices":["△ABC ∽ △DEF","△ABC ∽ △FDE","△ABC ∽ △DFE","△ABC ∽ △EFD"],"answer":3,"explain":"相似符號兩側的頂點必須依對應關係「同位置對同位置」書寫。由 A↔E、B↔F、C↔D，第一個位置放 E、第二個放 F、第三個放 D，故為 △ABC ∽ △EFD。寫成 △DEF 表示 A↔D、B↔E、C↔F；△FDE 表示 A↔F、B↔D、C↔E；△DFE 表示 A↔D、B↔F、C↔E，都與題意不符。順序寫錯會使後續列比例式時對應邊完全錯亂。"},{"level":"adv","topic":"直角三角形斜邊上的高與母子相似","q":"直角三角形 ABC 中 ∠A = 90°，自 A 作 AD ⊥ BC 交 BC 於 D。下列敘述何者正確？","choices":["△ABD ∽ △CAD ∽ △CBA","三個三角形彼此全等","△ABD ∽ △ACD，但它們都與 △ABC 不相似","只有 △ABD 與 △ABC 相似，△ACD 與它們無關"],"answer":0,"explain":"△ABD 中 ∠ADB = 90°、∠ABD = ∠B，故 ∠BAD = ∠C；△CAD 中 ∠ADC = 90°、∠ACD = ∠C，故 ∠CAD = ∠B；△CBA 中 ∠BAC = 90°，另兩角為 ∠B、∠C。三者的角度組合都是「90°、∠B、∠C」，由 AA 知兩兩相似，依角度對應應寫成 △ABD ∽ △CAD ∽ △CBA。三者大小不同並不全等；兩個小三角形與原三角形當然也相似，後兩個選項都遺漏或否定了部分關係。"},{"level":"adv","topic":"相似的測量應用－鏡子測高","q":"小安把一面鏡子平放在地上，然後往後退，直到剛好從鏡中看見樹頂。量出鏡子到自己與到樹的水平距離，以及自己的眼睛高度，就能算出樹高。這個方法能成立的主要理由是？","choices":["兩個三角形全等，所以樹高恰等於小安的眼睛高度","可用 SSS 相似判定兩個三角形相似","與相似無關，是直接用畢氏定理算出樹高","光的反射使入射角等於反射角，加上人與樹都與地面垂直（兩個直角），由 AA 得兩三角形相似，可列對應邊比例式"],"answer":3,"explain":"光線在鏡面反射時入射角等於反射角，於是「眼睛－鏡子－腳」與「樹頂－鏡子－樹根」兩個直角三角形有一組銳角相等，又各有一個直角，由 AA 判定相似，因此「眼睛高:人到鏡的距離 = 樹高:樹到鏡的距離」。兩三角形一小一大並不全等（若全等就不必測量了）；量的是高度與水平距離而非三邊，用不到 SSS；畢氏定理只能處理同一個直角三角形內的邊長，無法把樹高與人的高度連結起來。"},{"level":"adv","topic":"相似比與對應高之比","q":"已知 △ABC ∽ △DEF，相似比為 2:3。設 AH 是 BC 邊上的高、DK 是 EF 邊上的高，則 AH:DK 為？","choices":["2:3","3:2","4:9","無法確定，需知道實際邊長"],"answer":0,"explain":"由 △ABC ∽ △DEF 得 ∠B = ∠E，又 ∠AHB = ∠DKE = 90°，由 AA 得 △ABH ∽ △DEK，於是 AH:DK = AB:DE = 2:3。事實上相似三角形的所有對應線段（對應邊、對應高、對應中線、對應角平分線以及周長）之比都等於相似比。4:9 是面積比（相似比的平方）；3:2 順序顛倒；只要知道相似比即可確定，不需實際邊長。"},{"level":"adv","topic":"反例與全稱命題的判斷","q":"小傑主張：「面積相等的兩個三角形一定相似。」下列判斷何者正確？","choices":["正確，因為面積相等就代表兩個三角形大小相同","錯誤，舉一個反例即可推翻，例如底 6 高 4 與底 12 高 2 的三角形面積都是 12，形狀卻不同","錯誤，但必須檢查所有的三角形，才能確定這個主張不成立","正確，因為找得到面積相等又相似的例子（例如兩個全等三角形）"],"answer":1,"explain":"「面積相等⇒相似」是「所有…都…」的全稱命題，只要一個反例就能推翻：底 6 高 4 與底 12 高 2 的三角形面積同為 12，但對應角不相等、對應邊也不成比例，並不相似。反過來，舉出一個「面積相等又相似」的例子（如全等三角形）只是符合命題的個例，單一或有限多個例證都不能證明全稱命題成立。也不需要檢查所有三角形，一個反例就足夠。面積相等只是「量」相同，與形狀無關。"},{"level":"adv","topic":"由邊成比例逆推平行（SAS 相似）","q":"△ABC 中，D 在 AB 上、E 在 AC 上，且 AD/AB = AE/AC。下列推論何者正確？","choices":["由共用 ∠A 及兩組邊成比例（SAS 相似）得 △ADE ∽ △ABC，並可進一步推出 DE // BC","只能得到 △ADE ∽ △ABC，無法判斷 DE 與 BC 是否平行","必須先知道 DE // BC，才能判定 △ADE ∽ △ABC","由三組邊對應成比例（SSS 相似）判定 △ADE ∽ △ABC"],"answer":0,"explain":"AD 與 AE 的夾角、AB 與 AC 的夾角都是共用的 ∠A，配合 AD/AB = AE/AC，符合 SAS 相似，故 △ADE ∽ △ABC。既然相似，∠ADE = ∠ABC，這兩個角是截線 AB 上的同位角，同位角相等即得 DE // BC，所以平行是可以推出來的。本題是「平行⇒相似」的逆向推理，不必先假設平行；題目只給兩組邊的比，未給 DE 與 BC 的比，因此不能用 SSS。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

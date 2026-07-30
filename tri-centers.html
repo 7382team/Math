@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>二次函數 練習</title>
+<title>三角形的三心 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -99,14 +99,14 @@
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "quad-func",
-  "title": "二次函數",
+  "id": "tri-centers",
+  "title": "三角形的三心",
   "subject": "數學",
   "grade": "國三",
-  "term": "下",
+  "term": "上",
   "chapter": 0,
-  "ch": "第1章 二次函數",
-  "tag": "二次函數",
+  "ch": "第3章 幾何證明與三角形的三心",
+  "tag": "外心·內心·重心",
   "ready": true
 }
 </script>
@@ -116,8 +116,8 @@
 
   <header>
     <div>
-      <h1>二次函數</h1>
-      <div class="sub">對稱軸、頂點、極值</div>
+      <h1>三角形的三心</h1>
+      <div class="sub">外心/內心/重心的性質計算</div>
     </div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
@@ -161,88 +161,46 @@
 
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const sgn=()=>Math.random()<0.5?1:-1;
 let level='basic',problem=null,entry='',answered=false,streak=0;
-const MAXD=3;
-
-function polyStr(a,b,c){let s=(a===1?'':a===-1?'−':a)+'x²';if(b)s+=(b<0?' − '+(-b):' + '+b)+'x';if(c)s+=(c<0?' − '+(-c):' + '+c);return s;}
-function twoLine(top,ask){return '<div style="font-size:23px;font-weight:500">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
-
+const MAXD=4;
+function twoLine(top,ask){return '<div style="font-size:19px;font-weight:500;line-height:1.55">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
 function makeProblem(lv){
-  const a=lv==='basic'?1:(Math.random()<0.5?1:-1);
-  const h=rand(-4,4),k=rand(-9,9);
-  const b=-2*a*h,c=a*h*h+k;
-  const types=lv==='basic'?['axis','yint']:['axis','vertexY','extreme','yint'];
-  const t=pick(types);
-  let answer;
-  if(t==='axis')answer=h;else if(t==='vertexY')answer=k;else if(t==='extreme')answer=k;else answer=c;
-  return{a,h,k,b,c,t,answer};
+  const t=pick(lv==='basic'?['centroid','circumRt']:['centroid','circumRt','incircle','centroidArea']);
+  if(t==='centroid'){const m=rand(3,15)*3;return{t,m,answer:m*2/3};} // 重心分中線 2:1，求長段
+  if(t==='circumRt'){const c=rand(2,15)*2;return{t,c,answer:c/2};}   // 直角三角形外心在斜邊中點，外接圓半徑=斜邊一半
+  if(t==='incircle'){const a=rand(3,12),b=rand(3,12); // 直角三角形內切圓半徑 r=(a+b-c)/2，取畢氏數
+    const T=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15]];const tr=pick(T);const k=rand(1,3);
+    return{t,a:tr[0]*k,b:tr[1]*k,c:tr[2]*k,answer:(tr[0]*k+tr[1]*k-tr[2]*k)/2};}
+  const S=rand(2,20)*6;return{t:'centroidArea',S,answer:S/6}; // 重心連三頂點分成三等分，中線再分→S/6
 }
-function qText(){const p=problem;const f='y = '+polyStr(p.a,p.b,p.c).replace(/<[^>]+>/g,'^2');
-  if(p.t==='axis')return f+'，對稱軸 x =';if(p.t==='vertexY')return f+'，頂點 y =';if(p.t==='extreme')return f+'，'+(p.a>0?'最小值':'最大值')+' =';return f+'，與 y 軸交點 y =';}
-function eqHTML(){const p=problem;const f='y = '+polyStr(p.a,p.b,p.c);
-  const ask=p.t==='axis'?'對稱軸 x =':p.t==='vertexY'?'頂點的 y 坐標 =':p.t==='extreme'?(p.a>0?'最小值 =':'最大值 ='):'與 y 軸交點的 y 坐標 =';
-  return twoLine(f,ask);
-}
+function qText(){const p=problem;
+  if(p.t==='centroid')return '中線長 '+p.m+'，重心到頂點的距離 =';
+  if(p.t==='circumRt')return '直角三角形斜邊 '+p.c+'，外接圓半徑 =';
+  if(p.t==='incircle')return '直角三角形兩股 '+p.a+'、'+p.b+'，斜邊 '+p.c+'，內切圓半徑 =';
+  return '三角形面積 '+p.S+'，重心與兩頂點圍成的三角形被中線分出的小三角形面積 =';}
+function eqHTML(){const p=problem;
+  if(p.t==='centroid')return twoLine('三角形一條中線長 = '+p.m+'<br>重心把中線分成 2 : 1','重心到「頂點」的距離 =');
+  if(p.t==='circumRt')return twoLine('直角三角形，斜邊 = '+p.c,'外接圓半徑 =');
+  if(p.t==='incircle')return twoLine('直角三角形，兩股 = '+p.a+'、'+p.b+'，斜邊 = '+p.c,'內切圓半徑 =');
+  return twoLine('△ABC 面積 = '+p.S+'<br>重心 G 連三頂點分成三個等面積小三角形，<br>其中一個再被中線平分','最小的一塊面積 =');}
 function buildSteps(){const p=problem;
-  if(p.t==='axis')return '<div><span class="lead">對稱軸</span>x = −b / (2a) = −('+p.b+') / (2×'+p.a+') = <span class="res">'+p.answer+'</span></div>';
-  if(p.t==='yint')return '<div><span class="lead">y 軸</span>令 x = 0，y = <span class="res">'+p.c+'</span></div>';
-  return '<div><span class="lead">頂點式</span>y = '+(p.a===1?'':p.a===-1?'−':p.a)+'(x '+(p.h<0?'+':'−')+' '+Math.abs(p.h)+')<sup>2</sup> '+(p.k<0?'− '+(-p.k):'+ '+p.k)+'</div>'+
-    '<div>頂點 = ('+p.h+', '+p.k+')，'+(p.t==='extreme'?(p.a>0?'最小值':'最大值'):'頂點 y')+' = <span class="res">'+p.answer+'</span></div>';
-}
-function buildTip(){const p=problem;if(p.t==='axis')return '對稱軸 x = −b/(2a)。';if(p.t==='yint')return 'y 軸交點就是代 x=0，得常數項。';return '化成頂點式 y=a(x−h)²+k，頂點 (h,k)；a>0 有最小值、a<0 有最大值 = k。';}
-function render(){
-  document.getElementById('eq').innerHTML=eqHTML();
-  entry='';answered=false;
-  const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';
-  document.getElementById('explain').className='explain';
-  const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;
-}
-function showEntry(){const ans=document.getElementById('ans');
-  if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}
-  ans.textContent=entry.replace('-','−');ans.className='ans';}
-function check(){
-  if(entry===''||entry==='-')return;
-  answered=true;
-  const val=parseInt(entry,10);
-  const ans=document.getElementById('ans');
-  const correct=val===problem.answer;
-  ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');
-  if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}
-  streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;
-  if(window.parent!==window){
-    window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');
-    if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}
-  }
-  document.getElementById('steps').innerHTML=buildSteps();
-  const nl=document.getElementById('numline');if(nl)nl.innerHTML='';
-  document.getElementById('tip').innerHTML=buildTip();
-  document.getElementById('explain').className='explain show';
-  const go=document.getElementById('go');go.textContent='下一題';go.className='go next';
-}
+  if(p.t==='centroid')return '<div><span class="lead">重心</span>重心到頂點 : 重心到對邊中點 = 2 : 1</div><div>頂點段 = 中線 × 2/3 = '+p.m+' × 2/3 = <span class="res">'+p.answer+'</span></div>';
+  if(p.t==='circumRt')return '<div><span class="lead">外心</span>直角三角形的外心在「斜邊中點」</div><div>外接圓半徑 = 斜邊 ÷ 2 = '+p.c+' ÷ 2 = <span class="res">'+p.answer+'</span></div>';
+  if(p.t==='incircle')return '<div><span class="lead">內心</span>直角三角形內切圓半徑 r = (兩股和 − 斜邊) ÷ 2</div><div>= ('+p.a+' + '+p.b+' − '+p.c+') ÷ 2 = '+(p.a+p.b-p.c)+' ÷ 2 = <span class="res">'+p.answer+'</span></div>';
+  return '<div><span class="lead">重心</span>重心連三頂點 ⇒ 三塊面積相等，各為 '+p.S+' ÷ 3 = '+(p.S/3)+'</div><div>再被中線平分 ⇒ '+(p.S/3)+' ÷ 2 = <span class="res">'+p.answer+'</span></div>';}
+function buildTip(){const p=problem;
+  if(p.t==='centroid'||p.t==='centroidArea')return '重心是三中線交點，分中線為 2:1（近頂點段較長）；重心連三頂點會把三角形分成三個等面積區域。';
+  if(p.t==='circumRt')return '外心是三邊中垂線交點、到三頂點等距；直角三角形的外心恰在斜邊中點。';
+  return '內心是三內角平分線交點、到三邊等距；直角三角形內切圓半徑 r =(a+b−c)/2。';}
+function render(){document.getElementById('eq').innerHTML=eqHTML();entry='';answered=false;const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';document.getElementById('explain').className='explain';const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;}
+function showEntry(){const ans=document.getElementById('ans');if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}ans.textContent=entry.replace('-','−');ans.className='ans';}
+function check(){if(entry===''||entry==='-')return;answered=true;const val=parseInt(entry,10);const ans=document.getElementById('ans');const correct=val===problem.answer;ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;if(window.parent!==window){window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}}document.getElementById('steps').innerHTML=buildSteps();const nl=document.getElementById('numline');if(nl)nl.innerHTML='';document.getElementById('tip').innerHTML=buildTip();document.getElementById('explain').className='explain show';const go=document.getElementById('go');go.textContent='下一題';go.className='go next';}
 function next(){problem=makeProblem(level);render();}
-document.getElementById('pad').addEventListener('click',e=>{
-  const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;
-  if(k==='del')entry=entry.slice(0,-1);
-  else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
-  else{if(entry.replace('-','').length<MAXD)entry+=k;}
-  showEntry();
-});
+document.getElementById('pad').addEventListener('click',e=>{const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;if(k==='del')entry=entry.slice(0,-1);else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;else{if(entry.replace('-','').length<MAXD)entry+=k;}showEntry();});
 document.getElementById('go').addEventListener('click',()=>answered?next():check());
-document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');level=b.dataset.lv;next();
-}));
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){answered?next():check();return;}
-  if(answered)return;
-  if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}
-  else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}
-  else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}
-});
-(function(){const lv=new URLSearchParams(location.search).get('level');
-  if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}
-})();
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.lv;next();}));
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){answered?next():check();return;}if(answered)return;if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}});
+(function(){const lv=new URLSearchParams(location.search).get('level');if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}})();
 next();
 </script>
 

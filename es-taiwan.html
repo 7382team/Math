@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>台灣的地質與地質災害 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0369a1;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "es-taiwan",
+  "title": "台灣的地質與地質災害",
+  "subject": "地球科學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3章 台灣的地質與地質災害",
+  "tag": "造山·斷層·土石流",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>台灣的地質與地質災害</h1><div class="sub">地球科學 · 造山·斷層·土石流 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"台灣的板塊位置","q":"台灣島位於下列哪兩個板塊互相聚合的交界帶上？","choices":["太平洋板塊與北美洲板塊","歐亞板塊與菲律賓海板塊","印度—澳洲板塊與非洲板塊","歐亞板塊與南極洲板塊"],"answer":1,"explain":"台灣位於歐亞板塊與菲律賓海板塊的聚合（碰撞）交界處，兩板塊互相推擠是台灣造山、多地震的根本原因。其他選項所列板塊交界都不在台灣附近。"},{"level":"basic","topic":"板塊擠壓方向與台灣隆起","q":"關於台灣島持續隆起的原因，下列敘述正確的是？","choices":["菲律賓海板塊向東南方張裂遠離歐亞板塊，使台灣逐漸沉沒","台灣位於中洋脊上，由海底裂隙湧出的岩漿一層層堆高而成","菲律賓海板塊向西北方推擠歐亞板塊，岩層受擠壓褶皺、抬升，使台灣持續隆起","兩板塊之間只有水平錯動，沒有擠壓抬升，台灣高度幾乎不變"],"answer":2,"explain":"菲律賓海板塊向西北方擠壓歐亞板塊，使岩層受壓褶皺、破裂並抬升，形成數千公尺的高山且持續隆起。中洋脊是板塊張裂生成新海洋地殼的地方，與台灣的聚合環境相反；純水平錯動無法造出高聳山脈。"},{"level":"basic","topic":"台灣山脈走向","q":"中央山脈、雪山山脈、玉山山脈與海岸山脈的排列方向，大致為下列哪一種？","choices":["近南北向，與板塊擠壓的方向大致垂直","近東西向，與板塊擠壓的方向大致平行","以島中心為圓心呈同心圓狀環繞","雜亂散布，看不出方向性"],"answer":0,"explain":"板塊擠壓方向約為西北—東南，受擠壓而褶皺抬升的山脈軸向會與擠壓方向大致垂直，因此台灣山脈呈近南北（北北東—南南西）走向。若山脈與擠壓方向平行或呈同心圓，都不符合褶皺山脈的形成方式。"},{"level":"basic","topic":"海岸山脈的板塊來源","q":"就岩層來源而言，海岸山脈與台灣其他山脈相比，最特別之處是什麼？","choices":["全部由具柱狀節理的玄武岩組成，是澎湖群島向東的延伸","是在中洋脊張裂處生成後直接留在原地的海洋地殼","完全由變質岩組成，是台灣變質程度最高的山脈","岩層來源屬於菲律賓海板塊，隨板塊向西北移動後與台灣拼接在一起"],"answer":3,"explain":"海岸山脈原本是菲律賓海板塊上的火山島弧與其周圍沉積物，隨板塊移動撞上歐亞板塊而拼貼在台灣東緣，因此與屬歐亞板塊的中央山脈來源不同。玄武岩柱狀節理是澎湖的特徵；變質程度最高的是中央山脈。"},{"level":"basic","topic":"大屯火山群","q":"大屯火山群位於台灣的哪個區域，且具有什麼明顯的地質現象？","choices":["台灣東部海岸山脈南段，可見大量珊瑚礁石灰岩","澎湖群島海域，可見厚層玄武岩台地","台灣北部，附近有豐富的地熱、溫泉與硫氣孔","台灣西南部平原，地下有大規模岩漿庫噴發"],"answer":2,"explain":"大屯火山群位於台灣北部，為較晚期的火山活動區，殘餘熱源使當地地熱、溫泉與硫氣孔發達。西南部是以沉積層為主的平原，並無火山群；珊瑚礁石灰岩與玄武岩台地分別是其他地區的特徵。"},{"level":"basic","topic":"澎湖玄武岩的岩石分類","q":"澎湖群島常見一根根直立的柱狀節理，這些岩石屬於下列哪一種？","choices":["玄武岩，屬於火成岩中的噴出岩","大理岩，屬於變質岩","頁岩，屬於沉積岩","片麻岩，屬於變質岩"],"answer":0,"explain":"澎湖的柱狀節理由玄武岩質熔岩流噴出地表後冷卻收縮而成，屬火成岩（噴出岩）。大理岩、片麻岩是高溫高壓作用下形成的變質岩，多見於中央山脈；頁岩是細顆粒沉積岩，不會形成規則柱狀節理。"},{"level":"basic","topic":"冷卻速度與礦物顆粒大小","q":"澎湖的玄武岩顆粒細小、肉眼不易分辨，花崗岩的礦物顆粒卻粗大明顯，造成這種差異的主要原因是？","choices":["玄武岩年齡比花崗岩老很多，顆粒被長期壓碎而變小","玄武岩是岩漿噴出地表後快速冷卻，結晶時間短；花崗岩是岩漿在地下深處緩慢冷卻，結晶時間長","玄武岩形成時受到高溫高壓變質，礦物重新排列成細小顆粒","花崗岩是由粗砂膠結而成的沉積岩，所以顆粒特別粗大"],"answer":1,"explain":"岩漿冷卻速率決定結晶大小：噴出地表的熔岩散熱快，礦物來不及長大，形成細粒的噴出岩（如玄武岩）；深成岩（如花崗岩）在地下慢慢冷卻，礦物有時間長成粗大晶體。岩石年齡、變質作用或沉積膠結都不是顆粒粗細的主因，花崗岩也不是沉積岩。"},{"level":"basic","topic":"蘭嶼與綠島的成因","q":"位於台灣東南方海上的蘭嶼與綠島，主要是由什麼作用形成的島嶼？","choices":["珊瑚礁不斷堆積後隆起而成的石灰岩島","火山噴發作用堆積形成的火山島","河流帶來的泥砂堆積成的沙洲","冰河長期侵蝕陸地後殘留的島嶼"],"answer":1,"explain":"蘭嶼、綠島是菲律賓海板塊上火山活動形成的火山島（島弧的一部分），島上可見安山岩類的火山岩。雖然沿岸有裙礁發育，但島的主體不是珊瑚礁；沙洲規模小且鬆散，台灣低地也沒有冰河侵蝕作用。"},{"level":"basic","topic":"台灣變質岩分布","q":"台灣的變質岩（如片岩、大理岩）主要分布在下列哪一區域，原因為何？","choices":["西部平原地下，因為沉積物被海水長期浸泡","澎湖群島，因為熔岩冷卻速度很快","海岸山脈北段，因為那裡的岩層最年輕","中央山脈，因為岩層被深埋並受到高溫、高壓作用"],"answer":3,"explain":"中央山脈核心的岩層曾被深埋並在造山過程中承受高溫高壓，礦物重新排列而成為變質岩。變質作用需要高溫高壓，單靠海水浸泡或熔岩快速冷卻都不會產生變質岩；海岸山脈以火山岩與碎屑沉積岩為主。"},{"level":"basic","topic":"大理岩的原岩","q":"台灣東部（如太魯閣一帶）可見大量大理岩，這種岩石最可能是由下列哪一種岩石變質而成？","choices":["玄武岩，熔岩噴出地表冷卻後直接形成","砂岩，被河水搬運磨圓後形成","花崗岩，岩漿在地表快速冷卻形成","石灰岩，在高溫高壓下變質、礦物重新結晶而成"],"answer":3,"explain":"大理岩是以碳酸鈣為主的石灰岩在高溫高壓下變質、方解石重新結晶而成。玄武岩與花崗岩都是火成岩，不是大理岩的原岩；被水磨圓屬於搬運磨蝕，不是變質作用，砂岩變質後會成為石英岩類岩石。"},{"level":"basic","topic":"西部岩層與沉積作用","q":"台灣西部平原與丘陵地區的岩層，主要具有下列哪一項特徵？","choices":["以沉積岩為主，多為泥砂被河流搬運到海邊堆積、膠結成岩後再抬升出露","以變質岩為主，含大量大理岩與片岩","以玄武岩為主，普遍發育明顯的柱狀節理","以花崗岩為主，是岩漿在地表快速冷卻形成"],"answer":0,"explain":"山區岩石經風化侵蝕後，碎屑由河流搬運至西部海域堆積，經壓密膠結成砂岩、頁岩等沉積岩，再隨造山運動抬升成為平原與丘陵的基盤。大理岩、片岩集中在中央山脈；玄武岩見於澎湖；花崗岩是岩漿在地下深處緩慢冷卻的深成岩。"},{"level":"basic","topic":"地震波的性質","q":"地震發生後，測站最先記錄到的地震波是哪一種，其性質為何？","choices":["P波，屬於縱波（質點振動方向與波前進方向平行），傳播速度較快，最先抵達","S波，屬於縱波，速度比P波快，因此最先抵達","P波，屬於橫波，速度比S波慢，所以最後抵達","S波，屬於橫波，速度較快，因此比P波先抵達"],"answer":0,"explain":"P波是縱波，質點振動方向與波前進方向平行，在同一介質中速度比S波快，因此最先被記錄到；S波是橫波，速度較慢、較晚抵達，但常造成較劇烈的搖晃。把P波當橫波，或說S波先到，都與地震波的基本性質不符。"},{"level":"basic","topic":"地震規模與震度的區別","q":"同一次地震發生後，關於「規模」與「震度」的比較，下列敘述正確的是？","choices":["規模會隨測站與震央的距離而改變，震度則只有一個數值","規模與震度都會隨測站位置不同而改變","震度代表地震所釋放的總能量，規模代表各地搖晃的程度","規模代表該次地震釋放的能量大小，只有一個數值；震度代表各地搖晃的程度，會因地點而不同"],"answer":3,"explain":"規模由地震釋放的能量決定，同一次地震只有一個規模值；震度描述某地實際的搖晃與影響程度，會隨距震央遠近與地質條件改變。把兩者定義對調，或誤以為規模會隨測站改變，都是最常見的混用錯誤。"},{"level":"basic","topic":"活動斷層","q":"下列對「活動斷層」的說明，哪一項最正確？","choices":["只要地質史上曾經錯動過的斷層都算活動斷層，但未來不可能再錯動","在最近的地質時代曾經錯動、未來仍有可能再次錯動的斷層","只存在於海底，與陸地上的地震無關的斷層","岩層只發生彎曲、沒有斷裂錯動的構造"],"answer":1,"explain":"活動斷層指最近地質時代有過錯動紀錄、未來仍可能再活動的斷層，例如車籠埔斷層，是防災與土地利用評估的重點。很久以前錯動而現今已不活動者不列入；岩層只彎曲而未錯開的是褶皺；活動斷層在陸地上也很多。"},{"level":"basic","topic":"地層下陷的成因","q":"台灣西南沿海部分地區出現嚴重地層下陷，其最主要的人為原因是什麼？","choices":["大量開採石油與天然氣","興建鐵公路使地表被車輛壓實","長期超抽地下水，地下水位下降使地層壓密而下沉","海水溫度上升使沿海岩層膨脹"],"answer":2,"explain":"地下水被過度抽取後，孔隙中的水流失、水壓下降，顆粒間互相壓密，地表因此下沉且大多不可恢復。台灣並無大規模石油開採；車輛壓實只影響淺層路面，海水溫度上升也不會造成地層壓密。"},{"level":"basic","topic":"溫泉與地熱的熱源","q":"台灣溫泉與地熱資源相當豐富，就熱源與地質環境來說，最主要的原因是什麼？","choices":["位於板塊聚合交界，地殼變動與岩漿活動旺盛，地下熱源多，且斷層裂隙提供地下水循環的通道","位於中洋脊上，海水直接沿裂隙湧入被加熱","緯度較低、太陽輻射強，陽光把地下深處的水加熱","地下水被大量超抽，抽水時的摩擦生熱把水加熱"],"answer":0,"explain":"板塊聚合帶地下熱流高、岩漿或殘餘熱源豐富，加上斷層與破碎帶讓地下水下滲受熱後再上湧，因此台灣溫泉多。太陽輻射只能影響地表淺層，無法加熱深部地下水；抽水摩擦生熱量微不足道；台灣並不在中洋脊上。"},{"level":"basic","topic":"土石流的辨識","q":"下列哪一項現象最符合「土石流」的描述？","choices":["岩體沿破裂面整塊向下滑動，過程中幾乎沒有水參與","海浪長期拍打海崖，使崖壁上方的岩塊崩落海中","泥、砂、礫石與大量水混合後，沿著溝谷向下快速流動","超抽地下水使地面緩慢而大範圍地下沉"],"answer":2,"explain":"土石流是泥砂、礫石與大量水混合而成的高濃度流體，沿溝谷急速向下流動，破壞力強，常在豪雨時發生。缺水的整塊滑動屬山崩（滑動）；海崖岩塊崩落屬海岸侵蝕造成的落石；地面緩慢下沉是地層下陷。"},{"level":"adv","topic":"環太平洋地震帶與火山帶","q":"台灣同時位於環太平洋地震帶與火山帶上，就地質構造來推論，最主要的原因是？","choices":["台灣四面環海，海水的重量長期壓迫地殼造成破裂","台灣位在板塊聚合交界帶，板塊互相推擠並有隱沒作用，岩層容易錯動、岩漿也容易上升","台灣位於中洋脊，板塊在此不斷張裂並生成新地殼","台灣位於板塊內部的穩定地區，地震與火山只是偶然出現"],"answer":1,"explain":"環太平洋地震帶與火山帶主要沿板塊聚合（隱沒）邊界分布；台灣正處在歐亞板塊與菲律賓海板塊交界，應力累積使斷層錯動頻繁，隱沒帶附近也提供岩漿上升的條件。海水重量不足以造成造山與火山活動；台灣既非中洋脊，也不是板塊內部的穩定區。"},{"level":"adv","topic":"震度分布的判讀","q":"某次地震後，測得甲地震度5級、乙地3級、丙地2級，而氣象單位對這次地震只公布一個規模值。下列判讀最正確的是？","choices":["甲地測到的地震規模比丙地大，所以搖得比較厲害","甲地的震度最大，表示甲地距離震央一定最遠","三地震度不同，表示這其實是三次不同的地震同時發生","三地震度不同主要與距震央的遠近及當地地質條件有關，但同一次地震只有一個規模"],"answer":3,"explain":"規模是該次地震釋放能量的量度，只有一個值；各地震度不同，是因為距震央遠近不同，且鬆軟沉積層等地質條件會放大搖晃。說「甲地規模較大」是把規模當成震度；震度大通常代表較靠近震央或地盤軟弱，而非距離最遠。"},{"level":"adv","topic":"地震預警的原理","q":"地震預警系統能在強烈搖晃抵達前數秒發出警報，其原理與下列哪一項關係最密切？","choices":["P波與S波的傳播速度相同，但S波攜帶的能量比較大","測站能在地震發生之前先偵測到地下溫度上升","P波速度較快、先抵達測站，可在造成較大搖晃的S波與表面波到達前先發出警報","同一次地震在各地的規模不同，規模較小的地方會先收到通知"],"answer":2,"explain":"P波在地殼中傳播較快，會比造成劇烈搖晃的S波與表面波先抵達，系統因此能先分析P波訊號並發布警報，離震央較遠處可爭取到較長的預警時間。P波與S波速度並不相同；地下溫度無法用來事先預測地震；同一次地震只有一個規模，不會因地點而不同。"},{"level":"adv","topic":"隱沒帶與震源深度分布","q":"某海溝附近的震源分布圖顯示：震源深度由海溝向一側逐漸加深，整體排列成一個傾斜的震源帶。此現象最能說明該處具有下列哪一種構造？","choices":["有隱沒帶，一個板塊沿著這個傾斜面隱沒到另一個板塊之下","為中洋脊，板塊在此不斷張裂並向兩側移動","地殼完全靜止，震源只是隨機分布而剛好排成一列","震源愈深只是因為海水愈深、壓力愈大所造成"],"answer":0,"explain":"傾斜的震源帶是隱沒帶的典型證據：隱沒的板塊較冷、較硬，沿傾斜面下插進地函，摩擦與破裂使震源由淺而深依序分布。中洋脊附近以淺源地震為主；隨機分布不會形成規則傾斜面；海水壓力也不足以決定深部震源的位置。"},{"level":"adv","topic":"山崩與土石流的防治","q":"某山區溪谷上游坡度陡、岩層破碎，近年因開闢道路與濫墾，坡面植被大量減少。若遇連日豪雨，下列作法對降低土石流災害最有幫助的是？","choices":["繼續在陡坡上開挖平台並增建建築，用建築的重量壓住坡面","把開挖產生的土石堆置在溪谷中，等大雨自然沖走","加強坡面植生復育、設置排水與防砂設施，並在豪雨達警戒值時提前疏散撤離","把溪谷兩側的樹木全部砍除，讓水流更順暢不易堵塞"],"answer":2,"explain":"土石流需要陡坡、豐富鬆散土石與大量水；植生與排水設施可減少地表逕流與沖蝕，防砂設施可攔阻土石，再配合警戒疏散能保障人命。開挖坡地與棄土堆置只會增加不穩定土石來源；砍除樹木會使坡面失去根系固結與截留雨水的功能，風險更高。"},{"level":"adv","topic":"海岸侵蝕與沿岸漂沙","q":"某沙質海岸近年沙灘明顯後退。調查發現上游興建攔阻泥砂的設施使河川輸砂量大減，海岸邊又新建了突出海中的堤防。下列判讀最合理的是？","choices":["因為波浪把整片海水連同泥沙整體搬到外海，與河川輸砂多寡無關","河川輸砂減少使海岸沙源不足，加上突出的堤防改變沿岸漂沙的路徑，造成堤防一側堆積、另一側侵蝕後退","海岸後退只可能是海平面上升造成，人為工程不會影響","沙灘後退代表該地正在地層下陷，一定是超抽地下水所造成"],"answer":1,"explain":"沙岸寬窄取決於沙的補充與移出是否平衡：河川輸砂是主要沙源，減少後供應不足；突出的堤防會攔住沿岸漂沙，使上游側淤積、下游側因缺沙而侵蝕。波浪傳遞的是能量，水粒子大致在原地做往復運動，並不會把海水整體向前搬運；海平面上升與地層下陷可能加劇問題，但不是本題所述的原因。"},{"level":"adv","topic":"地層下陷的後續影響","q":"某沿海鄉鎮長期超抽地下水而發生地層下陷，關於後續影響的推論，下列哪一項最合理？","choices":["只要停止抽水，地下水位回升後土地高度就會完全恢復原狀","下陷只使地表變低，不會影響排水，也與海水入侵無關","下陷後該地反而比較不容易積水，因為雨水會直接滲入地下流走","地面高度降低使排水困難，豪雨或暴潮時容易積水、海水倒灌，且壓密後的地層很難再恢復"],"answer":3,"explain":"地層壓密大多屬不可逆的變化，地面一旦降低就長期維持，排水坡度變小、暴潮時海水易越過堤防倒灌，也會使地下水鹽化。認為停止抽水後土地會回彈、或下陷後更不易積水，都忽略了地面高度與排水、海水位之間的關係。"},{"level":"adv","topic":"砂岩頁岩互層的推論","q":"台灣西部丘陵可見厚層砂岩與頁岩一層一層交替出現。若由「顆粒粗細交替」的現象推論其形成過程，下列哪一項最合理？","choices":["岩漿多次噴出地表後冷卻，一層層堆積而成","中央山脈的變質岩整塊被推到西部，直接變成互層岩層","造山抬升使岩石風化侵蝕，碎屑經河流搬運到海域沉積，搬運與沉積的水流能量時強時弱，粗細顆粒交替堆積並膠結成岩，之後再隨抬升出露","海水長期蒸發後留下的鹽類一層一層堆積而成"],"answer":2,"explain":"砂岩、頁岩屬碎屑沉積岩，顆粒粗細差異反映搬運與沉積能量的強弱變化，能量強時堆積較粗的砂、能量弱時堆積細泥，故形成互層；整體符合抬升→風化侵蝕→河流搬運→海域沉積→膠結成岩→再抬升的循環。熔岩堆積會形成火成岩；變質岩不會「直接變成」互層沉積岩；鹽類堆積屬蒸發岩，不是台灣西部的主要岩層。"},{"level":"adv","topic":"溫泉分布與地質構造","q":"調查顯示台灣的溫泉多出現在山區斷層或岩層破碎帶附近，而北部大屯地區的泉水還常伴隨硫氣、且偏酸性。對此現象最合理的解釋是？","choices":["溫泉一定要有火山才會形成，所以台灣所有溫泉都與大屯火山群直接相關","斷層與破碎帶提供地下水下滲與熱水上湧的通道；大屯地區另有火山活動殘餘的熱源與火山氣體，使泉水含硫且偏酸","溫泉的熱來自太陽照射地表後傳到地下數公里深處","溫泉是海水沿著海溝流進山區深處被加熱後湧出的"],"answer":1,"explain":"溫泉需要熱源與通道：台灣位於板塊聚合帶，地下熱流高，斷層破碎帶讓水得以下滲受熱並上湧；大屯地區另有火山殘餘熱源與含硫火山氣體溶入水中，形成硫氣孔與酸性泉。中南部許多溫泉屬變質岩區的斷層型溫泉，與大屯火山無關；太陽輻射與海溝進水都無法解釋深部熱源。"},{"level":"adv","topic":"防災與國土保育","q":"就台灣的地質環境而言，下列防災與國土保育的作法，哪一項最恰當？","choices":["在活動斷層帶正上方興建學校、醫院等重要建築，以節省用地","為增加耕地面積，把陡坡上的天然林地全面開發為農地","沿海地區持續大量超抽地下水進行養殖，以提高產值","依地質敏感區劃設限制開發、強化建築耐震設計，並保留河川與坡地的自然緩衝空間"],"answer":3,"explain":"台灣地質脆弱、地震與豪雨頻繁，應避開高風險區位、提高結構耐震能力，並保留河川行水區與坡地植被作為緩衝，以降低災害損失。斷層帶上方地表錯動風險最高，不宜建重要設施；陡坡全面開發會增加山崩與土石流；持續超抽地下水則會加劇地層下陷與海水入侵。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

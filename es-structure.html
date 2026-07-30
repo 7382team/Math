@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>地球的構造與板塊運動 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0369a1;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "es-structure",
+  "title": "地球的構造與板塊運動",
+  "subject": "地球科學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1章 地球的構造與板塊運動",
+  "tag": "圈層·板塊·地震",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>地球的構造與板塊運動</h1><div class="sub">地球科學 · 圈層·板塊·地震 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"地球圈層構造－分層順序","q":"依照地球內部的分層，由地表向地心的正確順序是下列哪一項？","choices":["地殼→地函→地核","地殼→地核→地函","地函→地殼→地核","地核→地函→地殼"],"answer":0,"explain":"地球內部依組成與物理性質由外而內分為地殼、地函、地核三大圈層；地函所佔體積最大，地核位於最內部。其他選項把地核與地函的位置或整體順序顛倒，不符合地球內部的分層。"},{"level":"basic","topic":"地核的物理狀態（外核與內核）","q":"關於地核中「外核」與「內核」物理狀態的敘述，下列哪一項正確？","choices":["外核與內核都是固態","外核為液態、內核為固態","外核為固態、內核為液態","外核與內核都是液態"],"answer":1,"explain":"地核以鐵、鎳等金屬為主：外核呈液態、可以流動；內核雖然溫度更高，但因壓力極大而維持固態。常見迷思是「越接近地心越熱，所以一定越軟越容易熔化」，其實壓力的影響使最內部反而是固態。"},{"level":"basic","topic":"軟流圈的性質","q":"位於岩石圈下方的「軟流圈」，其性質最接近下列哪一項描述？","choices":["完全熔融的液態岩漿層，位於地核的外側","位於地殼與地函之間、由高溫氣體構成的圈層","位於地函上部，具塑性而能緩慢流動，板塊可在其上移動","由固態鐵鎳組成，是地球最內部的圈層"],"answer":2,"explain":"軟流圈屬於上部地函，溫度接近岩石的熔點，雖然大部分仍是固態，但具有塑性可以緩慢流動，成為板塊移動的「潤滑層」。它並不是整層熔融的岩漿，也不位於地核外側，更不是氣體層；固態鐵鎳的內核則是另一個圈層。"},{"level":"basic","topic":"岩石圈的範圍","q":"科學家所稱的「岩石圈」，其組成範圍為下列哪一項？","choices":["只包含大陸地殼","只包含海洋地殼","包含地殼與整個地核","包含地殼以及其下方最上部的地函"],"answer":3,"explain":"岩石圈是依力學性質劃分的堅硬外殼，包含全部地殼（大陸地殼與海洋地殼）以及最上部的地函，板塊就是破裂的岩石圈。把岩石圈只當成地殼、或把地核也算進來，都是常見的錯誤。"},{"level":"basic","topic":"大陸地殼與海洋地殼的厚度與密度比較","q":"比較大陸地殼與海洋地殼的厚度與密度，下列敘述哪一項正確？","choices":["大陸地殼較厚、密度較小；海洋地殼較薄、密度較大","大陸地殼較薄、密度較大；海洋地殼較厚、密度較小","兩者的厚度與密度都相同，只是所在位置不同","海洋地殼較厚且密度較小，所以浮在大陸地殼之上"],"answer":0,"explain":"大陸地殼以花崗岩質為主，較厚而密度較小；海洋地殼以玄武岩質為主，較薄而密度較大。因此兩者聚合時是密度大的海洋地殼隱沒到大陸地殼之下，而不是相反。"},{"level":"basic","topic":"大陸漂移說的證據","q":"下列哪一項是韋格納提出「大陸漂移說」時所使用的證據？","choices":["各地測得的地震規模大小不同","海底中洋脊噴出岩漿的溫度很高","大西洋兩岸的海岸線輪廓可以拼合，且兩岸出現相同的化石與古老地層","各大洋的海水都含有鹽類，嘗起來有鹹味"],"answer":2,"explain":"韋格納的主要證據包括兩岸海岸線輪廓吻合、相同的化石與地層可以互相連接，以及古氣候（如冰河沉積）的分布。地震規模、岩漿溫度、海水含鹽都與大陸是否曾經相連無關，屬於誘答。"},{"level":"basic","topic":"海底擴張說與中洋脊","q":"關於海底擴張說中「中洋脊」的敘述，下列哪一項正確？","choices":["它是位於海洋中央的深邃凹槽，是板塊隱沒消失的地方","它是海底的巨大山脈，岩漿由此湧升形成新的海洋地殼，板塊自此向兩側擴張","它是由珊瑚礁長期堆積形成的島鏈","它是大陸地殼受擠壓後隆起形成的褶皺山脈"],"answer":1,"explain":"中洋脊是張裂性邊界，地函物質上湧、岩漿冷卻形成新的海洋地殼，海底由此向兩側擴張。板塊隱沒消失的地方是海溝而不是中洋脊；把中洋脊誤認為海溝是最常見的混淆。"},{"level":"basic","topic":"板塊邊界類型辨識－張裂性邊界","q":"中洋脊與東非裂谷都屬於下列哪一種板塊邊界？","choices":["聚合性邊界","錯動性邊界","張裂性邊界","板塊內部的穩定區"],"answer":2,"explain":"中洋脊（在海洋中）與東非裂谷（在大陸上）都是板塊互相分離、地殼被拉張變薄的地帶，屬於張裂性邊界，常伴隨淺源地震與火山活動。聚合性邊界形成海溝、島弧或造山帶，錯動性邊界則以水平錯動為主。"},{"level":"basic","topic":"錯動性邊界－聖安地列斯斷層","q":"美國西岸的聖安地列斯斷層，其兩側板塊的相對運動為下列哪一項？","choices":["互相分離，不斷產生新的地殼","互相正面碰撞，形成高大的褶皺山脈","一個板塊隱沒到另一個板塊之下，形成深海溝","互相水平錯動而過，地殼既不新生也不消失"],"answer":3,"explain":"聖安地列斯斷層是典型的錯動性（轉形）邊界，兩側板塊沿斷層水平滑動，因此既不產生新地殼也沒有隱沒消失，但摩擦錯動常引發淺源地震。新生地殼屬張裂性邊界，海溝與造山帶屬聚合性邊界。"},{"level":"basic","topic":"震源與震央的位置關係","q":"關於一次地震中「震源」與「震央」的位置關係，下列哪一項正確？","choices":["震源是地球內部岩層開始錯動、釋放能量的位置，震央是震源正上方的地表位置","震源位於地表，震央位於地表下方的岩層中","震源與震央都位於地表，兩者位置必定相同","震央是地震規模最大的地點，震源是地震規模最小的地點"],"answer":0,"explain":"地震能量由地下岩層錯動處（震源）釋放，震源垂直投影到地表的點就是震央。震源在地下、震央在地表，兩者不會是同一點；而規模是整場地震的能量指標，不會「某地大、某地小」，最後一個選項混用了規模與震度的概念。"},{"level":"basic","topic":"P波與S波的性質","q":"地震發生後，地震儀最先記錄到的地震波及其性質為下列哪一項？","choices":["S波，屬橫波，傳播速度較P波快","P波，屬縱波，傳播速度較S波快","S波，屬縱波，只能在液體中傳播","P波，屬橫波，傳播速度比S波慢"],"answer":1,"explain":"P波是縱波（質點振動方向與傳播方向平行），速度較快，所以是最先抵達測站的「初達波」；S波是橫波，速度較慢而後到，造成的搖晃通常較劇烈。把P波、S波的縱橫波性質或快慢對調，是最常見的錯誤。"},{"level":"basic","topic":"地震規模與震度的區別","q":"某次地震發生後，關於「規模」與「震度」的敘述，下列哪一項正確？","choices":["規模與震度都只有一個數值，全臺各地相同","規模在各地不同，震度全臺只有一個數值","規模只有一個，代表這次地震釋放能量的大小；震度各地不同，代表當地搖晃的劇烈程度","規模與震度都會隨著離震央的距離增加而變大"],"answer":2,"explain":"一次地震只有一個規模（代表釋放能量的大小），但震度依各地搖晃程度而定，通常離震央愈近、地盤愈鬆軟，震度愈大。把「規模」與「震度」混用，或以為兩者都隨距離變大，都是最常見的迷思。"},{"level":"basic","topic":"環太平洋地震帶與臺灣的位置","q":"臺灣位於環太平洋地震帶上，地震活動頻繁，最主要的原因是下列哪一項？","choices":["臺灣位於歐亞板塊與菲律賓海板塊的聚合邊界附近，板塊互相擠壓","臺灣緯度較低，太陽輻射強使岩層受熱膨脹","臺灣四面環海，海水重量壓迫地下岩層","臺灣位於板塊內部最穩定的區域，能量特別容易累積"],"answer":0,"explain":"臺灣正處於歐亞板塊與菲律賓海板塊聚合擠壓的地帶，屬環太平洋地震帶，因此地震頻繁，也伴隨造山與火山活動。太陽輻射、海水重量都不是地震的能量來源；臺灣更不在板塊內部的穩定區。"},{"level":"basic","topic":"地震發生時的緊急應變作為","q":"在教室上課時突然感到強烈搖晃，第一時間最適當的作法是下列哪一項？","choices":["立刻衝到窗邊查看外面的情況","搭電梯迅速離開大樓到戶外","先打開瓦斯開關確認是否漏氣","趴下、掩護、穩住，躲在堅固桌下並保護頭頸部"],"answer":3,"explain":"強震來時應先做到「趴下、掩護、穩住」，避免被掉落物或倒塌家具砸傷，等搖晃停止後再依指示疏散。靠近窗戶有玻璃碎裂的危險，地震時搭電梯可能因停電受困，打開瓦斯反而增加火災風險。"},{"level":"basic","topic":"臺灣的板塊構造－海岸山脈的來源","q":"依板塊構造學說，臺灣東部海岸山脈的形成最可能為下列哪一項？","choices":["由歐亞板塊上原有的沉積岩層在原地緩慢隆起而成","由太平洋板塊隱沒到歐亞板塊之下，岩漿在原地噴發堆積而成","由中洋脊新生的海洋地殼直接向西推移並疊置在臺灣本島之上","原屬菲律賓海板塊上的火山島弧，隨板塊移動與歐亞板塊碰撞後接合在臺灣東側"],"answer":3,"explain":"一般認為海岸山脈原本是菲律賓海板塊上的火山島弧，隨板塊移動與歐亞板塊碰撞後接合在臺灣東側，花東縱谷即被視為兩個板塊的接合帶；中央山脈等則屬於歐亞板塊。海岸山脈並非原地隆起的沉積岩層，也不是中洋脊直接推移而來。"},{"level":"adv","topic":"地殼組成岩石的比較（花崗岩與玄武岩）","q":"組成大陸地殼與海洋地殼的代表性岩石，其形成方式與顆粒粗細差異為下列哪一項？","choices":["大陸地殼以花崗岩質為主，屬深成岩、礦物顆粒較粗；海洋地殼以玄武岩質為主，屬噴出岩、礦物顆粒較細","大陸地殼以玄武岩質為主，屬噴出岩、顆粒較細；海洋地殼以花崗岩質為主，屬深成岩、顆粒較粗","兩者都以石灰岩等沉積岩為主，差別只在地殼的厚度不同","兩者都以大理岩為主，是石灰岩受高溫高壓變質後形成的"],"answer":0,"explain":"花崗岩是岩漿在地下深處緩慢冷卻的深成岩，結晶時間長所以礦物顆粒較粗，構成密度較小的大陸地殼；玄武岩是岩漿噴出地表快速冷卻的噴出岩，顆粒細小，構成密度較大的海洋地殼。大理岩是石灰岩變質而成的變質岩，並非地殼的主要組成岩石。"},{"level":"adv","topic":"板塊運動的驅動力與地函對流","q":"目前科學界認為板塊能夠長期移動，主要動力來源最可能是下列哪一項？","choices":["月球引力每天拉動板塊，使板塊隨潮汐前後移動","地球內部的熱能使地函物質產生對流，帶動上方的板塊移動","地球自轉產生的離心力把板塊往赤道方向甩出","海面波浪不斷把整片海洋板塊向前搬運"],"answer":1,"explain":"地球內部的熱使地函物質緩慢對流（熱者上升、冷者下沉），成為推動板塊的主要機制。月球引力造成的是潮汐，與板塊運動無關；地球自轉不會把板塊甩向赤道；波浪只是使水面上下起伏並傳遞能量，並不會把海水或板塊整體向前搬運。"},{"level":"adv","topic":"聚合性邊界的產物比較","q":"甲區是海洋板塊與海洋板塊聚合，乙區是兩個大陸板塊聚合。根據板塊構造學說，最合理的推論是下列哪一項？","choices":["甲、乙兩區都會形成中洋脊，並不斷產生新的地殼","甲區會形成高大的褶皺山脈，乙區會形成海溝與火山島弧","甲、乙兩區的板塊都在互相分離，所以都不會發生地震","甲區會形成海溝與火山島弧，乙區會強烈擠壓形成高大的褶皺山脈（如喜馬拉雅山）"],"answer":3,"explain":"海洋板塊密度大，海－海聚合時其中一片隱沒形成海溝，隱沒帶上方岩石熔融產生岩漿而形成火山島弧；大陸地殼密度小不易隱沒，陸－陸聚合以擠壓抬升為主，形成喜馬拉雅山這類造山帶。中洋脊屬張裂性邊界，且聚合帶一定會發生地震。"},{"level":"adv","topic":"隱沒帶與震源深度分布判讀","q":"研究人員將某地區的地震震源位置畫在剖面圖上，發現震源深度由海溝向大陸方向逐漸加深，形成一個傾斜的帶狀分布。最合理的解釋是下列哪一項？","choices":["該處為聚合性邊界，密度較大的海洋板塊沿傾斜方向隱沒進入地函","該處為張裂性邊界，岩漿沿中洋脊上升不斷形成新地殼","該處為錯動性邊界，兩側板塊只做水平錯動","該處位於板塊內部，震源深度的分布與板塊運動無關"],"answer":0,"explain":"傾斜的震源帶正指出隱沒板塊的位置：海洋板塊自海溝向下插入地函，沿途因摩擦與破裂而產生由淺到深的地震。張裂性與錯動性邊界的地震多集中在淺處，不會形成向大陸方向逐漸加深的傾斜帶。"},{"level":"adv","topic":"P、S波到時差與震央距離","q":"同一次地震中，甲測站記錄到P波與S波抵達的時間差比乙測站大。據此可推論下列哪一項？","choices":["甲測站距離震央較近，因為波速快所以時間差大","甲測站距離震央較遠，因為P波與S波速度不同，傳播距離愈長兩者到時差愈大","甲測站測得的地震規模比乙測站大","甲測站正好位於震央上方，震源深度為零"],"answer":1,"explain":"P波比S波快，兩者同時從震源出發，走得愈遠，速度差累積出的時間差就愈大，因此到時差可用來估算震央距離。地震規模只有一個、不會因測站而異，這是規模與震度混用的迷思；震源深度也無法僅由到時差斷定為零。"},{"level":"adv","topic":"震度差異的成因分析","q":"同一次地震中，甲地震度5級、乙地震度3級。某同學說：「所以甲地的地震規模比乙地大。」對這句話的評論，下列哪一項最恰當？","choices":["錯誤，一次地震只有一個規模；甲地只是搖晃較劇烈，可能因為較靠近震央或當地地盤較鬆軟","正確，震度愈大就代表當地的地震規模愈大","錯誤，因為震度愈大表示該地距離震央愈遠","正確，因為地震波向外傳播時規模會逐漸累積增加"],"answer":0,"explain":"規模代表這次地震總共釋放多少能量，全臺只有一個數值；震度是各地實際搖晃的程度，受震央距離、震源深度與地盤軟硬影響。震度大通常代表離震央較近或地盤較鬆軟，且地震波向外傳播時能量會逐漸減弱而不是累積增加。"},{"level":"adv","topic":"地殼性質與海陸高低分布","q":"地球表面海洋盆地普遍低窪，而大陸地區則高出海面。從地殼性質分析，最主要的原因是下列哪一項？","choices":["因為海水的重量把海洋地殼向下壓，才形成低窪的海盆","因為海洋地殼比大陸地殼厚，太重所以整片下沉","因為大陸地殼含有較多鐵鎂質礦物，密度比海洋地殼大","因為海洋地殼以玄武岩質為主、較薄且密度較大而位置較低；大陸地殼以花崗岩質為主、較厚且密度較小，因此高出海面"],"answer":3,"explain":"地殼「浮」在密度較大的地函之上，密度小而厚的大陸地殼位置較高，密度大而薄的海洋地殼位置較低。海水重量並非主因；海洋地殼是較薄而不是較厚；含較多鐵鎂質、密度較大的是海洋地殼，而不是大陸地殼。"},{"level":"adv","topic":"從大陸漂移說到板塊構造學說的發展","q":"韋格納的大陸漂移說在提出當時未被普遍接受，後來卻成為板塊構造學說的重要基礎。其中的關鍵原因是下列哪一項？","choices":["當時完全沒有任何化石證據，後來才在各大陸找到化石","當時人們認為地球是平的，後來證實地球是球形","當時他無法說明大陸移動的動力來源；後來海底擴張說與地函對流的概念提供了合理機制，整合成板塊構造學說","當時科學家已證實潮汐力足以推動大陸，因此漂移說一提出就立刻被普遍接受"],"answer":2,"explain":"韋格納已提出海岸線輪廓、化石、地層與古氣候等證據，缺少的是「大陸為什麼會動」的機制。中洋脊與海底擴張說的發現，加上地函對流的概念，補上了動力來源，最後整合成板塊構造學說。他當時提出的潮汐等力量被認為不足以推動大陸，這正是漂移說不被接受的原因。"},{"level":"adv","topic":"火山分布與板塊邊界的關係","q":"世界上的火山大多集中在中洋脊附近與隱沒帶一帶，最合理的原因是下列哪一項？","choices":["這些地方的地殼特別厚，熱量不易散失所以容易熔融","中洋脊處地函物質上湧、壓力降低而形成岩漿；隱沒帶處隱沒板塊帶入的物質使上方岩石熔融產生岩漿","這些地方位於板塊中央，岩層最穩定，岩漿容易長期累積","這些地方海水較深，海水滲入使岩石降溫，冷縮後就會噴發"],"answer":1,"explain":"岩漿的產生需要達到熔融條件：中洋脊是地函物質上升、壓力下降而部分熔融；隱沒帶是板塊帶入含水物質，降低熔點使上方的地函與地殼熔融，因而形成火山島弧或陸上火山。地殼厚薄與海水降溫都不是岩漿的成因，板塊內部反而火山稀少。"},{"level":"adv","topic":"古氣候證據的判讀","q":"科學家在今日氣候炎熱的非洲南部與印度，發現古代冰河作用留下的沉積物。若以板塊構造學說解釋，最合理的推論是下列哪一項？","choices":["這些地區在古代曾長期被溫暖的海水完全覆蓋","古代地軸的傾斜角度為0度，因此全球各地同時結冰","這些陸塊在古代曾位於較高緯度、接近極區，後來隨板塊運動漂移到現在的位置","冰河沉積物是被強風從極區長距離吹送過來堆積而成的"],"answer":2,"explain":"冰河沉積代表當地曾處於寒冷的高緯度環境，這些陸塊原本相連並靠近極區，後來因板塊運動漂移到低緯度，正是韋格納古氣候證據的核心。溫暖海水覆蓋無法造成冰河沉積，冰河碎屑顆粒粗大也不可能靠風長程搬運。"},{"level":"adv","topic":"不同板塊邊界的震源深度特徵比較","q":"比較張裂性邊界與聚合性邊界的震源深度分布特徵，下列敘述哪一項最正確？","choices":["兩者的震源深度分布完全相同，都只出現淺源地震","張裂性邊界會出現深源地震，聚合性邊界只有淺源地震","張裂性邊界不會發生地震，只會有火山活動","張裂性邊界的地震多為淺源；聚合性邊界因板塊隱沒，可出現由淺源到深源的地震"],"answer":3,"explain":"張裂性邊界地殼被拉張破裂的位置較淺，地震以淺源為主；聚合性邊界的板塊向下隱沒，沿隱沒帶可產生由淺源到深源的地震，災害往往也較嚴重。張裂性邊界仍會發生地震，並非只有火山活動。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>二次函數 練習</title>
+<title>簡單機械 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -99,14 +99,14 @@
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "quad-func",
-  "title": "二次函數",
-  "subject": "數學",
+  "id": "simple-machine",
+  "title": "簡單機械",
+  "subject": "理化",
   "grade": "國三",
-  "term": "下",
+  "term": "上",
   "chapter": 0,
-  "ch": "第1章 二次函數",
-  "tag": "二次函數",
+  "ch": "第3章 功與能",
+  "tag": "槓桿·滑輪·斜面",
   "ready": true
 }
 </script>
@@ -116,8 +116,8 @@
 
   <header>
     <div>
-      <h1>二次函數</h1>
-      <div class="sub">對稱軸、頂點、極值</div>
+      <h1>簡單機械</h1>
+      <div class="sub">省力但不省功</div>
     </div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
@@ -161,88 +161,41 @@
 
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const sgn=()=>Math.random()<0.5?1:-1;
 let level='basic',problem=null,entry='',answered=false,streak=0;
-const MAXD=3;
-
-function polyStr(a,b,c){let s=(a===1?'':a===-1?'−':a)+'x²';if(b)s+=(b<0?' − '+(-b):' + '+b)+'x';if(c)s+=(c<0?' − '+(-c):' + '+c);return s;}
-function twoLine(top,ask){return '<div style="font-size:23px;font-weight:500">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
-
+const MAXD=5;
+function twoLine(top,ask){return '<div style="font-size:19px;font-weight:500;line-height:1.55">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
 function makeProblem(lv){
-  const a=lv==='basic'?1:(Math.random()<0.5?1:-1);
-  const h=rand(-4,4),k=rand(-9,9);
-  const b=-2*a*h,c=a*h*h+k;
-  const types=lv==='basic'?['axis','yint']:['axis','vertexY','extreme','yint'];
-  const t=pick(types);
-  let answer;
-  if(t==='axis')answer=h;else if(t==='vertexY')answer=k;else if(t==='extreme')answer=k;else answer=c;
-  return{a,h,k,b,c,t,answer};
+  const t=pick(lv==='basic'?['lever','pulley']:['lever','pulley','incline','leverArm']);
+  if(t==='lever'){const k=rand(2,6),F=rand(2,30),W=F*k;return{t,W,k,answer:F};}
+  if(t==='pulley'){const n=pick([2,4]),F=rand(2,40),W=F*n;return{t,W,n,answer:F};}
+  if(t==='incline'){const k=rand(2,5),F=rand(2,25),W=F*k,h=rand(1,5),L=h*k;return{t,W,h,L,answer:F};}
+  const m=rand(2,4),F=rand(2,20),W=F*m,a=rand(2,8),b=a*m;return{t:'leverArm',W,a,b,answer:F};
 }
-function qText(){const p=problem;const f='y = '+polyStr(p.a,p.b,p.c).replace(/<[^>]+>/g,'^2');
-  if(p.t==='axis')return f+'，對稱軸 x =';if(p.t==='vertexY')return f+'，頂點 y =';if(p.t==='extreme')return f+'，'+(p.a>0?'最小值':'最大值')+' =';return f+'，與 y 軸交點 y =';}
-function eqHTML(){const p=problem;const f='y = '+polyStr(p.a,p.b,p.c);
-  const ask=p.t==='axis'?'對稱軸 x =':p.t==='vertexY'?'頂點的 y 坐標 =':p.t==='extreme'?(p.a>0?'最小值 =':'最大值 ='):'與 y 軸交點的 y 坐標 =';
-  return twoLine(f,ask);
-}
+function qText(){const p=problem;
+  if(p.t==='lever')return '槓桿省力 '+p.k+' 倍，重物 '+p.W+' N，施力(N) =';
+  if(p.t==='pulley')return '動滑輪組('+p.n+'段繩)吊 '+p.W+' N，施力(N) =';
+  if(p.t==='incline')return '斜面長 '+p.L+'、高 '+p.h+'，物重 '+p.W+' N，沿斜面施力(N) =';
+  return '槓桿：抗力臂 '+p.a+'、施力臂 '+p.b+'，抗力 '+p.W+' N，施力(N) =';}
+function eqHTML(){const p=problem;
+  if(p.t==='lever')return twoLine('槓桿可省力 '+p.k+' 倍，重物重 '+p.W+' N','所需施力(N) =');
+  if(p.t==='pulley')return twoLine('滑輪組由 '+p.n+' 段繩子承擔重物<br>重物重 '+p.W+' N（不計滑輪重與摩擦）','所需施力(N) =');
+  if(p.t==='incline')return twoLine('斜面長 = '+p.L+' m、高 = '+p.h+' m<br>物體重 '+p.W+' N（不計摩擦）','沿斜面推的施力(N) =');
+  return twoLine('槓桿：抗力臂 = '+p.a+'、施力臂 = '+p.b+'<br>抗力(重物) = '+p.W+' N','施力(N) =');}
 function buildSteps(){const p=problem;
-  if(p.t==='axis')return '<div><span class="lead">對稱軸</span>x = −b / (2a) = −('+p.b+') / (2×'+p.a+') = <span class="res">'+p.answer+'</span></div>';
-  if(p.t==='yint')return '<div><span class="lead">y 軸</span>令 x = 0，y = <span class="res">'+p.c+'</span></div>';
-  return '<div><span class="lead">頂點式</span>y = '+(p.a===1?'':p.a===-1?'−':p.a)+'(x '+(p.h<0?'+':'−')+' '+Math.abs(p.h)+')<sup>2</sup> '+(p.k<0?'− '+(-p.k):'+ '+p.k)+'</div>'+
-    '<div>頂點 = ('+p.h+', '+p.k+')，'+(p.t==='extreme'?(p.a>0?'最小值':'最大值'):'頂點 y')+' = <span class="res">'+p.answer+'</span></div>';
-}
-function buildTip(){const p=problem;if(p.t==='axis')return '對稱軸 x = −b/(2a)。';if(p.t==='yint')return 'y 軸交點就是代 x=0，得常數項。';return '化成頂點式 y=a(x−h)²+k，頂點 (h,k)；a>0 有最小值、a<0 有最大值 = k。';}
-function render(){
-  document.getElementById('eq').innerHTML=eqHTML();
-  entry='';answered=false;
-  const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';
-  document.getElementById('explain').className='explain';
-  const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;
-}
-function showEntry(){const ans=document.getElementById('ans');
-  if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}
-  ans.textContent=entry.replace('-','−');ans.className='ans';}
-function check(){
-  if(entry===''||entry==='-')return;
-  answered=true;
-  const val=parseInt(entry,10);
-  const ans=document.getElementById('ans');
-  const correct=val===problem.answer;
-  ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');
-  if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}
-  streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;
-  if(window.parent!==window){
-    window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');
-    if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}
-  }
-  document.getElementById('steps').innerHTML=buildSteps();
-  const nl=document.getElementById('numline');if(nl)nl.innerHTML='';
-  document.getElementById('tip').innerHTML=buildTip();
-  document.getElementById('explain').className='explain show';
-  const go=document.getElementById('go');go.textContent='下一題';go.className='go next';
-}
+  if(p.t==='lever')return '<div><span class="lead">省力倍數</span>施力 = 抗力 ÷ 省力倍數</div><div>= '+p.W+' ÷ '+p.k+' = <span class="res">'+p.answer+'</span> N</div>';
+  if(p.t==='pulley')return '<div><span class="lead">滑輪組</span>由 n 段繩子分擔，施力 = 重量 ÷ n</div><div>= '+p.W+' ÷ '+p.n+' = <span class="res">'+p.answer+'</span> N（但要拉 '+p.n+' 倍長度，不省功）</div>';
+  if(p.t==='incline')return '<div><span class="lead">斜面</span>功相等：施力 × 斜面長 = 重量 × 高</div><div>施力 = '+p.W+' × '+p.h+' ÷ '+p.L+' = <span class="res">'+p.answer+'</span> N</div>';
+  return '<div><span class="lead">槓桿原理</span>施力 × 施力臂 = 抗力 × 抗力臂</div><div>施力 = '+p.W+' × '+p.a+' ÷ '+p.b+' = <span class="res">'+p.answer+'</span> N</div>';}
+function buildTip(){return '簡單機械可以省力或省時，但「絕不省功」：省了幾倍的力，就要多移動幾倍的距離（施力×施力距離 = 抗力×抗力距離）。';}
+function render(){document.getElementById('eq').innerHTML=eqHTML();entry='';answered=false;const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';document.getElementById('explain').className='explain';const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;}
+function showEntry(){const ans=document.getElementById('ans');if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}ans.textContent=entry.replace('-','−');ans.className='ans';}
+function check(){if(entry===''||entry==='-')return;answered=true;const val=parseInt(entry,10);const ans=document.getElementById('ans');const correct=val===problem.answer;ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;if(window.parent!==window){window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}}document.getElementById('steps').innerHTML=buildSteps();const nl=document.getElementById('numline');if(nl)nl.innerHTML='';document.getElementById('tip').innerHTML=buildTip();document.getElementById('explain').className='explain show';const go=document.getElementById('go');go.textContent='下一題';go.className='go next';}
 function next(){problem=makeProblem(level);render();}
-document.getElementById('pad').addEventListener('click',e=>{
-  const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;
-  if(k==='del')entry=entry.slice(0,-1);
-  else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
-  else{if(entry.replace('-','').length<MAXD)entry+=k;}
-  showEntry();
-});
+document.getElementById('pad').addEventListener('click',e=>{const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;if(k==='del')entry=entry.slice(0,-1);else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;else{if(entry.replace('-','').length<MAXD)entry+=k;}showEntry();});
 document.getElementById('go').addEventListener('click',()=>answered?next():check());
-document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');level=b.dataset.lv;next();
-}));
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){answered?next():check();return;}
-  if(answered)return;
-  if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}
-  else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}
-  else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}
-});
-(function(){const lv=new URLSearchParams(location.search).get('level');
-  if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}
-})();
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.lv;next();}));
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){answered?next():check();return;}if(answered)return;if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}});
+(function(){const lv=new URLSearchParams(location.search).get('level');if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}})();
 next();
 </script>
 

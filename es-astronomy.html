@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>天文：地球運動、月相與日月食 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0369a1;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "es-astronomy",
+  "title": "天文：地球運動、月相與日月食",
+  "subject": "地球科學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第6章 天文",
+  "tag": "自轉公轉·月相·日月食·太陽系",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>天文：地球運動、月相與日月食</h1><div class="sub">地球科學 · 自轉公轉·月相·日月食·太陽系 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"地球自轉的方向與週期","q":"關於地球自轉的方向與週期，下列敘述正確的是？","choices":["由東向西轉，週期約一日","由東向西轉，週期約一年","由西向東轉，週期約29.5天","由西向東轉，週期約一日"],"answer":3,"explain":"地球繞地軸由西向東自轉，週期約一日（約24小時），因而造成晝夜交替。誘答錯處：「由東向西」是把天體東升西落的視覺方向誤當成地球自轉方向；「一年」是公轉週期；「29.5天」是月相（朔望月）週期，都不是自轉週期。"},{"level":"basic","topic":"天體東升西落的成因","q":"在台灣不論觀察太陽、月亮或恆星，每天都是從東方升起、西方落下，這種東升西落主要是下列哪一項造成的？","choices":["地球繞太陽公轉","月球繞地球公轉","太陽繞著地球公轉","地球自轉"],"answer":3,"explain":"地球由西向東自轉，地面上的觀測者便看到天體相對地面由東向西移動，出現東升西落，屬於「視運動」。誘答錯處：地球公轉造成四季與季節星座變化（週期一年）；月球公轉造成月相變化（週期約29.5天）；「太陽繞地球公轉」則是錯誤的天體運動觀念。"},{"level":"basic","topic":"四季變化的成因","q":"造成台灣一年中有明顯四季變化的主要原因是什麼？","choices":["地球與太陽的距離在一年中大幅改變，夏天很近、冬天很遠","地球自轉的速度隨著季節而加快或變慢","地軸傾斜約23.5度且傾斜方向固定，加上地球繞太陽公轉","太陽本身放出的能量隨季節週期性地增強或減弱"],"answer":2,"explain":"地軸相對公轉軌道面傾斜約23.5度，且傾斜方向在公轉過程中保持固定，使太陽直射點在南、北回歸線之間移動，各地接收陽光的角度與日照長短隨季節改變，才形成四季。誘答錯處：地球公轉軌道接近圓形，日地距離變化很小，不足以造成四季；自轉速率與太陽輸出能量並不會隨季節週期性改變。"},{"level":"basic","topic":"二分二至與太陽直射點","q":"夏至這一天，太陽光直射地球表面的位置在下列哪一條線上？","choices":["北回歸線","赤道","南回歸線","北極圈"],"answer":0,"explain":"太陽直射點在南、北回歸線之間往返移動：夏至直射北回歸線，冬至直射南回歸線，春分與秋分直射赤道。誘答錯處：赤道是二分點的直射位置；南回歸線是冬至的直射位置；北極圈是極晝、極夜現象的界線，太陽不會直射到北極圈。"},{"level":"basic","topic":"月相變化的成因","q":"關於月相（月亮亮面形狀）會週期變化的原因，下列敘述正確的是？","choices":["月球本身會發光，而且發光的強弱有週期性的變化","月球不發光，只反射陽光，日、月、地相對位置改變使亮面形狀不同","月球每天被地球的影子遮住不同的部分，因此看到的形狀改變","月球被地球大氣中的雲層遮住的多寡不同，形狀才會跟著改變"],"answer":1,"explain":"月球不發光，只反射太陽光，永遠有半個球面被照亮；隨著月球繞地球公轉，日、月、地相對位置改變，地球上看到的亮面比例不同，依序出現朔、上弦、望、下弦。誘答錯處：「地球影子遮住月球」是最常見的迷思，那是月食的成因而非月相；雲層遮蔽只會使月亮看不清楚，不會產生規律的月相週期。"},{"level":"basic","topic":"朔望月週期與農曆日期","q":"月相由「朔」到下一次「朔」的週期大約是多少天？農曆初一大約對應哪一種月相？","choices":["約29.5天；滿月（望）","約29.5天；新月（朔）","約27天；上弦月","約365天；下弦月"],"answer":1,"explain":"月相變化週期（朔望月）約29.5天，農曆即依月相訂定：初一為朔（新月），約初七、初八為上弦，十五、十六前後為望（滿月），約二十二、二十三為下弦。誘答錯處：把農曆初一誤認為滿月是常見錯誤（滿月在月中）；約27天是月球繞地球公轉一周相對恆星的週期，不是月相週期；365天是地球公轉週期。"},{"level":"basic","topic":"月球同步自轉","q":"在地球上的人永遠只能看到月球的同一面，最主要的原因是什麼？","choices":["月球完全不自轉，所以同一面固定朝著地球","月球的另一面永遠照不到陽光，所以永遠看不見","月球的體積太小，因此只能看見它的一面","月球的自轉週期和繞地球公轉的週期相同"],"answer":3,"explain":"月球自轉一周所需時間與繞地球公轉一周的時間相同（同步自轉），因此邊自轉邊繞行地球，始終以同一面朝向地球。誘答錯處：月球其實會自轉，只是週期與公轉相同；月球背面也會被陽光照到，只是照到時無法從地球看見；天體大小與能看到幾面無關。"},{"level":"basic","topic":"日食發生的月相與三者位置","q":"日食一定發生在哪一種月相？此時太陽、月球、地球的相對位置為何？","choices":["望（滿月）；地球位於太陽與月球之間","上弦月；月球位於太陽與地球之間","朔（新月）；月球位於太陽與地球之間","望（滿月）；月球位於太陽與地球之間"],"answer":2,"explain":"日食是月球遮住太陽，必須是月球走到太陽與地球之間，也就是「朔」的位置，因此日食只可能發生在朔。誘答錯處：「地球在太陽與月球之間」且為望，是月食的條件；上弦時日、月、地約成直角，不可能發生食；「望」與「月球在太陽與地球之間」互相矛盾。"},{"level":"basic","topic":"月食的成因與本影","q":"月食發生時，月球所在的位置與當天的月相為何？","choices":["月球進入地球的本影中，且發生在「朔」","月球進入地球的本影中，且發生在「望」","地球進入月球的本影中，且發生在「望」","月球被太陽直接遮住，且發生在「朔」"],"answer":1,"explain":"月食是地球走到太陽與月球之間，月球進入地球的本影而變暗，此時日、地、月依序接近一直線，月球正好在「望」的位置。誘答錯處：「月食發生在朔」是典型迷思，朔時月球位於地球與太陽之間，發生的是日食；月球比地球小，不可能讓地球進入月球本影；太陽也不會遮住月球。"},{"level":"basic","topic":"八大行星的排列順序","q":"由太陽向外依序排列，八大行星的順序應為下列哪一組？","choices":["水星、金星、地球、火星、木星、土星、天王星、海王星","水星、金星、火星、地球、木星、土星、天王星、海王星","金星、水星、地球、火星、土星、木星、海王星、天王星","地球、水星、金星、火星、木星、土星、天王星、海王星"],"answer":0,"explain":"由太陽向外為水、金、地、火、木、土、天、海；水星到火星為類地行星，木星到海王星為類木行星，火星與木星軌道之間有小行星帶。誘答錯處：其餘選項把地球與火星、水星與金星或木星與土星的先後順序調換，都不符合實際的軌道位置。"},{"level":"basic","topic":"類地行星與類木行星的比較","q":"比較太陽系中的類地行星與類木行星，下列敘述正確的是？","choices":["類地行星體積較大、密度較小，以氣體為主；類木行星體積較小、密度較大，以岩石為主","類木行星表面都是堅硬的岩石，且幾乎沒有衛星；類地行星才普遍具有明顯的行星環","兩者的體積、密度與組成都差不多，差別只在於與太陽的距離遠近","類地行星體積較小、密度較大，以岩石為主；類木行星體積較大、密度較小，以氣體為主"],"answer":3,"explain":"類地行星（水、金、地、火）靠近太陽，體積小、密度大、以岩石與金屬為主，衛星少；類木行星（木、土、天、海）體積大、密度小、以氣體為主，衛星多且具有環。誘答錯處：第一個選項把兩類行星的體積、密度與組成完全對調；第二個選項把「岩石表面、少衛星」錯給類木行星，把行星環錯給類地行星；第三個選項忽略了兩類行星在組成與密度上的明顯差異。"},{"level":"basic","topic":"小行星、彗星與流星","q":"關於太陽系中小天體（小行星、彗星、流星）的敘述，下列哪一項正確？","choices":["流星是恆星失去平衡後從天空掉落下來的現象","彗星主要由岩石與金屬組成，接近太陽時會熔化成液體","小行星大多分布在火星軌道與木星軌道之間","流星雨是月球表面碎裂後的碎片落入地球所造成"],"answer":2,"explain":"小行星大多集中在火星與木星軌道之間的小行星帶；彗星主要由冰與塵埃組成，接近太陽時物質昇華形成彗尾；流星則是太空中的塵粒或小碎塊進入大氣層摩擦生熱而發光。誘答錯處：恆星是能自行發光的巨大天體，不會「掉下來」變成流星；彗星成分是冰與塵埃，不是岩石金屬熔化；流星體主要來自彗星或小行星遺留的碎屑，不是月球碎片。"},{"level":"basic","topic":"恆星、星系與宇宙的層級","q":"下列天體或天體系統，由尺度小到大排列正確的是？","choices":["太陽系 → 恆星 → 銀河系 → 宇宙","恆星 → 太陽系 → 銀河系 → 宇宙","銀河系 → 太陽系 → 恆星 → 宇宙","恆星 → 銀河系 → 太陽系 → 宇宙"],"answer":1,"explain":"層級關係為：單一恆星（如太陽）＜以恆星為中心的行星系統（太陽系）＜由大量恆星組成的星系（銀河系）＜宇宙。誘答錯處：其他選項把「部分」與「整體」的關係顛倒，例如把太陽系排在恆星之前，或把銀河系放進太陽系之內，都不符合包含關係。"},{"level":"basic","topic":"地方時與經度","q":"地球由西向東自轉。關於同一時刻、不同經度地區「地方時」的比較，下列哪一項正確？","choices":["全球各地的地方時都相同，因為太陽會同時照亮整個地球表面","位置偏西的地方先看到日出，所以地方時比偏東的地方早","位置偏東的地方較晚看到日出，所以地方時比偏西的地方晚","位置偏東的地方先看到日出，所以地方時比偏西的地方早"],"answer":3,"explain":"因為地球由西向東自轉，東邊的地點先轉到面向太陽的位置，所以偏東處先日出、地方時較早；經度每相差15度，地方時大約相差1小時，為方便生活才劃分時區。誘答錯處：太陽同一時間只能照亮地球的一半，各地地方時不可能相同；「偏西先日出」與「偏東較晚日出」都是把自轉方向弄反的結果。"},{"level":"adv","topic":"晝夜長短的季節變化","q":"台灣某地在冬至、春分、夏至這三天的白晝長度，由長到短排列應為下列哪一項？","choices":["夏至 ＞ 春分 ＞ 冬至","冬至 ＞ 春分 ＞ 夏至","春分 ＞ 夏至 ＞ 冬至","三天的白晝長度幾乎相同"],"answer":0,"explain":"台灣位於北半球：夏至時太陽直射北回歸線，北半球晝長夜短、白晝最長；春分直射赤道，全球晝夜約等長；冬至直射南回歸線，北半球晝短夜長、白晝最短。誘答錯處：把冬至排最長是把南半球季節相反的情形套錯；「三天幾乎相同」忽略了地軸傾斜造成的日照長短變化。"},{"level":"adv","topic":"太陽仰角與節氣的情境判讀","q":"某段時間在台灣持續觀測記錄，發現正午時太陽的仰角一天比一天大，白晝也一天比一天長。這段觀測期間最可能是從哪一個節氣到哪一個節氣？","choices":["夏至到秋分","冬至到春分","秋分到冬至","夏至到冬至"],"answer":1,"explain":"正午太陽仰角變大、白晝變長，表示太陽直射點正由南往北移動。冬至時直射南回歸線（台灣正午仰角最小、白晝最短），到春分時直射赤道，期間仰角與晝長持續增加，符合觀測結果。誘答錯處：夏至到秋分、秋分到冬至、夏至到冬至等期間，太陽直射點都是由北往南移動，台灣的正午仰角與白晝長度都逐日減小，與記錄相反。"},{"level":"adv","topic":"正午日影長度與二至","q":"在台北的空地上豎立一根固定的竿子，每天正午測量影子長度並記錄一整年。影子最短與影子最長分別出現在下列哪兩天？","choices":["春分與秋分","夏至與冬至","冬至與夏至","一年之中影子長度幾乎不變"],"answer":1,"explain":"正午太陽仰角越大，影子越短。台北位於北回歸線以北，夏至時正午太陽仰角全年最大，影子最短；冬至時仰角最小，影子最長。誘答錯處：春分、秋分的正午仰角介於兩者之間，不會是最短或最長；把冬至當成影子最短，是誤以為「冬天太陽低所以影子短」，其實仰角小反而影子長；影子長度會隨太陽直射點南北移動而明顯改變，並非全年不變。"},{"level":"adv","topic":"上弦月的形狀、方位與農曆日期","q":"某天傍晚太陽剛下山時，觀測者看到接近南方天空有一個半圓形的月亮，亮面朝向西邊，這個月亮大約在午夜時從西方落下。這最可能是什麼月相，當天農曆大約是幾號？","choices":["朔（新月），農曆初一前後","上弦月，農曆初七、初八前後","望（滿月），農曆十五、十六前後","下弦月，農曆二十二、二十三前後"],"answer":1,"explain":"上弦月時日、月、地約成直角，月球位於地球東側90度方向，因此日落時它剛好在接近南方的天空（近中天），午夜西沉，形狀為半圓且亮面朝著太陽所在的西方，對應農曆初七、初八前後。誘答錯處：朔時月球與太陽同方向，幾乎整夜看不到；滿月是日落時從東方升起、整夜可見的圓月；下弦月要到午夜才從東方升起，清晨才出現在南方天空，且亮面朝東。"},{"level":"adv","topic":"食的發生條件（軌道面夾角）","q":"為什麼並不是每一次「朔」都會發生日食，也不是每一次「望」都會發生月食？","choices":["因為月球公轉軌道面與黃道面之間有夾角，大多數朔、望時日、月、地並未真正排成一直線","因為月球有時距離地球太遠，遠到無法反射太陽光","因為地球自轉太快，地球的影子來不及落在月球上","因為朔、望有時發生在白天、有時發生在夜晚，白天就看不到食"],"answer":0,"explain":"朔、望只保證三者大致在同一方向，但月球軌道面與黃道面約有5度夾角，多數朔望時月球偏在黃道的上方或下方，影子錯開而不發生食；只有當朔或望剛好發生在兩軌道面交點附近時，才會出現日食或月食。誘答錯處：月地距離變化不會讓月球「無法反射陽光」；地球自轉快慢與影子落在何處無關；日食本來就發生在白天，月食發生時月球位於夜半球，與「白天看不到」的說法不符。"},{"level":"adv","topic":"日全食與日環食的差異","q":"日全食與日環食都發生在「朔」，造成這兩種日食差異的主要原因是什麼？","choices":["月球有時自己會發光，亮度不同所以遮蔽的效果不同","觀測當地的天氣與雲量不同，所看到的形狀就不同","月球與地球的距離會改變，使月球看起來的大小有時不足以完全遮住太陽","太陽本身的大小在一年之中會週期性地變大或變小"],"answer":2,"explain":"月球繞地球的軌道不是正圓，距離地球較近時看起來較大，可完全遮住太陽形成日全食；距離較遠時看起來略小於太陽，太陽邊緣露出成一圈亮環，即日環食；位於本影以外、半影之內的地區則看到日偏食。誘答錯處：月球不會自行發光；天氣只影響能否看見，不會改變食的種類；太陽的實際大小不會週期性改變。"},{"level":"adv","topic":"黃道與季節星座的變化","q":"為什麼在不同季節的夜晚，抬頭看到的主要星座並不相同？","choices":["因為星座會繞著地球公轉，每個季節剛好換到不同的位置","因為地球自轉，使得星座在一年之中依序東升西落","因為恆星在冬天發光較強、夏天發光較弱，亮度不同才看得見","因為地球繞太陽公轉，位置改變使夜晚面對的星空方向不同"],"answer":3,"explain":"地球公轉時在軌道上的位置不斷改變，夜晚我們面對的是背向太陽的天空，因此不同季節看到的星空方向不同，形成季節星座；太陽在星空背景上的視覺路徑就是黃道，太陽附近的星座在該季節因白天而看不到。誘答錯處：恆星距離極遠，並不是繞地球公轉；地球自轉造成的是同一夜之內天體東升西落（週期一日），不是季節性的星座更換；恆星亮度也不會隨地球的季節改變。"},{"level":"adv","topic":"月相順序的推論","q":"連續數日在傍晚同一時刻觀測月亮，第一天看到細細的眉月出現在西方低空，接下來幾天月亮的位置越來越偏東（離太陽越來越遠），亮面也越來越大。依此趨勢判斷，接下來將依序出現哪些月相？","choices":["上弦月 → 望（滿月）","下弦月 → 朔（新月）","望（滿月） → 上弦月","朔（新月） → 下弦月"],"answer":0,"explain":"傍晚出現在西方低空的眉月是在朔之後，月球正由朔往東遠離太陽，亮面持續增大，因此依序會經過上弦月，再到望（滿月）。誘答錯處：下弦月與朔屬於亮面逐漸變小（虧）的階段，與「亮面越來越大」相反；「望→上弦」把月相順序倒過來；朔已在觀測之前發生，不會又回到朔再接下弦。"},{"level":"adv","topic":"自轉效應與公轉效應的辨別","q":"下列現象中，哪一項主要是地球「公轉」所造成，而不是地球自轉造成的？","choices":["一天之中太陽的位置由東方逐漸移到西方","地球上晝夜不斷交替","同一地點正午太陽仰角在一年之中週期性變化","位於不同經度的地方，地方時不相同"],"answer":2,"explain":"同一地點正午太陽仰角在一年中的週期性變化，是地軸固定傾斜加上地球公轉，使太陽直射點在南、北回歸線之間移動所造成，週期為一年。誘答錯處：太陽日間由東移向西、晝夜交替、不同經度地方時不同，都是地球自轉（週期一日）造成的效應，不是公轉效應。"},{"level":"adv","topic":"日食與月食可見範圍的比較","q":"比較同一次日食與同一次月食「能被看到的範圍」，下列敘述正確的是？","choices":["日食時月球投在地球上的影子範圍小，只有特定地區能看到；月食時地球夜半球上幾乎都能看到","日食時全球各地都能看到，月食則只有少數地區能看到","日食與月食都能在全球各地同時看到","日食只能在夜晚看到，月食只能在白天看到"],"answer":0,"explain":"日食是月球的影子落在地球上，本影範圍很小且隨月球運行而移動，只有影子掠過的狹長地區才能看到日全食或日環食；月食是月球整顆進入地球的本影而變暗，因此當時面向月球的整個夜半球都能同時觀測到。誘答錯處：把兩者可見範圍對調是常見錯誤；食不可能全球同時可見；此外日食一定發生在白天（觀測地正對太陽），月食一定發生在夜晚（月球在夜半球上空），選項中的時段也弄反了。"},{"level":"adv","topic":"潮汐的成因與大潮小潮","q":"關於海水潮汐漲落的主要成因，以及大潮出現時的月相，下列敘述正確的是？","choices":["主要由地球自轉甩動海水造成，大潮發生在上弦月與下弦月","主要由月球與太陽的引力造成，大潮發生在上弦月與下弦月","主要由月球與太陽的引力造成，大潮發生在朔與望（滿月）","主要由風吹海面掀起波浪造成，與月相的變化沒有關係"],"answer":2,"explain":"潮汐主要是月球引力（太陽引力次之）產生的引潮力造成的。朔與望時日、月、地接近一直線，月球與太陽的引潮力互相加強，潮差最大，稱為大潮；上弦與下弦時兩者方向約成直角而互相抵減，潮差最小，稱為小潮。誘答錯處：地球自轉並不是潮汐的成因，只影響一天中漲退潮的次數與時刻；把大潮排在上、下弦與實際相反；風浪只是海水表面的波動，波浪傳遞的是能量，與週期性的潮汐漲落無關。"},{"level":"adv","topic":"北方星空的週日運動","q":"在台灣，晴朗夜晚以相機長時間對著北方天空拍攝，星星會在照片上留下一圈圈弧形軌跡。關於這些星星的運動，下列敘述正確的是？","choices":["星星本身繞著地球公轉，所以會在天空中畫出弧線","星星以北極星為中心呈順時鐘方向轉動，轉一圈約需一年","星星以北極星附近為中心呈逆時鐘方向轉動，這是地球自轉造成的視運動","星星的位置整夜固定不動，照片上的弧線純粹是相機晃動造成的"],"answer":2,"explain":"地球由西向東自轉，北半球的觀測者會看到北方天空的星星以北天極（北極星附近）為中心呈逆時鐘方向繞行，轉一圈約需一日，這是自轉造成的視運動（週日運動）。誘答錯處：恆星距離極遠，並非繞地球公轉；轉動方向為逆時鐘、週期約一日，不是順時鐘或一年；星星整夜都在移動，弧線並非相機晃動造成。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

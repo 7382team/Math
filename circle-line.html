@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>二次函數 練習</title>
+<title>圓與直線的位置關係 練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -99,14 +99,14 @@
 </style>
 <script type="application/json" id="unit-meta">
 {
-  "id": "quad-func",
-  "title": "二次函數",
+  "id": "circle-line",
+  "title": "圓與直線的位置關係",
   "subject": "數學",
   "grade": "國三",
-  "term": "下",
+  "term": "上",
   "chapter": 0,
-  "ch": "第1章 二次函數",
-  "tag": "二次函數",
+  "ch": "第2章 圓的性質",
+  "tag": "弦·切線·弦心距",
   "ready": true
 }
 </script>
@@ -116,8 +116,8 @@
 
   <header>
     <div>
-      <h1>二次函數</h1>
-      <div class="sub">對稱軸、頂點、極值</div>
+      <h1>圓與直線的位置關係</h1>
+      <div class="sub">弦心距·切線長·相交判別</div>
     </div>
     <div class="streak">連對 <b id="streak">0</b></div>
   </header>
@@ -161,88 +161,40 @@
 
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const sgn=()=>Math.random()<0.5?1:-1;
 let level='basic',problem=null,entry='',answered=false,streak=0;
-const MAXD=3;
-
-function polyStr(a,b,c){let s=(a===1?'':a===-1?'−':a)+'x²';if(b)s+=(b<0?' − '+(-b):' + '+b)+'x';if(c)s+=(c<0?' − '+(-c):' + '+c);return s;}
-function twoLine(top,ask){return '<div style="font-size:23px;font-weight:500">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
-
+const MAXD=4;
+function twoLine(top,ask){return '<div style="font-size:19px;font-weight:500;line-height:1.55">'+top+'</div><div style="font-size:15px;color:var(--ink-soft);margin-top:8px">'+ask+' <span class="q">?</span></div>';}
+const T=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[7,24,25],[12,16,20],[10,24,26],[20,21,29]];
 function makeProblem(lv){
-  const a=lv==='basic'?1:(Math.random()<0.5?1:-1);
-  const h=rand(-4,4),k=rand(-9,9);
-  const b=-2*a*h,c=a*h*h+k;
-  const types=lv==='basic'?['axis','yint']:['axis','vertexY','extreme','yint'];
-  const t=pick(types);
-  let answer;
-  if(t==='axis')answer=h;else if(t==='vertexY')answer=k;else if(t==='extreme')answer=k;else answer=c;
-  return{a,h,k,b,c,t,answer};
+  const t=pick(lv==='basic'?['chord','tangent']:['chord','tangent','halfchord']);
+  const tr=pick(T),k=lv==='basic'?1:rand(1,2);
+  const a=tr[0]*k,b=tr[1]*k,c=tr[2]*k; // a=弦心距, b=半弦, c=半徑（直角三角形）
+  if(t==='chord')return{t,r:c,d:a,answer:2*b};        // 已知半徑與弦心距求弦長
+  if(t==='halfchord')return{t,r:c,half:b,answer:a};   // 已知半徑與半弦求弦心距
+  return{t:'tangent',r:a,dist:c,answer:b};            // 切線長：圓外點到圓心距離 c、半徑 a → 切線長 b
 }
-function qText(){const p=problem;const f='y = '+polyStr(p.a,p.b,p.c).replace(/<[^>]+>/g,'^2');
-  if(p.t==='axis')return f+'，對稱軸 x =';if(p.t==='vertexY')return f+'，頂點 y =';if(p.t==='extreme')return f+'，'+(p.a>0?'最小值':'最大值')+' =';return f+'，與 y 軸交點 y =';}
-function eqHTML(){const p=problem;const f='y = '+polyStr(p.a,p.b,p.c);
-  const ask=p.t==='axis'?'對稱軸 x =':p.t==='vertexY'?'頂點的 y 坐標 =':p.t==='extreme'?(p.a>0?'最小值 =':'最大值 ='):'與 y 軸交點的 y 坐標 =';
-  return twoLine(f,ask);
-}
+function qText(){const p=problem;
+  if(p.t==='chord')return '圓半徑 '+p.r+'，弦心距 '+p.d+'，弦長 =';
+  if(p.t==='halfchord')return '圓半徑 '+p.r+'，半弦長 '+p.half+'，弦心距 =';
+  return '圓半徑 '+p.r+'，圓外一點距圓心 '+p.dist+'，切線長 =';}
+function eqHTML(){const p=problem;
+  if(p.t==='chord')return twoLine('圓半徑 = '+p.r+'，圓心到弦的距離(弦心距) = '+p.d,'弦長 =');
+  if(p.t==='halfchord')return twoLine('圓半徑 = '+p.r+'，弦的一半 = '+p.half,'弦心距 =');
+  return twoLine('圓半徑 = '+p.r+'，圓外一點 P 到圓心距離 = '+p.dist,'由 P 作的切線長 =');}
 function buildSteps(){const p=problem;
-  if(p.t==='axis')return '<div><span class="lead">對稱軸</span>x = −b / (2a) = −('+p.b+') / (2×'+p.a+') = <span class="res">'+p.answer+'</span></div>';
-  if(p.t==='yint')return '<div><span class="lead">y 軸</span>令 x = 0，y = <span class="res">'+p.c+'</span></div>';
-  return '<div><span class="lead">頂點式</span>y = '+(p.a===1?'':p.a===-1?'−':p.a)+'(x '+(p.h<0?'+':'−')+' '+Math.abs(p.h)+')<sup>2</sup> '+(p.k<0?'− '+(-p.k):'+ '+p.k)+'</div>'+
-    '<div>頂點 = ('+p.h+', '+p.k+')，'+(p.t==='extreme'?(p.a>0?'最小值':'最大值'):'頂點 y')+' = <span class="res">'+p.answer+'</span></div>';
-}
-function buildTip(){const p=problem;if(p.t==='axis')return '對稱軸 x = −b/(2a)。';if(p.t==='yint')return 'y 軸交點就是代 x=0，得常數項。';return '化成頂點式 y=a(x−h)²+k，頂點 (h,k)；a>0 有最小值、a<0 有最大值 = k。';}
-function render(){
-  document.getElementById('eq').innerHTML=eqHTML();
-  entry='';answered=false;
-  const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';
-  document.getElementById('explain').className='explain';
-  const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;
-}
-function showEntry(){const ans=document.getElementById('ans');
-  if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}
-  ans.textContent=entry.replace('-','−');ans.className='ans';}
-function check(){
-  if(entry===''||entry==='-')return;
-  answered=true;
-  const val=parseInt(entry,10);
-  const ans=document.getElementById('ans');
-  const correct=val===problem.answer;
-  ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');
-  if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}
-  streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;
-  if(window.parent!==window){
-    window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');
-    if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}
-  }
-  document.getElementById('steps').innerHTML=buildSteps();
-  const nl=document.getElementById('numline');if(nl)nl.innerHTML='';
-  document.getElementById('tip').innerHTML=buildTip();
-  document.getElementById('explain').className='explain show';
-  const go=document.getElementById('go');go.textContent='下一題';go.className='go next';
-}
+  if(p.t==='chord'){const h=p.answer/2;return '<div><span class="lead">性質</span>弦心距垂直平分弦 ⇒ 半徑、弦心距、半弦構成直角三角形</div><div>半弦 = √('+p.r+'² − '+p.d+'²) = √('+(p.r*p.r)+' − '+(p.d*p.d)+') = '+h+'</div><div>弦長 = 半弦 × 2 = <span class="res">'+p.answer+'</span></div>';}
+  if(p.t==='halfchord')return '<div><span class="lead">性質</span>半徑² = 弦心距² + 半弦²</div><div>弦心距 = √('+p.r+'² − '+p.half+'²) = √('+(p.r*p.r)+' − '+(p.half*p.half)+') = <span class="res">'+p.answer+'</span></div>';
+  return '<div><span class="lead">切線</span>切線⊥過切點的半徑 ⇒ 半徑、切線長、圓心到P的距離成直角三角形</div><div>切線長 = √('+p.dist+'² − '+p.r+'²) = √('+(p.dist*p.dist)+' − '+(p.r*p.r)+') = <span class="res">'+p.answer+'</span></div>';}
+function buildTip(){const p=problem;if(p.t==='tangent')return '切線與過切點的半徑垂直；用畢氏定理：切線長² = 圓心距² − 半徑²。';return '弦心距垂直平分弦，半徑² = 弦心距² + (弦長÷2)²。';}
+function render(){document.getElementById('eq').innerHTML=eqHTML();entry='';answered=false;const ans=document.getElementById('ans');ans.textContent='?';ans.className='ans empty';document.getElementById('explain').className='explain';const go=document.getElementById('go');go.textContent='檢查';go.className='go';go.disabled=false;}
+function showEntry(){const ans=document.getElementById('ans');if(entry===''||entry==='-'){ans.textContent=entry==='-'?'−':'?';ans.className='ans empty';return;}ans.textContent=entry.replace('-','−');ans.className='ans';}
+function check(){if(entry===''||entry==='-')return;answered=true;const val=parseInt(entry,10);const ans=document.getElementById('ans');const correct=val===problem.answer;ans.className='ans '+(correct?'ok':'no');ans.textContent=entry.replace('-','−');if(!correct){ans.classList.add('shake');setTimeout(()=>ans.classList.remove('shake'),400);}streak=correct?streak+1:0;document.getElementById('streak').textContent=streak;if(window.parent!==window){window.parent.postMessage({type:'unit-progress',unitDone:1,unitCorrect:correct?1:0},'*');if(!correct){window.parent.postMessage({type:'unit-mistake',q:qText(),ans:String(problem.answer),given:entry.replace('-','−'),steps:(typeof buildSteps==='function'?buildSteps():''),tip:(typeof buildTip==='function'?buildTip():'')},'*');}}document.getElementById('steps').innerHTML=buildSteps();const nl=document.getElementById('numline');if(nl)nl.innerHTML='';document.getElementById('tip').innerHTML=buildTip();document.getElementById('explain').className='explain show';const go=document.getElementById('go');go.textContent='下一題';go.className='go next';}
 function next(){problem=makeProblem(level);render();}
-document.getElementById('pad').addEventListener('click',e=>{
-  const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;
-  if(k==='del')entry=entry.slice(0,-1);
-  else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
-  else{if(entry.replace('-','').length<MAXD)entry+=k;}
-  showEntry();
-});
+document.getElementById('pad').addEventListener('click',e=>{const b=e.target.closest('.key');if(!b||answered)return;const k=b.dataset.k;if(k==='del')entry=entry.slice(0,-1);else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;else{if(entry.replace('-','').length<MAXD)entry+=k;}showEntry();});
 document.getElementById('go').addEventListener('click',()=>answered?next():check());
-document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');level=b.dataset.lv;next();
-}));
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){answered?next():check();return;}
-  if(answered)return;
-  if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}
-  else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}
-  else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}
-});
-(function(){const lv=new URLSearchParams(location.search).get('level');
-  if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}
-})();
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.lv;next();}));
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){answered?next():check();return;}if(answered)return;if(/^[0-9]$/.test(e.key)){if(entry.replace('-','').length<MAXD)entry+=e.key;showEntry();}else if(e.key==='-'){entry=entry.startsWith('-')?entry.slice(1):'-'+entry;showEntry();}else if(e.key==='Backspace'){entry=entry.slice(0,-1);showEntry();}});
+(function(){const lv=new URLSearchParams(location.search).get('level');if(lv==='basic'||lv==='adv'||lv==='mix'){level=lv;document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv));}})();
 next();
 </script>
 

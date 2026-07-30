@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>圓周運動與萬有引力 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#db2777;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "circular-gravity",
+  "title": "圓周運動與萬有引力",
+  "subject": "理化",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2章 力與運動",
+  "tag": "向心力·萬有引力",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>圓周運動與萬有引力</h1><div class="sub">理化 · 向心力·萬有引力 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"等速圓周運動的意義","q":"小華把綁在繩子一端的小石塊，在光滑水平面上以固定的快慢繞著同一圓心旋轉，這種運動稱為「等速圓周運動」。此處的「等速」應理解為下列何者？","choices":["速率的大小固定不變，但速度的方向不斷改變","速度的大小與方向都固定不變，屬於等速度運動","速度的方向固定不變，但速度的大小不斷改變","石塊所受的合力為零，因此能沿著圓周持續前進"],"answer":0,"explain":"等速圓周運動的「等速」其實是「等速率」：單位時間內走過的路徑長固定，所以速率不變；但石塊沿圓周前進，速度的方向時時刻刻在改變。說「大小與方向都不變」的是等速度直線運動；說「方向不變、大小改變」剛好把兩者顛倒；說「合力為零」也不對，合力為零的物體只能靜止或做等速度直線運動，不可能轉彎繞圈。"},{"level":"basic","topic":"等速圓周運動與加速度","q":"關於一個正在做等速圓周運動的物體，下列敘述何者正確？","choices":["速率不變就代表速度不變，所以物體的加速度為零","速度的方向持續改變，所以有加速度，物體所受的合力不為零","物體的加速度為零，因此不需要任何外力就能一直繞圈","只有在速率變快或變慢時，物體才會有加速度並受到外力"],"answer":1,"explain":"加速度描述的是「速度」的變化，而速度是有大小也有方向的量。等速圓周運動雖然速率不變，但方向一直改變，代表速度改變、有加速度；由牛頓運動定律可知必有不為零的合力，這個合力就是向心力。其餘三個選項都犯了同一個錯誤——把「速率不變」誤當成「速度不變」，因而推出加速度為零、不需受力的錯誤結論。"},{"level":"basic","topic":"向心力的方向","q":"物體做等速圓周運動時，它所受向心力的方向為何？","choices":["沿著圓周的切線方向，與物體的速度同方向","由圓心向外指向物體，也就是背離圓心的方向","由物體指向圓心，時時刻刻與速度方向垂直","固定指向空間中同一個方位，不隨物體位置而改變"],"answer":2,"explain":"「向心」二字即說明力的方向指向圓心，且與圓周上的速度（切線方向）互相垂直。若力沿切線方向，改變的會是速率而不是方向；「由圓心向外」則是想像中的「離心力」，在物體的受力分析中並不存在；至於方向固定不變也不對，物體位置改變時，指向圓心的方向也跟著改變。"},{"level":"basic","topic":"向心力的作用效果","q":"向心力對做等速圓周運動的物體造成什麼影響？","choices":["使物體沿圓周運動的速率越來越快","使物體沿圓周運動的速率越來越慢","使物體的質量隨著旋轉而逐漸變大","只改變物體運動的方向，而不改變它的速率"],"answer":3,"explain":"向心力的方向與速度方向垂直，只能把物體的運動路徑「拉彎」成圓形，改變速度的方向，不會使速率增加或減少。認為受力就一定會加速或減速，是忽略了力與速度的方向關係；至於質量是物體所含物質的多寡，不會因為旋轉而改變。"},{"level":"basic","topic":"向心力的來源—繩的張力","q":"阿明用繩子綁住小石塊，在光滑的水平桌面上讓石塊繞著固定的圓心旋轉。此時提供石塊向心力的是下列何者？","choices":["石塊因為旋轉而自己產生的離心力","繩子對石塊的張力，方向沿著繩子指向圓心","桌面對石塊鉛直向上的正向力","地球對石塊鉛直向下的重力"],"answer":1,"explain":"石塊在水平面上繞圈，指向圓心（繩子固定端）的力來自繩子的張力，張力就是這裡向心力的來源。物體並不會自己產生「離心力」，這是常見的迷思；正向力與重力都是鉛直方向且互相抵消，與水平圓周的圓心方向無關，無法提供向心力。"},{"level":"basic","topic":"向心力的來源—摩擦力","q":"汽車在水平的圓形彎道上以固定速率轉彎，提供汽車轉彎所需向心力的是下列何者？","choices":["輪胎與路面之間、指向彎道圓心的摩擦力","汽車引擎沿著行進方向所產生的動力","空氣對車身所產生的阻力","地球對汽車鉛直向下的重力"],"answer":0,"explain":"在水平彎道上，唯一能提供指向彎道圓心方向的力，是輪胎與路面之間的摩擦力；所以路面結冰或積水使摩擦力不足時，車子就容易打滑衝出彎道。引擎動力沿行進方向、空氣阻力與行進方向相反，兩者都不指向圓心；重力方向鉛直向下，也與水平方向的圓心無關。"},{"level":"basic","topic":"天體運行的向心力來源","q":"月球能長期繞著地球運行而不飛離，其所需的向心力主要來自下列何者？","choices":["月球本身運動時所具有的慣性","太陽對月球所施加的磁力","地球與月球之間的萬有引力","月球高速繞行時向外產生的離心力"],"answer":2,"explain":"地球與月球互相吸引的萬有引力，方向由月球指向地球，正好就是月球做圓周運動所需的向心力。慣性不是力，慣性反而使月球想沿切線方向直線離去；磁力並不是維持天體運行的原因；而「離心力」在受力分析中並不存在，是常見的迷思。"},{"level":"basic","topic":"萬有引力與質量的關係","q":"依萬有引力的概念，兩物體之間引力的大小與兩物體的質量有何關係？","choices":["與兩物體質量的乘積成正比","與兩物體質量的和成反比","與兩物體質量的差成正比","與兩物體的質量完全無關"],"answer":0,"explain":"萬有引力的大小與兩物體質量的乘積成正比，只要任一方的質量變大，引力就跟著變大。把乘積誤記成「和」或「差」都不符合萬有引力的內容；若說與質量無關，也與「地球質量龐大所以吸引力明顯」的事實相矛盾。"},{"level":"basic","topic":"萬有引力與距離的關係","q":"兩物體之間萬有引力的大小，與它們之間的距離有何關係？","choices":["與距離成正比，距離越遠引力越大","與距離的平方成正比，距離越遠引力越大","與距離無關，不論相距多遠引力都一樣","與距離的平方成反比，距離越遠引力越小"],"answer":3,"explain":"萬有引力與兩物體間距離的平方成反比，距離拉遠，引力會迅速變小。說成正比（不論是與距離或距離平方成正比）都把關係弄反了；說與距離無關，則與「離地球越遠、重力越小」的事實不符。"},{"level":"basic","topic":"重力與萬有引力的關係","q":"關於「重力」與「萬有引力」之間的關係，下列敘述何者正確？","choices":["重力只作用在有生命的物體上，石頭、空氣並不受重力","物體所受的重力，就是地球與該物體之間萬有引力的表現","重力與萬有引力是來源完全不同、互不相干的兩種力","物體必須接觸到地面才會受到重力，離開地面後就不受重力"],"answer":1,"explain":"重力並不是另一種特別的力，而是地球以其龐大的質量吸引物體所產生的萬有引力。石頭、空氣同樣受重力，與有無生命無關；把重力與萬有引力視為兩種不同的力，是混淆了名稱與本質；萬有引力是超距力，不需要接觸，跳起來的人在空中仍然受到重力作用。"},{"level":"basic","topic":"質量與重量的區別","q":"太空人帶著同一個實驗箱，從地球表面搭乘太空船到達月球表面。關於此實驗箱，下列敘述何者正確？","choices":["質量與重量都變小","質量變小，但重量維持不變","質量不變，但重量變小","質量與重量都維持不變"],"answer":2,"explain":"質量是物體所含物質的多寡，不隨位置而改變；重量則是所在星球對物體的萬有引力，月球的質量比地球小很多，故同一物體在月球表面的重量約只有在地球上的六分之一。認為質量會隨地點改變，或認為重量不隨星球改變，都是把兩個概念混為一談。"},{"level":"basic","topic":"萬有引力的普遍性","q":"關於萬有引力存在的範圍，下列敘述何者正確？","choices":["只有質量龐大的天體之間才有萬有引力，一般物體之間沒有","只有互相接觸的兩個物體之間才會產生萬有引力","只有地球會吸引其他物體，其他物體並不會吸引地球","任何兩個有質量的物體之間都存在互相吸引的引力"],"answer":3,"explain":"萬有引力之所以稱為「萬有」，就是因為任何兩個有質量的物體之間都互相吸引，只是一般物體的質量太小，引力小到難以察覺。把它限縮在天體之間或接觸的物體之間，都窄化了適用範圍；說只有地球會吸引別人，則忽略了引力是相互的——蘋果被地球吸引的同時，地球也被蘋果吸引。"},{"level":"basic","topic":"慣性與切線方向","q":"在光滑水平面上用繩子帶動小球做等速圓周運動，若繩子在某一瞬間突然斷裂，則此後小球（忽略摩擦力）將如何運動？","choices":["沿著半徑方向被向外甩出，做加速度越來越大的直線運動","失去繩子的拉力後立刻停在原地不動","仍沿著原來的圓形路徑再繞行一陣子才漸漸停止","沿繩斷瞬間速度的方向（圓的切線方向）做等速直線運動"],"answer":3,"explain":"繩斷後小球在水平方向不再受力，依慣性定律將維持斷裂瞬間的速度，沿切線方向做等速直線運動。「沿半徑向外甩出」是把不存在的離心力當成真實作用力的典型迷思；「立刻停住」違反慣性；「還能繞一陣子」則錯在沒有向心力就無法維持圓形路徑。"},{"level":"adv","topic":"離心現象的正確理解（車輛轉彎）","q":"公車向右轉彎時，站在車內的乘客常覺得自己「被甩向左側」。下列對此現象的解釋何者最正確？","choices":["有一個離心力從右邊把乘客推向左側，使乘客傾倒","乘客因慣性而維持原來的直線運動，車廂卻向右偏轉，因此乘客相對於車廂就偏向左側","地球對乘客的萬有引力在轉彎時改變了方向，把乘客拉向左側","乘客受到一個方向向左的向心力，所以身體往左移動"],"answer":1,"explain":"轉彎時真正作用在乘客身上、指向圓心（右側）的是地板的摩擦力或扶手的拉力；乘客覺得往左倒，是因為慣性使身體想繼續直行，而車廂轉走了，這是相對運動造成的感覺。把它說成「離心力推人」是最常見的迷思；重力方向鉛直向下，不會因轉彎而改變方向；而向心力應指向圓心（右側），不會是向左。"},{"level":"adv","topic":"離心現象的正確理解（洗衣機脫水）","q":"洗衣機脫水時內桶高速旋轉，水便從桶壁的小孔被排到外面。下列解釋何者最正確？","choices":["水滴受到一個方向向外的離心力，被這個力推出小孔","高速旋轉使水滴所受的重力變大，因此從小孔掉落出去","衣物對水滴的附著力不足以提供其做圓周運動所需的向心力，水滴便依慣性沿切線方向脫離圓周路徑而由小孔飛出","旋轉時的摩擦生熱使水先蒸發成水蒸氣，再由小孔排出桶外"],"answer":2,"explain":"脫水的關鍵是「向心力不足」而不是「被離心力甩出」：轉速越快，水滴要跟著轉所需的向心力越大，當衣物纖維的附著力提供不了時，水滴就依慣性沿切線方向直行而穿出小孔。重力由地球的吸引決定，不會因旋轉而變大；若是蒸發造成，脫水後的衣物不會仍然又濕又冷。"},{"level":"adv","topic":"向心力的本質","q":"關於「向心力」的性質，下列敘述何者最正確？","choices":["向心力是與重力、摩擦力、彈力並列的另一種基本力","向心力是物體做圓周運動時，由物體自身憑空產生出來的力","向心力必定與物體所受的其他力互相平衡，使物體的合力為零","向心力並非額外多出來的力，而是張力、摩擦力或萬有引力等既有的力所提供、方向指向圓心的合力"],"answer":3,"explain":"向心力是依「效果」命名的力，畫受力圖時不能在張力、摩擦力、重力之外再多畫一個向心力。把它當成新的基本力或憑空產生的力，都誤解了它的意義；說它與其他力平衡使合力為零更是明顯錯誤——若合力為零，物體只會沿直線前進，正因為合力不為零且指向圓心，物體才能持續轉彎。"},{"level":"adv","topic":"作用力與反作用力（地月引力）","q":"將「地球吸引月球的力」與「月球吸引地球的力」相比較，下列敘述何者正確？","choices":["兩力大小相等、方向相反，但分別作用在不同物體上，屬於一對作用力與反作用力","地球的質量比月球大得多，所以地球吸引月球的力比較大","兩力大小相等、方向相反且作用在同一物體上，屬於一對平衡力，合力為零","只有地球會吸引月球，月球對地球並沒有吸引力"],"answer":0,"explain":"萬有引力必定成對出現，大小相等、方向相反，但一個作用在月球上、另一個作用在地球上，因此是作用力與反作用力，不能互相抵消。認為質量大的一方施力較大，是常見的錯誤；把它當成平衡力更是典型錯誤——平衡力必須作用在「同一物體」上；而忽略引力的相互性也不正確。"},{"level":"adv","topic":"引力與距離平方成反比的推理","q":"甲、乙兩球之間的萬有引力大小為 F。若兩球的質量都不改變，只把兩球之間的距離拉大為原來的 2 倍，則此時兩球間引力的大小為下列何者？","choices":["2F","F/2","F/4","4F"],"answer":2,"explain":"萬有引力與距離的平方成反比，距離變為 2 倍，引力就變為原來的 1/2²＝1/4，故為 F/4。答成 F/2 是把「與距離平方成反比」誤記成「與距離成反比」；答成 2F 或 4F 則是把反比誤當成正比，距離變遠反而讓引力變大，明顯不合理。"},{"level":"adv","topic":"人造衛星的基本原理","q":"關於人造衛星能繞地球運行而不掉落地面的原因，下列敘述何者最正確？","choices":["衛星所在的高度已經完全沒有地球引力，所以不會掉下來","衛星具有足夠大的水平速度，雖然一直被地球引力拉著往下掉，但它下落的路徑恰與地球表面的彎曲相合，因而能不斷繞行","衛星受到向外的離心力，恰好把地球引力完全抵消，使合力為零","衛星是被高空稀薄的大氣層托住，才能停留在空中不掉落"],"answer":1,"explain":"把物體從高處水平拋出，速度越快落點越遠；當水平速度大到某一程度，物體「掉落」的曲線就與地球表面的弧度相合，於是一直落下卻永遠落不到地面，這就是人造衛星的原理。該高度的地球引力仍然很大，正是它提供向心力；離心力並不存在，且若合力真的為零，衛星會沿直線飛離；至於軌道高度的空氣極為稀薄，根本托不住衛星。"},{"level":"adv","topic":"重量隨高度改變、質量不變","q":"同一塊金屬磚分別在(甲)海平面、(乙)海拔三千公尺的高山山頂、(丙)比山頂更高的高空氣球上量測。下列有關其質量與重量的敘述何者正確？","choices":["質量在三處都相同，重量則以甲最大、丙最小","質量與重量在三處都完全相同","質量以丙最小，但重量在三處都相同","質量在三處都相同，重量則以丙最大、甲最小"],"answer":0,"explain":"質量是物體所含物質的多寡，與所在位置無關，三處都相同；重量則是地球對物體的萬有引力，與物體到地心的距離平方成反比。甲、乙、丙離地心越來越遠，故重量為甲＞乙＞丙。認為重量完全不變，忽略了高度的影響；認為質量會變而重量不變，則把兩者剛好顛倒；說丙最重也把大小順序記反了。"},{"level":"adv","topic":"等速圓周運動的速度與動能","q":"某人造衛星以固定的速率沿圓形軌道繞地球運行，可視為等速圓周運動。下列敘述何者正確？","choices":["它的速度不變，動能也不變","它的速率持續改變，因此動能也持續改變","它的速率不變故動能不變，但速度因方向持續改變而時時刻刻在改變","它在軌道上不受任何力的作用，所以能一直繞行下去"],"answer":2,"explain":"動能由質量與速率決定，速率不變則動能不變；但速度是有方向的量，沿圓周運動時方向不斷改變，因此速度改變、也有加速度。說「速度不變」是把速度與速率混為一談；說「速率持續改變」與等速圓周運動的定義不符；說「不受任何力」則忽略了衛星時時受到地球萬有引力（即向心力）的作用。"},{"level":"adv","topic":"向心力的來源—重力（鉛直圓周）","q":"阿凱用繩子綁住裝了水的水桶，在鉛直面上快速繞圈，發現水桶轉到最高點時水並不會倒出來。下列解釋何者最正確？","choices":["此時水受到一個方向向上的離心力，把水撐在桶內而不落下","此時水已經被甩得夠高，在最高點暫時不再受到地球重力的作用","此時水所受的重力恰好與繩子的張力互相平衡，合力為零所以水不會掉落","此時圓心在水的正下方，水所受的重力（必要時再加上桶底對水的推力）恰好指向圓心，正可作為水做圓周運動所需的向心力"],"answer":3,"explain":"在最高點時，圓心位在水的正下方，重力方向也向下，正好可以扮演向心力的角色，使水繼續沿圓周前進而不落下；若轉得太慢，重力大於所需的向心力，水就會離開圓周而灑出來。「向上的離心力」並不存在；重力隨時存在，不會因為被甩高而消失；若合力真的為零，水將沿切線方向直線飛出，無法繼續繞圈。"},{"level":"adv","topic":"摩擦力作為向心力的限制","q":"把一枚硬幣放在水平轉盤上，硬幣隨轉盤一起旋轉。當轉盤的轉速逐漸加快到某一程度時，硬幣便滑離原位而飛出。下列敘述何者最正確？","choices":["硬幣原本靠轉盤給它的靜摩擦力提供向心力，轉速加快後所需的向心力變大，一旦超過摩擦力所能提供的最大值，硬幣就無法再做圓周運動而脫離","轉速加快後，硬幣所受的離心力大於向心力，因此被向外推了出去","轉速加快後，硬幣的質量隨之變大，原有的摩擦力便不足以拉住它","轉速加快後，硬幣所受的重力變小，因此浮了起來而飛出轉盤"],"answer":0,"explain":"硬幣做圓周運動所需的向心力由靜摩擦力提供，轉速越快、所需的向心力越大；當需求超過最大靜摩擦力時，硬幣便留不住，依慣性沿切線方向脫離。「離心力大於向心力」是典型的錯誤說法，兩者並不是可以互相比較的一對力；質量不會隨運動狀態改變；重力由地球的吸引決定，也不會因轉速加快而變小。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大氣與天氣變化 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0369a1;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "es-atmosphere",
+  "title": "大氣與天氣變化",
+  "subject": "地球科學",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第4章 大氣與天氣變化",
+  "tag": "大氣分層·氣壓·鋒面·颱風",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>大氣與天氣變化</h1><div class="sub">地球科學 · 大氣分層·氣壓·鋒面·颱風 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"大氣的組成","q":"在乾燥空氣中，含量最多的兩種氣體及其大約的體積百分比為何？","choices":["氧氣約占78%、氮氣約占21%","氮氣約占78%、氧氣約占21%","氮氣約占78%、二氧化碳約占21%","氮氣約占50%、氧氣約占50%"],"answer":1,"explain":"乾燥空氣中氮氣約占78%、氧氣約占21%，其餘約1%為氬氣、二氧化碳等微量氣體。選項0把氮、氧的比例對調；二氧化碳含量不到1%，雖是重要的溫室氣體，卻不可能占21%；氮與氧也不是各占一半。"},{"level":"basic","topic":"大氣的分層與分層依據","q":"由地面往高空，大氣依「氣溫隨高度的變化」可分為四層，其正確順序為何？","choices":["對流層→中氣層→平流層→增溫層","平流層→對流層→中氣層→增溫層","對流層→平流層→中氣層→增溫層","對流層→平流層→增溫層→中氣層"],"answer":2,"explain":"大氣分層的依據是氣溫隨高度的變化，自地面向上依序為對流層、平流層、中氣層、增溫層。其中對流層與中氣層的氣溫隨高度遞減，平流層與增溫層的氣溫隨高度上升。其他選項都把層序顛倒。"},{"level":"basic","topic":"對流層的特徵","q":"雲、雨、鋒面、颱風等天氣現象幾乎都發生在哪一層大氣中？主要原因是什麼？","choices":["平流層，因為該層有臭氧層能吸收紫外線，氣流最為活躍","中氣層，因為該層是大氣中氣溫最低的地方，水氣最容易凝結","增溫層，因為該層空氣稀薄、氣溫很高，對流最旺盛","對流層，因為大氣中的水氣幾乎都集中在此，且氣溫隨高度遞減使空氣容易上下對流"],"answer":3,"explain":"對流層集中了大氣中絕大部分的水氣，而且下暖上冷（氣溫隨高度遞減），空氣容易上下對流，因此成為天氣現象發生的舞台。平流層雖有臭氧層，但上暖下冷、氣流穩定不易對流；中氣層與增溫層空氣極稀薄、幾乎沒有水氣，也不會產生日常的天氣變化。"},{"level":"basic","topic":"平流層與臭氧層","q":"關於平流層的氣溫隨高度變化，下列敘述正確的是？","choices":["氣溫隨高度上升而升高，因為層中的臭氧會吸收太陽紫外線","氣溫隨高度上升而降低，因為離地面越遠、得到地面的加熱越少","氣溫隨高度上升而降低，因為該層水氣蒸發時會吸收大量熱量","氣溫完全不隨高度改變，因為該層的空氣靜止不動、不會傳遞熱量"],"answer":0,"explain":"平流層含有臭氧層，臭氧吸收太陽紫外線後使該層增溫，因此高度越高氣溫越高，形成上暖下冷的穩定結構，空氣不易對流。常見迷思是把對流層「氣溫隨高度遞減」的規則誤套到平流層（選項1、2）；平流層水氣極少，空氣也並非完全靜止。"},{"level":"basic","topic":"氣壓的意義與測量","q":"下列關於氣壓的敘述，哪一項最恰當？","choices":["氣壓是空氣流動的快慢，常用的單位是公尺／秒","氣壓是單位面積上方空氣柱重量所造成的壓力，常用單位是百帕（hPa）","氣壓是空氣中水氣含量的多寡，常以百分比表示","氣壓只存在於地面附近，高空的空氣稀薄所以完全不產生氣壓"],"answer":1,"explain":"氣壓是單位面積上方空氣柱的重量所造成的壓力，天氣圖上常以百帕（hPa）表示，可用水銀氣壓計或空盒氣壓計測量。空氣流動的快慢是風速；空氣中水氣多寡常以相對濕度表示；高空仍有空氣，只是上方的空氣柱較短使氣壓較小，並非沒有氣壓。"},{"level":"basic","topic":"高氣壓的天氣特徵（天氣圖判讀）","q":"天氣圖上台灣位於一個高氣壓中心附近時，該地的垂直氣流與天氣最可能是？","choices":["空氣自高空下沉，天氣多為晴朗","空氣自地面上升，容易成雲致雨","空氣自高空下沉，容易成雲致雨","空氣自地面上升，天氣多為晴朗"],"answer":0,"explain":"高氣壓中心的空氣由高空下沉，並在地面向四周輻散；下沉的空氣受壓縮而增溫，相對濕度降低，水氣不易凝結，因此天氣晴朗少雲。低氣壓才是地面輻合、空氣上升冷卻凝結而多雲雨，選項1、2、3都把氣流升降與天氣的搭配弄錯。"},{"level":"basic","topic":"風的形成與氣壓差","q":"地面上風的吹送方向與氣壓的關係為何？","choices":["由低氣壓吹向高氣壓，因為低壓中心的空氣被四周擠壓而流出","只與氣溫有關，由氣溫低處吹向氣溫高處，與氣壓高低無關","永遠平行於等壓線吹送，地面風完全不會跨越等壓線","由高氣壓吹向低氣壓，兩地氣壓差越大則風速越大"],"answer":3,"explain":"空氣受氣壓差（氣壓梯度）驅動，由氣壓高處流向氣壓低處而形成風，氣壓差越大、風速越大。地面風雖受地球自轉偏向力與摩擦力影響而斜穿等壓線，整體方向仍是由高壓吹向低壓，故選項0方向相反，選項2忽略了地面風會跨越等壓線。"},{"level":"basic","topic":"北半球高低壓的水平氣流","q":"在北半球，地面高氣壓與低氣壓的水平氣流方向分別為何？","choices":["高壓逆時鐘向外輻散，低壓順時鐘向內輻合","高壓與低壓的氣流都是順時鐘方向旋轉","高壓順時鐘向外輻散，低壓逆時鐘向內輻合","高壓順時鐘向內輻合，低壓逆時鐘向外輻散"],"answer":2,"explain":"北半球受地球自轉偏向力影響，地面高壓的空氣一邊下沉一邊順時鐘向外輻散；低壓的空氣則逆時鐘向內輻合並上升。颱風是強烈的低氣壓，所以北半球颱風的風也是逆時鐘旋入。選項0把旋轉方向對調，選項3把輻散與輻合對調。"},{"level":"basic","topic":"露點的意義","q":"「露點」的意義是什麼？","choices":["空氣中的水氣達到飽和、開始凝結成水滴時的溫度","水開始沸騰時的溫度","相對濕度剛好等於50%時的氣溫","一天當中氣溫最低的那個時刻"],"answer":0,"explain":"空氣冷卻到某個溫度時，其中的水氣恰好達到飽和（相對濕度100%）而開始凝結，這個溫度就是露點；露點越高，代表空氣中的水氣越多。露點是一個溫度而不是時刻（選項3），也與沸點或相對濕度50%無關。"},{"level":"basic","topic":"雲的形成過程","q":"關於雲的形成過程，下列描述正確的是？","choices":["空氣下沉、體積被壓縮而增溫，使水氣大量凝結成小水滴","空氣上升、體積膨脹而冷卻，溫度降到露點以下，水氣凝結在凝結核上形成小水滴或冰晶","空氣上升、體積被壓縮而增溫，使原有的水滴大量蒸發成水氣","空氣只在水平方向流動，水氣不需要冷卻就能直接聚集成雲"],"answer":1,"explain":"空氣上升時周圍氣壓變小，空氣膨脹作功而降溫；當溫度降到露點以下，水氣便在凝結核上凝結（或凝華）成小水滴、冰晶，聚集而成雲。上升對應膨脹冷卻、下沉對應壓縮增溫，選項0、2把兩者的搭配顛倒。"},{"level":"basic","topic":"降水類型：對流雨","q":"夏季午後在陸地上常出現範圍小、時間短但雨勢猛烈並伴隨雷電的降雨，這種降水屬於下列哪一種？","choices":["鋒面雨","地形雨","對流雨","焚風"],"answer":2,"explain":"地面受強烈日照加熱，近地面空氣受熱膨脹上升形成旺盛對流，水氣凝結後常在午後降下短時強雨並伴隨雷電，稱為對流雨。鋒面雨由冷、暖氣團交界的鋒面造成，範圍廣、時間長；地形雨發生在山地迎風面；焚風是空氣越山後下沉增溫形成的乾熱風，根本不是一種降水。"},{"level":"basic","topic":"冷鋒過境後的氣溫與氣壓變化","q":"一道冷鋒通過某地之後，當地的氣溫與氣壓最可能如何變化？","choices":["氣溫上升、氣壓下降","氣溫上升、氣壓上升","氣溫下降、氣壓下降","氣溫下降、氣壓上升"],"answer":3,"explain":"冷鋒過境後該地由冷氣團控制，冷空氣密度較大，因此氣溫下降而氣壓上升，風向常轉為偏北。常見迷思是把冷鋒與暖鋒過境後的天氣對調——暖鋒過境後才是氣溫上升、氣壓下降（選項0）。"},{"level":"basic","topic":"滯留鋒與梅雨","q":"每年五、六月間台灣附近常有一道鋒面來回徘徊，帶來長時間陰雨，這道鋒面稱為什麼？其形成原因為何？","choices":["冷鋒；北方冷氣團勢力遠大於暖氣團，鋒面快速向南推進","暖鋒；南方暖氣團勢力遠大於冷氣團，鋒面快速向北推進","不是鋒面造成的，這些雨完全來自午後地面受熱形成的對流雨","滯留鋒；冷、暖氣團勢力相當而互相對峙，鋒面在原地或來回移動，形成梅雨"],"answer":3,"explain":"春末夏初，北方冷氣團減弱、南方暖氣團增強，兩者勢力相當而僵持，鋒面幾乎停滯不動，稱為滯留鋒，也就是台灣的梅雨鋒面，常造成連日陰雨與局部強降雨。冷鋒、暖鋒都是某一氣團明顯較強、使鋒面明顯移動的情形。"},{"level":"basic","topic":"颱風的結構：颱風眼","q":"關於颱風中心「颱風眼」的天氣特徵，下列敘述正確的是？","choices":["風雨最強、雲層最厚，因為所有水氣都集中在此","風力最強但完全不下雨，且氣壓是整個颱風中最高的地方","風力微弱、雲量少甚至可以看見藍天，但氣壓是整個颱風最低處","氣壓是整個颱風最高的地方，所以天氣晴朗又無風"],"answer":2,"explain":"颱風眼內部氣流下沉，雲量少、風力微弱，但它同時是整個颱風氣壓最低的地方；最強的風雨出現在颱風眼外圍的雲牆與暴風圈內。把颱風眼誤認為風雨最強處（選項0），或誤以為它是高氣壓（選項1、3），都是常見的錯誤。"},{"level":"basic","topic":"颱風警報的發布時機","q":"氣象機構發布「陸上颱風警報」的時機，下列敘述最正確的是？","choices":["只要海面上有颱風生成，就立即發布陸上颱風警報","等到颱風已經登陸並造成災害之後才發布","颱風中心的位置正好通過台灣海峽時發布","預測颱風的暴風圈即將侵襲台灣或金門、馬祖等地的陸上地區時發布"],"answer":3,"explain":"當預測颱風的暴風圈可能影響台灣附近海域時，先發布海上颱風警報；預測暴風圈將侵襲陸上地區時，再加發陸上颱風警報。警報的依據是「暴風圈」是否可能影響海域或陸地，而不是颱風是否剛生成、是否已經登陸，或中心恰好經過某處。"},{"level":"basic","topic":"氣團的性質","q":"「氣團」指的是什麼？其冷暖乾濕的性質主要由什麼決定？","choices":["一團正在快速旋轉的空氣，性質由旋轉方向決定","水平範圍廣大、氣溫與濕度都相當均勻的大範圍空氣，性質主要由發源地決定","只出現在平流層中的穩定空氣層，性質由臭氧含量決定","只有鋒面通過時才短暫形成的空氣，性質由當地地形高低決定"],"answer":1,"explain":"氣團是水平範圍可達數百至數千公里、內部氣溫與濕度相當均勻的大範圍空氣；它在發源地長時間停留而取得該地的性質，例如源自西伯利亞、蒙古一帶的大陸冷氣團乾冷，源自熱帶海洋的海洋氣團暖濕。兩個性質不同的氣團相遇，交界處便形成鋒面。氣團並非只存在於平流層，也不是鋒面過境時才臨時生成。"},{"level":"adv","topic":"對流層氣溫隨高度遞減的成因","q":"對流層的氣溫為什麼會隨高度增加而下降？","choices":["因為越高處空氣越稀薄，能直接吸收到的太陽可見光越少","因為高處臭氧含量較多，吸收紫外線後把熱量都留在低處","因為對流層的空氣主要是被太陽曬熱的地面由下往上加熱，離地面越遠受到的加熱越少","因為高處水氣蒸發特別旺盛，蒸發吸熱使氣溫下降"],"answer":2,"explain":"大氣直接吸收太陽輻射的能力有限，太陽輻射大多被地面吸收，地面再以輻射、傳導與對流加熱上方空氣，因此對流層越靠近地面越暖，平均每上升1公里氣溫約下降6.5℃。臭氧主要集中在平流層（選項1），高空的水氣本來就極少（選項3）。"},{"level":"adv","topic":"高低氣壓與天氣差異的成因","q":"為什麼高氣壓籠罩時天氣通常晴朗，低氣壓籠罩時卻常有雲雨？","choices":["高壓區空氣下沉、膨脹冷卻使水氣凝結；低壓區空氣上升、壓縮增溫使水氣蒸發","高壓區空氣下沉、受壓縮而增溫，相對濕度降低不易成雲；低壓區空氣上升、膨脹冷卻達露點而凝結成雲雨","高壓區的空氣中本來就完全沒有水氣，低壓區水氣特別多，與氣流升降無關","高壓區風速大把雲吹散，低壓區無風使雲停留，與空氣的升降完全無關"],"answer":1,"explain":"關鍵在垂直氣流：下沉的空氣被壓縮而增溫，飽和水氣量增加、相對濕度下降，雲不易生成；上升的空氣膨脹冷卻，降到露點以下水氣凝結成雲並可能降雨。選項0把升降與冷熱的對應顛倒；選項2、3則忽略了垂直氣流才是決定天氣的主因。"},{"level":"adv","topic":"等壓線疏密與風速判讀","q":"某張地面天氣圖上，甲地附近等壓線非常密集，乙地附近等壓線相當稀疏。關於兩地的風，下列判斷最合理的是？","choices":["乙地風速較大，因為等壓線稀疏代表空氣可以自由流動","甲地風速較大，因為單位水平距離內的氣壓差（氣壓梯度）較大","兩地風速相同，因為風速只由當地氣溫高低決定","甲地風速較大，但風向會由低氣壓一側吹向高氣壓一側"],"answer":1,"explain":"等壓線越密集，代表相同水平距離內的氣壓差越大、氣壓梯度越大，推動空氣的力量越強，風速越大。風向仍是由高壓側吹向低壓側（受偏向力與摩擦力影響而斜穿等壓線），故選項3的風向敘述錯誤；風速主要由氣壓梯度決定，而不是只看氣溫。"},{"level":"adv","topic":"低氣壓環流與風向判讀","q":"一個低氣壓中心位於台灣北方海面上（不考慮地形影響），依北半球低氣壓的環流方式，台灣地面最可能吹哪個方向的風？天氣趨勢又如何？","choices":["吹偏西風（常表現為西南風）；低壓中心氣流輻合上升，天氣容易轉為多雲有雨","吹偏東風；低壓中心氣流輻合上升，天氣容易轉為多雲有雨","吹偏西風（常表現為西南風）；低壓中心氣流下沉，天氣晴朗穩定","吹偏北風；因為地面風一定是由低壓中心向四周輻散吹出去"],"answer":0,"explain":"北半球低氣壓的地面風呈逆時鐘方向向中心輻合：中心的北側吹偏東風，南側則吹偏西風。低壓中心在台灣北方，台灣位於中心南側，因此吹偏西風，再加上向中心輻合的分量，常表現為西南風（颱風中心移到台灣北方時，台灣常出現明顯西南風，就是這個道理）。輻合上升的空氣膨脹冷卻，容易成雲致雨。選項1把中心南、北側的環流方向弄反；選項2、3把低壓誤當成下沉、輻散的高壓。"},{"level":"adv","topic":"相對濕度與氣溫的關係","q":"一團空氣中的水氣含量維持不變，若氣溫由午後的高溫逐漸下降到入夜，其相對濕度會如何變化？原因是什麼？","choices":["相對濕度下降，因為冷空氣能容納的水氣量比暖空氣多","相對濕度不變，因為空氣中的水氣量並沒有改變","相對濕度上升，因為氣溫降低使飽和水氣量減少，實際水氣量占飽和量的比例變大","相對濕度先上升再下降，因為水氣會先凝結後又全部蒸發"],"answer":2,"explain":"相對濕度＝實際水氣量÷該溫度下的飽和水氣量×100%。溫度越低，飽和水氣量越小，分母變小而分子不變，比值就上升；若持續冷卻到露點，就會凝結成露或霧。選項0說反了（暖空氣才能容納較多水氣），選項1誤以為相對濕度只看水氣量而忽略溫度的影響。"},{"level":"adv","topic":"露點高低與水氣量比較","q":"同一時刻甲、乙兩地氣溫都是30℃，但甲地的露點是25℃、乙地的露點是15℃。下列判斷正確的是？","choices":["甲地空氣中的水氣較多，相對濕度也比乙地高","乙地空氣中的水氣較多，相對濕度也比甲地高","兩地相對濕度必定相同，因為兩地氣溫相同","甲地空氣比乙地更接近飽和，但相對濕度比乙地低"],"answer":0,"explain":"露點越高，代表空氣中實際的水氣量越多；在氣溫相同（飽和水氣量相同）的情況下，露點高者相對濕度也高。氣溫與露點的差距越小表示越接近飽和，甲地只差5℃、乙地差15℃，故甲地較潮濕。選項3前後自相矛盾，選項2誤以為相對濕度只由氣溫決定。"},{"level":"adv","topic":"冷鋒與暖鋒的性質比較","q":"比較冷鋒與暖鋒造成的降雨型態與過境後的天氣，下列敘述正確的是？","choices":["冷鋒降雨範圍廣、時間長且雨勢和緩；暖鋒降雨範圍窄、雨勢猛烈","兩者過境後氣溫都會下降，只是冷鋒下降得比較多","兩者都是暖氣團主動推進、把冷氣團抬升所形成的鋒面","冷鋒鋒面坡度較陡，降雨範圍窄但雨勢常較猛烈；暖鋒鋒面坡度較緩，降雨範圍廣、雨勢較和緩"],"answer":3,"explain":"冷鋒是冷氣團主動推進，把暖空氣急速抬升，鋒面坡度陡，降雨集中在鋒面附近狹窄的帶狀區，常有陣雨或雷雨；暖鋒是暖空氣沿冷空氣緩慢爬升，坡度平緩，形成範圍廣、時間長的連續性小雨。過境後冷鋒使氣溫下降、暖鋒使氣溫上升，選項0、1、2都把兩者的性質對調或混為一談。"},{"level":"adv","topic":"由觀測資料判讀鋒面種類","q":"某觀測站連續記錄到：氣溫由26℃在數小時內降到18℃、氣壓由1008百帕升到1016百帕、風向由偏南轉為偏北，並出現短時強陣雨後轉為乾冷。這段時間最可能發生的天氣事件是？","choices":["暖鋒過境","颱風眼正好通過該站上空","滯留鋒長期停留在該站上方","冷鋒過境"],"answer":3,"explain":"氣溫驟降、氣壓上升、風向由偏南轉偏北，並伴隨短時強降雨後轉為乾冷，是典型的冷鋒過境特徵。暖鋒過境會使氣溫上升、氣壓下降；颱風眼通過時氣壓會降到最低，且風力呈強—弱—強的變化；滯留鋒帶來的是連續多日的陰雨，氣溫與氣壓不會出現這樣劇烈的轉折。"},{"level":"adv","topic":"台灣的季風與季節降雨分布","q":"台灣冬季北部與東北部多陰雨、中南部相對乾燥，夏季則常見中南部午後或連日大雨。造成這種季節差異的主要原因是？","choices":["冬季吹東北季風，北部與東北部位於地形迎風面而多地形雨；夏季吹西南季風（西南氣流），中南部轉為迎風面而多雨","冬季吹西南季風、夏季吹東北季風，風向與多雨地區的搭配剛好與上述相反","冬季太陽直射北半球使北部日照強而對流雨多；夏季太陽直射南半球，中南部才多雨","因為中央山脈冬季會擋住暖氣團、夏季會擋住冷氣團，與季風的風向無關"],"answer":0,"explain":"台灣位於季風氣候區：冬季盛行東北季風，潮濕的東北風在北部、東北部沿山坡被迫抬升而降下地形雨，中南部位於背風面因而較乾燥；夏季盛行西南季風並常伴隨西南氣流，中南部成為迎風面，加上旺盛對流與颱風而多雨。選項1把季風方向對調；冬季太陽直射南半球，選項2的敘述也不正確。"},{"level":"adv","topic":"颱風登陸後減弱的原因","q":"颱風登陸後通常會迅速減弱，最主要的原因是什麼？","choices":["陸地上的氣壓比海面高，把颱風的低壓中心「壓散」了","陸地缺少溫暖海水持續供應水氣，水氣凝結釋放的潛熱大幅減少，加上地表摩擦力大，使颱風減弱","陸地氣溫比海面高，使颱風先獲得更多能量而增強，然後突然消失","颱風登陸後旋轉方向會由逆時鐘改為順時鐘，能量互相抵消"],"answer":1,"explain":"颱風的形成與維持需要溫暖的熱帶海面，海水蒸發提供大量水氣，水氣凝結所釋放的潛熱正是颱風的能量來源。登陸後水氣供應被切斷，加上地形起伏與地表摩擦破壞了低層的輻合結構，颱風便迅速減弱。北半球颱風的旋轉方向恆為逆時鐘，不會因登陸而改變（選項3）。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
