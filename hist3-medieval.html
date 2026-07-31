@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>中古西歐與伊斯蘭世界 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist3-medieval",
+  "title": "中古西歐與伊斯蘭世界",
+  "subject": "歷史",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2課 中古西歐與伊斯蘭世界",
+  "tag": "封建·教會·伊斯蘭",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>中古西歐與伊斯蘭世界</h1><div class="sub">歷史 · 封建·教會·伊斯蘭 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"日耳曼民族大遷徙與西羅馬帝國滅亡","q":"西羅馬帝國末期，日耳曼各部族因受外族壓迫、尋找耕地而大規模遷入帝國境內，西羅馬帝國最後為日耳曼人所滅。關於這段歷史的敘述，下列何者正確？","choices":["日耳曼人重新統一整個地中海世界，恢復羅馬帝國舊有的統治","日耳曼人因信奉伊斯蘭教，入侵後大力打擊基督教會","日耳曼各族在西歐分別建立大小王國，西歐陷入長期分裂與動盪","日耳曼人入侵後，西歐的城市與商業比羅馬時代更加繁榮"],"answer":2,"explain":"日耳曼人並未建立統一政權，而是各族分別在西歐建立大小王國，政治分裂、社會動盪，成為日後封建制度形成的背景，故選(2)。(0)錯在日耳曼人始終未能統一地中海世界；(1)錯在時間與宗教都不合，伊斯蘭教此時尚未興起，日耳曼人後來多改信基督教並成為教會的支持者；(3)錯在遷徙與戰亂使西歐城市衰落、商業萎縮，經濟轉為以莊園為中心。"},{"level":"basic","topic":"西歐封建制度：領主與封臣的關係","q":"中古西歐，國王把土地分封給大貴族，大貴族再把部分土地分封給騎士，受封的人則須向授予土地者宣誓效忠、提供軍事服務。這種以「土地」交換「效忠」的關係，主要建立在哪兩種身分之間？","choices":["領主與封臣","教宗與修道院院長","城市商人與手工業工匠","農奴與奴隸"],"answer":0,"explain":"授予土地（采邑）的一方稱為領主，接受土地並效忠、服軍役的一方稱為封臣，兩者之間是層層相屬的契約關係，故選(0)。(1)是教會內部的宗教職務關係，不涉及封建的軍事義務；(2)屬於城市與行會的經濟關係，是中古後期商業復興的現象；(3)農奴是被支配的勞動者，沒有受封土地、以效忠換取采邑的資格。"},{"level":"basic","topic":"莊園經濟的自給自足特色","q":"中古西歐的莊園裡，領主的宅邸、教堂、農田、磨坊與烤爐大多集中在一起，居民日常所需的糧食、衣物與工具幾乎都在莊園內生產。這最能反映莊園經濟的什麼特色？","choices":["以海外貿易的利潤作為主要收入來源","完全由市民選出的議會自治管理","普遍以貨幣支付工資，僱用自由勞工","自給自足，對外的商業交易相當有限"],"answer":3,"explain":"莊園是中古西歐的基本經濟單位，生活所需大多自行生產，對外交易少，屬於自給自足的經濟型態，故選(3)。(0)海外貿易是中古後期城市與商業復興後的現象，並非莊園的特色；(1)自治與特許狀屬於中古後期的城市，不是莊園；(2)莊園主要依靠農奴的勞役與實物地租，以貨幣工資僱工要到中古後期才逐漸普遍。"},{"level":"basic","topic":"農奴的身分與義務","q":"關於中古西歐莊園上「農奴」的身分與義務，下列敘述何者正確？","choices":["可自由買賣所耕種的土地，並隨時遷居他鄉","須耕種領主的田地、繳納租稅，且不得任意離開莊園","身分與奴隸完全相同，領主可將其當作財產任意買賣","只需向教會繳納什一稅，不必對領主負擔任何義務"],"answer":1,"explain":"農奴附著於土地，必須為領主服勞役、繳納實物地租與各種規費，並受領主管轄、不得隨意遷徙，故選(1)。(0)恰與農奴「束縛於土地」的特徵相反；(2)混淆農奴與奴隸，農奴仍可擁有家庭並保有部分收成，並非任人買賣的財產；(3)農奴既要向教會納什一稅，也要對領主盡義務，兩者並存。"},{"level":"basic","topic":"天主教會對社會生活的影響","q":"中古西歐的人民出生後在教堂受洗，婚禮由神職人員主持，死後葬在教會的墓地，平時還須向教會繳納什一稅；教會本身也擁有廣大的土地。這些現象最能說明什麼？","choices":["天主教會的影響力深入西歐社會與人民生活各層面","教會只負責宗教儀式，完全不介入土地與財產事務","西歐人民可自由選擇信仰各種不同的宗教","國王掌握教會全部人事與財產，教會完全受制於王權"],"answer":0,"explain":"從生到死的重要儀式、稅收與土地都與教會有關，可見教會不只是信仰中心，也是社會、經濟與文化的支配力量，故選(0)。(1)錯在教會是中古西歐最大的地主之一，深度介入世俗事務；(2)錯在當時天主教信仰具有獨占性，異端會受到制裁；(3)錯在教會擁有獨立的組織與龐大財產，王權與教權時常互相競爭。"},{"level":"basic","topic":"修道院的文化保存功能","q":"中古前期西歐戰亂頻繁、學術衰微，修道院中的修士除了祈禱、勞動外，還抄寫並保存古代典籍、開墾荒地、收容旅人與教育子弟。由此可知修道院在當時最重要的作用是？","choices":["負責訓練騎士，成為各國作戰的主力","專門經營海外貿易，替教宗累積財富","由國王設立，作為地方的行政與司法機關","在動盪的時代保存並傳承文化與知識"],"answer":3,"explain":"修道院抄寫典籍、興辦教育，使古典與宗教文獻在戰亂中得以留存，是中古前期西歐的文化中心，故選(3)。(0)訓練騎士是貴族領主的事，修士以祈禱與勞動為主；(1)修道院雖有田產，但目的不在經營海外貿易，海外貿易復興是中古後期城市的現象；(2)修道院屬教會系統，並非國王設立的行政機關。"},{"level":"basic","topic":"拜占庭帝國首都的地理位置","q":"西羅馬帝國滅亡後，東羅馬帝國（拜占庭帝國）仍延續了數百年之久。它的首都位於歐、亞交界處，扼守海峽要衝，成為東西方貿易與文化交會的重鎮。這座城市是？","choices":["羅馬","君士坦丁堡","巴格達","麥加"],"answer":1,"explain":"君士坦丁堡位於歐亞交界的海峽要衝，是拜占庭帝國的首都，也是東西貿易與文化交流的中心，故選(1)。(0)羅馬是教宗所在地、西方天主教的中心；(2)巴格達是阿拉伯帝國的重要都城；(3)麥加是伊斯蘭教的聖地，都不是拜占庭帝國的首都。"},{"level":"basic","topic":"東正教與東西教會的分立","q":"中古時期基督教會逐漸分裂為東、西兩大系統，各自發展出不同的儀式、語言與組織。關於拜占庭帝國所屬的教會，下列敘述何者正確？","choices":["屬於天主教，奉羅馬教宗為最高領袖","屬於伊斯蘭教，以哈里發為宗教領袖","屬於東正教，皇帝對教會事務具有很大的影響力","屬於猶太教，以耶路撒冷為唯一中心"],"answer":2,"explain":"拜占庭帝國以東正教為主，皇帝在教會事務上握有極大影響力，帶有政教結合的色彩，故選(2)。(0)天主教以羅馬教宗為首、通行於西歐，正是與東正教分立的另一方；(1)伊斯蘭教與哈里發屬於阿拉伯帝國；(3)猶太教並非拜占庭帝國的國教。"},{"level":"basic","topic":"伊斯蘭教的興起與創教者","q":"中古初期，阿拉伯半島上有一位人物宣稱領受真主阿拉的啟示，反對當地的多神偶像崇拜，主張唯一真神的信仰，後來以麥地那為基地逐漸統一阿拉伯半島。這位創立伊斯蘭教的人物是？","choices":["耶穌","查士丁尼","查理曼","穆罕默德"],"answer":3,"explain":"穆罕默德是伊斯蘭教的創立者，宣揚一神信仰並統一阿拉伯半島，故選(3)。(0)耶穌是基督教信仰的中心人物，時代與地區皆不同；(1)查士丁尼是拜占庭帝國皇帝，以編纂法典聞名；(2)查理曼是西歐法蘭克王國的君主，皆非伊斯蘭教的創教者。"},{"level":"basic","topic":"《可蘭經》在伊斯蘭社會的地位","q":"穆斯林相信《可蘭經》記載真主阿拉透過先知傳達的啟示，其內容除信仰教義外，也包含飲食、婚姻、商業往來等規範。由此可知《可蘭經》在伊斯蘭世界的地位是？","choices":["只是一部文學作品，與信仰及日常生活無關","既是信仰的根本，也是社會生活與行為規範的依據","由基督教會編纂而成，供穆斯林參考使用","只有宗教學者能夠誦讀，一般信徒不得接觸"],"answer":1,"explain":"題幹指出《可蘭經》兼含信仰與生活規範，因此它同時是宗教經典與社會生活準則，說明宗教深刻形塑伊斯蘭社會，故選(1)。(0)與題幹敘述矛盾；(2)《可蘭經》是伊斯蘭教自身的經典，與基督教會無關；(3)穆斯林普遍誦讀《可蘭經》，並非少數人的專利。"},{"level":"basic","topic":"伊斯蘭教徒的宗教義務（五功）","q":"一位穆斯林每日按時面向麥加禮拜，齋戒月期間白天不飲食，平時定期捐助貧困者，一生中若有能力便前往麥加朝覲。這些宗教實踐屬於下列何者？","choices":["天主教信徒必須領受的七件聖事","東正教教堂中的聖像崇拜儀式","伊斯蘭教徒應實踐的五功","猶太教徒必須遵守的安息日規定"],"answer":2,"explain":"念、禮（拜）、課（施捨）、齋、朝合稱五功，是穆斯林應盡的基本宗教義務，題幹描述的正是其中數項，故選(2)。(0)七件聖事屬天主教；(1)聖像崇拜是東正教的特色；(3)安息日是猶太教的規定。"},{"level":"basic","topic":"伊斯蘭文化的兼容並蓄","q":"今日通行世界的 1、2、3 等符號源自印度，經阿拉伯人改良使用後傳入歐洲，因而被稱為「阿拉伯數字」；阿拉伯學者也發展出代數，並在醫學、天文學上有重要成就。這最能說明伊斯蘭文化的什麼特色？","choices":["廣泛吸收各地文明的成果並加以發展，再傳播到其他地區","完全排斥外來文化，只固守本身的傳統","只重視宗教教義，忽視自然科學的研究","學術成就僅在阿拉伯世界流傳，對歐洲毫無影響"],"answer":0,"explain":"伊斯蘭世界地跨歐亞非，能吸收印度、希臘、波斯等文明的成果並加以發展，再轉而影響歐洲，故選(0)。(1)恰與吸收印度數字的事實相反；(2)錯在醫學、天文與代數都是重要的科學成就；(3)錯在阿拉伯數字與許多學術譯本後來確實傳入歐洲，影響深遠。"},{"level":"basic","topic":"伊斯蘭世界保存與傳譯希臘典籍","q":"阿拉伯帝國時期，統治者在都城設立學術機構，延聘學者將希臘的哲學、醫學與科學著作翻譯成阿拉伯文，並加以注解與研究。這件事對後來的歐洲產生的最重要影響是？","choices":["使西歐人民普遍改信伊斯蘭教","古希臘學術得以保存，日後又經由譯本傳回西歐","使阿拉伯世界從此放棄伊斯蘭信仰而改宗","希臘文原著因被翻譯而在各地遭到全面銷毀"],"answer":1,"explain":"西歐在中古前期一度與古典學術脫節，靠著阿拉伯文譯本的保存與再傳譯，希臘哲學與科學著作才重新回到西歐學界，成為中古後期學術發展的重要養分，故選(1)。(0)翻譯活動屬學術交流，並未使西歐改宗；(2)阿拉伯帝國的學術發展與伊斯蘭信仰並行不悖；(3)翻譯是保存而非銷毀原著，屬於因果顛倒。"},{"level":"basic","topic":"十字軍東征的起因","q":"中古後期，羅馬教宗公開號召西歐的貴族與信徒組成軍隊向東方進軍，教會並允諾參加者可獲得宗教上的赦免。這場「十字軍東征」發動的主要原因是？","choices":["為了開闢通往美洲的新航路，尋找金銀與香料","為了消滅拜占庭帝國，奪取君士坦丁堡作為據點","為了反對教會腐敗，推動宗教改革與教義革新","為了奪回被伊斯蘭勢力控制的聖地耶路撒冷"],"answer":3,"explain":"十字軍東征的直接號召是收復基督教聖地耶路撒冷，並回應拜占庭帝國的求援，故選(3)。(0)新航路的開闢屬於後來的地理大發現，時代不合；(1)攻打君士坦丁堡是東征過程中出現的偏離結果，並非起初的目的；(2)宗教改革發生在近代初期，與十字軍的動機無關。"},{"level":"adv","topic":"封建制度的契約性與忠誠衝突","q":"中古西歐的封建關係層層相屬。假設有一位騎士同時從兩位不同的領主手中領有采邑，當這兩位領主彼此發生戰爭時，他便陷入不知該支援哪一方的困境。這種情形最能反映封建制度的什麼特徵？","choices":["國王直接統治全國人民，中央權力高度集中且指揮統一","封臣有權隨時剝奪領主的土地，領主必須服從封臣","封建關係是層層分封的契約關係，效忠對象可能重疊而產生衝突","封建制度下土地的所有權屬於農奴，貴族只能向農奴收取租金"],"answer":2,"explain":"封建關係由一層層的「授土—效忠」契約構成，一人可對多位領主負義務，因而出現忠誠衝突，正說明王權不彰、政治分散的特色，故選(2)。(0)恰好相反，中古西歐王權微弱、地方割據；(1)顛倒了領主與封臣的主從關係；(3)農奴並無土地所有權，只有耕作與繳租服役的義務。"},{"level":"adv","topic":"莊園規定的史料判讀","q":"某莊園的規定記載：「農戶每週須在領主直接經營的田地上服勞役；使用莊園的磨坊磨麥，須繳交部分麵粉；未經領主許可，農戶子女不得與外莊園的人通婚。」根據這段紀錄，最合理的推論是？","choices":["領主對莊園居民的勞動與日常生活都具有支配力","莊園居民享有充分的人身自由與遷徙權利","莊園以貨幣工資僱用自由勞工從事農業生產","莊園的司法與管理權掌握在國王派任的官員手中"],"answer":0,"explain":"服勞役、使用磨坊須繳費、連婚姻都需領主許可，顯示領主的權力涵蓋經濟生產與日常生活兩個層面，故選(0)。(1)與「未經許可不得通婚」的紀錄矛盾；(2)紀錄中呈現的是勞役與實物繳納，不是貨幣工資；(3)莊園內的裁判與管理多由領主掌握，王權難以直接深入。"},{"level":"adv","topic":"教會與王權的衝突","q":"史書記載：皇帝與教宗因主教的任命權發生激烈爭執，教宗宣布將皇帝逐出教會，境內諸侯因此得以不再效忠；皇帝最後親自前往教宗所在之處請求寬恕。這段敘述最能說明中古西歐的什麼情況？","choices":["皇帝完全掌控教會人事，神職人員必須聽命於王室","教會已放棄一切世俗權力，專心於信仰與慈善事業","中古西歐已確立政教分離，宗教與政治互不干涉","教宗握有宗教制裁的武器，教權一度凌駕於王權之上"],"answer":3,"explain":"「逐出教會」使皇帝失去信徒的服從，可見在人人信教的社會中，宗教制裁具有強大的政治效力，教權曾一度壓過王權，故選(3)。(0)若皇帝完全掌控教會，就不會發生任命權之爭與屈服的結果；(1)與教宗介入政治的事實相反；(2)政教分離是近代以後的觀念，中古西歐正是政教高度糾結。"},{"level":"adv","topic":"拜占庭帝國的歷史地位","q":"拜占庭帝國長期保存羅馬的法律傳統與希臘的語言、文化，其首都同時是東西方商品往來的重要據點，帝國的宗教藝術也影響了東歐與俄羅斯地區。就其歷史地位而言，下列評價何者最恰當？","choices":["是刻意阻絕東西方往來、與外界毫無接觸的封閉帝國","是連結歐亞、承先啟後的文化橋梁，並向外傳播東正教文化","本質上只是西歐封建制度的一部分，政治制度與西歐完全相同","與伊斯蘭世界長期完全隔絕，彼此既沒有戰爭也沒有貿易"],"answer":1,"explain":"拜占庭承續羅馬與希臘的遺產，又居東西交通要衝，並把東正教信仰與文化傳入東歐、俄羅斯，是承先啟後的橋梁，故選(1)。(0)與其作為貿易與文化交會之地的事實相反；(2)拜占庭皇權集中、官僚體系完備，與西歐分散的封建體制大不相同；(3)拜占庭與伊斯蘭勢力既有長期戰爭，也有貿易往來。"},{"level":"adv","topic":"阿拉伯帝國對異教徒的統治政策","q":"阿拉伯帝國向外擴張後，對境內原有的基督徒與猶太教徒，通常允許他們保有原來的信仰，但必須繳納特別的稅；若改信伊斯蘭教則可免除該稅。這種作法最可能造成的影響是？","choices":["減少被征服地區的反抗，有助於維持廣大帝國的統治","使被征服地區的居民立即全部改信基督教","造成帝國內部宗教戰爭不斷，短期內迅速瓦解","顯示帝國完全禁止伊斯蘭教以外的任何信仰"],"answer":0,"explain":"允許保有信仰可降低被統治者的敵意，課稅又能充實財政，兼具懷柔與現實考量，有利於統治遼闊的疆域，故選(0)。(1)與「允許保有原有信仰」矛盾，且改宗的方向也弄反了；(2)這項政策的效果是緩和而非激化衝突；(3)若全面禁止其他信仰，就不會有繳稅即可保有信仰的規定。"},{"level":"adv","topic":"伊斯蘭商業網絡與技術傳播","q":"中古時期，阿拉伯商人的船隊與商隊往來於印度洋與地中海之間，把香料、絲綢、棉布等商品運往各地，同時也將造紙術等技術由東方傳向西方。這個現象最能說明什麼？","choices":["宗教信仰的差異使商業活動完全無法進行","阿拉伯人以農業生產為主，甚少從事長程貿易","商業活動同時帶動了技術與文化的交流傳播","中古時期東西方之間只有戰爭，沒有任何往來"],"answer":2,"explain":"商人往返運送商品的同時，也把技術、知識與風俗一併帶到沿途各地，商路即是文化傳播的通道，故選(2)。(0)史實上不同信仰的商人仍長期交易；(1)阿拉伯帝國正因位居商路要衝而以商業著稱；(3)戰爭之外仍有大量貿易與交流，敘述過於絕對。"},{"level":"adv","topic":"十字軍東征的長期影響","q":"十字軍東征最後並未能長期保有聖地，但東征期間義大利各城市因承運人員與物資而興盛，西歐人也大量接觸到東方的香料、絲織品與學術。就長期影響來看，下列推論何者最合理？","choices":["西歐從此與東方完全斷絕往來，走向封閉","教宗因東征成功而使教會權威永久提升","封建領主的勢力因東征而更加穩固，莊園制度更為強化","促進東西貿易與文化交流，也使教會的權威逐漸受到質疑"],"answer":3,"explain":"東征打通了東西往來，義大利商業城市興起、商業復甦，而東征屢次失利又削弱了教宗的號召力，動搖教會權威，故選(3)。(0)恰與貿易擴大的事實相反；(1)東征整體上並未成功，教會威信反而受損；(2)許多領主因遠征而耗費資財甚至喪命，加上城市與貨幣經濟興起，封建勢力反而走向衰退。"},{"level":"adv","topic":"黑死病的社會經濟衝擊","q":"某地區在黑死病流行前後出現下列變化：人口——大量減少；耕地——出現大片荒廢；勞工工資——明顯上升；領主要求農奴照舊服勞役——遭到抗拒。根據這些變化，最合理的推論是？","choices":["領主因荒地增多而勢力更加強大，農民更受壓迫","勞動力供不應求，農民談判籌碼增加，封建莊園制度受到衝擊","教會因能有效治療疫病而聲望大增，信仰更加穩固","城市因人們躲避疫病而人口暴增，商業空前繁榮"],"answer":1,"explain":"人口銳減使勞動力變得稀少而珍貴，工資上升、農民得以要求更好的條件甚至改繳貨幣地租，動搖了以勞役為基礎的莊園制度，故選(1)。(0)荒地雖多，但缺人耕種反而使領主收入減少；(2)教會面對疫病束手無策，反而使部分人對教會產生懷疑；(3)城市人口密集，疫病死亡更為嚴重，並非暴增繁榮。"},{"level":"adv","topic":"中古後期城市自治與特許狀","q":"中古後期西歐商業復興，許多城市的市民集資向封建領主或國王取得「特許狀」，據以自行管理市政、設立法庭並自訂稅捐。市民積極爭取特許狀，最主要的目的是？","choices":["擺脫封建領主的層層束縛，取得自治與經商活動的保障","希望成為領主的農奴，以換取戰亂時期的人身保護","為了取得參加十字軍東征、前往聖地作戰的資格","為了向教宗請願，要求降低教會徵收的什一稅"],"answer":0,"explain":"城市市民多以工商為業，領主的關卡、雜稅與司法權妨礙交易，取得特許狀即可自治自理、保障商業活動，是市民階級興起的重要一步，故選(0)。(1)方向相反，市民正是要擺脫農奴般的束縛；(2)參加十字軍並不需要特許狀；(3)特許狀處理的是城市自治與世俗權利，並非教會稅務。"},{"level":"adv","topic":"中古大學的出現與特色","q":"中古後期西歐出現由教師與學生結成的團體，逐漸發展成大學；大學多與教會關係密切，神學被視為最崇高的學問，此外也講授法學、醫學以及文法、修辭、邏輯等科目。關於中古大學的敘述，下列何者最恰當？","choices":["大學完全排斥宗教，是為了對抗教會而設立的機構","大學由國王直接經營，教授的內容以軍事訓練為主","大學在教會的影響下發展，神學居於各學科之首","大學只教授實用技術，與宗教及古典學術都沒有關係"],"answer":2,"explain":"中古大學源自師生結成的團體，多受教會支持，課程以神學為最高，並兼授法學、醫學與文法等科目，故選(2)。(0)與大學同教會關係密切、神學居首的事實不符；(1)大學並非國王經營的軍事機構，騎士的軍事訓練另有途徑；(3)錯在大學正是以神學、法學等學術為主，並非只教實用技術。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

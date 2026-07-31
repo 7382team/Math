@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>連接詞與動名詞 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng3-conj",
+  "title": "連接詞與動名詞",
+  "subject": "英文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "whether/if · V-ing",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>連接詞與動名詞</h1><div class="sub">英文 · whether/if · V-ing · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"whether/if 引導名詞子句表「是否」","q":"I wonder ______ Mike will come to the party tonight. He hasn't answered my message yet.","choices":["that","whether","what","because"],"answer":1,"explain":"wonder 後面接名詞子句表「想知道是否」，用 whether 或 if 引導，故選 whether。(A) that 引導的名詞子句表「肯定的事實」，與 wonder（不確定）的語意不合；(C) what 必須在子句中當主詞或受詞，但 Mike will come 已完整，不缺成分；(D) because 表原因，句意不通。"},{"level":"basic","topic":"whether...or not 置於句首","q":"______ or not you agree with the plan, we have to finish the report by Friday.","choices":["Whether","If","That","Unless"],"answer":0,"explain":"whether...or not 表「不論是否」，可放句首；而且 or not 緊接在連接詞後面時只能用 whether，不能用 if，故選 (A)。(B) if 不能直接和 or not 連用（不可說 If or not...）；(C) That 引導的子句表事實，不能與 or not 連用；(D) Unless 本身就等於 if...not，後面再加 or not 語意重複且不合語法。"},{"level":"basic","topic":"if 條件句用現在式表未來","q":"If it ______ tomorrow, we will stay home and watch a movie.","choices":["will rain","rains","rained","raining"],"answer":1,"explain":"if 表「如果」引導條件副詞子句時，必須用現在式代替未來式，主要子句才用 will；主詞 it 為第三人稱單數，故用 rains。(A) will rain 是最常見的錯誤，條件副詞子句中不可用 will；(C) rained 為過去式，與 tomorrow 的時間不合；(D) raining 前面缺 be 動詞，不能單獨當動詞。"},{"level":"basic","topic":"動名詞當主詞","q":"______ English songs every day has helped me learn a lot of new words.","choices":["Listening to","Listen to","Listens to","To listening to"],"answer":0,"explain":"動名詞（V-ing）可以當句子的主詞，Listening to English songs every day 當主詞時視為單數，故後面接 has helped。(B) 原形動詞、(C) 第三人稱單數動詞都不能當主詞；(D) to + V-ing 是錯誤結構，不定詞應寫成 to listen。"},{"level":"basic","topic":"enjoy 只接動名詞","q":"My little brother enjoys ______ comic books before he goes to bed.","choices":["read","to read","reading","reads"],"answer":2,"explain":"enjoy 後面只能接動名詞（V-ing）當受詞，故選 reading。(A) 原形動詞、(B) 不定詞、(D) 第三人稱單數動詞都不能接在 enjoy 之後。同樣只接動名詞的常見動詞還有 finish, keep, practice, mind, give up, avoid, suggest。"},{"level":"basic","topic":"decide 只接不定詞","q":"We decided ______ a birthday cake for Grandma by ourselves.","choices":["make","making","to make","made"],"answer":2,"explain":"decide 後面只能接不定詞（to V），故選 to make。(A) 原形、(B) 動名詞、(D) 過去式都不可接在 decide 之後。同樣只接不定詞的常見動詞還有 want, hope, plan, agree, promise, would like。"},{"level":"basic","topic":"be good at + V-ing（介系詞後接動名詞）","q":"Kevin is good at ______ math problems, so his classmates often ask him for help.","choices":["solve","solving","to solve","solved"],"answer":1,"explain":"at 是介系詞，介系詞後面必須接動名詞，be good at V-ing 表「擅長做…」，故選 solving。(A) 原形、(C) 不定詞、(D) 過去式都不能放在介系詞後面。"},{"level":"basic","topic":"look forward to 的 to 是介系詞","q":"We are looking forward to ______ you again at the school fair next month.","choices":["to see","see","seeing","seen"],"answer":2,"explain":"look forward to 裡的 to 是介系詞，不是不定詞的 to，後面要接動名詞 seeing。(A) 會變成 to to see，明顯錯誤；(B) 介系詞後不可接原形動詞；(D) seen 是過去分詞，此處不是被動語態。"},{"level":"basic","topic":"go + V-ing 表從事活動","q":"Last Sunday my father and I went ______ at the lake, and we caught three big fish.","choices":["fish","for fishing","fishing","fished"],"answer":2,"explain":"「go + V-ing」表示從事某項活動，如 go fishing / go swimming / go shopping，故選 fishing。(A) 原形動詞不可直接接在 went 後面；(B) go for fishing 是錯誤用法；(D) fished 是過去式動詞，一個子句不能有兩個過去式動詞並列。"},{"level":"basic","topic":"mind 只接動名詞","q":"Would you mind ______ the window? It's a little cold in here.","choices":["to close","close","closed","closing"],"answer":3,"explain":"mind 後面只接動名詞，Would you mind V-ing? 表「你介意做…嗎？」，故選 closing。(A) 不定詞、(B) 原形、(C) 過去式都不能接在 mind 之後。"},{"level":"basic","topic":"對等連接詞 not only...but also","q":"Tina is not only a good student ______ also a wonderful singer in the school choir.","choices":["and","but","or","so"],"answer":1,"explain":"not only A but also B 是固定句型，表「不僅…而且…」，故選 but。(A) and、(C) or、(D) so 都不能與 not only 搭配成這個句型。"},{"level":"basic","topic":"從屬連接詞 because 與對等連接詞 so 不可並用","q":"Which sentence gives a reason correctly with 'because' or 'so'?","choices":["Because it was raining hard, so we stayed at home.","Because of it was raining hard, we stayed at home.","It was raining hard, so because we stayed at home.","Because it was raining hard, we stayed at home."],"answer":3,"explain":"中文的「因為…所以…」在英文中只能擇一使用，because 與 so 不可同時出現，故 (D) 正確。(A) because 與 so 並用是最常見的中式英文錯誤；(B) because of 是介系詞片語，後面只能接名詞（如 because of the rain），不能接子句；(C) so 後面再加 because，兩個連接詞連用不合語法。"},{"level":"basic","topic":"neither...nor 與就近一致","q":"Neither Jack ______ his sisters are going to the summer camp this year.","choices":["or","and","but","nor"],"answer":3,"explain":"neither A nor B 是固定搭配，表「A 和 B 都不…」，動詞與最靠近的主詞 his sisters 一致，故用 are going。(A) or 只能和 either 搭配成 either...or；(B) and 與 (C) but 都不能與 neither 搭配。"},{"level":"basic","topic":"although 引導從屬子句，與 but 不可並用","q":"______ Peter was very tired, he kept working on his science project until midnight.","choices":["Although","But","So","However"],"answer":0,"explain":"although 表「雖然」，引導從屬子句，後面的主要子句不可再加 but，故選 Although。(B) But 是對等連接詞，不能放句首引導從屬子句形成「雖然…但是…」；(C) So 表結果，前後語意不通；(D) However 是副詞，須用句號或分號隔開（He was tired; however, he kept working.），不能直接引導子句。"},{"level":"adv","topic":"if 名詞子句 vs. if 條件句的時態","q":"I don't know if my sister ______ the singing contest next month, but if she ______, our whole family will go and cheer for her.","choices":["will join / will join","joins / joins","joins / will join","will join / joins"],"answer":3,"explain":"第一個 if 引導 know 的名詞子句表「是否」，談未來的事要用未來式 will join；第二個 if 表「如果」引導條件副詞子句，必須用現在式 joins 代替未來式，故選 (D)。(A)(B) 把兩種 if 當成同一種用法；(B) 的第一格另有問題：參賽與否是妹妹未來的決定，不是既定時刻表的事件，不能用簡單現在式表未來；(C) 前後正好顛倒，條件句用了 will 是最常見的錯誤。"},{"level":"adv","topic":"whether/if 用法區別（當主詞、介系詞後、接不定詞）","q":"Which sentence uses 'whether' or 'if' correctly in a noun clause?","choices":["If we will go camping depends on the weather.","Whether we go camping or not depends on the weather.","We are talking about if we should go camping.","The problem is if to go camping this weekend."],"answer":1,"explain":"whether 引導的名詞子句可以放句首當主詞，也可以和 or not 連用，故 (B) 正確。(A) if 引導的名詞子句不能放句首當主詞，須改成 Whether we go camping；(C) 介系詞（about）後面的名詞子句只能用 whether，不能用 if；(D) if 後面不能接不定詞，須用 whether to V。"},{"level":"adv","topic":"whether + to V","q":"Mom hasn't decided ______ yet.","choices":["whether to take the train or the bus","if to take the train or the bus","whether taking the train or the bus","if taking the train or the bus"],"answer":0,"explain":"「whether + to V」表「是否要做…／要做 A 還是 B」，是 decide 之後常見的用法，故選 (A)。(B)(D) if 後面絕對不能接不定詞或動名詞；(C) whether 後面可接不定詞或完整子句，但不能直接接動名詞。"},{"level":"adv","topic":"suggest 接動名詞 vs. promise 接不定詞","q":"David suggested ______ a taxi, but I promised ______ him to the station myself.","choices":["to take / driving","to take / to drive","taking / to drive","taking / driving"],"answer":2,"explain":"suggest 後面只接動名詞（taking），promise 後面只接不定詞（to drive），故選 (C)。(A) 兩者正好相反；(B) suggest to take 錯誤；(D) promise driving 錯誤。"},{"level":"adv","topic":"介系詞（for / instead of）後接動名詞","q":"Thank you for ______ me with my science report instead of ______ out with your friends.","choices":["helping / going","help / go","to help / to go","helping / to go"],"answer":0,"explain":"for 和 instead of 都是介系詞，後面一律接動名詞，故兩格都用 V-ing，選 (A)。(B) 介系詞後不可接原形動詞；(C)(D) 介系詞後不可接不定詞，thank you for to help、instead of to go 都是錯誤用法。"},{"level":"adv","topic":"改錯：if 條件句不可用 will","q":"Which sentence is INCORRECT in its use of 'if'?","choices":["If you finish your homework early, you can watch TV.","I wonder if you will finish your homework before dinner.","Please ask Jenny if she will be free tomorrow night.","If you will finish your homework early, you can watch TV."],"answer":3,"explain":"(D) 的 if 表「如果」，引導條件副詞子句，子句中不可用 will，必須用現在式 finish，所以是錯誤句。(A) 是正確的條件句寫法；(B)(C) 的 if 是「是否」，引導 wonder / ask 的名詞子句，這種 if 子句談未來時可以用 will，並沒有錯。"},{"level":"adv","topic":"動名詞當主詞 + give up 接動名詞","q":"______ too much junk food is bad for your health, so my doctor asked me to give up ______ it.","choices":["Eat / eat","Eating / eating","To eat / to eat","Eating / to eat"],"answer":1,"explain":"第一格用動名詞當主詞（Eating）；第二格 give up 後面只接動名詞（eating），故選 (B)。(A) 原形動詞既不能當主詞，也不能接在 give up 後面；(C) 雖然不定詞當主詞在文法上可行，但 give up to eat 是錯誤用法；(D) 同樣錯在 give up to eat。"},{"level":"adv","topic":"間接問句語序（whether/if + 主詞 + 動詞）","q":"Ann asked me, \"Do you like Taiwanese food?\" Now she wants to know ______.","choices":["do I like Taiwanese food","whether do I like Taiwanese food","whether I like Taiwanese food","if do I like Taiwanese food"],"answer":2,"explain":"Yes/No 問句改成名詞子句（間接問句）時，要用 whether/if 引導，而且子句必須改回「主詞＋動詞」的直述句語序，人稱也要跟著調整（you→I），故選 (C)。(A) 缺少連接詞且仍是倒裝語序；(B)(D) 在 whether/if 後面還保留助動詞 do 的倒裝，是最常見的錯誤。"},{"level":"adv","topic":"句型轉換：whether 名詞子句當主詞","q":"Peter may or may not join the school band. Which sentence expresses this idea correctly?","choices":["Whether Peter will join the school band or not is still a question.","Whether will Peter join the school band is still a question.","If Peter will join the school band or not is still a question.","Whether Peter join the school band or not are still a question."],"answer":0,"explain":"whether...or not 引導的名詞子句可以當主詞，子句內用直述句語序，整個主詞子句視為單數，動詞用 is，故選 (A)。(B) 子句中不可用倒裝 will Peter join；(C) if 引導的子句不能放句首當主詞，須改用 whether；(D) 子句動詞 join 未配合主詞 Peter 變化，且主詞子句應接單數動詞 is。"},{"level":"adv","topic":"對話應用：keep / practice 只接動名詞","q":"A: Why do you keep ______ that song again and again?  B: Because I need to practice ______ it for the school show next week.","choices":["to play / to sing","to play / singing","playing / to sing","playing / singing"],"answer":3,"explain":"keep 和 practice 後面都只能接動名詞，故兩格都用 V-ing，選 (D)。(A)(B) 錯在 keep to play；(A)(C) 錯在 practice to sing。記得 enjoy, finish, keep, practice, mind, give up, avoid, suggest 這一組動詞後面一律接 V-ing。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

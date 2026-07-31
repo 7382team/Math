@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>漠南非洲 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo3-africa",
+  "title": "漠南非洲",
+  "subject": "地理",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2課 漠南非洲",
+  "tag": "高原大陸·莽原·殖民影響",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>漠南非洲</h1><div class="sub">地理 · 高原大陸·莽原·殖民影響 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"漠南非洲的範圍與位置","q":"地理課本所稱的「漠南非洲」，其範圍是指下列哪一個地區？","choices":["地中海沿岸到撒哈拉沙漠北緣的非洲地區","尼羅河下游到紅海沿岸的非洲地區","撒哈拉沙漠以南的廣大非洲地區","非洲大陸最南端好望角附近的沿海地區"],"answer":2,"explain":"「漠南非洲」以撒哈拉沙漠為界，指沙漠以南的非洲，故選C。A所述為北非；B為東北非的尼羅河流域，仍屬北非範圍；D僅是非洲西南角的一小塊，範圍遠小於漠南非洲。"},{"level":"basic","topic":"赤道通過的地形區","q":"赤道橫貫非洲中部，下列哪一個地形區位於赤道通過的範圍內？","choices":["喀拉哈里沙漠","阿特拉斯山脈","撒哈拉沙漠","剛果盆地"],"answer":3,"explain":"赤道通過非洲中部的剛果盆地，使該地成為非洲熱帶雨林的核心區，故選D。A的喀拉哈里沙漠位於南回歸線附近的非洲南部；B、C的阿特拉斯山脈與撒哈拉沙漠都在北非，距赤道甚遠。"},{"level":"basic","topic":"熱帶雨林氣候特徵","q":"剛果盆地的氣候特徵，下列敘述何者正確？","choices":["全年氣溫偏低，降水集中於冬季","乾濕季分明，乾季可長達半年以上","全年高溫多雨，年溫差小，午後常有雷陣雨","全年乾燥少雨，日夜溫差極大"],"answer":2,"explain":"剛果盆地位於赤道附近，屬熱帶雨林氣候，終年受赤道低壓帶影響，全年高溫多雨、年溫差小，故選C。A是溫帶地中海型氣候冬雨的特徵；B是外圍熱帶莽原的特徵；D則是沙漠氣候的特徵。"},{"level":"basic","topic":"熱帶莽原氣候的降水","q":"漠南非洲面積最廣的熱帶莽原（熱帶草原）氣候區，其降水特徵為何？","choices":["乾濕季分明，雨季集中在太陽直射、氣溫較高的季節","全年降水平均，沒有明顯的乾濕季之分","降水集中在氣溫最低的月份，形成冬雨型","全年降水稀少，只有偶發的短暫陣雨"],"answer":0,"explain":"熱帶莽原受赤道低壓帶與副熱帶高壓帶隨季節南北移動的交替影響，太陽直射時受低壓帶控制而多雨，其餘時間受高壓帶控制而乾燥，乾濕季因此分明，故選A。B是熱帶雨林的特徵；C屬地中海型氣候；D為沙漠氣候。"},{"level":"basic","topic":"沙漠的分布位置","q":"下列哪一座沙漠位於漠南非洲南部，是本區景觀向南遞變而出現的乾燥地區？","choices":["撒哈拉沙漠","阿拉伯沙漠","塔克拉瑪干沙漠","喀拉哈里沙漠"],"answer":3,"explain":"喀拉哈里沙漠位於非洲南部、南回歸線附近，是莽原向南遞變為乾燥景觀的代表，故選D。A的撒哈拉沙漠在非洲北部，是漠南非洲的北界；B位於西亞；C位於中國西北的內陸盆地。"},{"level":"basic","topic":"東非大裂谷的成因","q":"東非大裂谷南北綿延、兩側崖壁陡峭，谷地內分布多個狹長湖泊並有火山活動。此地形的主要成因為何？","choices":["冰河長期侵蝕挖掘谷地而成","板塊張裂拉張、中間地塊陷落而成","河流長期向下侵蝕所形成的深峻峽谷","板塊碰撞擠壓、地層褶皺隆起而成"],"answer":1,"explain":"東非大裂谷位於板塊張裂帶，地殼受拉張而斷裂陷落，形成陡崖、狹長湖泊並伴隨火山與地震，故選B。A的冰河地形見於高緯或高山地區；C的河蝕峽谷不會呈現長距離平行陡崖與火山活動；D的擠壓褶皺會形成高大山脈而非陷落谷地。"},{"level":"basic","topic":"高原大陸的地形特徵","q":"非洲素有「高原大陸」之稱，下列何者最能表現此一地形特徵？","choices":["沿海平原十分寬廣，是全洲主要的人口與農業精華區","境內以高大年輕的褶皺山系為主，山勢陡峻、地震頻繁","內陸多高原與盆地，海岸平原狹窄，河川下游多瀑布急流","全洲地勢普遍低平，幾乎沒有大面積的高原與山地分布"],"answer":2,"explain":"非洲以高原、盆地為主體，地勢自內陸向海岸急降，沿海平原狹窄，河川下游多瀑布與急流，不利航運與港口腹地的聯繫，故選C。A與非洲海岸平原狹窄的事實相反；B的年輕高大褶皺山系是美洲科迪勒拉山系一類的特徵，非洲主體為古老高原；D忽略了非洲整體海拔偏高的事實。"},{"level":"basic","topic":"剛果河的水文特徵","q":"關於剛果河的敘述，下列何者正確？","choices":["流經赤道附近的剛果盆地，水量豐沛，向西注入大西洋","流經撒哈拉沙漠的南緣，最後向北注入地中海","由南向北流貫東非高原，最後注入印度洋","是非洲最長的河川，下游三角洲為著名的古文明農業區"],"answer":0,"explain":"剛果河集水區橫跨赤道兩側，南北半球雨季交替補注，使其水量豐沛且全年變化較小，向西注入大西洋，故選A。B、C的流向與注入海域皆錯誤；D所述為北非的尼羅河，且尼羅河才是非洲最長的河川。"},{"level":"basic","topic":"尼日河的流域位置","q":"尼日河是漠南非洲重要的河川之一，其流經的區域與注入的海域為何？","choices":["東非高原一帶，最後注入印度洋","非洲南部的乾燥地區，最後注入大西洋","北非的地中海沿岸地區，最後注入地中海","西非地區，最後注入幾內亞灣"],"answer":3,"explain":"尼日河發源於西非，流經西非內陸後轉向南注入幾內亞灣，是西非重要的水源與交通線，故選D。A、B所述分別為東非與非洲南部河川的流路；C的地中海沿岸屬北非，不在漠南非洲的範圍內。"},{"level":"basic","topic":"礦產資源與出口項目","q":"漠南非洲礦產資源豐富，下列哪一組敘述最符合本區礦產與出口的情形？","choices":["煤、鐵、硫磺為主，且幾乎全部供應本地重工業使用","黃金、鑽石、銅與多種稀有金屬，且多以原料形式輸出","僅有大理石、石灰岩等非金屬建材，並無金屬礦產","只出產錫與鎢兩種金屬，沒有其他礦產可供出口"],"answer":1,"explain":"漠南非洲的黃金、鑽石、銅與多種稀有金屬蘊藏與產量在世界前列，是重要的出口項目，故選B。A誤以為本區以重工業自用為主，事實上加工工業有限、多以原料輸出；C、D的「僅有」「只出產」與本區礦種多元的事實不符。"},{"level":"basic","topic":"熱帶栽培業的作物","q":"漠南非洲部分國家自殖民時期起發展熱帶栽培業，其種植的作物與經營目的為何？","choices":["小麥、大麥等溫帶穀物，主要供本地製作主食","可可、咖啡、油棕等熱帶作物，並以外銷為主要目的","蘋果、葡萄等溫帶水果，主要銷往鄰近的國家","水稻與甘藷等糧食作物，以自給自足為主要目的"],"answer":1,"explain":"熱帶栽培業配合本區高溫多雨的環境，栽種可可、咖啡、油棕、橡膠等熱帶作物，並以外銷為導向，故選B。A、C的作物需要溫帶氣候，不適合本區；D的自給性作物栽培雖然存在，但屬於自給性農業，並非熱帶栽培業的內涵。"},{"level":"basic","topic":"殖民時期的交通建設","q":"漠南非洲不少國家的鐵路、公路呈現「由內陸礦區或栽培業產地直通某一沿海港口」的形態。此一路網最主要反映了什麼？","choices":["殖民時期為輸出原料而興建，故國內與鄰國之間的橫向聯繫較弱","為促進各國之間的觀光往來，由各國共同規劃興建而成","純粹依地形起伏選擇最平坦的路線，長期自然形成","為連結內陸各大都市之間的通勤需求而規劃興建"],"answer":0,"explain":"這類「內陸產地—港口」的放射狀路網是殖民時期為輸出原料而建，造成今日國內與跨國的橫向交通聯繫不足，故選A。B的觀光需求不是當初建設的目的；C無法解釋路線何以都指向港口；D與路線多起於礦區、農場而非都市群的事實不符。"},{"level":"basic","topic":"莽原生態與觀光資源","q":"東非的肯亞、坦尚尼亞等國吸引大量國際遊客前往，其最具代表性的觀光資源為何？","choices":["冰河侵蝕形成的峽灣海岸與大型冰河遺跡","莽原上的大型野生動物，以及國家公園與野生動物保護區","熱帶雨林中的大型高山滑雪場與滑雪度假村","沙漠中的石油鑽井與煉油工業景觀"],"answer":1,"explain":"東非高原的熱帶莽原有廣大草原與豐富的大型草食、肉食動物，各國設有國家公園與保護區發展生態觀光，故選B。A的峽灣屬高緯度冰河作用地形；C的滑雪場需長期積雪，與熱帶環境不符；D的石油景觀並非本區觀光主體。"},{"level":"basic","topic":"族群與語言的多元","q":"關於漠南非洲的族群與語言，下列敘述何者正確？","choices":["全區只有單一族群與單一語言，各地的文化相當一致","各國的官方語言全部都是阿拉伯語，行政運作也以此為主","各國一律以英語為唯一官方語言，不使用其他任何語言","族群與語言種類繁多，不少國家以前宗主國語言為官方語言之一"],"answer":3,"explain":"漠南非洲族群與語言極為多元，許多國家為便於跨族群溝通與行政運作，同時採用英語、法語或葡萄牙語等前宗主國語言作為官方語言之一，故選D。A與本區的多元事實相反；B的阿拉伯語主要通行於北非與西亞；C忽略了法語、葡萄牙語及各種本土語言的使用。"},{"level":"adv","topic":"氣候與景觀的緯度遞變","q":"由剛果盆地向南、向北到南北回歸線附近，自然景觀依序出現「熱帶雨林→熱帶莽原→沙漠」的變化，其主要原因為何？","choices":["地勢由低漸高，氣溫隨海拔上升而遞減，植被因此改變","距海遠近不同，內陸受海洋水氣的影響大於沿海地區","緯度愈高，受赤道低壓帶控制的時間愈短、副熱帶高壓愈久，年雨量遞減","沿岸洋流由暖流轉為寒流，使沿海地區的降水由少變多"],"answer":2,"explain":"赤道低壓帶與副熱帶高壓帶隨太陽直射點南北移動，緯度愈高受低壓帶控制的月份愈短，雨量與雨季長度隨之遞減，景觀由雨林轉為莽原再轉為沙漠，故選C。A的高度變化無法解釋南北對稱的帶狀分布；B的敘述本身即錯誤，愈向內陸受海洋影響愈弱；D的因果方向相反，寒流流經的沿岸反而少雨。"},{"level":"adv","topic":"殖民國界與部族分布","q":"漠南非洲不少國家的國界在地圖上呈現筆直線條。關於這種國界的形成背景與可能造成的問題，下列敘述何者最為適當？","choices":["多由殖民列強依經緯線劃定，與部族分布不一致，易使族群被分割而增加治理難度","依主要河川、山脈等自然界線劃定，因此與部族的分布範圍完全一致","由各部族代表協商後共同劃定，因此獨立以後幾乎沒有邊界爭議","依各地人口密度平均劃分，使各國的人口規模大致相近"],"answer":0,"explain":"筆直的國界顯示其依經緯線等人為界線劃設，並非依自然界線或族群分布，使部分族群被分割、不同族群被納入同一國，成為日後協調與治理上的課題，故選A。B與「筆直」的形態明顯矛盾；C若由部族協商，國界應沿族群分布呈不規則狀；D的人口平均劃分並非史實。"},{"level":"adv","topic":"單一作物經濟的風險","q":"漠南非洲某國的出口以一種熱帶栽培作物為大宗。當該作物的國際價格大幅下跌時，該國最可能出現下列何種情況？","choices":["因為出口項目單純，反而較不易受國際市場價格波動的影響","出口收入明顯減少，國家財政與農民所得都受到較大的衝擊","國內糧食自給率立即提高，糧食供應隨即轉為充足","工業產品出口隨即大幅增加，足以完全彌補農產的損失"],"answer":1,"explain":"出口項目集中於單一作物時，收入高度依賴該作物的國際價格，價格下跌便直接衝擊外匯收入與農民所得，這正是單一作物經濟的脆弱之處，故選B。A的因果顛倒，項目愈單一風險愈集中；C的栽培業農地無法立刻改種糧食；D與本區工業基礎有限的現況不符。"},{"level":"adv","topic":"初級產品輸出與經濟依賴","q":"漠南非洲許多國家礦產豐富，但出口仍以未經加工的礦砂、原礦等初級產品為主。此一貿易型態對其經濟發展最主要的不利影響是什麼？","choices":["礦產將在短期內完全耗竭，該國從此再也無法開採任何資源","該國將完全無法參與國際貿易，只能長期維持封閉的自給經濟","該國的糧食作物產量必然超過國內需求，造成長期生產過剩","加工層次低、附加價值有限，較高的利潤多留在進口國的製造環節"],"answer":3,"explain":"初級產品價格低、加工層次淺，利潤主要留在下游加工與製造的國家，出口國不易累積資金與技術，形成對外依賴度高的經濟結構，故選D。A過度誇大，資源是否耗竭取決於蘊藏與開採速度；B與本區大量出口礦產的事實相反；C與貿易型態並無必然的因果關係。"},{"level":"adv","topic":"沙漠化的人為因素","q":"撒哈拉沙漠南緣的莽原地帶，沙漠化的範圍有擴大的趨勢，下列何者是造成此現象的主要人為因素？","choices":["大規模興建水利灌溉設施，使農地長期積水而無法耕作","人口增加使耕地不斷擴張，加上過度放牧與砍伐薪柴，地表植被減少","政府推動大規模造林與草地復育，使地表植被過於濃密","工業區密集排放廢水，使大面積的土壤鹽鹼化"],"answer":1,"explain":"沙漠邊緣本就雨量少而不穩定，人口壓力下的擴耕、超載放牧與砍伐薪柴使植被減少，土壤失去保護而風蝕加劇，沙漠化因而擴大，故選B。A的積水並非本區沙漠化的成因；C的造林與草地復育屬於防治沙漠化的措施，方向相反；D的工業廢水並非本區莽原地帶的主要問題。"},{"level":"adv","topic":"氣候資料判讀","q":"某地氣候資料顯示：各月均溫都在攝氏20度以上、年溫差小；降水集中於連續數個月，其餘月份幾乎不降雨。該地最可能的自然景觀與位置為何？","choices":["熱帶莽原，位於剛果盆地外圍向南北兩側過渡的地帶","熱帶雨林，位於剛果盆地的中央地區","溫帶落葉林，位於非洲南端的沿海地區","沙漠，位於喀拉哈里沙漠的中心地帶"],"answer":0,"explain":"高溫且年溫差小顯示位於低緯；降水集中於部分月份、其餘月份幾乎無雨，是乾濕季分明的熱帶莽原特徵，故選A。B的雨林應為全年多雨、無明顯乾季；C的溫帶落葉林區冬季均溫不可能維持在攝氏20度以上；D的沙漠全年雨量都極少，不會出現連續數月的雨季。"},{"level":"adv","topic":"高度對氣溫的影響（區域比較）","q":"東非高原上有些地方雖然位在赤道附近，氣溫卻比同緯度的剛果盆地低，氣候相對涼爽。造成此一差異的主要原因為何？","choices":["距離海洋較近，受沿岸寒流的影響十分顯著","緯度較高，接收到的太陽輻射明顯較為微弱","地勢較高，氣溫隨海拔增加而遞減，因此較為涼爽","位於背風側，因焚風作用而使氣溫明顯下降"],"answer":2,"explain":"兩地緯度相近，差異主要來自地形高度：東非高原海拔較高，氣溫隨高度遞減，故較為涼爽，選C。A的東非高原多屬內陸高地，寒流並非主因；B與題幹「同緯度」的條件矛盾；D的焚風為背風側下沉增溫，會使氣溫上升而非下降。"},{"level":"adv","topic":"行動通訊與行動支付的普及","q":"近年漠南非洲不少地區的行動電話與行動支付服務普及速度相當快，下列何者是較合理的解釋？","choices":["當地固定電話與有線網路早已密布，行動通訊只是額外的補充","當地法令明文禁止設置有線通訊設備，民眾只能改用行動電話","當地人口稀少、通訊需求極低，業者可以輕易滿足所有的需求","有線通訊與金融據點不足，行動通訊鋪設較快、成本較低，可直接以手機收付款"],"answer":3,"explain":"有線電纜與實體銀行分行的建設成本高、耗時久，行動通訊網路鋪設相對快速便宜，因此許多地區得以跳過有線階段，直接發展行動通訊與行動支付，故選D。A與有線建設不足的實情相反；B的法令禁止並非事實；C與本區人口成長快速、通訊需求大的情況不符。"},{"level":"adv","topic":"都市化與居住問題","q":"漠南非洲部分大都市的周邊出現大片設施簡陋的住宅區，其形成的主要原因為何？","choices":["都市人口大量外移到鄉村，原有住宅閒置而逐漸老舊破敗","政府刻意將工業區全部規劃在市中心，居民因此被迫遷往郊區","鄉村人口大量移入，住宅、就業與公共設施的供給趕不上人口增加","當地都市化程度極低，幾乎沒有人口在城鄉之間往來移動"],"answer":2,"explain":"鄉村推力與都市拉力使人口快速集中，都市的住宅、水電與就業供給一時難以配合，部分移入者只能居住在設施較為簡陋的地區，故選C。A的人口移動方向與事實相反；B並非普遍現象，也無法解釋住宅品質問題；D與本區都市化速度較快的趨勢不符。"},{"level":"adv","topic":"人口成長與糧食供應","q":"漠南非洲部分地區人口成長較快，而農業又多屬耕作方式較傳統的自給性農業。這樣的組合最可能帶來下列何種挑戰？","choices":["糧食增產的速度不易跟上人口成長，遇乾旱時易出現糧食與飲水不足","農產品長期大量過剩，必須積極對外尋找新的海外市場","農村勞動力嚴重不足，大片農地因此被迫長期休耕","糧食供給穩定充足，可全面轉型為出口導向的商業性農業"],"answer":0,"explain":"自給性農業單位面積產量提升有限，當人口成長較快時，糧食增產速度容易落後於需求，遇乾旱等自然因素時缺糧與缺水問題更為明顯，故選A。B與糧食供應吃緊的情況相反；C與人口成長快、農村勞動力充足的情形不符；D忽略了增產不易的限制。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

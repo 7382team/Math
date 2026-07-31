@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>文藝復興與宗教改革 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist3-renaissance",
+  "title": "文藝復興與宗教改革",
+  "subject": "歷史",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3課 文藝復興與宗教改革",
+  "tag": "人文主義·馬丁路德",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>文藝復興與宗教改革</h1><div class="sub">歷史 · 人文主義·馬丁路德 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文藝復興起源背景－義大利的商業與財富","q":"文藝復興最早出現在義大利的城市，而非歐洲其他地區。下列哪一項最能說明義大利當時具備的有利條件？","choices":["義大利各城市因東西方貿易而累積財富，富商願意出資贊助文藝活動","義大利擁有廣大海外殖民地，得以掠奪大量金銀以興建學校","義大利已完成統一，由強而有力的國王主導全國文化建設","義大利率先發生工業革命，工廠主人以機器生產藝術品"],"answer":0,"explain":"義大利半島位居地中海貿易要衝，威尼斯、佛羅倫斯等城市因商業而富裕，富商家族贊助學者與藝術家，成為文藝復興的重要推力，故選第1項。第2項的海外殖民與掠奪金銀是新航路開闢後西班牙、葡萄牙的情形，時間與對象皆不合；第3項錯在義大利當時仍是分立的城市國家，並未統一；第4項的工業革命發生在數百年後，屬時序錯置。"},{"level":"basic","topic":"古典典籍西傳與古典文化再生","q":"鄂圖曼土耳其人攻滅東羅馬帝國(拜占庭帝國)前後，不少學者攜帶古代典籍逃往義大利。這件事對文藝復興的主要影響是什麼？","choices":["使義大利商人取得繞過非洲、通往印度的新航路","帶來大量古希臘、羅馬的典籍與學術，促成古典文化被重新研究","促使羅馬教會決定主動把聖經翻譯成各國語言","使義大利各城市改採君主專制，加強對學者的控制"],"answer":1,"explain":"東羅馬帝國長期保存古希臘、羅馬的文獻，學者攜書西遷使義大利得以直接研讀古典原典，「再生」古典文化，故選第2項。第1項是新航路開闢的成果，與學者西遷無關；第3項把宗教改革時期路德等人翻譯聖經的作為誤植於此，當時羅馬教會仍以拉丁文聖經為準；第4項與史實不合，學者帶來的是學術資源，而非政治體制的改變。"},{"level":"basic","topic":"人文主義的基本精神","q":"人文主義者主張「人應充分發揮自己的才能，現世生活同樣值得珍惜」。這種主張與中古時期的觀念，最大的差異在於？","choices":["中古強調追求享樂，人文主義則強調禁慾苦修","中古重視科學實驗，人文主義重視神學辯論","中古以神與來世為中心，人文主義則肯定人的價值與現世生活","中古主張君權神授，人文主義主張以選舉產生國王"],"answer":2,"explain":"中古歐洲的思想以教會、神與來世救贖為核心，人文主義則把關注焦點轉向人本身與現世成就，故選第3項。第1項把兩者的內容完全顛倒；第2項也顛倒了，中古學術偏重神學，人文主義才逐漸帶動對自然與人事的探究；第4項的民主選舉是近代以後的政治發展，人文主義並未提出此主張。"},{"level":"basic","topic":"文藝復興藝術－達文西","q":"有一位文藝復興時期的人物，兼具畫家、科學家與工程師的身分，留下大量人體解剖與機械設計的手稿，代表畫作有《最後的晚餐》。這位人物是誰？","choices":["拉斐爾","米開朗基羅","但丁","達文西"],"answer":3,"explain":"達文西被視為「多才多藝」的典型，兼通繪畫、解剖、工程與科學，《最後的晚餐》《蒙娜麗莎》為其代表作，故選第4項。拉斐爾以聖母像與《雅典學園》著稱，畫風柔和典雅；米開朗基羅長於雕刻與壁畫，如《大衛像》；但丁是文學家而非畫家，三者皆與題幹描述不符。"},{"level":"basic","topic":"文藝復興藝術特色－寫實與人體之美","q":"米開朗基羅的《大衛像》以比例勻稱、肌肉分明的裸體青年，展現沉著與力量。這件作品最能反映文藝復興藝術的哪一項特色？","choices":["完全排斥宗教題材，只描繪市井小民的日常生活","重視人體之美與寫實表現，藉此肯定人的價值","以扭曲抽象的線條表達內心的信仰狂熱","模仿東方繪畫的留白與寫意，追求意境"],"answer":1,"explain":"文藝復興藝術受古典雕刻影響，講求比例、透視與寫實，透過健美的人體展現對人的肯定，故選第2項。第1項錯在文藝復興作品仍大量取材聖經人物(大衛本身即是聖經人物)，只是表現方式改變；第3項的抽象扭曲不符合此時期追求勻稱寫實的風格；第4項的留白寫意屬中國水墨畫特色，與此無關。"},{"level":"basic","topic":"活字印刷術與知識傳播","q":"古騰堡改良活字印刷術後，歐洲書籍的產量大增、價格明顯下降。此一改變最直接的影響是？","choices":["知識傳播加快，更多人得以接觸書籍與新思想","各國政府因此立刻設立義務教育，兒童人人入學","教會壟斷聖經解釋權的地位因此更為鞏固","拉丁文成為歐洲唯一被允許使用的書寫文字"],"answer":0,"explain":"書價下降、書籍普及，使新思想能突破抄本流通緩慢的限制而迅速擴散，故選第1項。第2項的義務教育是十九世紀以後各國推行的制度，時間相差甚遠；第3項顛倒因果，印刷術讓一般人也能擁有聖經，反而削弱教會的獨占解釋；第4項相反，印刷術反而助長以各國語言(民族語言)出版的書籍。"},{"level":"basic","topic":"宗教改革背景－教會腐敗與贖罪券","q":"宗教改革前夕，教會為籌措經費而販售贖罪券，宣稱購買者可減免罪罰。此舉引發強烈批評，主要原因是？","choices":["贖罪券價格過於低廉，使教會蒙受重大虧損","贖罪券只在義大利發行，其他地區的信徒買不到","以金錢換取赦罪違背信仰本質，凸顯教會的腐化","贖罪券改由各國國王發行，侵犯了教宗的權力"],"answer":2,"explain":"救贖本應源於信仰與悔改，卻能以金錢購買，使許多信徒與教士認為教會已流於斂財腐化，成為宗教改革的導火線，故選第3項。第1項與史實相反，爭議在於斂財而非虧損；第2項錯在贖罪券正是在德意志等地大力推銷才激起反彈；第4項錯在贖罪券由教會發行，與國王無關。"},{"level":"basic","topic":"馬丁路德的主張－因信稱義","q":"馬丁路德提出「因信稱義」，作為他改革主張的核心。這句話的意思是？","choices":["人必須購買足夠的贖罪券，罪過才能獲得赦免","人必須透過教士主持的各項儀式，才可能與神溝通","人必須累積足夠的善行與功德，才能換取得救的資格","人能否得救取決於對神的真誠信仰，而非儀式或金錢"],"answer":3,"explain":"「因信稱義」強調人因真誠的信仰而被神接納稱義，不需藉贖罪券、繁複儀式或教士的中介，故選第4項。第1項正是路德所反對的贖罪券制度；第2項把教士與儀式視為必要中介，正是他所批評的舊有作法；第3項以善行功德「換取」得救，也與其主張相反，路德認為善行是信仰的結果而非得救的條件。"},{"level":"basic","topic":"聖經翻譯與教會解釋權","q":"馬丁路德將聖經翻譯成德文並印行流通。此舉在宗教與文化上的重要意義是？","choices":["一般民眾能自行閱讀聖經，教會獨占解釋的權威因而動搖","拉丁文因此成為德意志地區唯一的官方語言","教宗因此承認德意志地區可以自行選出教宗","天主教會因此決定不再以聖經作為信仰依據"],"answer":0,"explain":"過去聖經多為拉丁文，只有教士能讀能解；譯成本國語言後，信徒可直接閱讀並自行理解，教會的解釋權威受到挑戰，同時也促進德語的統一與發展，故選第1項。第2項顛倒了，翻譯的作用是提升本國語言而非拉丁文；第3項並無此事；第4項錯在天主教會始終以聖經為經典，爭論的是誰有權解釋。"},{"level":"basic","topic":"喀爾文教派－預選說","q":"喀爾文的教義中，主張人能否得救早已由神所揀選、非人力所能改變。此一主張稱為？","choices":["因信稱義","預選說(預定論)","君權神授","政教分離"],"answer":1,"explain":"喀爾文的核心教義是預選說，認為得救與否出於神的預定，信徒因而更加勤奮節儉、嚴守紀律，以印證自己蒙揀選，故選第2項。第1項「因信稱義」是馬丁路德的主張，兩者常被混淆；第3項君權神授屬政治思想，用來強化王權；第4項政教分離是更晚近的原則，皆非喀爾文的教義。"},{"level":"basic","topic":"英國國教會的成立原因","q":"英國國教會(安立甘教會)得以成立，與下列哪一項因素關係最為密切？","choices":["英國民眾不滿教士以拉丁文主持禮拜，群起暴動迫使教會改制","英國商人希望取得教會土地，因而發動長期抗爭","英王因婚姻問題與教宗決裂，宣布英國教會由國王領導","英王深受喀爾文預選說感召，決心在全國推行新制"],"answer":2,"explain":"英國的宗教改革由王室由上而下推動：英王亨利八世因婚姻問題與教宗衝突，遂宣布英國教會脫離教宗管轄、由國王擔任最高領袖，故選第3項。第1項與史實不符，英國國教會並非民眾暴動的產物；第2項雖與日後教會土地的處置有關，但「發動長期抗爭」並無其事，也不是成立的原因；第4項張冠李戴，喀爾文教派在英國的影響屬後續發展。"},{"level":"basic","topic":"天主教的自我改革","q":"面對新教勢力迅速擴張，天主教會也展開自我改革。下列何者屬於此次改革的作法？","choices":["承認因信稱義，並廢除教宗制度","解散所有修會，改由各國國王管理教會事務","停止一切海外傳教，專心整頓歐洲教區","召開大公會議整頓教會弊端，並成立耶穌會積極傳教"],"answer":3,"explain":"天主教改革一方面透過大公會議重申教義、革除販售贖罪券等弊端，另一方面成立耶穌會，以嚴格紀律、興辦教育與海外傳教擴展影響力，故選第4項。第1項是新教的主張，天主教並未接受；第2項與史實相反，改革反而強化修會的功能；第3項也相反，此時期正是天主教向海外積極傳教的階段。"},{"level":"basic","topic":"耶穌會與海外傳教","q":"天主教改革期間成立的耶穌會，除了重視教育與紀律外，還有一項極重要的活動是？","choices":["前往亞洲、美洲等地傳教，把天主教信仰傳布到海外","號召農民起義，推翻歐洲各地的封建領主","主張廢除聖經，信徒只需服從教宗的命令","率先在德意志地區翻譯並印行新教的聖經"],"answer":0,"explain":"耶穌會士隨著新航路前往東亞、美洲等地傳教，也把歐洲的學術帶往各地，是天主教勢力向外擴展的重要力量，故選第1項。第2項與耶穌會強調服從與教育的性質不符；第3項錯在天主教並未廢除聖經；第4項是新教陣營(如路德)的作為，與耶穌會立場相反。"},{"level":"basic","topic":"文藝復興文學－莎士比亞","q":"文藝復興時期的英國有一位劇作家，以本國語言寫作，深入刻畫人物的情感與內心衝突，代表作有《哈姆雷特》《羅密歐與茱麗葉》。這位人物是誰？","choices":["塞萬提斯","莎士比亞","但丁","薄伽丘"],"answer":1,"explain":"莎士比亞是英國文藝復興時期最著名的劇作家，以英文寫作、細膩描寫人性與世俗情感，符合題幹描述，故選第2項。塞萬提斯是西班牙作家，代表作為《唐吉訶德》；但丁是義大利文學家，以《神曲》著稱；薄伽丘著有《十日談》，三者皆非題幹所述的英國劇作家。"},{"level":"adv","topic":"贊助制度與文藝復興的推手(帳冊判讀)","q":"一份佛羅倫斯商人家族的帳冊寫著：「支付畫師工錢，為本家族禮拜堂繪製壁畫；另付雕刻師訂金，訂製庭園雕像一座。」這份資料最適合用來說明文藝復興的哪一種現象？","choices":["教會壟斷全部藝術創作，藝術家不得替私人工作","藝術家多半出身貴族世家，不必依靠他人資助","富商藉由贊助藝術展現財富與品味，成為文藝復興的重要推手","城市政府以全民稅金統一培養並分配藝術人才"],"answer":2,"explain":"帳冊顯示藝術品由私人商家出資訂製，正反映義大利富商贊助文藝的風氣，故選第3項。第1項被資料直接推翻，付錢的是商人家族而非教會；第2項也與資料矛盾，藝術家是收取工錢的受雇者；第4項的公費統一培養在資料中毫無根據，屬過度推論。"},{"level":"adv","topic":"人文主義的自由意志(觀點判讀)","q":"某位文藝復興時期的學者曾表達這樣的看法：人可以自由選擇要成為什麼樣的人，向下沉淪或向上提升，全繫於自己。這種看法最能呈現的思想是？","choices":["強調人的自由意志與尊嚴，充分展現人文主義精神","主張人的命運早由神所預定，努力並不能改變結果","認為人應遠離塵世、進入修道院潛心修行","主張唯有血統高貴的貴族才具備優越的品格"],"answer":0,"explain":"該看法把選擇權交還給人自己，強調人的自由意志與可塑性，正是人文主義肯定人之價值的表現，故選第1項。第2項是喀爾文預選說的內容，與「自由選擇」直接牴觸，屬易混淆的誘答；第3項是中古修道生活的價值觀，與重視現世的立場相反；第4項的血統決定論與「全繫於自己」的意旨不合。"},{"level":"adv","topic":"印刷術與宗教改革傳播(技術條件推論)","q":"馬丁路德的主張能在短時間內傳遍德意志各地，若要從「技術條件」加以說明，下列推論何者最合理？","choices":["因為各地已普設公立圖書館，民眾可自由借閱相關著作","因為活字印刷術使小冊子與傳單能大量印製、快速流通","因為羅馬教會主動印行路德的著作，以示公開辯論","因為拉丁文已被各國廢除，人人都改讀本國文字"],"answer":1,"explain":"題目限定從技術層面推論，活字印刷讓路德的論點與小冊子迅速大量複製、廣泛流傳，是最直接的技術條件，故選第2項。第1項的公立圖書館體系當時尚未普及；第3項與教會的立場矛盾，教會是要壓制而非推廣其著作；第4項誇大失實，拉丁文在學術與教會中仍長期使用，且該敘述屬語言問題而非技術條件。"},{"level":"adv","topic":"動搖中古權威與近代歐洲的形成","q":"有學者主張：「文藝復興與宗教改革共同動搖了中古歐洲的權威。」下列敘述最能支持這項看法的是？","choices":["兩者都使歐洲重新回到以教會為中心的社會秩序","兩者都主張以武力推翻各國的君主，建立共和","兩者都促使人重新思考、質疑既有權威，理性與個人判斷因而受到重視","兩者都推動歐洲各國合併，統一成單一的大帝國"],"answer":2,"explain":"文藝復興回到古典原典、重新評價人的價值，宗教改革則直接挑戰教會與教宗的權威，兩者都培養了獨立思考與質疑的態度，為近代歐洲的形成鋪路，故選第3項。第1項顛倒了方向，教會權威是被削弱而非強化；第2項錯在兩者並非以推翻君主為目標，宗教改革中甚至有不少君主與諸侯支持；第4項與史實相反，此時期歐洲反而走向各自發展的民族國家。"},{"level":"adv","topic":"路德與喀爾文主張的比較(表格判讀)","q":"下表整理兩位宗教改革者的主張：甲—得救須靠信仰，聖經是信仰的唯一依據，並將聖經譯為德文；乙—得救與否由神預先揀選，信徒應勤奮節儉、生活嚴謹。甲、乙最可能分別是誰？","choices":["甲為喀爾文，乙為馬丁路德","甲為羅耀拉，乙為亨利八世","甲為亨利八世，乙為馬丁路德","甲為馬丁路德，乙為喀爾文"],"answer":3,"explain":"「因信稱義、聖經權威、德文聖經」是馬丁路德的主張；「預選說」與勤奮節儉的生活態度則是喀爾文教派的特色，故選第4項。第1項把兩人對調；第2項的羅耀拉是天主教耶穌會的創立者、亨利八世則是英國國教會的推手，皆與表中主張不符；第3項同樣張冠李戴。"},{"level":"adv","topic":"英國國教會的性質(史家評論判讀)","q":"一位史家評論某個教會：「它脫離教宗的管轄，改由國王擔任最高領袖，但在儀式與制度上仍保留不少舊有傳統。」他所描述的最可能是？","choices":["英國國教會","喀爾文教派","耶穌會","東正教會"],"answer":0,"explain":"英國國教會由王室主導成立，在組織上脫離教宗、以國王為首，教義與儀式卻保留許多天主教傳統，符合題幹描述，故選第1項。第2項喀爾文教派在教義與儀式上改革幅度大，且不以國王為教會領袖；第3項耶穌會屬天主教修會，仍效忠教宗；第4項東正教會早在宗教改革之前即與羅馬教會分立，並非此次改革的產物。"},{"level":"adv","topic":"宗教改革的政治面向－德意志諸侯","q":"宗教改革期間，德意志地區不少諸侯公開支持路德的主張，並保護他的安全。若從政治角度分析，這些諸侯的動機最可能是？","choices":["希望教宗能派遣更多教士，協助他們治理領地","希望藉此擺脫教宗與教會的干預，擴大自身的權力與利益","希望與義大利各城市結盟，共同壟斷地中海貿易","希望恢復羅馬帝國的舊有秩序，統一整個歐洲"],"answer":1,"explain":"題目要求從政治角度分析：支持路德可讓諸侯減少教宗與教會對領地事務、稅收與土地的干預，進而鞏固自身權力，故選第2項。第1項與擺脫教會控制的動機相反；第3項的貿易結盟與德意志諸侯支持宗教改革並無關聯，是把文藝復興的商業背景硬套過來；第4項恢復帝國統一的說法與當時諸侯各自為政的情勢不合。"},{"level":"adv","topic":"民族語言書寫與文化發展","q":"文藝復興時期的文學作品，愈來愈多改以本國語言書寫，題材描寫人間百態與世俗情感，而不再僅限於拉丁文的宗教著作。此一轉變帶來的影響是？","choices":["使拉丁文的地位大幅提升，重新成為文學創作的主流","使文學作品只能在教會與修道院內部流傳","使更多一般民眾得以閱讀，並促進各地民族語言與文化的發展","使各國明令禁止翻譯與研究古典時期的作品"],"answer":2,"explain":"以本國語言創作降低了閱讀門檻，作品得以在民間流通，也讓各地語言更趨成熟，為日後民族意識的形成奠基，故選第3項。第1項顛倒事實，改用本國語言正是相對於拉丁文而言；第2項與「世俗題材、民間流傳」的趨勢相反；第4項無中生有，文藝復興反而積極研究古典作品。"},{"level":"adv","topic":"宗教寬容的形成原因(統治者立場)","q":"經歷長期宗教戰爭後，歐洲部分統治者逐漸允許境內存在不同的信仰。若從統治者的立場推論，這種轉變的主要考量最可能是？","choices":["這些統治者本身都改信新教，因此不再迫害其他教派","教宗下令各國一律承認新教，統治者只好遵從","各國已無財力興建教堂，只能放任民間自行信仰","持續的宗教衝突嚴重耗損國力，維持社會安定比強求信仰一致更有利"],"answer":3,"explain":"長期戰爭使人口凋零、財政困窘，統治者體認到以武力強求信仰一致的代價遠高於容忍差異，於是逐步走向宗教寬容，成為近代思想的重要基礎，故選第4項。第1項以偏概全，仍有許多統治者維持天主教信仰；第2項與史實不符，教宗並未下達這樣的命令，其權威此時也已無法約束各國；第3項把複雜的政治考量簡化為蓋不起教堂，理由過於牽強。"},{"level":"adv","topic":"人文主義與宗教改革的思想連結","q":"文藝復興思潮由義大利傳布到西北歐後，當地學者常運用人文主義的方法研讀古代文獻，並以此批評教會的種種弊端。這一現象與稍後的宗教改革，關係最合理的推論是？","choices":["兩者毫無關聯，宗教改革純粹出於政治與經濟因素","人文主義者親自主導宗教改革，並創立新教各教派","宗教改革發生之後，人文主義思想才傳入西北歐","人文主義者的批評與研究，為宗教改革營造了有利的思想氛圍"],"answer":3,"explain":"西北歐的人文主義者主張回到原典、以理性檢視教會現況，使批評教會成為可被公開討論的事，替宗教改革預備了思想土壤，故選第4項。第1項忽略思想層面的鋪墊，過於武斷；第2項誇大其角色，多數人文主義者並未創立教派，路德、喀爾文才是新教的領導者；第3項時序顛倒，人文主義的傳布在宗教改革之前。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

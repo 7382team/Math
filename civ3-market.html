@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>交易與市場：供需法則 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ3-market",
+  "title": "交易與市場：供需法則",
+  "subject": "公民",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第2課 交易與市場：供需法則",
+  "tag": "供需曲線·均衡價格",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>交易與市場：供需法則</h1><div class="sub">公民 · 供需曲線·均衡價格 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"市場的意義","q":"小明在網路購物平台向店家下單，雙方談妥價格後完成一筆二手教科書交易。就公民課所學，下列關於「市場」的敘述何者最正確？","choices":["市場一定要有固定的實體攤位或店面才能成立","市場是買賣雙方進行交易、共同決定價格與數量的機制","市場只買賣有形的商品，勞務的交易不算是市場","市場中的價格一律由政府訂定，買賣雙方無法自行議價"],"answer":1,"explain":"市場是買賣雙方交易的「機制」，不以實體場所為必要條件，網路平台同樣是市場。「一定要有實體店面」忽略了網路等無形市場；「只買賣有形商品」也不對，家教、理髮等勞務同樣有市場；市場價格是供需雙方互動的結果，並非由政府統一訂定。"},{"level":"basic","topic":"市場的功能與資源配置","q":"某款手機殼因造型特別而大受歡迎，售價因此上升，吸引更多廠商投入生產。這個過程最能說明市場的何種功能？","choices":["價格傳遞消費者需要的訊息，引導生產資源流向該用途","保障每一位生產者都能得到完全相同的利潤","消除生產者彼此之間的競爭，維持產業秩序","使商品價格長期固定不變，方便消費者做計畫"],"answer":0,"explain":"價格上升代表消費者需要強烈，這個訊息促使生產資源移向該產品，正是市場配置資源的功能。市場並不保證每位生產者利潤相同；市場運作反而以競爭為特色，不會消除競爭；價格會隨供需持續變動，不可能長期固定不變。"},{"level":"basic","topic":"需求法則與需求曲線","q":"其他條件不變下，某品牌鮮奶的售價由較低調整為較高。依需求法則，下列敘述何者完全正確？","choices":["消費者購買量會增加，需求曲線由左下往右上傾斜","消費者購買量不受價格影響，需求曲線為垂直線","消費者購買量會減少，需求曲線由左上往右下傾斜","消費者購買量會減少，需求曲線由左下往右上傾斜"],"answer":2,"explain":"需求法則指價格與需求量呈反向變動，因此需求曲線為負斜率，由左上往右下傾斜。「購買量減少但曲線由左下往右上」方向判斷正確，卻把曲線寫成供給曲線的形狀；「購買量增加」與「購買量不受價格影響（垂直線）」都不符合需求法則。"},{"level":"basic","topic":"供給法則與供給曲線","q":"其他條件不變下，若市場上蘭花的價格上漲，依供給法則，花農的反應與供給曲線的形狀應為？","choices":["願意供應的數量減少；供給曲線由左上往右下傾斜","願意供應的數量減少；供給曲線由左下往右上傾斜","願意供應的數量增加；供給曲線由左上往右下傾斜","願意供應的數量增加；供給曲線由左下往右上傾斜"],"answer":3,"explain":"供給法則指價格與供給量同向變動，價格上漲使生產者更願意供應，供給曲線為正斜率（由左下往右上）。「數量增加但曲線由左上往右下」方向對而形狀誤寫成需求曲線；兩個「數量減少」的選項則把供給法則誤記為反向關係。"},{"level":"basic","topic":"需求量的變動（沿曲線移動）","q":"下列哪一種情況屬於「需求量的變動」，也就是沿著同一條需求曲線上的移動？","choices":["家庭所得普遍提高，購買牛肉麵的數量增加","養生風潮興起，民眾更愛購買燕麥奶","珍珠奶茶降價促銷，同學們買得比平常多","消費者預期下個月衛生紙會漲價，本月先行囤貨"],"answer":2,"explain":"只有「商品本身價格改變」所引起的購買量改變，才是沿同一條曲線移動的需求量變動。所得提高、偏好改變、預期未來漲價都屬非價格因素，會使整條需求曲線移動，屬於「需求的變動」。"},{"level":"basic","topic":"需求的變動（整條曲線移動）","q":"考點：需求的變動。下列何種情況會使手搖飲料「整條」需求曲線向右移動？","choices":["手搖飲料店推出全面降價促銷","天氣持續酷熱，民眾對冷飲的偏好明顯提高","手搖飲料所用茶葉的進貨成本上漲","街上新開設的手搖飲料店數目大幅增加"],"answer":1,"explain":"整條需求曲線移動必須由非價格因素引起；偏好提高使同一價格下的購買量增加，需求曲線右移。降價促銷是商品本身價格改變，只造成沿曲線的「需求量變動」；茶葉成本與店家數目屬供給面因素，移動的是供給曲線而非需求曲線。"},{"level":"basic","topic":"供給量變動與供給變動的區別","q":"關於「供給量的變動」與「供給的變動」，下列敘述何者正確？","choices":["商品本身價格上漲使供給量增加，屬於沿同一條供給曲線的移動","生產成本下降使供應量增加，屬於沿同一條供給曲線的移動","商品本身價格上漲會使整條供給曲線向右移動","生產技術進步只會改變供給量，不會使供給曲線移動"],"answer":0,"explain":"價格因素造成沿曲線移動（供給量的變動），非價格因素造成整條曲線移動（供給的變動）。把生產成本下降、技術進步視為沿曲線移動或只改變供給量都不對，它們會移動整條供給曲線；商品本身價格上漲則只沿曲線改變供給量，不會移動曲線。"},{"level":"basic","topic":"影響供給的非價格因素","q":"下列何者屬於影響「供給」的非價格因素，會使整條供給曲線移動？","choices":["該商品本身在市場上的成交價格","消費者的所得水準與消費偏好","生產所需原料的成本與生產者的數目","消費者對該商品未來價格的預期"],"answer":2,"explain":"影響供給的非價格因素主要有生產成本、生產技術與生產者數目。商品本身的成交價格是價格因素，只造成供給量的變動；消費者所得、偏好與對未來價格的預期屬需求面因素，移動的是需求曲線。"},{"level":"basic","topic":"均衡價格與均衡數量","q":"當某商品市場達成均衡時，下列敘述何者正確？","choices":["需求量等於供給量，市場上既無過剩也無短缺","消費者想買的數量大於生產者想賣的數量","生產者想賣的數量大於消費者想買的數量","必須由政府出面訂價，市場才可能達到均衡"],"answer":0,"explain":"均衡即供給量等於需求量，此時對應的價格為均衡價格、數量為均衡數量。買方想買多於賣方想賣是超額需求，反之是超額供給，兩者都不是均衡狀態；均衡是價格機能自動運作的結果，不需政府訂價。"},{"level":"basic","topic":"超額供給","q":"某商品目前的市場價格高於均衡價格，此時市場最可能出現的狀況是？","choices":["供給量小於需求量，商品出現短缺","供給量等於需求量，市場維持均衡","這個偏高的價格會自動成為新的均衡價格，市場不必再調整","出現超額供給，商品滯銷，價格有下跌的壓力"],"answer":3,"explain":"價格高於均衡時，供給量增加而需求量減少，形成超額供給（過剩），賣方為出清存貨而降價，價格回跌至均衡。「供給量小於需求量的短缺」是價格低於均衡的情形；只有在均衡價格下供需量才會相等；偏離均衡的價格會被價格機能推回均衡，不會自動變成新的均衡價格。"},{"level":"basic","topic":"超額需求","q":"某熱門展覽的門票訂價明顯低於均衡價格，最可能出現的市場現象是？","choices":["門票大量賣不完，主辦單位必須再降價","出現超額需求，門票供不應求，票價有上漲的壓力","供給量恰好等於需求量，市場處於均衡狀態","票價偏低會使主辦單位願意供應的數量增加，短缺因而自動消失"],"answer":1,"explain":"價格低於均衡時需求量大於供給量，形成超額需求（短缺），推動價格上漲。「賣不完要再降價」是超額供給的情形；只有在均衡價格下供需量才相等；依供給法則，價格偏低時供給量只會減少而非增加，短缺不會自動消失。"},{"level":"basic","topic":"價格機能（看不見的手）","q":"經濟學上以「看不見的手」形容市場運作，這隻手主要是指下列何者？","choices":["政府訂定價格上限與價格下限的公權力","大型企業聯合控制產量與價格的力量","消費者團體發起拒買運動的影響力","價格機能自動調節供需、引導資源配置的作用"],"answer":3,"explain":"「看不見的手」指價格機能：價格上漲會抑制需求量、鼓勵供給量，價格下跌則相反，使市場自動趨向均衡。政府管制、企業聯合行為與消費者團體行動，都是人為或特定團體的力量，並非價格機能本身。"},{"level":"basic","topic":"公共財","q":"國防、路燈等財貨通常必須由政府提供，最主要的原因是？","choices":["這些財貨的生產技術太過複雜，民間廠商做不出來","政府生產這些財貨的成本必定低於民間廠商","這些財貨可共同享用且難以排除他人使用，廠商無從收費，市場提供不足","這些財貨的需求量非常小，民間廠商不願意生產"],"answer":2,"explain":"公共財具共享性與無排他性，容易產生「搭便車」現象，廠商難以向使用者收費而不願提供，形成市場失靈，因此改由政府提供。技術太難、政府成本較低、需求量太小都不是公共財的定義特徵。"},{"level":"basic","topic":"市場失靈的判別","q":"下列何者「不屬於」市場失靈的情形？","choices":["某項服務只有一家廠商供應，該廠商得以自行抬高價格","工廠排放廢水汙染河川，卻未負擔任何相關成本","燈塔這類設施因難以向使用者收費而乏人提供","早餐店因原料上漲而調高售價，顧客購買量隨之減少"],"answer":3,"explain":"市場失靈常見於獨占、外部性與公共財三種情形。早餐店因成本上升而供給減少、價格上漲，顧客購買量沿需求曲線減少，這是價格機能正常運作的結果，不是市場失靈。"},{"level":"adv","topic":"供給變動對均衡的影響","q":"連日豪雨使中部高麗菜大量受損，採收量銳減。在其他條件不變下，高麗菜市場最可能出現下列何種變化？","choices":["供給減少，供給曲線左移，均衡價格上升、均衡數量減少","供給增加，供給曲線右移，均衡價格下跌、均衡數量增加","需求減少，需求曲線左移，均衡價格與均衡數量同時下降","需求增加，需求曲線右移，均衡價格上升、均衡數量增加"],"answer":0,"explain":"天災屬影響供給的非價格因素，使整條供給曲線左移，與原需求曲線相交於較高價格、較少數量。「需求右移」雖也推得價格上升，但受衝擊的是供給面，且均衡數量應減少；其餘選項的移動方向也判斷錯誤。"},{"level":"adv","topic":"所得改變與需求變動","q":"某地區居民的平均所得普遍提高後，當地健身房會員（視為正常財）的市場最可能出現？","choices":["沿原需求曲線向左上方移動，屬於需求量的減少","整條需求曲線向右移動，均衡價格上升、均衡數量增加","整條需求曲線向左移動，均衡價格下跌、均衡數量減少","需求曲線不動，僅供給曲線因居民所得提高而右移"],"answer":1,"explain":"所得是非價格因素，正常財的所得增加使需求增加、整條需求曲線右移，均衡價格與均衡數量同時上升。把非價格因素當成沿曲線移動、或把移動方向寫成左移都不對；消費者所得影響的是需求面，不會移動供給曲線。"},{"level":"adv","topic":"預期因素與需求變動","q":"媒體報導某品牌筆電下個月將全面調漲售價，本月門市立刻湧現搶購人潮。就供需分析，本月市場的變化最適合描述為？","choices":["售價下跌造成需求量沿需求曲線增加","供給增加使供給曲線右移，均衡價格因而下跌","消費者預期未來漲價使需求增加，需求曲線右移，均衡價格上升","消費者偏好改變使供給曲線右移，均衡數量因而減少"],"answer":2,"explain":"「預期未來價格上漲」屬非價格因素，使本期需求整條右移，均衡價格上升。本月售價其實尚未調整，並非價格引起的需求量變動；預期與偏好都是需求面因素，不應放到供給曲線上，且供給右移也不會使數量減少。"},{"level":"adv","topic":"替代品價格與需求","q":"若豬肉價格因疫病而大幅上漲，而雞肉與豬肉互為替代品。其他條件不變下，雞肉市場最可能出現？","choices":["雞肉需求減少，需求曲線左移，均衡價格下跌","雞肉供給增加，供給曲線右移，均衡價格下跌","雞肉需求量沿需求曲線減少，均衡數量下降","雞肉需求增加，需求曲線右移，均衡價格上升、均衡數量增加"],"answer":3,"explain":"替代品價格上漲，消費者轉而購買雞肉，屬影響需求的非價格因素，雞肉需求整條右移，均衡價格與數量齊升。雞肉本身價格並未先變動，不能算需求量的變動；其餘選項在移動方向或所影響的市場面向上判斷錯誤。"},{"level":"adv","topic":"互補品價格與需求","q":"印表機與碳粉匣互為互補品。若碳粉匣價格大幅上漲，其他條件不變下，印表機市場最可能出現？","choices":["印表機需求減少，需求曲線左移，均衡價格下跌、均衡數量減少","印表機需求增加，需求曲線右移，均衡價格上升、均衡數量增加","印表機供給減少，供給曲線左移，均衡數量反而增加","印表機需求量沿需求曲線增加，均衡價格隨之上升"],"answer":0,"explain":"互補品須搭配使用，碳粉匣變貴會降低消費者購買印表機的意願，需求曲線左移，均衡價格與均衡數量同時下降。需求右移是替代品價格上漲才有的效果；供給左移不可能使均衡數量增加；印表機本身價格未變，也不屬需求量的變動。"},{"level":"adv","topic":"供需圖判讀：超額供給量","q":"假設某文具店筆記本的均衡價格為每本 40 元。若店家把售價訂在每本 60 元，對照供需圖，關於此價格下兩條曲線的關係，下列敘述何者最正確？","choices":["此價格下需求量大於供給量，兩者的水平差距即為短缺量","此價格下供給量大於需求量，兩者的水平差距即為超額供給量","此價格下供給量與需求量仍然相等，只是成交數量比均衡時少","此價格會使整條需求曲線向左移動，均衡價格因而上升"],"answer":1,"explain":"價格高於均衡時，沿供給曲線的供給量增加、沿需求曲線的需求量減少，同一價格下兩條曲線的水平差距就是超額供給（過剩）。「需求量大於供給量」是價格低於均衡的短缺情形；只有在均衡價格下供需量才相等；商品本身價格改變只造成沿曲線的需求量變動，不會移動整條需求曲線。"},{"level":"adv","topic":"技術進步與供給變動","q":"太陽能板的生產技術大幅進步，使每片的生產成本明顯下降。其他條件不變下，太陽能板市場最可能的結果為？","choices":["供給曲線左移，均衡價格上升、均衡數量減少","需求曲線右移，均衡價格上升、均衡數量增加","供給曲線右移，均衡價格下跌、均衡數量增加","供給量沿供給曲線減少，均衡價格因此下跌"],"answer":2,"explain":"技術與成本屬供給的非價格因素，成本下降使供給增加、整條供給曲線右移，與需求曲線相交於較低價格、較多數量。供給左移或需求右移都會推升價格，與本題情境不符；成本下降也不是沿曲線的供給量減少。"},{"level":"adv","topic":"價格機能的調節過程","q":"某夜市攤位的鹽酥雞每晚都提早售罄，仍有許多顧客排隊買不到。依價格機能的運作，市場接下來最可能如何調整？","choices":["價格下跌，需求量因此減少，短缺自然消失","價格上漲，需求量減少而供給量增加，短缺逐漸縮小並趨向均衡","價格維持不變，排隊的短缺情形會自行消失","需求曲線自動向左移動，直到沒有人願意購買為止"],"answer":1,"explain":"供不應求即超額需求，會推升價格；價格上漲同時抑制需求量、鼓勵供給量，使市場回到均衡，這正是價格機能。短缺時價格會上漲而非下跌，也不會在價格不變下自行消失；價格上漲只造成沿曲線的需求量減少，並非整條需求曲線移動。"},{"level":"adv","topic":"外部性與政府干預","q":"某工廠將未經處理的廢氣排入空氣中，鄰近居民健康受損卻未獲補償，工廠也不必為此付出代價。就經濟學概念，下列敘述何者最適當？","choices":["此為外部成本造成的市場失靈，政府可透過管制或課徵費用等方式矯正","此為價格機能運作良好的表現，政府完全不應介入","此為公共財問題，應由受害居民自行付費購買乾淨空氣","此為獨占造成的問題，只要開放更多廠商進入競爭即可解決"],"answer":0,"explain":"生產行為使他人受損卻未反映在生產成本中，屬負的外部性（外部成本），市場價格低估真實的社會成本，是市場失靈的一種，需要政府干預。此時價格機能並未正常運作；空氣汙染是外部性問題而非公共財問題；汙染與市場中廠商家數多寡也沒有必然關係。"},{"level":"adv","topic":"獨占與市場失靈","q":"某離島地區的自來水供應僅有一家業者，居民別無其他選擇。就市場運作而言，下列推論何者最合理？","choices":["因為沒有競爭者，該業者必定會主動壓低價格以吸引顧客","由於只有一家廠商，資源配置反而一定最有效率","這是公共財的典型例子，與獨占的問題無關","缺乏競爭下業者可能訂較高價格、提供較少數量，屬市場失靈，政府需加以管理"],"answer":3,"explain":"獨占者能影響價格並限制產量，使資源配置失去效率，屬市場失靈，因此政府多會管制其費率與服務品質。缺乏競爭壓力反而沒有降價誘因；獨占難以達成資源配置效率；自來水可計量收費且具排他性，並不是公共財。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

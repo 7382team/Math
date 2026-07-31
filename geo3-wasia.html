@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>西亞與北非 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo3-wasia",
+  "title": "西亞與北非",
+  "subject": "地理",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1課 西亞與北非",
+  "tag": "乾燥氣候·石油·伊斯蘭",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>西亞與北非</h1><div class="sub">地理 · 乾燥氣候·石油·伊斯蘭 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"範圍與位置","q":"「西亞與北非位居三大洲的交會地帶，自古即為東西方交通與文化交流的要道。」此處所指的三大洲是？","choices":["歐洲、亞洲、非洲","亞洲、非洲、大洋洲","歐洲、亞洲、北美洲","非洲、歐洲、南美洲"],"answer":0,"explain":"西亞與北非北隔地中海、黑海與歐洲相望，東接亞洲內陸，西南連非洲大陸，故為歐、亞、非三洲交會處。大洋洲、北美洲、南美洲均與本區相隔重洋，並非交會的洲別。"},{"level":"basic","topic":"蘇伊士運河","q":"蘇伊士運河開通後，往來歐亞的船隻不必再繞行非洲南端。該運河所連接的兩個水域為？","choices":["黑海與地中海","地中海與紅海","紅海與波斯灣","波斯灣與阿拉伯海"],"answer":1,"explain":"蘇伊士運河位於埃及，北端接地中海、南端通紅海，再經曼德海峽進入印度洋。黑海與地中海之間相通的是土耳其海峽；紅海與波斯灣之間並無運河相連；波斯灣與阿拉伯海是以荷姆茲海峽相通，而非運河。"},{"level":"basic","topic":"荷姆茲海峽","q":"波斯灣沿岸產油國的油輪出海，須通過一處狹窄水道，故有「石油咽喉」之稱。此水道是？","choices":["荷姆茲海峽","直布羅陀海峽","曼德海峽","麻六甲海峽"],"answer":0,"explain":"荷姆茲海峽連接波斯灣與阿曼灣、阿拉伯海，是波斯灣油氣外運的必經孔道。直布羅陀海峽位於地中海西端，曼德海峽在紅海南口，麻六甲海峽則遠在東南亞，皆非波斯灣的出海口。"},{"level":"basic","topic":"氣候特徵","q":"一位旅客描述在阿拉伯半島內陸的見聞：全年降水稀少、地表多沙丘與礫漠，白天酷熱、入夜轉涼。此地最主要的氣候類型為？","choices":["熱帶莽原氣候","溫帶海洋性氣候","熱帶雨林氣候","熱帶沙漠氣候"],"answer":3,"explain":"本區以熱帶沙漠（乾燥）氣候為主，終年乾燥、雲量少而氣溫日夜差異大。熱帶莽原有明顯乾濕季且草原廣布，熱帶雨林終年高溫多雨，溫帶海洋性氣候則溫和濕潤，均與描述不符。"},{"level":"basic","topic":"地形－半島","q":"西亞有一面積廣大的半島，西臨紅海、南濱阿拉伯海、東鄰波斯灣，為世界面積最大的半島。此半島是？","choices":["印度半島","中南半島","阿拉伯半島","巴爾幹半島"],"answer":2,"explain":"阿拉伯半島三面臨海，面積居世界各半島之首，內部以沙漠與高原為主。印度半島與中南半島分別位於南亞、東南亞，巴爾幹半島則在歐洲東南部。"},{"level":"basic","topic":"地形－高原","q":"位於美索不達米亞平原以東、地勢高亢乾燥且四周為山脈環繞的高原是？","choices":["安納托利亞高原","伊朗高原","衣索比亞高原","德干高原"],"answer":1,"explain":"伊朗高原位居西亞東部，介於美索不達米亞平原與南亞之間，四周山脈環繞、內部乾燥。安納托利亞高原在土耳其（小亞細亞），衣索比亞高原位於東非，德干高原則在印度半島。"},{"level":"basic","topic":"河川與平原","q":"「兩河流域」是肥沃月彎的一部分，為古文明發源地之一。沖積出美索不達米亞平原的兩條河川是？","choices":["尼羅河與剛果河","印度河與恆河","底格里斯河與幼發拉底河","約旦河與尼羅河"],"answer":2,"explain":"底格里斯河與幼發拉底河自西亞北部山地南流，沖積出美索不達米亞平原。尼羅河位於北非、剛果河在漠南非洲；印度河與恆河屬南亞；約旦河為西亞小河，均不構成兩河流域。"},{"level":"basic","topic":"尼羅河與聚落","q":"埃及國土大半為沙漠，但人口與耕地卻高度集中於某一地帶。該地帶是？","choices":["西部沙漠的內陸高地","尼羅河河谷與三角洲","紅海沿岸的山地","西奈半島中部"],"answer":1,"explain":"尼羅河提供穩定水源與肥沃沖積土，聚落、農田因而沿河谷與三角洲呈帶狀分布。西部沙漠高地、紅海沿岸山地與西奈半島內陸皆缺乏可靠水源，人口稀疏。"},{"level":"basic","topic":"地形－沙漠","q":"北非有一片面積居世界之冠的沙漠，將地中海沿岸與漠南非洲分隔開來。此沙漠為？","choices":["撒哈拉沙漠","塔克拉瑪干沙漠","卡拉哈里沙漠","阿他加馬沙漠"],"answer":0,"explain":"撒哈拉沙漠位於北非，是世界面積最大的（熱帶）沙漠，形成南北往來的天然障礙。塔克拉瑪干沙漠在中國西北，卡拉哈里沙漠位於非洲南部，阿他加馬沙漠則在南美洲西岸。"},{"level":"basic","topic":"地形－山脈","q":"北非西北部有一列走向大致與地中海岸平行的山脈，山脈北側降水較多，南側則迅速轉為沙漠。此山脈是？","choices":["高加索山脈","安地斯山脈","札格洛斯山脈","亞特拉斯山"],"answer":3,"explain":"亞特拉斯山分布於摩洛哥、阿爾及利亞一帶，攔截來自地中海與大西洋的水氣，其南側即進入撒哈拉沙漠。高加索山脈位於黑海與裏海之間，安地斯山脈屬南美洲科迪勒拉山系，札格洛斯山脈則在伊朗西南部。"},{"level":"basic","topic":"傳統取水方式","q":"伊朗等地傳統上以「坎井」引取山麓的地下水，供聚落與農田使用。坎井最主要的優點是？","choices":["可同時發電供應照明","能將海水淡化為淡水","以地下水道輸水，減少沿途蒸發損失","可蓄積夏季豐沛的季風雨"],"answer":2,"explain":"坎井是人工開鑿的地下水道，讓水在地下輸送，避免在乾燥高溫環境下大量蒸發。坎井不具發電或海水淡化功能；本區夏季亦無豐沛季風雨可供蓄積。"},{"level":"basic","topic":"伊斯蘭宗教文化","q":"齋戒月期間，多數穆斯林的生活作息主要出現下列何種變化？","choices":["整月完全不飲不食","全月禁止進入清真寺","改以豬肉作為主要蛋白質來源","白天禁食，日落後才進餐"],"answer":3,"explain":"齋戒是在白天（自破曉至日落）不飲不食，日落後才進餐，並非整月完全不進食。齋戒月期間清真寺的宗教活動反而更為頻繁；伊斯蘭教的飲食規範不食豬肉，故該選項與事實相反。"},{"level":"basic","topic":"耶路撒冷的宗教意義","q":"耶路撒冷城內保有哭牆、聖墓教堂與圓頂清真寺等宗教聖蹟，被三大宗教同視為聖地。這三大宗教是？","choices":["猶太教、基督教、伊斯蘭教","印度教、佛教、伊斯蘭教","猶太教、印度教、基督教","佛教、道教、基督教"],"answer":0,"explain":"耶路撒冷同時是猶太教、基督教與伊斯蘭教的重要聖地，宗教地位特殊。印度教與佛教的主要聖地在南亞，道教聖地在東亞，均不在耶路撒冷。"},{"level":"basic","topic":"石油與天然氣分布","q":"就本區石油與天然氣的蘊藏及生產而言，最為集中的地帶是？","choices":["亞特拉斯山區","波斯灣沿岸","尼羅河三角洲","阿拉伯半島西南部高地"],"answer":1,"explain":"波斯灣沿岸是本區油氣蘊藏與輸出最集中的地帶，產量與輸出量居世界前列。亞特拉斯山區與阿拉伯半島西南高地以山地地形為主，尼羅河三角洲雖有油氣開採，規模均遠不及波斯灣沿岸。"},{"level":"adv","topic":"氣候成因推論","q":"沙漠地區常有「日曬如夏、夜寒如冬」的說法。造成當地氣溫日夜差異大的主要原因是？","choices":["緯度偏高，太陽終年斜射","地勢高聳，氣溫隨高度遞減","空氣乾燥、雲量稀少，白天增溫快、夜間地面散熱也快","沿岸有寒流經過，海水調節氣溫"],"answer":2,"explain":"乾燥少雲使白天太陽輻射直接加熱地面而迅速增溫，夜間地面熱量又快速散失，因此日夜溫差大。本區緯度不高；日夜溫差大並非高度造成；寒流反而使沿岸氣溫較穩定、溫差變小。"},{"level":"adv","topic":"交通樞紐的影響","q":"若蘇伊士運河因故長期無法通行，由西歐前往南亞、東亞的貨輪最可能出現的變化是？","choices":["改走巴拿馬運河，航程略為縮短","改經荷姆茲海峽直達地中海，航程不變","因航線縮短而運費下降","須繞行非洲南端好望角，航程拉長、運輸成本上升"],"answer":3,"explain":"蘇伊士運河的價值在於免去繞行非洲南端；一旦停用，只能改繞好望角，航程與時間增加，成本隨之提高。巴拿馬運河位於中美洲，對歐亞航線無助益；荷姆茲海峽通往波斯灣，無法直達地中海；航程既然拉長，運費不可能下降。"},{"level":"adv","topic":"綠洲農業","q":"撒哈拉沙漠中的綠洲聚落多形成於湧泉或地下水可及之處，居民以椰棗樹遮蔭，樹下再種植蔬菜與穀物。此種土地利用方式最主要反映的環境限制是？","choices":["地形崎嶇，可耕平地嚴重不足","冬季嚴寒，作物生長期過短","土壤過於黏重，排水不良","水源稀少且蒸發旺盛，須集約利用有限水資源"],"answer":3,"explain":"以椰棗遮蔭、樹下再種作物的多層栽培，可降低水分蒸發並提高單位水量的產出，反映缺水與強蒸發的限制。沙漠並不缺平坦土地；本區熱量充足，並非低溫限制；當地土壤的問題在於缺水與鹽分累積，而非排水不良。"},{"level":"adv","topic":"產油國經濟轉型","q":"波斯灣部分產油國近年積極發展觀光、金融、航空轉運與都市建設。此一經濟轉型最主要的考量是？","choices":["石油已完全開採枯竭，被迫停止生產","為配合鄰國要求而縮減石油生產","減少對單一石油產業的依賴，降低油價波動帶來的風險","沙漠氣候已轉為濕潤，農業足以取代石油"],"answer":2,"explain":"產油國的財政收入高度集中於油氣，國際油價一旦變動即牽動整體經濟，故發展多元產業以分散風險。目前石油尚未枯竭，減產亦非鄰國要求所致，氣候更不會在短期內轉為濕潤。"},{"level":"adv","topic":"水資源議題","q":"本區多條重要河川流經數個國家，上游國家興建水壩蓄水發電時，常引起下游國家關切。此現象最主要說明？","choices":["乾燥地區水資源稀少，跨國河川的分配容易成為國際協商的課題","上游國家降水過多，必須築壩排洪","下游國家水量豐沛，並不需仰賴河水","河川僅供航運之用，與農業用水無關"],"answer":0,"explain":"本區降水稀少，河水是農業與民生用水的命脈，上游用水或蓄水的改變會直接影響下游水量，因此需要跨國協商。本區上游並非降水過多；下游國家對河水依賴甚深；河川對灌溉的重要性也遠大於航運。"},{"level":"adv","topic":"人口分布與氣候","q":"北非國家的人口多集中於地中海沿岸的狹長地帶，內陸則人口稀少。造成此種分布差異的主要因素是？","choices":["內陸的礦產全部禁止開採","沿海地勢高聳，氣候較為涼爽","沿海降水較多、氣候較溫和，內陸則乾燥缺水","內陸位於高緯度，氣溫過低而不宜居住"],"answer":2,"explain":"地中海沿岸屬冬雨型氣候，水源較穩定，利於農耕與居住；往南進入撒哈拉後降水銳減，難以形成大規模聚落。內陸仍有石油等礦產開採；沿海多為平原而非高地；北非內陸緯度較低，問題在於乾熱而非低溫。"},{"level":"adv","topic":"氣候類型判讀","q":"某地氣候資料顯示：夏季高溫而幾乎無雨，冬季溫和且降水集中。此地最可能位於本區的何處？","choices":["阿拉伯半島內陸的沙漠地帶","亞特拉斯山北側的地中海沿岸","尼羅河上游的谷地","波斯灣沿岸的低地"],"answer":1,"explain":"夏乾冬雨是地中海型氣候的特徵，本區僅地中海沿岸（含亞特拉斯山北側迎風的沿海地帶）具備。阿拉伯半島內陸與波斯灣低地終年乾燥少雨，尼羅河上游屬熱帶氣候，降水的季節分配與題幹不符。"},{"level":"adv","topic":"能源運輸與航運風險","q":"新聞報導指出荷姆茲海峽一帶航運風險升高，船舶保險費用隨之調漲。此情況最可能造成的直接影響是？","choices":["撒哈拉沙漠的降水明顯增加","蘇伊士運河因此停止收取通行費","全球稻米價格立即大幅下跌","波斯灣油氣輸出的運輸成本提高，國際能源供應受到關注"],"answer":3,"explain":"荷姆茲海峽是波斯灣油氣外運的必經海上通道，航運風險升高會推升運輸與保險成本，進而牽動國際能源市場。海峽的航運情勢與撒哈拉降水、蘇伊士運河收費制度及稻米價格之間並無直接因果關係。"},{"level":"adv","topic":"產業結構與區域比較","q":"甲、乙兩國同位於本區：甲國出口以原油為主，乙國則兼營轉口貿易、觀光與加工製造。當國際油價大幅下跌時，兩國經濟受到的衝擊差異最可能是？","choices":["甲國影響較小，因原油可留供國內自行消費","甲國影響較大，因出口收入集中於單一產品","兩國影響相同，因同屬乾燥氣候區","乙國影響較大，因觀光業完全取決於油價"],"answer":1,"explain":"出口結構愈單一，價格波動造成的衝擊愈大，故以原油為主的甲國受影響較大。原油轉為自用並無法彌補外銷收入；氣候相同與經濟衝擊程度無必然關係；乙國產業多元，反而較能分散風險。"},{"level":"adv","topic":"伊斯蘭文化景觀","q":"某旅客在本區城市記下以下見聞：街道旁有喚拜塔與清真寺、店家招牌多以阿拉伯文書寫、餐廳菜單不提供豬肉料理。這些現象共同反映的是？","choices":["伊斯蘭宗教文化對日常生活的影響","殖民時期歐洲建築風格的完整保存","熱帶雨林區的傳統聚落形式","遊牧民族逐水草而居的生活方式"],"answer":0,"explain":"清真寺與喚拜塔、阿拉伯文的普遍使用以及飲食規範，都與伊斯蘭宗教文化及阿拉伯語的通行有關。題幹所述並非歐式建築特徵；本區乾燥少雨並無熱帶雨林；描述的是定居的都市景觀，與遊牧遷徙的生活方式不同。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

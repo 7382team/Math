@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>被動語態 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng3-passive",
+  "title": "被動語態",
+  "subject": "英文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "be + p.p.",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>被動語態</h1><div class="sub">英文 · be + p.p. · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"現在簡單式被動 am/is/are + p.p.","q":"English ___ in many countries around the world, so it is very useful.","choices":["is spoken","speaks","is speaking","spoken"],"answer":0,"explain":"英文是「被說」的對象，主詞是動作的承受者，須用被動 be + p.p.；English 為單數且敘述現在的普遍事實，故用 is spoken。「speaks」是主動，意思變成英文自己會說話；「is speaking」是現在進行主動；「spoken」缺少 be 動詞，過去分詞不能單獨當句子的動詞。"},{"level":"basic","topic":"過去簡單式被動 was/were + p.p. 與主詞單複數","q":"The windows ___ by the strong wind last night.","choices":["were broken","was broken","broke","are broken"],"answer":0,"explain":"主詞 The windows 是複數，時間 last night 是過去，被動須用 were + p.p.。「was broken」的 be 動詞與複數主詞不一致；「broke」是主動，但句中有 by the strong wind，表示窗戶是被吹破的；「are broken」是現在式，與 last night 的過去時間衝突。"},{"level":"basic","topic":"未來式被動 will be + p.p.","q":"A new library ___ in our town next year.","choices":["will build","is building","will be build","will be built"],"answer":3,"explain":"未來式被動的公式是 will be + p.p.，圖書館是被蓋的，故用 will be built。「will build」是主動，變成圖書館去蓋東西；「is building」是現在進行主動；「will be build」錯在 be 動詞後面必須接過去分詞 built，不能接原形 build。"},{"level":"basic","topic":"現在完成式被動 have/has been + p.p.","q":"All the concert tickets ___ already, so we cannot buy any now.","choices":["has been sold","have been selling","have been sold","are selling"],"answer":2,"explain":"already 常搭配現在完成式，票是被賣掉的，故用 have been + p.p.；主詞 tickets 是複數，用 have 而非 has。「has been sold」主詞與助動詞不一致；「have been selling」是現在完成進行主動；「are selling」是現在進行主動，都變成票去賣別的東西。"},{"level":"basic","topic":"助動詞被動 must be + p.p.","q":"All library books must ___ before the end of this month.","choices":["be returned","return","be return","returned"],"answer":0,"explain":"助動詞 must 後面接原形動詞，被動形式為 must + be + p.p.，書是被歸還的，故用 must be returned。「return」是主動，變成書自己去還；「be return」錯在 be 後面必須接過去分詞；「returned」缺少 be 動詞，助動詞後不能直接加過去分詞。"},{"level":"basic","topic":"被動語態的否定句 was/were not + p.p.","q":"The letter ___ last week, so Amy still doesn't know the news.","choices":["didn't send","wasn't send","isn't sent","wasn't sent"],"answer":3,"explain":"被動的否定是 be + not + p.p.，last week 為過去，故用 wasn't sent。「didn't send」是主動否定，信不會自己寄信；「wasn't send」錯在 be 動詞後面要接過去分詞 sent；「isn't sent」是現在式，與 last week 不合。"},{"level":"basic","topic":"被動語態的 Yes/No 疑問句（be 動詞移到主詞前）","q":"A: ___ this book ___ in easy English?  B: Yes, it is. Even little kids can read it.","choices":["Does / write","Is / written","Is / wrote","Was / writing"],"answer":1,"explain":"被動疑問句把 be 動詞移到主詞前面：Be + 主詞 + p.p.?；書是被寫的，敘述現在的狀態用 Is ... written。「Does / write」是主動疑問句；「Is / wrote」錯在 be 動詞後面要用過去分詞 written，不是過去式 wrote；「Was / writing」是過去進行主動。"},{"level":"basic","topic":"by + 行為者的介系詞","q":"The beautiful picture on the wall was painted ___ my grandfather.","choices":["with","of","from","by"],"answer":3,"explain":"被動語態中引出「動作執行者」要用介系詞 by。「with」表示使用的工具或材料，如 painted with a brush；「of」和「from」都不能用來帶出行為者。"},{"level":"basic","topic":"被動語態主詞與 be 動詞的單複數一致","q":"A lot of new trees ___ in the park every spring.","choices":["are planted","is planted","plants","are planting"],"answer":0,"explain":"主詞 A lot of new trees 是複數，被動的 be 動詞要用 are；every spring 表習慣，用現在簡單式被動 are + p.p.。「is planted」單複數不一致；「plants」是主動；「are planting」是現在進行主動，變成樹在種東西。"},{"level":"basic","topic":"不及物動詞 happen 沒有被動語態","q":"A serious car accident ___ near my school this morning.","choices":["was happened","is happened","happened","has been happened"],"answer":2,"explain":"happen 是不及物動詞，後面不接受詞，所以沒有被動語態；this morning 已過去，用過去簡單式 happened。其餘三個選項都把不及物動詞誤用成被動，全部錯誤。相同用法的動詞還有 appear、arrive、occur。"},{"level":"basic","topic":"主動句改被動句的三步驟（現在簡單式）","q":"Active: \"The students clean the classroom every day.\" Which is the correct passive sentence?","choices":["The classroom cleans by the students every day.","The classroom is cleaned by the students every day.","The classroom is clean by the students every day.","The classroom was cleaned by the students every day."],"answer":1,"explain":"改被動三步驟：受詞 the classroom 移到句首當主詞、動詞改成 be + p.p.（is cleaned）、原主詞前加 by（by the students）。「The classroom cleans by...」仍是主動形式；「is clean」的 clean 是形容詞，必須用過去分詞 cleaned；「was cleaned」時態錯誤，原句是現在簡單式，不可改為過去式。"},{"level":"basic","topic":"助動詞被動 can be + p.p.","q":"Wild pandas ___ only in a few places in China.","choices":["can find","can found","can be find","can be found"],"answer":3,"explain":"助動詞的被動為 can + be + p.p.，貓熊是被發現的，故用 can be found。「can find」是主動，變成貓熊會找東西；「can found」缺少 be 動詞；「can be find」錯在 be 後面必須接過去分詞 found。"},{"level":"basic","topic":"行為者不明時使用被動（過去式對話）","q":"A: You look worried. What's wrong?  B: My bike ___ in front of the store yesterday, and I have no idea who took it.","choices":["stole","was stolen","is stolen","was stealing"],"answer":1,"explain":"不知道是誰做的（行為者不明）時常用被動，且 by + 行為者可省略；yesterday 用過去式，故用 was + p.p.（steal-stole-stolen）。「stole」是主動，變成腳踏車去偷東西；「is stolen」是現在式，與 yesterday 不合；「was stealing」是過去進行主動。"},{"level":"basic","topic":"疑問詞開頭的被動疑問句（現在式）","q":"A: How ___ this soup ___?  B: With fresh tomatoes and eggs.","choices":["does / make","is / made","is / make","was / making"],"answer":1,"explain":"湯是被做出來的，用被動 be + p.p.；疑問詞 How 開頭時把 be 動詞移到主詞前面：How + be + 主詞 + p.p.?，敘述一般作法用現在式，故用 How is this soup made?。「does / make」是主動疑問句，變成湯去做東西；「is / make」錯在 be 後面要接過去分詞 made；「was / making」是過去進行主動。"},{"level":"adv","topic":"改錯：be 動詞後必須接過去分詞","q":"Which sentence has a mistake? (Hint: look at the verb form right after the be-verb.)","choices":["The classroom was cleaned by the students after school.","The new bridge will be finished next month.","These letters were wrote by my grandmother many years ago.","My glasses were broken in the basketball game yesterday."],"answer":2,"explain":"被動語態是 be + 過去分詞，write 的三態是 write-wrote-written，wrote 是過去式不能接在 be 後面，應改成 These letters were written by my grandmother many years ago.。其餘三句 was cleaned、will be finished、were broken 的 be 動詞與過去分詞搭配、單複數與時態都正確。"},{"level":"adv","topic":"過去被動 vs 現在完成被動（時間副詞判斷）","q":"The old bridge ___ in 1998, and it ___ several times since then.","choices":["built / has repaired","was built / has repaired","has been built / was repaired","was built / has been repaired"],"answer":3,"explain":"in 1998 是明確的過去時間點，用過去簡單式被動 was built；since then 表示從過去持續到現在，用現在完成式被動 has been repaired。「built」是主動；「has repaired」是現在完成主動，變成橋去修理別的東西；「has been built / was repaired」把兩個時態顛倒，且現在完成式不可與明確過去時間連用。"},{"level":"adv","topic":"完成式被動不可與明確過去時間連用","q":"Which sentence is correct? (Hint: check the tense and the time expression \"yesterday\".)","choices":["The room was cleaned yesterday.","The room has been cleaned yesterday.","The room has cleaned yesterday.","The room is cleaned yesterday."],"answer":0,"explain":"yesterday 是明確的過去時間，只能搭配過去簡單式；房間是被打掃的，故用 was cleaned。「has been cleaned」雖然被動形式正確，但現在完成式不能與 yesterday 連用；「has cleaned」除了時態問題還誤用主動；「is cleaned」是現在簡單式，與 yesterday 矛盾。"},{"level":"adv","topic":"助動詞被動的否定 must not be + p.p.","q":"This medicine is dangerous. It ___ by children under six.","choices":["must not take","must not taken","must not be taken","is not must take"],"answer":2,"explain":"助動詞被動的否定為 must + not + be + p.p.，藥是被吃的，故用 must not be taken。「must not take」是主動，變成藥不可以吃東西；「must not taken」缺少 be 動詞；「is not must take」語序與詞性都錯，be 動詞不能與助動詞這樣併用。"},{"level":"adv","topic":"間接問句語序 + 被動語態","q":"A: Do you know when ___?  B: About fifty years ago, I think.","choices":["was the museum built","the museum was built","did the museum build","the museum built was"],"answer":1,"explain":"間接問句（名詞子句）要用「疑問詞 + 主詞 + 動詞」的肯定句語序，不可倒裝；博物館是被蓋的，故用 when the museum was built。「was the museum built」保留了疑問句的倒裝語序；「did the museum build」既倒裝又是主動；「the museum built was」語序錯亂。"},{"level":"adv","topic":"if 條件句以現在式代替未來式 + 被動","q":"If your report ___ on time, our team will lose points.","choices":["won't be finished","doesn't finish","isn't finish","isn't finished"],"answer":3,"explain":"if 引導的條件副詞子句要「以現在式代替未來式」，報告是被完成的，故用 isn't finished。「won't be finished」錯在 if 子句不可用 will；「doesn't finish」是主動，變成報告自己完成不了；「isn't finish」錯在 be 動詞後面要接過去分詞 finished。"},{"level":"adv","topic":"主動與被動的語意判斷（誰是動作承受者）","q":"A: What happened to your hand?  B: I ___ by my neighbor's dog while I was jogging.","choices":["bit","was biting","was bitten","have bitten"],"answer":2,"explain":"說話者是「被咬」的一方，且句中有 by my neighbor's dog，須用被動 was + p.p.（bite-bit-bitten）；事情發生在過去，用過去式。「bit」是主動，變成我咬狗；「was biting」是過去進行主動；「have bitten」是現在完成主動，也與 while I was jogging 的過去時間不合。"},{"level":"adv","topic":"不可數名詞主詞的被動與 be 動詞一致","q":"The news about the young swimmer ___ on TV last night.","choices":["were reported","reported","was reported","were reporting"],"answer":2,"explain":"news 字尾雖有 s，卻是不可數名詞，視為單數，加上 last night 為過去，被動用 was + p.p.；消息是被報導的，故用 was reported。「were reported」和「were reporting」的 were 與單數主詞不一致；「reported」是主動，變成消息去報導別人。"},{"level":"adv","topic":"句型轉換：未來式主動改被動","q":"\"They will hold the sports meet next Friday.\" Which sentence has the same meaning?","choices":["The sports meet will be held next Friday.","The sports meet will hold next Friday.","The sports meet will be hold next Friday.","The sports meet was held next Friday."],"answer":0,"explain":"未來式被動為 will be + p.p.（hold-held-held）；原主詞 they 指涉不明確，by them 可以省略。「will hold」是主動，運動會不會自己舉辦；「will be hold」錯在 be 後面必須接過去分詞 held；「was held」是過去式，與 next Friday 的未來時間矛盾。"},{"level":"adv","topic":"同句中兩個時態的被動判斷","q":"The Great Wall ___ many centuries ago, and now it ___ by tourists from all over the world every year.","choices":["built / visits","was built / is visited","has been built / visits","was built / visits"],"answer":1,"explain":"長城是被建造的，且 many centuries ago 是過去時間，用過去簡單式被動 was built；後半句有 now 與 by tourists，長城是被參觀的，敘述現在的習慣用現在簡單式被動 is visited。「built」是主動；「has been built」不可與過去時間副詞連用；「visits」是主動，後面卻接 by，文法與語意都不通。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

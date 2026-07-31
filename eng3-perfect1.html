@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>現在完成式（經驗與持續） 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng3-perfect1",
+  "title": "現在完成式（經驗與持續）",
+  "subject": "英文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "have/has + p.p.",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>現在完成式（經驗與持續）</h1><div class="sub">英文 · have/has + p.p. · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"現在完成式結構：主詞與 have/has 的搭配","q":"My sister ______ her homework, so she can watch TV now.","choices":["have finished","has finished","has finish","having finished"],"answer":1,"explain":"現在完成式的結構是「have/has + 過去分詞(p.p.)」。主詞 My sister 是第三人稱單數，必須用 has，故選 has finished。(A) 主詞單數不能用 have。(C) has 後面要接過去分詞 finished，不能用原形 finish。(D) having finished 是分詞形式，不能單獨當句子的主要動詞。"},{"level":"basic","topic":"不規則過去分詞 see-saw-seen","q":"I ______ that movie three times, and I still like it.","choices":["have see","have saw","have seen","have seeing"],"answer":2,"explain":"see 的三態是 see-saw-seen，現在完成式要用過去分詞 seen；three times（次數）是經驗用法的常見線索。(A) have 後不可接原形 see。(B) saw 是過去式，不是過去分詞。(D) seeing 是現在分詞，用於進行式，不可直接接在 have 後表示完成。"},{"level":"basic","topic":"經驗用法 Have you ever + p.p.（eat-ate-eaten）","q":"Have you ever ______ Japanese food? It is really delicious.","choices":["eat","ate","eaten","eating"],"answer":2,"explain":"Have you ever...? 是詢問「你曾經…過嗎」的經驗句型，助動詞 have 之後必須用過去分詞。eat 的三態是 eat-ate-eaten，故選 eaten。(A) 原形 eat 不能接在 have 後面。(B) ate 是過去式，是最常見的錯誤。(D) eating 用於進行式，語意不合。"},{"level":"basic","topic":"never + 過去分詞（write-wrote-written）","q":"My father has never ______ a letter in English before.","choices":["written","wrote","write","writing"],"answer":0,"explain":"never 表示「從未」，是經驗用法的關鍵字，句型為 has/have never + p.p.。write 的三態是 write-wrote-written，故用 written。(B) wrote 是過去式，不可接在 has 之後。(C) write 是原形。(D) writing 是現在分詞，語意與句型都不合。"},{"level":"basic","topic":"have gone to（去了還沒回來）","q":"A: Where is Mary? B: She ______ to the post office. She will be back in ten minutes.","choices":["has been","have gone","is gone","has gone"],"answer":3,"explain":"Mary 現在不在這裡（人還在郵局，等一下才回來），要用 has gone to「去了某地還沒回來」。(A) has been to 是「曾經去過、人已經回來了」，與 She will be back 矛盾。(B) 主詞 She 是單數，要用 has 而非 have。(C) is gone 不是現在完成式，也不能接 to + 地點表達此意。"},{"level":"basic","topic":"have been to（曾去過，人已回來）","q":"I ______ to Kenting twice, and I want to go there again this summer.","choices":["have been","have gone","have went","am been"],"answer":0,"explain":"說話者現在人在這裡，只是表達「去過墾丁兩次」的經驗，要用 have been to。(B) have gone to 表示「去了還沒回來」，但說話者正在此地說話並想再去，語意矛盾。(C) went 是過去式，不能接在 have 後面（go 的 p.p. 是 gone）。(D) am been 不是正確的動詞形式。"},{"level":"basic","topic":"現在完成式否定 hasn't + p.p.（搭配 since）","q":"Amy ______ her grandparents since last winter, so she misses them a lot.","choices":["doesn't visit","hasn't visited","hasn't visit","didn't visited"],"answer":1,"explain":"since last winter（從去年冬天到現在）表示狀態持續到現在，要用現在完成式；否定為 hasn't + p.p.，故選 hasn't visited。(A) 現在簡單式無法表達從過去持續到現在。(C) hasn't 後面必須接過去分詞 visited。(D) didn't 之後要接原形動詞，且過去簡單式不與 since 這樣連用。"},{"level":"basic","topic":"現在完成式疑問句的助動詞倒裝","q":"______ your brother ever read this comic book? It is my favorite one.","choices":["Does","Is","Has","Have"],"answer":2,"explain":"現在完成式的疑問句是把 have/has 移到主詞前面：Has/Have + 主詞 + p.p.？主詞 your brother 為第三人稱單數，故用 Has（read 在此為過去分詞）。(A) Does 之後要接原形動詞，也無法表達經驗。(B) Is 無法與過去分詞 read 形成此意。(D) Have 用於複數主詞或 I/you。"},{"level":"basic","topic":"持續到現在的用法：for + 一段時間","q":"Mr. Wang ______ in this small town for more than ten years, and he still loves it here.","choices":["lives","lived","is living","has lived"],"answer":3,"explain":"for more than ten years 加上 he still loves it here，表示從過去住到現在且仍然持續，要用現在完成式 has lived。(A) 現在簡單式只描述現況或習慣，無法表達持續了多久。(B) 過去簡單式 lived 暗示現在已經不住那裡，與 still 矛盾。(C) is living 是現在進行式，表示目前暫時的狀態，無法表達從十多年前延續至今。"},{"level":"basic","topic":"不規則過去分詞 read-read-read","q":"Kevin has ______ this novel twice because he really loves the story.","choices":["read","readed","reads","reading"],"answer":0,"explain":"read 的三態同形：read-read-read，過去分詞仍寫作 read（發音為 /rɛd/），故答案為 read。(B) read 是不規則動詞，沒有 readed 這個字。(C) reads 是第三人稱單數現在式。(D) reading 是現在分詞，不能直接接在 has 後表示完成。"},{"level":"basic","topic":"不規則過去分詞 do-did-done（搭配 already）","q":"I have already ______ the dishes, so you don't have to help me.","choices":["did","done","do","doing"],"answer":1,"explain":"do 的三態是 do-did-done，現在完成式用過去分詞 done；already（已經）也是現在完成式常見的副詞。(A) did 是過去式，不可接在 have 後面。(C) do 是原形。(D) doing 是現在分詞，用於進行式。"},{"level":"basic","topic":"不規則過去分詞 take-took-taken","q":"Nick has ______ a lot of pictures of the old temple with his new camera.","choices":["take","took","taking","taken"],"answer":3,"explain":"take 的三態是 take-took-taken，has 之後要接過去分詞 taken。(A) 原形 take 不能接在 has 後面。(B) took 是過去式，是常見誤答。(C) taking 是現在分詞，須寫成 has been taking 才合文法，單獨 has taking 是錯的。"},{"level":"basic","topic":"不規則過去分詞 come-came-come（搭配 just）","q":"My cousin has just ______ back from Canada, so we will have dinner together tonight.","choices":["came","coming","come","comes"],"answer":2,"explain":"come 的三態是 come-came-come，過去分詞與原形同形，故 has just come back 正確；just 常與現在完成式連用表示「剛剛」。(A) came 是過去式。(B) coming 是現在分詞。(D) comes 是第三人稱單數現在式，都不能接在 has 之後表示完成。"},{"level":"basic","topic":"Have you ever...? 的簡答方式","q":"A: Have you ever seen a real lion? B: ______ But I really want to see one someday.","choices":["Yes, I did.","No, I haven't.","No, I didn't.","Yes, I do."],"answer":1,"explain":"問句用 Have you ever...?，簡答就要用 have/haven't 回答；後句 I really want to see one someday 表示還沒看過，故答 No, I haven't.。(A)(C) 用 did/didn't 回答的是過去式問句 Did you...?。(D) Yes, I do. 用來回答現在簡單式問句，且與後句語意矛盾。"},{"level":"adv","topic":"時態判斷：明確過去時間不可用現在完成式","q":"Choose the correct sentence that talks about a finished action with the clear past time 'last night'.","choices":["I have finished my science report last night.","I finished my science report last night.","I have already finished my science report last night.","I have finish my science report last night."],"answer":1,"explain":"句中出現 last night 這種明確的過去時間，動作已在過去結束，必須用過去簡單式 finished。(A)(C) 現在完成式不可與 yesterday、last night、last year 等明確過去時間連用，加了 already 也一樣錯。(D) 除了時間詞衝突外，have 後面還誤用原形 finish。"},{"level":"adv","topic":"have gone to 的語境判斷（複數主詞）","q":"Nobody is at home right now because my parents ______ to the night market.","choices":["have been","has gone","are gone","have gone"],"answer":3,"explain":"家裡現在沒人，表示父母去了夜市還沒回來，且主詞 my parents 是複數，要用 have gone to。(A) have been to 表示「去過並已回來」，會變成家裡有人，與 Nobody is at home 矛盾。(B) 主詞是複數，不能用 has。(C) are gone 不是現在完成式，也不能接 to + 地點表達此意。"},{"level":"adv","topic":"改錯：has went 與 been/gone 的選用","q":"The sentence 'Lisa has went to the science museum twice, and she likes it a lot.' is wrong. Which words should replace 'has went'?","choices":["has been","have gone","has going","was gone"],"answer":0,"explain":"go 的過去分詞是 gone，英文沒有 has went 的用法；又因為 twice 表示「去過兩次」的經驗、人已經回來，所以要用 has been to，故選 has been。(B) have gone 主詞單數不合，語意也變成人還沒回來。(C) has going 不是正確的動詞形式。(D) was gone 是過去式，無法表達到目前為止的次數經驗。"},{"level":"adv","topic":"間接問句語序（不可倒裝）","q":"Do you know ______? I want to ask him about the trip.","choices":["has Peter ever been to Green Island","if has Peter ever been to Green Island","whether Peter has ever been to Green Island","does Peter has ever been to Green Island"],"answer":2,"explain":"間接問句要用「連接詞 + 主詞 + 動詞」的直述句語序，故 whether Peter has ever been 正確。(A) 保留了疑問句倒裝 has Peter。(B) if 之後仍倒裝成 has Peter，錯誤。(D) does 之後要接原形動詞，且同樣是疑問句語序，屬雙重錯誤。"},{"level":"adv","topic":"句型轉換：first time 與 have never + p.p.","q":"This is my first time trying durian. = ______","choices":["I have never tried durian before.","I have tried durian before.","I have ever tried durian before.","I didn't try durian before."],"answer":0,"explain":"「這是我第一次吃榴槤」等於「我以前從來沒吃過榴槤」，用 have never + p.p. 表示沒有這個經驗。(B) 意思相反，變成吃過。(C) ever 一般用於疑問句或否定句，不用於這種肯定敘述句。(D) 過去簡單式只談過去某個時候沒吃，無法表達「到目前為止的經驗」。"},{"level":"adv","topic":"since + 過去時間點的時態判斷","q":"Peter ______ English since he was six years old, and he speaks it very well now.","choices":["studies","studied","has studied","is studying"],"answer":2,"explain":"since he was six years old 表示「從六歲到現在」，動作持續至今，主要子句要用現在完成式 has studied。(A) 現在簡單式無法連接過去的起點到現在。(B) 過去簡單式 studied 不能與 since + 過去時間點搭配表示持續到現在。(D) 現在進行式只表示此刻正在做，無法表達從六歲延續至今的期間。"},{"level":"adv","topic":"ever / never 在現在完成式中的正確用法","q":"Which sentence uses 'ever' or 'never' correctly with the present perfect?","choices":["I have ever been to Hong Kong with my family.","Have you ever tried making cookies by yourself?","She hasn't never seen snow in her life.","He has been never to Paris before."],"answer":1,"explain":"ever 用在疑問句中表示「曾經」，Have you ever + p.p.? 是標準的經驗問句，故 (B) 正確。(A) 肯定敘述句不用 ever，應說 I have been to Hong Kong。(C) hasn't 與 never 形成雙重否定，應說 She has never seen snow。(D) never 要放在 has 與過去分詞之間，應為 has never been to Paris。"},{"level":"adv","topic":"How long + 現在完成式的問答","q":"A: How long ______ your bike? B: For about two years. I got it in the seventh grade.","choices":["do you have","did you have","are you having","have you had"],"answer":3,"explain":"How long 問「持續多久」，答句 For about two years 表示從過去擁有到現在，要用現在完成式 have you had（have 的過去分詞是 had）。(A) 現在簡單式問不出持續的時間長度。(B) 過去式暗示現在已經沒有這台車，與語境不合。(C) have 表「擁有」時是狀態動詞，不用進行式。"},{"level":"adv","topic":"過去簡單式與現在完成式並用（last year / yet）","q":"My uncle ______ to Australia last year, and he ______ back to Taiwan yet.","choices":["moved; hasn't come","has moved; didn't come","moved; doesn't come","has moved; hasn't come"],"answer":0,"explain":"last year 是明確的過去時間，第一格必須用過去簡單式 moved；第二格有 yet（尚未），是現在完成式否定句的常見搭配，用 hasn't come back。(B)(D) 第一格與 last year 衝突，現在完成式不可與明確過去時間連用。(C) 第二格用現在簡單式，無法與 yet 搭配表達「到現在還沒」。"},{"level":"adv","topic":"對話選填：現在完成式的否定簡答","q":"A: Has your sister finished her report? B: ______ She started it just an hour ago.","choices":["Yes, she has.","Yes, she did.","No, she didn't.","No, she hasn't."],"answer":3,"explain":"問句是 Has...? 的現在完成式，簡答必須用 has/hasn't；後句說她一小時前才開始寫，表示還沒完成，故選 No, she hasn't.。(A) 語意與後句矛盾。(B)(C) did/didn't 是用來回答過去式問句 Did she...? 的答語。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

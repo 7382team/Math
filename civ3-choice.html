@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>選擇與消費：機會成本 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ3-choice",
+  "title": "選擇與消費：機會成本",
+  "subject": "公民",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1課 選擇與消費：機會成本",
+  "tag": "稀少性·機會成本",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>選擇與消費：機會成本</h1><div class="sub">公民 · 稀少性·機會成本 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"稀少性的意義","q":"公民課本寫著：「不論是富有的人或貧窮的人，都必須面對想要的東西太多、可運用的資源太少的處境。」這段話說明的是下列哪一個概念？","choices":["沉沒成本","消費者主權","稀少性","定型化契約"],"answer":2,"explain":"題幹強調不論貧富都面臨「慾望無窮、資源有限」，正是稀少性的意義，也是一切經濟問題的根源。沉沒成本指已付出且收不回的代價；消費者主權強調消費者的購買選擇會引導廠商生產；定型化契約是業者事先擬定的條款，三者都與題意不符。"},{"level":"basic","topic":"稀少性與取捨的關係","q":"下列哪一項最能解釋「有選擇就一定有取捨」的原因？","choices":["資源有限，把資源用在某個用途，就不能同時用在別的用途","人們的偏好會隨著流行不斷改變","商品的價格會隨著季節上下波動","政府會保障每一位消費者的權益"],"answer":0,"explain":"取捨的根源是稀少性：同一份時間、金錢或土地用於一種用途，就無法同時用於另一種，因此必須擇一。偏好改變與價格波動只是市場上的現象，權益保障屬於法律制度，都不是「必須取捨」的根本原因。"},{"level":"basic","topic":"機會成本的定義","q":"週末只有一個下午的空檔，小妤最後決定去圖書館看書。她放棄的其他選項與自己認定的價值高低依序為：打工（最高）、和同學打球（次高）、在家補眠（最低）。小妤這次選擇的機會成本是什麼？","choices":["在家補眠","她去圖書館所花的車錢","打工、打球與補眠三者價值的總和","打工"],"answer":3,"explain":"機會成本是被放棄的各種可能中「價值最高」的那一項，也就是打工。它不是所有放棄項目的加總，也不是價值最低的補眠；車錢是做出選擇後實際支付的貨幣支出，並非被放棄的選項本身。"},{"level":"basic","topic":"機會成本包含非金錢代價","q":"阿豪為了搶購限量球鞋，前一晚就到店門口排隊等候。老師提醒他：「你的代價不只鞋子的售價。」老師所指的另一項代價，最可能是下列何者？","choices":["商店為販售球鞋所支付的店面租金","排隊所花掉的時間與體力，原本可用於做其他最有價值的事","球鞋日後轉賣可能賺到的價差","其他同學也想買球鞋的心情"],"answer":1,"explain":"機會成本除了金錢，也包含時間、精力等非金錢代價，排隊的時間本可用於其他最有價值的活動。店租是商家的成本，不是阿豪的代價；轉賣價差屬於可能的收益而非代價；他人的心情與本人的決策代價無關。"},{"level":"basic","topic":"沉沒成本的概念","q":"關於「沉沒成本」的敘述，下列何者正確？","choices":["是指做選擇時所放棄的各種可能中價值最高的一項","是指未來還必須再支付的金額，一定要列入考慮","已經付出且無法收回，因此不應影響現在要不要繼續的決定","只有企業經營者才會產生，一般消費者不會遇到"],"answer":2,"explain":"沉沒成本是已支出且無法回收的代價，理性決策應只比較「從現在往後」的利益與成本。「放棄選項中價值最高者」其實是機會成本的定義；未來還要支付的金額仍可改變，本來就該納入考量；一般消費者買票、報名課程同樣會產生沉沒成本。"},{"level":"basic","topic":"理性決策與邊際思考","q":"在吃到飽餐廳已先付清費用後，理性的消費者在決定「要不要再拿一盤」時，最應該比較下列哪一組？","choices":["已經付出的餐費與餐廳的進貨成本","這家餐廳的招牌菜色與其他餐廳的招牌菜色","自己每個月的收入與這一餐的價格","多吃這一盤帶來的滿足感，與多吃這一盤所帶來的不適或負擔"],"answer":3,"explain":"理性決策採用邊際思考，比較「多做一單位」的邊際利益與邊際成本。餐費已經付清屬於沉沒成本，不該成為「再拿一盤」的理由；比較別家餐廳菜色或個人月收入，與此刻的邊際決定沒有直接關係。"},{"level":"basic","topic":"影響消費的因素—所得","q":"姊姊開始打工有收入後，把原本很少買的書籍和演唱會門票列入固定支出。影響她消費改變的主要因素是下列何者？","choices":["可支配的所得增加","商品價格大幅下降","廣告不斷重複播放","定型化契約提供的保障"],"answer":0,"explain":"有了打工收入使可支配所得提高，購買能力隨之擴大，這是所得因素。題幹並未提到降價或廣告刺激；定型化契約屬於契約條款的規範，與消費能力高低無關。"},{"level":"basic","topic":"影響消費的因素—廣告","q":"某款飲料原本乏人問津，在推出一系列電視與網路宣傳後銷量大增，而該飲料的售價與消費者的收入都沒有改變。此例最能說明影響消費的哪一項因素？","choices":["所得","廣告","價格","生產要素"],"answer":1,"explain":"題幹已明言價格與收入不變，銷量變化來自宣傳所引發的購買意願，屬於廣告（行銷）因素。所得與價格已被題幹排除；生產要素是廠商生產時投入的資源，與消費者的購買動機無關。"},{"level":"basic","topic":"消費者主權","q":"「消費者主權」的核心意義是下列何者？","choices":["消費者可以要求廠商依自己開出的價格出售商品","由政府替消費者決定市場上該販售哪些商品","消費者購買後可以無限期退換任何商品","消費者的購買選擇會影響廠商生產什麼、生產多少"],"answer":3,"explain":"消費者主權指消費者以「買或不買」的選擇引導廠商的生產決策。消費者無法片面決定售價；市場上供應哪些商品主要由供給與需求決定，而非政府替消費者指定；退換貨受法律與契約條件限制，並非無限期。"},{"level":"basic","topic":"聰明消費","q":"下列哪一種做法最符合「聰明消費」的精神？","choices":["看到限時搶購就立刻下單，以免錯過機會","一律挑最貴的商品，因為價格高就代表品質一定最好","購買前先確認自己的需求，並比較不同店家的價格與售後服務","把發票與保固卡丟掉，以免家裡雜亂"],"answer":2,"explain":"聰明消費強調先分辨「需要」與「想要」，再蒐集資訊、比較後再決定。限時搶購常造成衝動購買不需要的商品；價格高不必然品質最好；發票與保固單據是日後維修或申訴的重要憑證，不應丟棄。"},{"level":"basic","topic":"定型化契約與審閱期間","q":"健身房、電信、補習班等業者事先印製、消費者通常只能選擇簽或不簽的契約條款，稱為什麼？法律上為何要求業者提供合理期間讓消費者攜回細看？","choices":["定型化契約；因為條款由業者單方擬定，需給消費者足夠時間審閱以保障權益","個別磋商條款；因為雙方的議約能力完全對等","保固書；因為只有商品損壞時才需要維修","消費爭議調解書；因為爭議發生後才需要簽名"],"answer":0,"explain":"由企業經營者預先擬定、供不特定多數人簽訂的條款即定型化契約；因消費者議約能力較弱，法律要求提供合理的審閱期間。個別磋商條款是雙方逐條商議的內容；保固書與調解書分別處理維修與爭議善後，皆非題幹所指。"},{"level":"basic","topic":"通訊交易與猶豫期","q":"關於網路購物中「猶豫期（解除契約權）」的概念，下列敘述何者最正確？","choices":["只要商品被用壞了，隨時都可以要求退貨","在法律規定的期間內，消費者可以不必說明理由解除契約並退回商品","必須先向法院提出訴訟，才能主張退貨","在實體商店試穿後買回家的商品，也一律適用相同的猶豫期"],"answer":1,"explain":"猶豫期的用意在於通訊交易（網購、電視購物等）中，消費者事前無法檢視商品，故可於法定期間內無須說明理由解除契約。它不是無限期退貨，也不必先提起訴訟；在實體店面能親自檢視、試用的交易並不當然適用。"},{"level":"basic","topic":"消費爭議申訴管道","q":"阿凱網購的耳機收到後功能與網頁說明不符，多次聯絡賣家都得不到回應。依一般消費爭議的處理程序，他接下來最適當的做法是？","choices":["直接到賣家門市把同款商品拿走作為補償","在社群媒體上公布賣家全家人的個人資料","自認倒楣，把耳機丟掉重新再買一副","向消費者保護官或直轄市、縣（市）政府的消費者服務中心申訴，必要時申請消費爭議調解"],"answer":3,"explain":"消費爭議應先向企業經營者申訴，未獲妥適處理時可再向消費者保護官或地方政府的消費者服務中心申訴，並可申請消費爭議調解。自行取走商品、公布他人個資都涉及違法行為；放棄權益則無助於解決問題，也不符合消費者權益保護的精神。"},{"level":"basic","topic":"生產要素的分類","q":"一家手搖飲料店開業時投入下列項目，何者屬於「資本」這項生產要素？","choices":["店面所座落的土地","店員每天沖泡與服務的工作","製冰機、封口機等設備","老闆整合資源、承擔盈虧的決策能力"],"answer":2,"explain":"資本指人們製造出來、用於生產的機器、設備與廠房，如製冰機、封口機。土地泛指自然資源；店員提供的體力與腦力屬於勞動；老闆整合土地、勞動、資本並承擔風險的能力則屬企業能力（企業家精神）。"},{"level":"adv","topic":"機會成本的判定","q":"小恩暑假某個下午只能安排一項活動，他評估的選項與自己認定的價值如下：到餐廳打工（可得工資900元）、參加免費營隊（自認價值1200元）、在家追劇（自認價值400元）。若他最後選擇參加營隊，其機會成本為何？","choices":["400元的追劇價值","900元的打工收入","900元＋400元＝1300元","1200元的營隊價值"],"answer":1,"explain":"他放棄了打工（900元）與追劇（400元），機會成本取其中價值最高者，即900元。1300元是把放棄項目加總的錯誤算法；400元是價值最低者；1200元則是他所「獲得」的利益，而不是成本。"},{"level":"adv","topic":"機會成本的常見誤解","q":"四位同學在課堂上討論機會成本，下列誰的說法正確？","choices":["甲：只要必須在多個選項中擇一，就一定會產生機會成本","乙：機會成本就是我實際花掉的錢，沒花錢就沒有機會成本","丙：機會成本要把所有被放棄選項的價值全部加起來","丁：只要是免費得到的東西，機會成本一定是零"],"answer":0,"explain":"只要面臨選擇就必有取捨，也就必有機會成本，故甲正確。乙忽略了時間、精力等非金錢代價；丙誤把加總當成機會成本，正確做法是取被放棄選項中價值最高者；丁忽略免費商品仍須花時間排隊或使用，機會成本未必為零。"},{"level":"adv","topic":"沉沒成本與理性決策","q":"小婕買票進場看電影，二十分鐘後覺得劇情無聊，卻想著：「票錢都付了，硬看完才不吃虧。」從理性決策的角度來看，對她的想法最適當的評論是？","choices":["票錢就是她的機會成本，所以一定要看完才划算","既然已經進場，中途離場會使票錢變成更大的損失","票價愈貴，就愈應該堅持看完，才對得起自己","票錢已付且無法收回，是否留下應比較繼續觀看的利益與所花時間的代價"],"answer":3,"explain":"票錢屬於沉沒成本，不論去留都收不回，理性決策只需比較往後的邊際利益（劇情帶來的滿足）與邊際成本（時間）。其餘三種說法都把沉沒成本錯當成決策依據；票錢也不是被放棄的最高價值選項，因此不是機會成本。"},{"level":"adv","topic":"邊際利益與邊際成本","q":"便利商店老闆評估要不要在深夜時段多排一名工讀生。他估算：多排一人每晚需多付一筆人事費用，而深夜多開一個結帳台預計能多做的生意相當有限。下列判斷何者最符合理性決策？","choices":["只要這家店整體有賺錢，就應該無條件增加人力","應以當初店面裝潢花了多少錢，作為主要的判斷依據","若增加這名人力帶來的額外收益低於額外支出，就不應該增加","應該先比較這家店與隔壁店的總營業額，再決定要不要增加人力"],"answer":2,"explain":"理性決策比較的是「多增加一單位」的邊際利益與邊際成本，額外收益低於額外支出就不值得投入。整體是否賺錢屬於總量思考；裝潢費是收不回的沉沒成本；他店營業額與本店這項邊際決定沒有直接關係。"},{"level":"adv","topic":"機會成本的比較與理性選擇","q":"小翔評估週六上午三種安排並自評滿意分數：甲、到書店看新書60分；乙、陪弟弟去公園85分；丙、在家整理房間40分，三者只能擇一。他原本打算選甲，最後改為選乙。關於這次改變，下列敘述何者正確？","choices":["改選乙後，機會成本由85分降為60分，代表這次改變較為划算","改選乙後，機會成本由60分升為85分，代表這次改變得不償失","不論選甲或選乙，機會成本都是被放棄兩項分數的總和","既然乙是分數最高的選項，選乙就不會產生任何機會成本"],"answer":0,"explain":"選甲時放棄乙（85分）與丙（40分），機會成本為85分；改選乙後放棄甲（60分）與丙（40分），機會成本降為60分，所得利益也較高，因此較為划算。機會成本永遠取被放棄項目中的最高者，不是加總；即使選到自認價值最高的選項，仍然放棄了其他可能，機會成本不會歸零。"},{"level":"adv","topic":"影響消費的因素判讀","q":"下列四位消費者改變購買行為的原因，何者是由「價格」因素所造成？","choices":["小美因為特別喜歡藍色，買了藍色的水壺","阿佑因為常喝的奶茶調漲，改買較便宜的紅茶","阿宏因為看到偶像代言的廣告，買了同款背包","小雨因為升職加薪，開始每週外食一次"],"answer":1,"explain":"因售價上漲而改買較便宜的替代品，屬於價格因素。喜歡藍色反映的是個人偏好；受偶像代言影響屬於廣告（行銷）因素；升職加薪則是所得因素，三者都不是價格造成的改變。"},{"level":"adv","topic":"消費者主權的展現","q":"近年許多消費者主動選擇包裝較少、可重複使用的商品，使得不少廠商跟著調整產品設計與包裝方式。這個現象最能說明下列何者？","choices":["廠商可以任意決定消費者要買什麼，消費者只能被動接受","市場上商品的價格完全由政府一手訂定","消費者的購買選擇會引導廠商的生產決策，展現消費者主權","沉沒成本會決定廠商未來的生產方向"],"answer":2,"explain":"廠商為回應消費者的購買偏好而調整生產，正是消費者主權的展現。說廠商可任意決定消費者買什麼是把因果關係說反了；價格在市場中主要由供給與需求決定；沉沒成本已無法收回，理性的廠商不應以它作為未來決策依據。"},{"level":"adv","topic":"定型化契約情境判讀","q":"阿嬤到門市簽健身課程契約時，業務員說：「條款大家都一樣啦，直接簽名就好，帶回家看很麻煩。」關於此情境，下列判斷何者最適當？","choices":["契約既然由業者印好，消費者本來就沒有要求先看的權利","只要簽了名，日後即使條款明顯不公平也絕對不能主張任何救濟","健身課程屬於口頭契約，簽名與否並不重要","消費者有權要求合理期間審閱契約內容，業者不得以話術剝奪"],"answer":3,"explain":"定型化契約應給予消費者合理的審閱期間，業者以話術催促簽約並不能免除此義務。條款由業者單方擬定，正是需要審閱的理由；顯失公平的條款依消費者保護法可能無效，並非簽名後全無救濟；書面簽署的課程契約也不是口頭契約。"},{"level":"adv","topic":"生產要素的判別","q":"一位年輕人回鄉創業製作果醬：向農民承租果園、雇用鄰居採果與熬煮、購入殺菌鍋與封瓶機，並自行規劃品牌與通路、承擔可能的虧損。下列配對何者完全正確？","choices":["承租果園—土地；購入殺菌鍋—資本；規劃品牌並承擔風險—企業能力","承租果園—資本；雇用鄰居—土地","購入殺菌鍋—勞動；承擔風險—土地","雇用鄰居—企業能力；規劃品牌—勞動"],"answer":0,"explain":"土地泛指果園等自然資源；資本指殺菌鍋、封瓶機等人造的機器設備；勞動是採果、熬煮所付出的體力與腦力；企業能力則是整合上述三者、承擔盈虧風險的能力。其餘選項都把要素名稱張冠李戴。"},{"level":"adv","topic":"稀少性與公共決策的取捨","q":"某市政府本年度建設經費有限，議會討論後決定將經費用於改善老舊校舍，因而暫緩原先規劃的體育館興建案（在所有備選方案中，體育館的效益評估最高）。下列敘述何者最適當？","choices":["因為使用的是公務預算而非私人的錢，所以不會有機會成本","此決策的機會成本是暫緩興建的體育館所可帶來的效益","只有個人才會面臨取捨，政府不受稀少性的限制","此決策的機會成本是所有未被採納方案的效益加總"],"answer":1,"explain":"政府預算同樣有限，仍須面對稀少性與取捨；機會成本是被放棄方案中效益最高的那一個，即體育館。把所有未採納方案加總是錯誤算法；公部門並不因使用公務預算而免於稀少性，資源用於校舍就無法同時用於體育館，機會成本並不會消失。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>歐洲 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo3-europe",
+  "title": "歐洲",
+  "subject": "地理",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3課 歐洲",
+  "tag": "溫帶海洋性·歐盟·工業",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>歐洲</h1><div class="sub">地理 · 溫帶海洋性·歐盟·工業 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"歐洲的位置與範圍｜歐亞陸上分界","q":"歐洲與亞洲同屬歐亞大陸，兩者在陸上的傳統分界大致以下列哪一座山脈為準？","choices":["阿爾卑斯山脈","烏拉山脈","庇里牛斯山脈","喀爾巴阡山脈"],"answer":1,"explain":"歐、亞兩洲之間沒有海洋阻隔，習慣上以俄羅斯境內南北走向的烏拉山脈作為陸上分界。阿爾卑斯山脈位於歐洲中南部，庇里牛斯山脈是法國與西班牙之間的界山，喀爾巴阡山脈則位於中歐、東歐一帶，三者皆為歐洲內部的山脈，並非歐亞兩洲的界線。"},{"level":"basic","topic":"海岸線特徵｜半島與島嶼眾多","q":"與非洲相比，歐洲的海岸線具有下列哪一項明顯特徵？","choices":["海岸線平直單調，缺乏天然良港","海岸多為綿長的沙漠海岸，人煙稀少","海岸線雖長，但幾乎全年結冰而無法利用","海岸線曲折，半島與島嶼眾多，多優良港灣"],"answer":3,"explain":"歐洲陸塊被海洋深深切入，形成眾多半島、島嶼與海灣，海岸線曲折且良港密布，有利航運與海外貿易發展。「平直單調、缺乏良港」是非洲海岸的特徵；「綿長沙漠海岸」多見於非洲北部與西南部；「幾乎全年結冰」只適用於高緯度的北極海沿岸，並非歐洲海岸的普遍情形。"},{"level":"basic","topic":"歐洲的半島辨識","q":"下列哪一組地名，全部都屬於歐洲的半島？","choices":["斯堪地那維亞半島、伊比利半島、巴爾幹半島","中南半島、朝鮮半島、阿拉伯半島","義大利半島、馬來半島、日德蘭半島","伊比利半島、堪察加半島、小亞細亞半島"],"answer":0,"explain":"斯堪地那維亞半島在北歐、伊比利半島在西南歐、巴爾幹半島在東南歐，皆為歐洲著名半島。中南半島、朝鮮半島、阿拉伯半島三者全在亞洲；馬來半島位於東南亞；堪察加半島位於俄羅斯的亞洲部分，小亞細亞半島則屬西亞。"},{"level":"basic","topic":"冰河地形｜峽灣的成因","q":"挪威西岸有許多深入內陸、兩側崖壁陡峭且水深的狹長海灣（峽灣），其主要成因為何？","choices":["河流長期向下侵蝕形成峽谷後陸地陷落","海浪不斷侵蝕海岸岩層，形成海蝕洞與海蝕門","冰河侵蝕形成U型谷，冰期結束後海水入侵谷地","板塊張裂形成地塹，低地積水而成海灣"],"answer":2,"explain":"高緯度地區在冰期時冰河由山地流向海洋，強烈刨蝕形成兩側陡峭的U型谷；冰河消退、海水面上升後海水灌入谷地，即成峽灣。河流下切形成的是V型谷，谷壁與谷底形態不同；海蝕洞、海蝕門屬海蝕地形，規模與深度都不足以造成深入內陸的長灣；地塹積水屬構造地形，並非峽灣的成因。"},{"level":"basic","topic":"地形｜歐洲大平原","q":"關於歐洲中部的歐洲大平原，下列敘述何者正確？","choices":["地勢平坦、河川眾多，水陸交通便利，是人口與農業集中區","地勢崎嶇、山脈綿延，陸上交通十分不便","地表以沙漠為主，缺乏水源，人口極為稀少","位於歐洲最南端，屬於新褶曲的高聳山地"],"answer":0,"explain":"歐洲大平原由西向東橫貫歐洲中部，地勢低平、河流眾多，運河與鐵公路易於興築，農業發達且人口稠密。「地勢崎嶇、山脈綿延」是南歐阿爾卑斯山系的特徵；「以沙漠為主」的景觀見於北非與西亞，不出現在歐洲大平原；「位於歐洲最南端的新褶曲高聳山地」則是把平原與南歐山地混為一談。"},{"level":"basic","topic":"地形｜阿爾卑斯山系","q":"位於歐洲南部、與亞洲喜馬拉雅山同屬新褶曲山地，地勢高聳且地震活動較多的山系是下列何者？","choices":["斯堪地那維亞山地","阿爾卑斯山系","烏拉山脈","大分水嶺"],"answer":1,"explain":"阿爾卑斯山系橫亙南歐，為板塊擠壓形成的新褶曲山地，山勢高峻、地震活動較活躍。斯堪地那維亞山地與烏拉山脈都屬古老的褶曲山地，久經侵蝕而較為低緩；大分水嶺位於澳洲東部，不在歐洲。"},{"level":"basic","topic":"主要河川｜萊茵河的流路","q":"下列有關萊茵河流路與注入海域的敘述，何者正確？","choices":["發源於東歐平原，向南流注入黑海","全程僅流經英國境內，是工業革命時期最重要的水運通道","水量季節變化極大、冬季長期封凍，幾乎無法通航","上游源自阿爾卑斯山區，向北流經西歐工業地帶後注入北海"],"answer":3,"explain":"萊茵河發源於阿爾卑斯山區，向北穿越西歐重要工業與都市地帶，最後由荷蘭注入北海，是歐洲航運最繁忙的國際河川之一。「向南流注入黑海」描述的是多瑙河；萊茵河並不流經英國；「水量季節變化極大、冬季長期封凍」與萊茵河水量穩定、冬季少封凍的實況相反。"},{"level":"basic","topic":"主要河川｜多瑙河的出海口","q":"多瑙河由西向東流，流經中歐與東南歐多國後，最後注入下列哪一海域？","choices":["北海","波羅的海","黑海","地中海"],"answer":2,"explain":"多瑙河自德國西南部向東流，最後注入黑海，是連接中歐與東南歐的重要水路。北海是萊茵河的出海口；波羅的海位於北歐與東歐之間；地中海位於南歐沿岸，皆與多瑙河下游流向不合。"},{"level":"basic","topic":"氣候｜西歐溫帶海洋性氣候","q":"西歐地區冬季不甚寒冷、夏季不甚炎熱，全年雨量分配相當平均，屬於下列哪一種氣候類型？","choices":["地中海型氣候","溫帶海洋性氣候","溫帶大陸性氣候","熱帶莽原氣候"],"answer":1,"explain":"冬溫夏涼、年溫差小且全年有雨，是溫帶海洋性氣候的典型特徵，西歐因盛行西風自海洋帶來水氣而具此特色。地中海型氣候為夏乾冬雨；溫帶大陸性氣候年溫差大、雨量偏少；熱帶莽原氣候位於低緯度且有明顯乾濕季，皆與題意不符。"},{"level":"basic","topic":"洋流｜北大西洋暖流的影響","q":"北歐挪威西岸緯度雖高，部分港口冬季海面仍不結冰而能全年通航，主要是受下列何者影響？","choices":["北大西洋暖流","拉布拉多寒流","加那利寒流","千島寒流"],"answer":0,"explain":"北大西洋暖流由低緯度北上流經西歐與北歐西岸，帶來溫暖海水，使沿岸冬季氣溫較同緯度地區高、海面不易結冰。拉布拉多寒流位於北美東岸、加那利寒流位於非洲西北岸、千島寒流位於亞洲東北岸，皆為寒流且不流經挪威沿海。"},{"level":"basic","topic":"氣候｜南歐地中海型氣候的降水","q":"南歐地中海沿岸地區的降水季節分配，下列敘述何者正確？","choices":["全年多雨，各月雨量大致平均","夏季雨量最多，冬季乾燥少雨","夏季乾燥少雨，冬季雨量較多","全年皆乾燥，年雨量極少"],"answer":2,"explain":"地中海型氣候夏季受副熱帶高壓籠罩而乾熱少雨，冬季副熱帶高壓南移，西風與氣旋帶來降水，故為夏乾冬雨。「全年多雨且各月平均」是西歐溫帶海洋性氣候的特徵；「夏雨冬乾」為季風氣候型態；「全年皆乾燥」則屬沙漠氣候。"},{"level":"basic","topic":"農業｜地中海型農業作物","q":"下列哪一組作物最能代表南歐地中海沿岸地區的傳統栽培作物？","choices":["稻米、甘蔗、天然橡膠","咖啡、可可、油棕","椰棗、小米、高粱","葡萄、橄欖、柑橘"],"answer":3,"explain":"葡萄、橄欖與柑橘耐夏季乾旱、根系較深，能適應地中海型氣候夏乾冬雨的環境，是南歐的代表性作物。稻米、甘蔗、天然橡膠為高溫多雨的熱帶或季風區作物；咖啡、可可、油棕是熱帶栽培業的代表；椰棗、小米、高粱則多見於乾燥的西亞與非洲地區。"},{"level":"basic","topic":"氣候｜東歐溫帶大陸性氣候","q":"與西歐相比，東歐內陸地區的氣候特徵為何？","choices":["冬暖夏涼、年溫差小，全年有雨","冬冷夏熱、年溫差大，年雨量較少","夏季乾熱、冬季溫濕，適合栽種橄欖","終年高溫多雨，森林終年常綠"],"answer":1,"explain":"東歐深居內陸，受海洋與暖流調節的作用減弱，形成冬冷夏熱、年溫差大、雨量偏少的溫帶大陸性氣候。「冬暖夏涼、年溫差小」是西歐溫帶海洋性氣候的特徵；「夏乾冬雨、適合橄欖」為南歐地中海型氣候；「終年高溫多雨」屬低緯度的熱帶雨林氣候。"},{"level":"basic","topic":"歐洲聯盟｜共同貨幣","q":"歐洲聯盟部分會員國共同採用、可跨國通行使用的單一貨幣是下列何者？","choices":["歐元","英鎊","瑞士法郎","盧布"],"answer":0,"explain":"歐元是歐盟推動經濟整合的重要措施，採用的會員國之間可減少換匯成本，便利跨國貿易與旅行。英鎊為英國貨幣，瑞士法郎為瑞士貨幣，兩者皆未改用歐元；盧布是俄羅斯的貨幣，俄羅斯並非歐盟會員國。"},{"level":"adv","topic":"氣候成因推論｜海洋性向大陸性遞變","q":"自歐洲西岸往東逐漸深入內陸，各地年溫差愈來愈大、年雨量愈來愈少，造成此一變化的最主要原因是？","choices":["緯度由南往北升高，接受的太陽輻射逐漸減少","地勢由西往東逐漸升高，氣溫隨高度而遞減","距海愈遠，盛行西風與海洋的調節作用逐漸減弱","沿岸洋流由暖流轉為寒流，使內陸氣溫下降"],"answer":2,"explain":"歐洲西岸受盛行西風與北大西洋暖流影響，海洋調節作用強；往東距海漸遠，水氣與熱量的調節效果遞減，因而年溫差變大、雨量減少。緯度變化屬南北向差異，與題幹的東西向遞變不符；歐洲大平原地勢低平，並非由西向東明顯升高；洋流只影響沿海，無法解釋內陸的遞變。"},{"level":"adv","topic":"氣候情境判讀｜南歐","q":"某地夏季高溫而幾乎不降雨，冬季溫和且雨量最為集中，當地農民常於冬季蓄水以供夏季灌溉。此地最可能位於下列何處？","choices":["挪威西部沿海","波蘭東部內陸","冰島西南部","義大利南部沿海"],"answer":3,"explain":"夏乾冬雨、冬季溫和是地中海型氣候的判別關鍵，義大利南部沿海正位於地中海沿岸。挪威西部與冰島西南部全年有雨、夏季涼冷，不會出現夏季幾乎無降水的情形；波蘭東部屬溫帶大陸性氣候，降水略集中於夏季且冬季寒冷。"},{"level":"adv","topic":"河川航運｜萊茵河的優勢條件","q":"萊茵河為歐洲航運最繁忙的國際河川之一，下列何者是其航運價值高的主要原因？","choices":["流量季節變化小、冬季少見封凍，中下游流經平原並可直達北海大港","河床坡度陡峻、水流湍急，船隻航行速度特別快","流域內人口稀少，沿岸幾乎沒有城市與工業區","冬季河面長期結冰，可長時間作為冰上運輸道路"],"answer":0,"explain":"萊茵河上游有阿爾卑斯山融雪補注、中下游有西歐分配平均的雨量，水量穩定且冬季少封凍；中下游流經地勢低平的平原並連接北海港口，貨物可直接轉運海運，故航運價值高。水流湍急不利航行；沿岸實際上人口稠密、工業密集，繁榮腹地正是航運需求的來源；長期封凍反而會中斷航運。"},{"level":"adv","topic":"河川航運｜多瑙河的跨國特性","q":"多瑙河由西向東流，其流經的國家數量在世界大河中名列前茅。此一特性對多瑙河航運的主要影響是？","choices":["流經國家多，各國制度自然一致，航運管理最為單純","航運需跨越多國，須仰賴國際協商與合作，管理較為複雜","流經國家多，使河川流量特別穩定而不受氣候影響","流經國家多，因此全河段皆禁止船隻通行"],"answer":1,"explain":"跨國河川的航道維護、通關與環境保護涉及沿岸各國，須透過國際合作與協定才能順暢運作，管理難度高於單一國家境內的河川。把「國家多」推論為制度自然一致，方向恰好相反；流量取決於氣候與地形，與流經幾個國家無關；多瑙河至今仍是重要航道，並未禁航。"},{"level":"adv","topic":"觀光業｜歷史古蹟與文化資產","q":"南歐的義大利、希臘與西歐的法國等地每年吸引大量國際觀光客，就人文條件而言，其最主要的觀光資源是下列何者？","choices":["廣大的熱帶雨林與野生動物保護區","世界規模最大的油田與礦業景觀","面積遼闊的熱帶栽培業農場","豐富的歷史古蹟、藝術與文化資產"],"answer":3,"explain":"歐洲文明發展悠久，古蹟、教堂、博物館與各式文化活動密集，加上交通便捷、區域內移動方便，使觀光業成為重要產業。熱帶雨林與野生動物觀光是非洲、南美洲的特色；大型油田集中於西亞等地；熱帶栽培業農場分布於低緯度地區，皆非歐洲的觀光主力。"},{"level":"adv","topic":"歐洲聯盟｜申根區與人員自由流動","q":"一位旅客由德國搭火車前往法國，再轉往荷蘭，沿途通過國界時並未再受到護照查驗。此情形最能反映歐洲整合的哪一項制度？","choices":["共同農業政策的價格與補貼措施","會員國統一使用同一種官方語言","申根區內人員可自由跨越國界流動","會員國統一實施相同的義務教育年限"],"answer":2,"explain":"申根區的核心是取消成員國之間的例行邊境管制，人員得以自由跨境移動，對通勤、旅遊與勞動力流動幫助很大。共同農業政策屬農業支持措施，與邊境查驗無關；歐盟尊重各國語言多元，並無單一官方語言；教育制度仍由各國自行規定。"},{"level":"adv","topic":"歐洲聯盟｜整合的成效與挑戰","q":"關於歐洲聯盟推動區域整合的成效與挑戰，下列敘述何者最為恰當？","choices":["單一市場使貨物、人員與資金流動更便利，但會員國經濟發展程度不一，政策協調仍具挑戰","所有會員國皆已採用歐元，各國財政與貨幣政策完全一致","會員國加入後即放棄全部主權，已合併成為一個單一國家","歐盟成立的主要目的是組成軍事同盟，並對外擴張領土"],"answer":0,"explain":"歐盟藉單一市場降低關稅與貿易障礙，提升整體競爭力；但各會員國產業結構與所得水準有差距，財政、移民等議題常需長時間協商，是整合的現實挑戰。並非所有會員國都使用歐元；會員國讓渡部分權限但仍是獨立國家；歐盟以經濟合作與維持和平為主要宗旨，與軍事擴張的說法不符。"},{"level":"adv","topic":"人口議題｜少子化、高齡化與勞動力","q":"歐洲許多國家近年出生率偏低、老年人口比例上升，下列何者是最可能隨之出現的連鎖現象？","choices":["學齡人口大幅增加，各地學校數量普遍不足","農業人口大幅回升，農村人口重新超過都市人口","勞動力供給趨緊，部分產業引進外來移民補充人力，社會照護支出也隨之增加","都市人口大量外移，都市化程度明顯下降"],"answer":2,"explain":"少子化使新增勞動人口減少，高齡化則使退休金與長期照護需求上升，部分產業因而引進外來移民補足人力，社會制度也需隨之調整。學齡人口增加與出生率下降的趨勢相反；歐洲都市化程度高且持續維持，勞動人口多集中於都市的工商業與服務業，農村人口回升與都市化明顯下降均不符現況。"},{"level":"adv","topic":"區域差異比較｜北歐、西歐、南歐、東歐","q":"下列有關歐洲四大分區一般特色的比較，何者最為恰當？","choices":["南歐屬溫帶海洋性氣候，全年雨量平均，以酪農業為最主要產業","北歐緯度高、林業與漁業發達；西歐工商業與服務業興盛，都市化程度高","東歐瀕臨大西洋，海洋性氣候顯著，年溫差為全歐最小","西歐地形以高原與沙漠為主，人口稀少且工業不發達"],"answer":1,"explain":"北歐緯度高、冬季寒冷，森林與漁業資源豐富；西歐位處歐洲大平原與大西洋沿岸，工商業與服務業發達，都市化程度居世界前列。南歐屬夏乾冬雨的地中海型氣候，該選項誤植為西歐的氣候與產業；東歐深居內陸，年溫差為全歐較大者；西歐地勢低平、人口稠密、工業發達，與「高原與沙漠、人口稀少」的敘述相反。"},{"level":"adv","topic":"工業發展｜工業革命發源地與精密工業","q":"歐洲被視為近代工業的搖籃，下列有關其工業發展的敘述，何者最為正確？","choices":["工業革命最早發生於義大利，並以紡織與造船業起家","歐洲工業以輸出未經加工的原料為主，製造業並不發達","歐洲工業區多集中於北極圈內，以漁獲加工為主要型態","工業革命最早發生於英國，今日歐洲以汽車、機械、鐘錶等精密工業與高附加價值產品聞名"],"answer":3,"explain":"英國憑藉煤鐵資源、技術改良與海外市場，最早展開工業革命；今日歐洲工業已轉向技術密集、附加價值高的精密製造與研發。工業革命的發源國並非義大利；歐洲製造業實力雄厚，並非以輸出原料為主；歐洲工業區主要分布於西歐與中歐的平原與礦區，而非北極圈內。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

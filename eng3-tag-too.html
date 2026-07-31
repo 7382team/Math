@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>附加問句與 too...to 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng3-tag-too",
+  "title": "附加問句與 too...to",
+  "subject": "英文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "tag questions · so...that",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>附加問句與 too...to</h1><div class="sub">英文 · tag questions · so...that · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"附加問句－be動詞（前肯後否）","q":"Your sister is a nurse in that hospital, ___?","choices":["isn't she","is she","doesn't she","isn't your sister"],"answer":0,"explain":"前面是肯定句，附加問句就要用否定；主詞 your sister 是單數女性，代名詞用 she，be 動詞 is 的否定縮寫是 isn't，故用 isn't she。(B) 前肯後也肯定，違反「前肯後否」原則。(C) 原句用 be 動詞 is，不可改用一般動詞的助動詞 does。(D) 附加問句的主詞一定要用代名詞，不能重複名詞。"},{"level":"basic","topic":"附加問句－一般動詞否定句（前否後肯）","q":"Tom doesn't like coffee at all, ___?","choices":["doesn't he","is he","does he","does Tom"],"answer":2,"explain":"前面是否定句，附加問句要用肯定；一般動詞現在式第三人稱單數用 does，主詞 Tom 用 he，故為 does he。(A) 前否後又否，重複否定。(B) 原句動詞是一般動詞 like，不能用 be 動詞。(D) 附加問句不可用名詞當主詞，必須改成代名詞。"},{"level":"basic","topic":"附加問句－現在完成式","q":"You have already finished your science report, ___?","choices":["didn't you","haven't you","don't you","have you"],"answer":1,"explain":"現在完成式 have/has + p.p. 的附加問句要用 have/has；前肯後否、主詞 you，故用 haven't you。(A) 現在完成式不可用 did 來作附加問句。(C) 句中已有助動詞 have，不需要也不可以用 do。(D) 前面肯定、後面也肯定，不符合規則。"},{"level":"basic","topic":"附加問句－祈使句用 will you?","q":"Please turn off the lights before you leave, ___?","choices":["do you","shall we","don't you","will you"],"answer":3,"explain":"以原形動詞開頭的祈使句（請求或命令），附加問句固定用 will you?。(A)(C) 祈使句沒有主詞也沒有時態，不能用 do you / don't you。(B) shall we? 只能用在 Let's 開頭的提議句。"},{"level":"basic","topic":"附加問句－Let's 用 shall we?","q":"Let's take a walk in the park after dinner, ___?","choices":["shall we","will you","do we","don't we"],"answer":0,"explain":"Let's（= Let us）開頭的提議句，附加問句固定用 shall we?。(B) will you? 是祈使句用的。(C)(D) Let's 句型不是一般直述句，不能用 do we / don't we。"},{"level":"basic","topic":"附加問句－I am 用 aren't I","q":"I am the tallest student in our class, ___?","choices":["am I","am not I","aren't I","are I"],"answer":2,"explain":"I am 開頭的肯定句，附加問句是固定用法 aren't I?。(A) 前肯後也肯定，違反規則。(B) am not I 不合英文習慣，實際上不使用。(D) are I 的主詞與動詞不一致，也不是問句形式。"},{"level":"basic","topic":"附加問句－否定字 never","q":"Jenny never eats breakfast before school, ___?","choices":["doesn't she","isn't she","does she","did she"],"answer":2,"explain":"句中有否定副詞 never，整句視為否定句，附加問句要用肯定；一般動詞現在式第三人稱單數用 does she。(A) 句子已含否定，不可再用否定形式。(B) 原句是一般動詞 eats，不用 be 動詞。(D) 附加問句時態要跟前句一致，前句是現在式。"},{"level":"basic","topic":"too...to 基本句型（主詞即受詞，不再加 it）","q":"The soup is still too hot ___ right now.","choices":["to drink it","to drink","drinking","for drinking"],"answer":1,"explain":"too + 形容詞 + to V 表「太…而不能…」。主詞 The soup 本身就是 drink 的受詞，後面不必再加受詞。(A) 多加 it 是最常見的錯誤。(C)(D) 此句型後面固定接不定詞 to V，不接動名詞。"},{"level":"basic","topic":"so...that 接形容詞","q":"The movie was ___ boring that many people left before it ended.","choices":["too","such","very","so"],"answer":3,"explain":"so + 形容詞 + that + 子句，表「如此…以致於…」。(A) too 後面要接 to V，不能接 that 子句。(B) such 後面要接名詞片語，如 such a boring movie。(C) very 只能加強語氣，不能引導表結果的 that 子句。"},{"level":"basic","topic":"enough to V 的位置","q":"Peter isn't ___ to reach the books on the top shelf.","choices":["enough tall","tall enough","too tall","so tall"],"answer":1,"explain":"enough 修飾形容詞或副詞時要放在其「後面」，即形容詞 + enough + to V。(A) 位置顛倒，enough 不可放在形容詞前。(C) too tall to reach 意思是「太高而搆不到」，語意不合理。(D) so tall 後面必須接 that 子句，不能直接接 to V。"},{"level":"basic","topic":"too...to 不可再加 not","q":"Which sentence correctly uses the \"too...to\" pattern to mean \"She was so tired that she couldn't walk home\"?","choices":["She was too tired to walking home.","She was too tired that she walked home.","She was too tired to not walk home.","She was too tired to walk home."],"answer":3,"explain":"too...to 本身已含「不能」的否定意味，只要 too + 形容詞 + to + 原形動詞即可。(A) to 後面必須接原形動詞 walk，不可用 V-ing。(B) too 不能接 that 子句，要接 to V。(C) 再加 not 變成雙重否定，是常見錯誤。"},{"level":"basic","topic":"附加問句－助動詞 can","q":"We can meet at the MRT station tomorrow morning, ___?","choices":["can't we","can we","shall we","don't we"],"answer":0,"explain":"句中有助動詞 can，附加問句就沿用 can；前肯後否、主詞 we，故為 can't we。(B) 前肯後也肯定，不符合規則。(C) shall we? 只用於 Let's 句型。(D) 句中已有助動詞 can，不可換成 do。"},{"level":"basic","topic":"附加問句－過去式否定句","q":"You didn't call me back last night, ___?","choices":["didn't you","did you","were you","do you"],"answer":1,"explain":"前句是過去式否定句，附加問句要用肯定的 did you。(A) 前否後又否，重複否定。(C) 原句動詞是一般動詞 call，不用 be 動詞。(D) last night 是過去時間，時態必須用過去式 did。"},{"level":"basic","topic":"so...that 接副詞","q":"Ben ran ___ fast that none of us could catch up with him.","choices":["very","too","so","such"],"answer":2,"explain":"so 也可以修飾副詞，形成 so + 副詞 + that + 子句。fast 在此修飾動詞 ran，是副詞。(A) very 不能引導表結果的 that 子句。(B) too 要接 to V。(D) such 後面要接名詞片語。"},{"level":"adv","topic":"句型轉換－too...to 改寫成 so...that...not","q":"Which sentence has the same meaning as \"The rock was too heavy for us to move\"?","choices":["The rock was so heavy that we couldn't move it.","The rock was so heavy that we could move it.","The rock was so heavy that we couldn't move.","The rock was too heavy that we couldn't move it."],"answer":0,"explain":"too...to 可改寫成 so + 形容詞 + that + 主詞 + can't/couldn't + V；前句是過去式，故用 couldn't，而 that 子句是完整句子，及物動詞 move 後面必須補上受詞 it。(B) 少了否定，意思完全相反。(C) 缺少受詞 it，句子不完整。(D) too 不能接 that 子句。"},{"level":"adv","topic":"句型轉換－so...that...not 改寫成 too...to","q":"\"Kevin was so nervous that he couldn't say a word.\" Which sentence keeps the same meaning?","choices":["Kevin was too nervous not to say a word.","Kevin was too nervous to say a word.","Kevin was too nervous to not say a word.","Kevin was nervous enough to say a word."],"answer":1,"explain":"so + 形容詞 + that + 主詞 + couldn't + V 可改寫成 too + 形容詞 + to V。(A)(C) too...to 已含否定意味，再加 not 會造成雙重否定，語意反而變成「不得不說」或不合文法。(D) 形容詞 + enough + to V 表「夠…足以做…」，語意與原句相反。"},{"level":"adv","topic":"not...enough to V 的語意判斷","q":"Amy is only ten years old, so she is ___ to drive a car.","choices":["too old","old enough","not old enough","so old"],"answer":2,"explain":"十歲還不到開車年齡，要用 not + 形容詞 + enough + to V 表「不夠…而無法…」。(A) too old 是「年紀太大」，與事實不符。(B) old enough 表示「年紀夠大」，語意相反。(D) so old 後面必須接 that 子句，不能直接接 to V。"},{"level":"adv","topic":"附加問句－hardly 視為否定 + 助動詞 could","q":"Sandy could hardly hear the teacher's voice in the back row, ___?","choices":["could she","couldn't she","did she","couldn't Sandy"],"answer":0,"explain":"hardly 表「幾乎不」，帶否定意味，整句視為否定句，附加問句要用肯定；句中已有助動詞 could，就沿用 could，故為 could she。(B) 句子已含否定意味，不可再用否定形式。(C) 句中有助動詞 could，不可改用 did。(D) 附加問句的主詞必須改成代名詞 she，不能重複名詞。"},{"level":"adv","topic":"附加問句－everyone 的代名詞與時態","q":"Everyone enjoyed the school trip to Tainan, ___?","choices":["didn't he","did they","didn't everyone","didn't they"],"answer":3,"explain":"everyone 雖然搭配單數動詞，但附加問句的代名詞習慣用 they；前句是肯定的過去式，故用 didn't they。(A) 用 he 不合現代英文習慣。(B) 前肯後也肯定，違反「前肯後否」原則。(C) 附加問句主詞必須用代名詞，不可重複 everyone。"},{"level":"adv","topic":"附加問句綜合辨析（祈使句、Let's、I am、never）","q":"Which sentence uses its tag question correctly? (Check the rules for imperatives, Let's, I am, and negative words.)","choices":["Let's order some pizza, will you?","I am on the right team, am not I?","Don't tell Mom about this, will you?","Sam has never lost a game, hasn't he?"],"answer":2,"explain":"祈使句（包含 Don't 開頭的否定祈使句）的附加問句一律用 will you?。(A) Let's 開頭要用 shall we?。(B) I am 的附加問句固定用 aren't I?。(D) never 使句子帶否定意味，附加問句要用肯定的 has he?。"},{"level":"adv","topic":"對話選填－too...to 與附加問句綜合","q":"A: I've read this English article three times, but I still don't get it.\nB: ___\nA: You're right. Let's ask Mr. Lin together.","choices":["It's so hard that we can understand it by ourselves, isn't it?","It's too hard for us to not understand by ourselves, is it?","It's too hard for us understanding by ourselves, doesn't it?","It's too hard for us to understand by ourselves, isn't it?"],"answer":3,"explain":"too + 形容詞 + for + 受格 + to V 表「對某人而言太…而不能…」；前句 It's 是肯定的 be 動詞句，附加問句用 isn't it，語意也符合「所以去問老師」。(A)「這麼難以致於我們看得懂」語意矛盾。(B) too...to 再加 not 是雙重否定，且前肯後應用否定。(C) for us 後要接 to V，且原句用 be 動詞，附加問句不可用 does。"},{"level":"adv","topic":"附加問句－little 視為否定 + There be 句型","q":"There is little milk left in the bottle, ___?","choices":["is there","isn't there","isn't it","does it"],"answer":0,"explain":"little 修飾不可數名詞，表「幾乎沒有」，整句視為否定句，附加問句要用肯定的 is there。(B) 句子已含否定意味，不可再用否定。(C)(D) There be 句型的附加問句主詞必須用 there，不能換成 it，也不能改用助動詞 does。"},{"level":"adv","topic":"so...that 結果子句的時態與動詞形式","q":"Ted was so excited about the trip to Japan that he ___ all night.","choices":["can't sleep","couldn't slept","didn't can sleep","couldn't sleep"],"answer":3,"explain":"主要子句用過去式 was，that 結果子句時態要一致，用 couldn't + 原形動詞 sleep。(A) can't 是現在式，與 was 時態不合。(B) 助動詞 couldn't 後面一定接原形動詞，不可用過去分詞或過去式。(C) 一個句子不能同時出現 did 和 can 兩個助動詞。"},{"level":"adv","topic":"too...to 句型中的 for + 受格","q":"This math problem is too difficult ___ to solve.","choices":["to me","for me","for I","of me"],"answer":1,"explain":"too...to 句型若要指出「對誰而言」，用 for + 受格，故為 for me。(A) 此處介系詞應用 for，不用 to。(C) 介系詞後面要用受格 me，不可用主格 I。(D) of 不用於這個句型。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

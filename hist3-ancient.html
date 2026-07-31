@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>亞非古文明與歐洲古典文化 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist3-ancient",
+  "title": "亞非古文明與歐洲古典文化",
+  "subject": "歷史",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第1課 亞非古文明與歐洲古典文化",
+  "tag": "兩河·埃及·希臘羅馬",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>亞非古文明與歐洲古典文化</h1><div class="sub">歷史 · 兩河·埃及·希臘羅馬 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"兩河流域文明－蘇美人與楔形文字","q":"最早在兩河流域南部建立城邦、並以蘆葦桿在泥板上壓刻文字的民族是蘇美人。他們所創造的這種文字稱為：","choices":["象形文字","楔形文字","甲骨文","羅馬字母"],"answer":1,"explain":"蘇美人以削尖的蘆葦桿在泥板上壓寫，筆畫一端寬、一端尖，呈楔子狀，故稱楔形文字。象形文字是古埃及的文字；甲骨文是中國商朝刻在龜甲獸骨上的文字；羅馬字母則是後來歐洲拼音文字的系統，三者都與兩河流域無關。"},{"level":"basic","topic":"兩河流域文明－漢摩拉比法典的處罰原則","q":"古巴比倫王國的漢摩拉比頒布一部著名法典，教科書中最常引用它的哪一項處罰原則？","choices":["「以牙還牙、以眼還眼」的同態復仇原則","法律之前人人平等，完全不分身分階級","廢除一切死刑，一律改以勞役代替","法律必須經全體人民投票通過才生效"],"answer":0,"explain":"漢摩拉比法典以同態復仇（以牙還牙、以眼還眼）的原則聞名，是古代重要的成文法典。該法典依貴族、平民、奴隸的身分給予不同處罰，並非人人平等；它保留死刑，也未以勞役全面取代；法典由國王頒布，不需人民投票，那是把近代民主觀念套用到古代。"},{"level":"basic","topic":"古埃及文明－尼羅河與農業","q":"古希臘史家曾說「埃及是尼羅河的贈禮」。這句話最主要是在強調尼羅河的哪一項作用？","choices":["兩岸蘊藏大量鐵礦，帶動埃及冶鐵業發達","向南連通印度洋，使埃及壟斷香料貿易","定期氾濫，退水後留下肥沃泥土，有利農耕","沿岸森林密布，供應建造船隊所需的木材"],"answer":2,"explain":"尼羅河每年定期氾濫，退水後在兩岸留下肥沃淤泥，使乾旱的埃及得以發展農業、孕育文明，這正是「埃及是尼羅河的贈禮」的意思。埃及以石材與金、銅著稱，不是產鐵重地；尼羅河向北注入地中海，並未通往印度洋；埃及境內林木稀少，優良木材反而必須向外輸入。"},{"level":"basic","topic":"古埃及文明－木乃伊、金字塔所反映的宗教觀念","q":"古埃及人費時費力為死者製作木乃伊，並為國王興建巨大的金字塔陵墓。這些做法最能反映他們的哪一種觀念？","choices":["相信人死後靈魂仍存在，非常重視來世","認為國君須與人民共同商議來治理國家","主張眾生平等，反對社會上的階級差別","強調用成文法律來規範人民日常生活"],"answer":0,"explain":"保存屍體（木乃伊）是為了讓靈魂有所依歸，金字塔則是法老通往另一個世界的陵墓，兩者都是重視來世的具體表現。埃及法老被視為神的化身、握有絕對權力，並不與人民共議國政；眾生平等是後起宗教（如佛教）的主張；以成文法律規範生活是兩河流域的文化特色，都不是木乃伊與金字塔所要說明的重點。"},{"level":"basic","topic":"印度古文明－種姓制度的階級劃分","q":"印度種姓制度將人分成四大階級，其中地位最高、掌管宗教祭祀與經典的是哪一階級？","choices":["剎帝利","婆羅門","吠舍","首陀羅"],"answer":1,"explain":"婆羅門是祭司階級，負責主持祭祀、傳授經典，地位最高。剎帝利是國王與武士，掌握政治軍事；吠舍為農工商平民；首陀羅則從事勞役、地位最低，此外還有被排除在四大種姓之外的「賤民」。"},{"level":"basic","topic":"希伯來人－一神信仰的民族","q":"古代西亞民族大多信奉多神，但有一個民族堅持只崇拜唯一的真神，並把信仰與歷史編成經典流傳後世。這個民族是：","choices":["腓尼基人","蘇美人","亞述人","希伯來人"],"answer":3,"explain":"希伯來人（猶太人）發展出一神信仰，並留下宗教經典，這是他們最突出的文化特色。腓尼基人以航海貿易與傳播拼音字母著稱；蘇美人是兩河流域最早建立城邦、創造楔形文字的民族；亞述人以強悍的軍事征服建立帝國，這三個民族都屬多神信仰。"},{"level":"basic","topic":"希臘城邦－雅典直接民主的運作方式","q":"雅典的民主政治與近代國家的代議民主，最大的不同在於：","choices":["雅典由公民票選代表組成議會，代替人民行使權力","具公民身分的成年男子親自出席公民大會，直接表決城邦大事","雅典的重大決策須先經國王與貴族會議批准才能執行","雅典的官職一律由貴族世襲擔任，公民不得參與"],"answer":1,"explain":"雅典採直接民主，公民不透過代表，而是親自到公民大會表決，這與近代由人民選出代表行使權力的代議制度最為不同。選出代表組成議會是近代國家的作法；雅典民主時期並非由國王與貴族會議把持決策，官職也多由公民抽籤或選舉產生，並非貴族世襲。"},{"level":"basic","topic":"希臘城邦－斯巴達的軍事體制","q":"斯巴達為維持強大的戰鬥力，其社會生活最主要的特色是：","choices":["重視商業貿易，鼓勵公民出海經商致富","崇尚哲學辯論，設立學院培養思想家","男子自幼接受嚴格軍事訓練，過集體團體生活","以每年的戲劇競賽做為公民教育的核心"],"answer":2,"explain":"斯巴達實施軍國體制，男孩自幼離家接受嚴格訓練，成年後過集體軍營生活，以確保少數斯巴達人能統治為數眾多的被征服者。鼓勵出海經商、崇尚哲學辯論與以戲劇競賽為公民教育核心，都是雅典等城邦的形象，被誤植到斯巴達身上。"},{"level":"basic","topic":"希臘哲學－蘇格拉底","q":"有一位希臘哲學家常在市集與人以問答方式辯論，主張「知識即道德」，最後卻被指控敗壞青年而遭判死刑。他是：","choices":["蘇格拉底","柏拉圖","亞里斯多德","荷馬"],"answer":0,"explain":"蘇格拉底以詰問（問答）法引導人反省，主張有真知才能有真正的德行，最後被雅典法庭判處死刑。柏拉圖是他的學生，著有《理想國》並創辦學院；亞里斯多德是柏拉圖的學生，博學而重視觀察與分類，曾任亞歷山大的老師；荷馬則是史詩作者，不是哲學家。"},{"level":"basic","topic":"希臘的文學戲劇與建築藝術","q":"下列何者屬於古希臘人在文學與建築藝術方面的成就？","choices":["創作悲劇與喜劇，並興建以列柱為特色的神殿，如帕德嫩神殿","發明楔形文字，並在泥板上記下著名的史詩","建造規模宏大的金字塔，做為國王的陵墓","制定十二銅表法，並以拉丁文書寫各種文獻"],"answer":0,"explain":"希臘戲劇分悲劇與喜劇，在露天劇場公開演出；建築則以優美的柱式與比例著稱，衛城上的帕德嫩神殿是代表作。楔形文字與泥板史詩屬兩河流域，金字塔屬古埃及，十二銅表法與拉丁文則是羅馬的成就。"},{"level":"basic","topic":"希臘－奧林匹亞競技會","q":"關於古希臘奧林匹亞競技會（現代奧運的起源），下列敘述何者正確？","choices":["是各城邦為爭奪土地而舉行的軍事演習","由羅馬皇帝所創辦，用來慶祝對外戰爭的勝利","是專供外邦人與奴隸參加的娛樂表演活動","為祭祀天神宙斯而舉行，競技期間各城邦休戰"],"answer":3,"explain":"奧林匹亞競技會帶有宗教性質，為祭祀主神宙斯而定期舉行，比賽期間各城邦停止戰爭，使選手與觀眾能安全往來，展現希臘人共同的文化認同。它並非軍事演習，也不是羅馬皇帝創辦；參賽資格限希臘城邦的男性公民，外邦人與奴隸並不能參加。"},{"level":"basic","topic":"亞歷山大帝國與希臘化文化","q":"亞歷山大率軍東征，建立橫跨歐、亞、非的大帝國。此事在文化上最重要的影響是：","choices":["使羅馬法隨著軍隊傳播到東方各地，成為通行的法律","促使基督教在他統治期間成為地中海世界的主要信仰","使埃及象形文字取代希臘文，成為帝國的通用文字","使希臘文化與西亞、埃及等地文化交流融合，形成希臘化文化"],"answer":3,"explain":"東征使希臘語文與生活方式傳入東方，又吸收西亞、埃及的文化與知識，形成兼容並蓄的希臘化文化。羅馬法是後來羅馬人的成就，基督教興起於羅馬帝國時期，時序都晚於亞歷山大；希臘化時代通行的是希臘文，而非埃及象形文字。"},{"level":"basic","topic":"羅馬－由共和到帝國","q":"關於羅馬從共和走向帝國的過程，下列敘述何者正確？","choices":["共和時期由國王世襲統治，進入帝國後才改為選舉皇帝","共和時期以元老院與執政官為核心，後因對外擴張與內戰，權力集中於個人而形成帝國","帝國建立後立刻廢除元老院，改行公民大會的直接民主","羅馬因外族入侵而被迫由帝國體制改回共和體制"],"answer":1,"explain":"羅馬共和以元老院、執政官與公民大會分掌權力；長期對外擴張造成貧富不均、軍事將領坐大，內戰之後大權集中於一人，於是由共和轉為帝國。共和時期並無世襲國王（王政早已結束）；帝國時期元老院仍存在，只是權力被架空；羅馬的演變方向是共和到帝國，並非由帝國改回共和。"},{"level":"basic","topic":"羅馬法與拉丁文的影響","q":"下列何者是羅馬人對後世西方文明最重要的貢獻之一？","choices":["創造楔形文字，成為西亞各地通用的文字","首創城邦制度，並發展出直接民主政治","建立完備的法律體系，成為近代歐洲法律的基礎","提出「知識即道德」，開創西方倫理學的討論"],"answer":2,"explain":"羅馬人自十二銅表法起不斷累積、整理法律，形成重視契約、財產與訴訟程序的法律體系，深深影響近代歐洲各國法律，所使用的拉丁文也成為歐洲學術與教會的共同語文。楔形文字屬兩河流域，城邦與直接民主屬希臘，「知識即道德」是蘇格拉底的主張。"},{"level":"basic","topic":"基督教的興起與國教化","q":"關於基督教在羅馬帝國境內的發展，下列敘述何者最正確？","choices":["一開始就被羅馬政府定為國教，長期受到官方保護","因為主張多神信仰，才與羅馬統治者發生嚴重衝突","早期信徒因拒絕參與國家祭典等因素曾遭迫害，後來卻被定為國教","傳入羅馬後始終被禁止，直到西羅馬帝國滅亡都未取得合法地位"],"answer":2,"explain":"基督教在帝國初期因信徒堅持一神信仰、不參拜皇帝與國家神祇，一度遭受迫害；後來信徒日增，帝國先承認其合法地位，最終定為國教。說一開始就是國教顛倒了先後；基督教是一神信仰而非多神；說始終被禁止，則忽略了它由受迫害轉為國教的重大轉折。"},{"level":"adv","topic":"兩河流域與古埃及的地理環境比較","q":"兩河流域與古埃及同樣發源於大河，但兩河流域政權更迭頻繁、外族入侵不斷，古埃及則長期維持較穩定的統一。造成此一差異最合理的解釋是：","choices":["兩河流域沒有可供灌溉的河流，農業長期不發達","兩河流域地勢開闊、缺乏天然屏障，四周民族容易進入；埃及則有沙漠與海洋阻隔，較為封閉","兩河流域居民不重視軍事，古埃及則是全民皆兵","古埃及位於各族往來的交通要衝，兩河流域反而偏處內陸"],"answer":1,"explain":"地理環境是關鍵：兩河流域四周平坦開闊、缺乏屏障，周邊民族來去自如，政權因而迭起；埃及東西有沙漠、北有地中海、南有瀑布阻隔，相對封閉而易維持統一。兩河流域正因灌溉農業富庶才引來爭奪，說它沒有可灌溉的河流與事實相反；「不重視軍事／全民皆兵」缺乏根據；把兩河流域說成偏處內陸、埃及是交通要衝，更是把兩地情況說反了。"},{"level":"adv","topic":"漢摩拉比法典的階級性（史料判讀）","q":"某部古代法典有這樣的條文：「若貴族毀壞另一名貴族的眼睛，則毀其眼；若毀壞平民的眼睛，則賠償一定數量的銀。」由這段條文最可以推論出：","choices":["這部法典主張人人在法律之前完全平等","這個社會已經沒有身分階級的分別","這部法典的內容主要用來規範宗教祭祀活動","刑罰的輕重會因當事人的身分地位不同而有差別"],"answer":3,"explain":"同樣是傷人眼睛，對貴族施以同態復仇，對平民卻只需賠銀，可見處罰輕重取決於當事人的身分，反映該社會階級分明。正因處置不同，說人人平等或社會已無階級，都與條文直接牴觸；條文談的是傷害與賠償，與宗教祭祀無關。"},{"level":"adv","topic":"古埃及的來世信仰（考古情境判讀）","q":"考古隊在一座古埃及墓中，發現保存完好的木乃伊，四周陪葬著家具、食物模型與僕役造型的小人偶。這些發現最能說明古埃及人：","choices":["認為死亡就是生命的終結，因此以厚葬表示紀念","相信人死後生命仍會延續，必須為來世預作準備","以陪葬品的多寡來決定死者生前擔任的官職高低","想藉由陪葬品向鄰近民族炫耀本國的財富與武力"],"answer":1,"explain":"陪葬家具、食物與僕役人偶，是要讓死者在另一個世界仍能維持原有的生活，正是來世信仰的表現。若認為死亡即終結，就不必準備這些「生活用品」；是死者生前的身分決定陪葬規格，而非由陪葬品反推官職，因果顛倒；墓室深埋地下、外人無從觀看，也談不上向鄰國炫耀。"},{"level":"adv","topic":"種姓制度的社會影響","q":"印度種姓制度規定各階級世代相承，不同種姓之間不得通婚、不能共食，職業也大多固定。此制度長期實施，對印度社會最直接的影響是：","choices":["使社會階級趨於固定、身分難以流動，形成長期的不平等","促使印度各地區迅速統一為一個強大的帝國","使商人階級掌握政治大權，主導國家的決策","使原本的多神信仰逐漸轉變成一神信仰"],"answer":0,"explain":"身分世襲、不通婚、不共食、職業固定，等於封閉了向上流動的管道，使不平等長期延續，這是題幹規定最直接的結果。種姓制度反而使社會分割，與國家統一沒有必然關係；掌握政治軍事的是剎帝利，而非屬吠舍的商人；一神信仰是希伯來人的特色，與種姓制度無關。"},{"level":"adv","topic":"希伯來人一神信仰的後世影響","q":"有學者指出：希伯來人不曾建立強大帝國，也沒有留下宏偉的宮殿，但對後世世界的影響卻極為深遠。此一評價的主要理由是：","choices":["他們發明拼音字母，後來為希臘人所採用","他們編訂完整的成文法典，成為後世法律的範本","他們的一神信仰與宗教經典，成為日後基督教（以及伊斯蘭教）的重要淵源","他們創造太陽曆與幾何測量的知識，奠定後世曆法與數學的基礎"],"answer":2,"explain":"希伯來人的影響力來自信仰而非武力：一神觀念與宗教經典為後來的基督教、伊斯蘭教所承繼，進而形塑西方與西亞文明。拼音字母主要由腓尼基人發明並傳播；成文法典的代表出自兩河流域；太陽曆與幾何測量則是古埃及因農業與尼羅河氾濫而發展出的知識。"},{"level":"adv","topic":"雅典公民資格的限制","q":"假如能回到古代雅典的公民大會現場，下列哪一個人最可能坐在會場中並參與表決？","choices":["從外地遷來雅典多年、生意興隆的外邦商人","在雅典市民家中負責家務的奴隸","出身雅典世家、家境富裕的成年女性","年滿規定年齡、具有雅典公民身分的男子"],"answer":3,"explain":"雅典的直接民主只開放給具公民身分的成年男子；外邦人（即使長住並致富）、奴隸與婦女都被排除在外，這正是雅典民主的重大限制，因此其餘三種身分的人雖然處境各異，卻同樣沒有參政權。"},{"level":"adv","topic":"希臘化文化的特徵（史料情境）","q":"亞歷山大帝國分裂後，埃及的亞歷山卓城成為著名的學術中心：城中學者以希臘文著述，研究天文、幾何與醫學，並蒐藏來自各地的典籍。這段敘述最能呈現希臘化文化的哪一項特色？","choices":["以希臘文化為主體，同時吸收東方各地的知識，學術研究相當興盛","刻意排斥東方一切事物，力求維持希臘文化的純粹","以宗教信仰全面取代理性研究，使學術因此衰微","以拉丁文做為共同語言，形成統一的地中海文化圈"],"answer":0,"explain":"亞歷山卓位於埃及卻通行希臘文，又匯集各地典籍與學問，正說明希臘化文化是「以希臘為主、融合東方」，並帶動科學與學術發展。若刻意排斥東方，就不會蒐藏各地知識；題幹描述的是學術興盛而非衰微；拉丁文是羅馬人的語言，希臘化世界的共通語文是希臘文。"},{"level":"adv","topic":"羅馬的公共建設與實用精神","q":"羅馬帝國境內修築了四通八達的道路、橫跨山谷的水道橋，以及可容納大批觀眾的競技場。關於這些建設的說明，下列何者最恰當？","choices":["它們主要供祭司舉行宗教儀式使用，與一般人民的生活關係不大","道路便於軍隊調動與商旅往來，水道橋為城市供水，競技場提供公眾娛樂，展現羅馬人重視實用的精神","它們全由希臘人設計建造，羅馬人自己並未加以使用","它們在西羅馬帝國滅亡後全數毀壞消失，對後世沒有留下任何影響"],"answer":1,"explain":"羅馬人長於工程與實用技術：道路利於統治與貿易，水道橋解決都市用水，競技場與浴場滿足公共生活需求，正是「重實用」的文化特色。這些建設服務於軍事、民生與娛樂，而非祭司儀式；羅馬雖受希臘藝術影響，工程卻由自己大規模興建並廣泛使用；今日歐洲仍留有羅馬道路與水道橋遺跡，說它們全數消失、毫無影響過於誇大。"},{"level":"adv","topic":"羅馬和平（Pax Romana）的情境判讀","q":"某段史料描述地中海世界的景象：各行省之間商旅往來頻繁，人們沿著帝國修築的大道長途旅行而少有戰事，各地城市紛紛興建劇場與浴場。這最可能是描述哪一個時期？","choices":["希臘各城邦彼此爭霸、戰爭不斷的時期","亞歷山大率軍向東方進行征戰的時期","羅馬共和末年將領互相攻伐、內戰頻仍的時期","羅馬帝國初期的「羅馬和平」時期"],"answer":3,"explain":"帝國初期政局相對安定、境內少有大規模戰事，道路與海運暢通、商業繁榮、各地城市興建公共建築，史稱「羅馬和平」，與題幹景象完全吻合。希臘城邦爭霸與羅馬共和末年內戰都以戰亂為特徵，與「少有戰事」矛盾；亞歷山大東征時期正進行大規模軍事征服，也不符合和平繁榮的描述。"},{"level":"adv","topic":"西羅馬帝國滅亡後的西歐","q":"西羅馬帝國滅亡後，西歐的歷史出現了什麼樣的變化？","choices":["東羅馬帝國同時滅亡，地中海世界完全失去統一政權","西歐迅速被統一成一個比羅馬更強大的新帝國","日耳曼人在西歐各地建立王國，羅馬的古典文化與基督教影響仍持續留存","拉丁文立即遭到廢止，西歐改以希臘文做為通用文字"],"answer":2,"explain":"西羅馬滅亡後，西歐由多個日耳曼王國分立取代統一帝國，但羅馬法、拉丁文與基督教會仍延續下來，成為中古歐洲文明的基礎。東羅馬（拜占庭）帝國此時仍存續甚久；西歐長期陷於分裂，並未迅速統一；拉丁文反而透過教會與學術繼續使用，並未被希臘文取代。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

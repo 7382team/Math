@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>北美洲 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo3-namerica",
+  "title": "北美洲",
+  "subject": "地理",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第5課 北美洲",
+  "tag": "三大地形區·農業帶·高科技",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>北美洲</h1><div class="sub">地理 · 三大地形區·農業帶·高科技 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"北美洲地形－西部科迪勒拉山系","q":"北美洲西部由多條大致南北走向的山脈、高原與盆地組成，屬於環太平洋火山地震帶的一部分，其中最著名的山脈為洛磯山脈。這一整片高大山地的總稱是什麼？","choices":["阿帕拉契山脈","安地斯山脈","科迪勒拉山系","烏拉山脈"],"answer":2,"explain":"北美洲西部南北縱走的高大山地總稱為科迪勒拉山系，洛磯山脈是其東側主脈，山脈之間夾有高原與盆地。阿帕拉契山脈位於美國東部，高度較低、較古老；安地斯山脈屬南美洲西部；烏拉山脈是歐、亞兩洲的分界，皆不在北美洲西部。"},{"level":"basic","topic":"北美洲地形－東部阿帕拉契山脈","q":"美國東部有一列走向大致與大西洋岸平行、高度較低、坡度和緩且蘊藏豐富煤礦的古老山脈，這列山脈是下列何者？","choices":["阿帕拉契山脈","科迪勒拉山系","海岸山脈","內華達山脈"],"answer":0,"explain":"阿帕拉契山脈位於美國東部，形成年代早、久經侵蝕而高度較低，山區煤礦豐富，是東北部工業發展的重要基礎。科迪勒拉山系、海岸山脈與內華達山脈都位於北美洲西部，地勢高峻且形成年代較晚。"},{"level":"basic","topic":"北美洲水文－密西西比河的辨識","q":"北美洲中部大平原上有一條由北向南縱貫、支流眾多、流域廣大，兼具灌溉與航運功能的大河，被視為美國農業區最重要的河流。該河是下列何者？","choices":["科羅拉多河","密西西比河","聖羅倫斯河","育空河"],"answer":1,"explain":"密西西比河及其眾多支流貫穿中部大平原，是農業區灌溉與運輸的主幹。科羅拉多河位於西部乾燥區，以深切峽谷著稱、水量有限；聖羅倫斯河位於東北部，連接五大湖與大西洋；育空河位於高緯的阿拉斯加一帶，冬季長期結冰。"},{"level":"basic","topic":"冰河地形－五大湖成因","q":"北美洲五大湖區湖泊眾多、湖岸曲折，湖盆多呈窪地狀。這些湖泊主要是下列哪一種外力作用造成的？","choices":["火山噴發後熔岩堰塞","河流侵蝕與泥沙堆積","風力吹蝕形成窪地","冰河侵蝕形成湖盆"],"answer":3,"explain":"冰期時大陸冰河向南推進，侵蝕地表形成許多窪地，冰河消退後積水成湖，因此五大湖屬於典型的冰蝕湖。熔岩堰塞湖多為零星單一湖泊；河流作用主要形成牛軛湖等小型湖泊；風蝕窪地多見於乾燥區，與濕潤的五大湖區條件不符。"},{"level":"basic","topic":"密西西比河河口位置與外銷門戶","q":"中部平原的農產品可順著密西西比河運至河口一帶的港口外銷。該河最後注入下列哪一海域？","choices":["墨西哥灣","哈得孫灣","加利福尼亞灣","聖羅倫斯灣"],"answer":0,"explain":"密西西比河由北向南流，最後注入南方的墨西哥灣，河口附近的港口成為農產品外銷的重要門戶。哈得孫灣位於加拿大中北部，緯度高、封凍期長；加利福尼亞灣位於北美洲西側；聖羅倫斯灣則是聖羅倫斯河的出海口，皆非密西西比河所注入。"},{"level":"basic","topic":"氣候類型－西岸地中海型氣候","q":"美國西岸南段（加利福尼亞州一帶）夏季炎熱乾燥、冬季溫和有雨，此地屬於下列哪一種氣候？","choices":["溫帶海洋性氣候","地中海型氣候","熱帶莽原氣候","溫帶大陸性氣候"],"answer":1,"explain":"夏乾冬雨是地中海型氣候的最大特徵，成因與副熱帶高壓帶、西風帶隨季節南北移動有關。溫帶海洋性氣候出現在西岸較北的地區，全年有雨、年溫差小；熱帶莽原氣候位於低緯乾濕分明處；溫帶大陸性氣候分布於內陸與中東部，年溫差大且降水多集中夏季。"},{"level":"basic","topic":"氣候類型－北部寒帶（苔原）","q":"加拿大北部與阿拉斯加北岸一帶，因緯度高、氣溫低，地表植被以苔蘚、地衣等苔原植物為主，地下常見永凍土。此區屬於下列哪一氣候帶？","choices":["溫帶","副熱帶","寒帶","熱帶"],"answer":2,"explain":"北美洲北端緯度高、太陽輻射弱，最暖月均溫仍低，形成寒帶（苔原）氣候，樹木難以生長。溫帶與副熱帶分別位於中緯與較低緯地區，熱帶更不見於北美洲高緯區，皆與永凍土、苔原景觀不符。"},{"level":"basic","topic":"中部平原劇烈天氣－龍捲風與地形關係","q":"美國中部大平原每年春夏常出現龍捲風等劇烈天氣，這與當地哪一項地形條件關係最密切？","choices":["中部有東西走向的高大山脈，阻擋南北氣團交會","中部為高原地形，海拔高、空氣稀薄不易對流","中部緊鄰大西洋，颶風常直接登陸內陸","中部平原缺乏東西走向的山脈阻擋，南北氣團可長驅直入而劇烈交會"],"answer":3,"explain":"北美洲的大山脈多呈南北走向，中部平原地勢平坦且沒有東西向山脈橫阻，來自北方的乾冷氣團與來自墨西哥灣的暖濕氣團得以長驅直入、劇烈交會，容易生成龍捲風。第一個選項敘述正好相反；中部為平原而非高原；中部也不臨海，龍捲風並非颶風登陸所造成。"},{"level":"basic","topic":"加拿大人文特色－人口分布","q":"加拿大國土面積居世界前列，但人口分布極不平均。其人口主要集中於下列何處？","choices":["南部與美國接壤的邊境地帶","北極海沿岸島嶼","洛磯山脈高山區","哈得孫灣周邊沼澤區"],"answer":0,"explain":"加拿大北部氣候嚴寒，南部緯度較低、氣候相對溫和，且鄰近美國市場與主要交通線，因此人口與大都市集中在南側邊境一帶。北極海沿岸與哈得孫灣周邊寒冷、對外交通不便；洛磯山脈為高山區，地形崎嶇，均不利大量人口聚居。"},{"level":"basic","topic":"加拿大人文特色－英法雙語","q":"加拿大以英語和法語同列官方語言，其中法語人口比例最高、法語文化色彩最濃厚的省分是下列何者？","choices":["亞伯達省","卑詩省","魁北克省","安大略省"],"answer":2,"explain":"魁北克省早期為法國人主要移入與開發的地區，法語與法式文化保存至今，是加拿大雙語文化最具代表性的省分。亞伯達省位於中西部草原與能源產區，卑詩省位於太平洋岸，安大略省為人口與經濟核心區，三者皆以英語使用者居多。"},{"level":"basic","topic":"美國工業分布－東北傳統製造業帶","q":"美國早期以鋼鐵、汽車等重工業為主的傳統製造業帶，主要分布於下列哪一區域？","choices":["西南部乾燥高原區","五大湖沿岸至東北部大西洋岸","佛羅里達半島南端","阿拉斯加北部"],"answer":1,"explain":"五大湖沿岸至東北部大西洋岸兼具煤鐵原料、廉價水運與稠密人口市場，成為美國最早的重工業核心區。西南部乾燥高原水源不足、開發較晚；佛羅里達半島以觀光與農業見長；阿拉斯加緯度高、人口稀少，均非傳統製造業帶所在。"},{"level":"basic","topic":"美國高科技產業－矽谷位置","q":"美國著名的高科技與資訊產業聚集地「矽谷」位於下列何處？","choices":["五大湖南岸","密西西比河下游三角洲","東北部大西洋岸","西岸的加利福尼亞州"],"answer":3,"explain":"矽谷位於美國西岸加利福尼亞州，鄰近知名大學與研究機構，是電子資訊與高科技產業的重要聚集地。五大湖南岸與東北部大西洋岸屬傳統製造業帶；密西西比河下游三角洲以農業與港口機能為主，皆非矽谷所在。"},{"level":"basic","topic":"美國農業帶－小麥帶分布","q":"美國中部大平原西側雨量較少、地勢平坦開闊，適合大型農機作業，成為下列哪一種農業帶的主要分布區？","choices":["小麥帶","棉花帶","酪農帶","熱帶栽培業區"],"answer":0,"explain":"中部大平原西側較為乾燥，適合較耐旱的小麥，加上地勢平坦利於機械化耕作，形成大規模的小麥帶。棉花帶原分布於較溫暖濕潤的南部；酪農帶集中在氣候冷涼、鄰近大都市的五大湖周邊與東北部；北美洲中緯度地區並無熱帶栽培業。"},{"level":"basic","topic":"都市化－美國東北部大都會帶","q":"美國東北部自波士頓、紐約、費城到華盛頓一帶，都市與郊區沿交通線連綿成一長條狀的高度都市化地區，此種現象稱為下列何者？","choices":["都市化程度下降","逆都市化","大都會帶","分散的鄉村聚落"],"answer":2,"explain":"多個大都市及其衛星市鎮沿交通線相連、機能高度整合，形成帶狀的大都會帶，美國東北部即為典型代表。都市化程度下降與逆都市化指人口由都市外移的過程；分散的鄉村聚落更與該區高度都市化、聚落連綿的實況相反。"},{"level":"adv","topic":"地形與氣候的因果－雨影效應","q":"美國西岸沿海地區水氣充足、森林茂密，但越過山脈之後的內陸盆地（如大盆地）卻十分乾燥。造成此差異的主要原因為何？","choices":["內陸緯度較高，日照強烈使蒸發量特別旺盛","科迪勒拉山系阻擋來自太平洋的水氣，內陸位居背風側，形成雨影區","內陸受寒流影響，空氣不易上升成雲致雨","內陸屬季風氣候，降水集中於冬季而全年偏少"],"answer":1,"explain":"西風把太平洋的水氣帶向陸地，氣流沿科迪勒拉山系迎風坡爬升而多雨；越過山脈後空氣下沉增溫，水氣不易凝結，內陸遂成雨影區而乾燥。大盆地與西岸緯度相近，乾燥並非源自緯度或蒸發旺盛；寒流影響的是沿海的氣溫與多霧現象；北美洲內陸也不屬季風氣候區。"},{"level":"adv","topic":"密西西比河的航運價值與農業商業化","q":"密西西比河對美國中部農業區的商業化經營具有重大意義，下列哪一項說明最為合理？","choices":["含沙量極高、河道淤積嚴重，完全無法通航","河道落差大、瀑布急流眾多，主要價值在於水力發電","流經乾燥沙漠地帶，是沿線唯一的灌溉水源","流經平原、水流平緩且支流廣布，適合長程航運，可降低農產品運輸成本"],"answer":3,"explain":"密西西比河穿越平坦的中部大平原，水流平緩、支流呈樹枝狀廣布，並可與運河、五大湖水運系統相連，使笨重的農產品能以低成本外運，強化農業的商業化與外銷能力。該河仍是重要的內河航道；落差大、適合水力發電的多為西部山地河川；中部平原並非沙漠，灌溉水源也不只此一河。"},{"level":"adv","topic":"農業專業化分區－酪農帶區位條件","q":"五大湖沿岸與美國東北部發展成酪農帶，最主要的區位條件是下列何者？","choices":["氣候冷涼濕潤、土壤較不利穀物栽培，且鄰近人口稠密的大都會帶，乳製品市場廣大","氣候炎熱乾燥，最適合放牧綿羊與山羊","地形崎嶇、交通閉塞，只能發展自給自足的畜牧","位於熱帶，牧草終年生長迅速，可全年放牧"],"answer":0,"explain":"酪農帶的形成同時受自然與人文條件影響：冷涼濕潤的氣候與冰河作用後較貧瘠的土壤不利大宗穀物，卻適合牧草生長；加上鄰近東北部大都會帶，鮮乳等易腐產品可迅速供應龐大市場。炎熱乾燥與五大湖區實況不符；該區交通便利、以商業性經營為主；五大湖區屬中緯度而非熱帶。"},{"level":"adv","topic":"美國工業轉型－陽光帶興起","q":"20世紀後期起，美國部分產業與人口由東北部傳統工業區移往南部與西部的「陽光帶」。下列推論何者最為合理？","choices":["因為東北部氣候溫暖、勞力價格低廉，吸引力較強","因為陽光帶煤鐵資源最豐富，最適合發展傳統重工業","因為東北部設備老舊、土地與勞力成本較高；陽光帶氣候溫暖、土地成本較低，並發展高科技、航太等新興產業","因為陽光帶位於高緯度，工廠冷卻設備的成本較低"],"answer":2,"explain":"東北部工業區起步早，廠房設備老舊、土地與勞力成本上升；陽光帶則具氣候溫暖、土地較便宜、交通與研究機構配合等條件，加上高科技與航太等新興產業興起，因而吸引產業與人口移入。溫暖低成本描述的是陽光帶而非東北部；陽光帶興起的關鍵並非煤鐵；陽光帶位於緯度較低的南部與西部，而非高緯度。"},{"level":"adv","topic":"洋流與漁場－紐芬蘭外海寒暖流交會","q":"北美洲東北部的紐芬蘭外海一帶，海底地形淺平，又有寒、暖流在此交會，海水攪動使養分上湧、浮游生物繁盛，成為著名漁場。此處交會的兩股洋流是下列何者？","choices":["北太平洋暖流與千島寒流","墨西哥灣暖流與拉布拉多寒流","加利福尼亞寒流與赤道逆流","秘魯寒流與巴西暖流"],"answer":1,"explain":"紐芬蘭外海的淺灘水深較淺，來自南方的墨西哥灣暖流與自北方南下的拉布拉多寒流在此交會，海水擾動使營養鹽上湧，浮游生物大量繁殖而形成著名漁場；兩者溫差也使該海域經常起霧。北太平洋暖流與千島寒流位於太平洋西北側；加利福尼亞寒流位於北美洲西岸外海；秘魯寒流與巴西暖流則屬南美洲。"},{"level":"adv","topic":"工業區位條件的組合判斷－五大湖鋼鐵業","q":"五大湖區能成為美國早期鋼鐵工業的重心，下列哪一組區位條件的組合最能說明其原因？","choices":["熱帶栽培業原料充足＋沿海漁獲豐富","石油輸出港便利＋沙漠氣候利於露天曝曬","火山灰土壤肥沃＋地熱能源便宜","蘇必略湖區的鐵礦＋阿帕拉契山區的煤礦＋五大湖及運河的廉價水運"],"answer":3,"explain":"鋼鐵工業屬原料與燃料指向，需要大量笨重的鐵礦與煤，五大湖區恰好結合湖區西側的鐵礦、東側阿帕拉契山區的煤礦，並以廉價的湖運與運河把兩者連結起來，故能形成鋼鐵工業核心。其餘選項所列條件與五大湖區的自然環境及鋼鐵工業的需求皆不相符。"},{"level":"adv","topic":"美國農業特色－機械化、專業化與外銷","q":"美國農產品出口量長期居世界前列，下列哪一項最能解釋此一現象？","choices":["大農場經營、機械化與專業化分區程度高，平均每位農民生產量大，加上運輸系統便利，利於大量外銷","農業人口占總人口的比例極高，勞力十分充足","全國各地皆屬熱帶氣候，作物可一年三穫","以人力精耕細作為主，故單位面積產量遠高於其他國家"],"answer":0,"explain":"美國以大規模農場、高度機械化，並依自然條件分區專業化生產，使每位農民能耕作的面積與產量都很大，再配合河運、鐵路與港口，形成龐大的可外銷剩餘。美國農業人口比例其實很低；北美洲中緯度並非熱帶，難以一年三穫；其農業特色是機械化的粗放式大規模經營，而非人力精耕。"},{"level":"adv","topic":"美加區域比較","q":"比較美國與加拿大的地理特徵，下列敘述何者最為正確？","choices":["兩國國土均以熱帶氣候為主，農作全年生長","加拿大人口總數多於美國，都市規模也普遍較大","加拿大緯度較高，北部寒冷不利居住，人口與都市多集中南部；森林、礦產與能源資源豐富，林業與礦業占重要地位","美國西部為阿帕拉契山脈，加拿大西部則為科迪勒拉山系"],"answer":2,"explain":"加拿大位置偏北，北部氣候嚴寒，人口與主要都市集中在南側；廣大的針葉林與豐富礦產、能源，使林業、礦業與能源出口成為其經濟特色。兩國以溫帶、寒帶為主而非熱帶；加拿大人口遠少於美國；阿帕拉契山脈位於美國東部，兩國西部同屬科迪勒拉山系。"},{"level":"adv","topic":"移民社會概念－民族熔爐與沙拉碗","q":"早期人們以「民族熔爐」形容美國的移民社會，後來又出現「沙拉碗」的說法。關於這兩個概念的差異，下列敘述何者較為適當？","choices":["兩者都主張移民必須完全放棄原有文化，才能融入社會","「民族熔爐」強調不同移民融合成共同的新文化；「沙拉碗」則強調各族群保有自身特色並共存於同一社會","「沙拉碗」是指美國農產品加工業的分布型態","兩者都是用來描述加拿大北部原住民的分布情形"],"answer":1,"explain":"「民族熔爐」著重各地移民彼此融合、形成共同的文化；「沙拉碗」則強調各族群如同沙拉中的食材，保有自身語言與習俗，同時共處於同一社會，反映多元文化的觀點。第一個選項忽略了沙拉碗保留特色的核心意涵；沙拉碗與農產加工業無關；兩者描述的都是移民社會而非原住民分布。"},{"level":"adv","topic":"北美洲原住民現況","q":"關於北美洲原住民（如美國的印第安族群、加拿大的因紐特人等）現況的敘述，下列何者較為適切？","choices":["原住民族群已完全消失，僅存於歷史記載中","原住民全數居住於大都市中心，生活方式與其他居民完全相同","原住民的語言與文化已完全同化，不再保有自身特色","部分原住民聚居於保留區或北方地區，各國政府與原住民族仍持續就土地權益、語言與文化保存等議題協商"],"answer":3,"explain":"北美洲原住民至今仍是社會的組成部分，部分聚居於保留區或北方地區，土地權益、自治、語言與文化保存等議題持續受到討論與協商。前三個選項分別誤認原住民已消失、全部居於市中心，或文化已完全同化，均不符合實際情形。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

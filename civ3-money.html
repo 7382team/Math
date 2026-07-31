@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>貨幣、金融與物價 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ3-money",
+  "title": "貨幣、金融與物價",
+  "subject": "公民",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第3課 貨幣、金融與物價",
+  "tag": "貨幣功能·通膨·理財",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>貨幣、金融與物價</h1><div class="sub">公民 · 貨幣功能·通膨·理財 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"貨幣的起源：以物易物的不便","q":"小柔想用自己種的青菜換一雙鞋子，但賣鞋的老闆並不需要青菜，這筆交易因此談不成。這個例子最能說明以物易物的哪一項不便？","choices":["物品容易腐壞而無法長期保存","物品體積太大而不方便攜帶","政府沒有規定物品的價格上限","交易雙方必須剛好都需要對方的物品"],"answer":3,"explain":"以物易物必須符合「需求的雙重巧合」，雙方都想要對方的東西才能成交，題幹中老闆不需要青菜正是此問題。「容易腐壞」與「體積太大」雖然也是以物易物的缺點，但與本題情境不符；「政府未規定價格上限」與以物易物的困難無關。"},{"level":"basic","topic":"貨幣的功能：交易媒介","q":"在市場買菜、在便利商店結帳，人們都願意接受新臺幣，不必再費心尋找願意交換物品的對象。這主要展現貨幣的哪一項功能？","choices":["價值標準：作為衡量商品價值高低的尺度","交易媒介：作為買賣時普遍被接受的支付工具","價值儲存：把購買力保留到未來使用","資金中介：把存款人的錢轉給借款人"],"answer":1,"explain":"貨幣被普遍接受，使買賣不必再依賴以物易物，屬於交易媒介功能。價值標準是用來「比較」價格，價值儲存是把購買力「留到以後」，兩者都不是本題重點；資金中介是金融機構的功能，並非貨幣本身的功能。"},{"level":"basic","topic":"貨幣的功能：價值標準（計價單位）","q":"走進超市，麵包標價 35 元、牛奶標價 60 元，消費者一眼就能看出兩者價格的高低。這說明貨幣具有下列何種功能？","choices":["交易媒介","資金中介","價值標準（計價單位）","價值儲存"],"answer":2,"explain":"用同一種單位標示所有商品的價格，方便彼此比較，是貨幣的價值標準（計價單位）功能。題幹只談「標價與比較」，尚未發生付款，所以不是交易媒介；也沒有把購買力留到未來，不是價值儲存；資金中介是銀行的角色。"},{"level":"basic","topic":"貨幣的功能：價值儲存","q":"阿明把打工賺來的錢先存下來，打算兩、三年後用來買一輛機車。就貨幣功能而言，此舉最能凸顯下列何者？","choices":["價值儲存","交易媒介","價值標準","風險分散"],"answer":0,"explain":"把錢先留著、日後再換取商品，代表貨幣可以保存購買力，屬於價值儲存功能。目前並未進行買賣，所以不是交易媒介；沒有比較商品價格，不是價值標準；風險分散是理財觀念，不是貨幣的功能。"},{"level":"basic","topic":"貨幣應具備的特性","q":"若要作為貨幣使用，下列哪一項特性「最不」符合貨幣應具備的條件？","choices":["體積輕巧，方便攜帶與交付","品質一致，容易分割成不同大小","材質耐久，不易損壞而可長期保存","隨處可得，數量多到近乎無限"],"answer":3,"explain":"貨幣必須「數量有限、不易任意取得」，才能維持其價值；若隨處可撿、供給無限，價值會迅速下降而無人願意接受。攜帶方便、品質一致易分割、耐久保存都是貨幣應具備的特性，故非答案。"},{"level":"basic","topic":"我國貨幣的發行機構","q":"我國市面上流通的新臺幣紙鈔與硬幣，其發行的權責機關是下列何者？","choices":["財政部","中央銀行","金融監督管理委員會","各地的商業銀行"],"answer":1,"explain":"我國貨幣由中央銀行發行，並負責維持幣值與金融穩定。財政部主管稅收與國庫；金融監督管理委員會負責金融市場與金融機構的監理；商業銀行只能收受存款、辦理放款，不能發行貨幣。"},{"level":"basic","topic":"金融機構的功能：資金中介","q":"銀行一方面吸收民眾存入的閒置資金，一方面把這些資金貸放給需要用錢的企業與家庭。銀行在此扮演的角色最適合稱為下列何者？","choices":["商品的生產者","最終的消費者","資金的中介者","貨幣的發行者"],"answer":2,"explain":"銀行把有剩餘資金者的錢，轉給需要資金者使用，扮演資金中介的角色，這是金融機構最核心的功能。銀行並未生產商品，也不是把資金用掉的最終消費者；發行貨幣是中央銀行的職權。"},{"level":"basic","topic":"儲蓄與投資的差異","q":"就風險與報酬的關係而言，關於「儲蓄」與「投資」的比較，下列敘述何者最為正確？","choices":["儲蓄通常風險較低、報酬較穩定；投資可能獲利較高，但須承擔虧損的風險","儲蓄與投資都保證不會虧損，兩者差別只在於金額大小","投資的風險等於零，因此應把所有積蓄全部投入","儲蓄是把錢花掉，投資則是把錢存進銀行"],"answer":0,"explain":"儲蓄以保本與穩定為主，投資則追求較高報酬但須承擔價格波動與虧損風險，這正是「高報酬通常伴隨高風險」。宣稱「都保證不會虧損」與「投資風險等於零」均與事實不符；把儲蓄說成花錢、把投資說成存款，則是混淆了消費、儲蓄與投資的定義。"},{"level":"basic","topic":"常見理財工具的基本特性","q":"關於定存、股票、基金、保險等常見理財工具的特性，下列敘述何者最為正確？","choices":["股票價格由政府統一訂定，不會上下波動","基金是把資金集中投入單一公司的理財工具","保險的主要目的是在短期內賺取高額價差","銀行定期存款的報酬通常低於股票，但相對穩定"],"answer":3,"explain":"定存利息固定、風險低，報酬通常低於股票，符合風險與報酬的關係。股價由市場供需決定而非政府訂定；基金是集合眾人資金分散投資「多種」標的，而非集中於單一公司；保險的主要功能是移轉與分擔風險，並非短期賺價差。"},{"level":"basic","topic":"非法吸金的辨識","q":"有人在網路社群宣稱：「只要投入資金，保證每月穩賺兩成，完全零風險，再拉親友加入還可額外領獎金。」對此最合理的判斷是下列何者？","choices":["對方願意書面保證獲利，代表這項投資一定合法","只要拉更多親友一起加入，風險就會被分攤為零","保證高報酬又宣稱零風險，違反風險與報酬的關係，可能是非法吸金","報酬率越高代表公司規模越大，越值得投入資金"],"answer":2,"explain":"報酬與風險是相伴而生的，宣稱「高報酬又零風險」並強調拉人入會，是非法吸金常見的話術。書面保證不等於合法，參加人數增加也無法消除風險；報酬率高低與公司規模更無必然關係。"},{"level":"basic","topic":"通貨膨脹的意義","q":"下列關於「通貨膨脹」的敘述，何者最符合其意義？","choices":["某一項水果因颱風而在短期內漲價","物價水準持續且普遍地上漲","市面上流通的紙鈔破損而無法使用","銀行的存款利率突然調高"],"answer":1,"explain":"通貨膨脹是指整體物價「持續而且普遍」上漲，而非單一商品的短期波動。水果因天候漲價只是個別商品的變動；紙鈔破損屬於鈔券汰換問題；存款利率調高是利率變動，與物價上漲的定義不同。"},{"level":"basic","topic":"通貨緊縮的意義","q":"所謂「通貨緊縮」，是指下列何種情形？","choices":["物價水準持續而普遍地下跌","政府減少發行硬幣的面額種類","民眾把銀行存款全部提領出來","只有房價下跌，其他商品價格不變"],"answer":0,"explain":"通貨緊縮與通貨膨脹相反，指整體物價持續且普遍下跌，常伴隨消費與生產意願低落。減少硬幣面額種類只是幣制調整；民眾大量提領存款屬於擠兌現象；只有房價下跌並不普遍，不能稱為通貨緊縮。"},{"level":"basic","topic":"消費者物價指數的概念","q":"政府編製「消費者物價指數（CPI）」，主要是為了觀察下列何者的變化？","choices":["股票市場的每日成交量","銀行放款的總金額","一般家庭經常購買的一籃子商品與服務的價格","政府一年的總支出金額"],"answer":2,"explain":"消費者物價指數是選取一般家庭常買的一籃子商品與服務，追蹤其價格的整體變動，用來衡量物價與生活成本的變化。股市成交量反映交易熱度、銀行放款金額屬金融統計、政府支出屬財政收支，都不是 CPI 的觀察對象。"},{"level":"basic","topic":"利率的基本概念","q":"關於「利率」的意義，下列敘述何者正確？","choices":["利率是商品售價除以成本所得到的比例","利率是政府對每一筆交易所課徵的稅率","利率是股票每年一定會上漲的固定百分比","利率是使用資金所須付出的代價，也是存款人把資金借給銀行的報酬"],"answer":3,"explain":"利率代表資金的價格：借款人付出利息作為使用資金的代價，存款人則因把資金交給銀行而獲得利息報酬。售價與成本的比例是利潤率的概念；對交易課徵的比例屬於稅制；股票價格會漲也會跌，並無固定的上漲率。"},{"level":"adv","topic":"通貨膨脹對不同族群的影響","q":"某地物價已連續多年明顯上漲。在其他條件不變下，下列哪一種人受到的不利影響通常最大？","choices":["領固定月退休金、給付金額多年未調整的長者","持有多筆房地產的投資人","以固定利率借入大筆貸款的屋主","薪資會隨物價變動而調整的上班族"],"answer":0,"explain":"通膨會侵蝕貨幣購買力，收入固定又無法調整的人買得到的東西變少，受害最深。房地產等實質資產的價格常隨物價上漲，持有人相對有利；固定利率的債務人還款時貨幣購買力下降，實質負擔反而減輕；薪資會隨物價調整者受影響最小。"},{"level":"adv","topic":"通貨膨脹與債權債務關係","q":"小華數年前以固定利率向銀行借了一筆錢，這段期間物價持續明顯上漲。就他的實質還款負擔而言，下列推論何者最合理？","choices":["實質負擔加重，因為每期須償還的金額變多了","實質負擔減輕，因為還款時貨幣的購買力已經下降","物價變動與借貸無關，實質負擔完全不受影響","銀行會因物價上漲而自動免除他的部分債務"],"answer":1,"explain":"固定利率下每期還款的「金額」不變，但物價上漲使同樣的錢能買到的東西變少，因此債務人的實質負擔減輕，債權人（銀行、存款人）則相對吃虧。認為還款金額會隨物價自動增加，是誤解固定利率；說完全不受影響則忽略購買力變化；銀行自動免除債務更無此制度。"},{"level":"adv","topic":"物價指數的判讀","q":"假設甲國以某一年為基期（該年指數設為 100），其後三年的消費者物價指數依序為 104、108、110。根據這組數字，下列判讀何者最正確？","choices":["三年間物價逐年下跌，甲國處於通貨緊縮","三年間物價持續上漲，但第三年的上漲幅度小於第二年","第三年的整體物價比第二年便宜","指數高於 100 代表該國貨幣已停止流通"],"answer":1,"explain":"指數由 104 升到 108 再升到 110，數值一路上升代表物價持續高於基期且仍在上漲；但第二年較前一年上升 4 點、第三年只上升 2 點，上漲幅度明顯縮小。指數上升不是通縮，110 高於 108 也不代表物價變便宜；指數高低與貨幣是否流通更無關係。"},{"level":"adv","topic":"利率變動的影響","q":"若中央銀行宣布調高利率，銀行的存款與放款利率也隨之調整。一般而言，最可能出現下列何種情形？","choices":["存款人領到的利息減少，借款人的成本同時降低","存款利息與借款成本都不受任何影響","銀行將因此停止辦理存款與放款業務","存款人可領到較多利息，借款人則須負擔較高的利息成本"],"answer":3,"explain":"利率是資金的價格，利率上升時存款報酬提高、借款成本增加，民眾多傾向增加儲蓄、減少借貸與消費。說存款利息減少而借款成本降低，是把兩者方向弄反；說完全不受影響則忽略利率變動的傳導效果；銀行停止存放款業務與實際營運不符。"},{"level":"adv","topic":"分散風險的理財觀念","q":"阿姨手上有一筆多年累積的資金，希望在追求合理報酬的同時降低整體風險。下列哪一種做法最符合「分散風險」的原則？","choices":["把全部資金押在同一家公司的股票上","把全部資金換成現金放在家中保管，完全不使用任何理財工具","把資金分別配置於定存、不同產業的基金以及保險等多種工具","把全部資金交給宣稱保證高獲利的網路投資群組"],"answer":2,"explain":"分散風險是把資金配置於性質不同的工具或標的，避免單一標的大跌時全部受害。全部押在同一家公司的股票屬於高度集中；現金全部放在家中雖看不到價格波動，卻無法取得合理報酬，物價上漲時購買力仍會下降；交給宣稱保證高獲利的網路群組不僅未分散，還有非法吸金的高度疑慮。"},{"level":"adv","topic":"儲蓄與投資的判別","q":"下列四位同學運用零用錢的方式，何者最接近「投資」而非單純的儲蓄或消費？","choices":["小安把零用錢投進撲滿，存滿了再拿出來用","小柏把零用錢存入銀行的活期存款帳戶，隨時可以提領","小丁把零用錢拿去買零食，當天就吃完了","小維把壓歲錢請家長協助購買股票型基金，期待日後增值"],"answer":3,"explain":"投資是把資金投入具有風險與增值可能的標的，購買股票型基金符合此特徵。撲滿與活期存款都屬於儲蓄，強調保本、報酬低或幾乎沒有；買零食吃掉屬於消費，資金並未保留或增值。"},{"level":"adv","topic":"非法吸金的運作與判斷","q":"某集團宣稱擁有「穩賺不賠的獲利模式」，實際上卻是把新加入者繳交的資金，拿去發給先前加入的人充當「利潤」。關於此情形的判斷，下列何者最正確？","choices":["以新加入者的錢支付先前加入者，是非法吸金的常見手法，最終多以崩盤收場","前面加入的人確實領到錢，足以證明此模式長期可行","這與銀行的資金中介業務相同，屬於合法經營","只要參加的人數持續增加，就不會有任何人受害"],"answer":0,"explain":"這種「以後金養前金」的模式並沒有真正的獲利來源，一旦新資金流入減少便會瓦解，屬於典型的非法吸金。前期領到錢只是吸引更多人加入的誘餌；銀行放款有金融監理與擔保機制，性質完全不同；參加人數再多，也只是讓後加入者承受更大的損失。"},{"level":"adv","topic":"中央銀行與商業銀行的差異","q":"就設立目的與主要業務而言，關於中央銀行與一般商業銀行的比較，下列敘述何者最為正確？","choices":["中央銀行的主要業務是吸收民眾存款並辦理消費貸款","中央銀行負責發行貨幣、調節利率並維持金融穩定，不以營利為主要目的","一般商業銀行可自行印製新臺幣，供其放款使用","兩者都以追求股東利潤最大化為首要目標"],"answer":1,"explain":"中央銀行是國家的貨幣主管機關，負責發行通貨、調節利率與維護金融穩定，任務在於公共利益而非賺錢。吸收民眾存款、辦理放款是商業銀行的業務；商業銀行絕不能自行印製鈔券；商業銀行雖以營利為目標，中央銀行則不是。"},{"level":"adv","topic":"單一商品漲價與通貨膨脹的區辨","q":"新聞報導：「受產季影響，本月高麗菜價格大漲；同期多數民生商品價格持平，部分電子產品甚至降價。」根據此敘述，下列判斷何者最合理？","choices":["這是典型的通貨膨脹，因為已經出現商品漲價","這是通貨緊縮，因為同時有商品降價","整體物價並未持續且普遍上漲，不宜逕稱為通貨膨脹","只要有一項商品大漲，消費者物價指數必然大幅上升"],"answer":2,"explain":"通貨膨脹強調物價「持續而且普遍」上漲，本例只有高麗菜因產季因素大漲，其餘商品持平甚至下跌，並不符合定義。以單一商品上漲就斷定通膨、或以部分商品降價就斷定通縮，都犯了以偏概全的錯誤；CPI 是一籃子商品的綜合結果，單項漲價對整體指數的影響有限。"},{"level":"adv","topic":"金融機構的資金中介與存放款利率","q":"銀行支付給存款人的利率，通常低於它向借款人收取的貸款利率。關於此一現象，下列說明何者最合理？","choices":["這是銀行擔任資金中介的收益來源之一，用以支應營運成本並承擔放款可能收不回的風險","這代表銀行違法牟利，利率應改由存款人自行決定","這表示存款人必定虧損，因此不應把錢存入銀行","這是中央銀行規定所有商品都必須加價的結果"],"answer":0,"explain":"銀行居間吸收存款再貸放出去，存放款之間的利率差價是它提供中介服務的報酬，也用來支應人事、營運與呆帳等風險，屬於正常經營方式而非違法牟利。存款人仍可領到利息，並非必定虧損；中央銀行也沒有規定商品一律加價。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

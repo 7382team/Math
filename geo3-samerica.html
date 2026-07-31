@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>中南美洲 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo3-samerica",
+  "title": "中南美洲",
+  "subject": "地理",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第6課 中南美洲",
+  "tag": "安地斯·亞馬孫·熱帶栽培業",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>中南美洲</h1><div class="sub">地理 · 安地斯·亞馬孫·熱帶栽培業 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"地形－安地斯山脈","q":"中南美洲西部有一列南北縱走、高聳綿長的山脈，是科迪勒拉山系向南延伸的部分，也是許多大河的發源地。這列山脈是？","choices":["洛磯山脈","安地斯山脈","阿帕拉契山脈","大分水嶺"],"answer":1,"explain":"科迪勒拉山系縱貫美洲西部，位於南美洲的部分即安地斯山脈。洛磯山脈屬於北美洲段落；阿帕拉契山脈在北美洲東部、山勢和緩；大分水嶺則位於澳洲東部，三者皆不在中南美洲西緣。"},{"level":"basic","topic":"地形－板塊運動與火山地震","q":"安地斯山脈沿線火山活動與地震相當頻繁，最主要的原因是此地位於？","choices":["古老而穩定的地盾","板塊張裂形成的中洋脊","大陸內部的沉積盆地","板塊互相聚合擠壓的地帶"],"answer":3,"explain":"南美洲西岸為板塊聚合（隱沒）帶，地殼受擠壓抬升成高大褶曲山脈，並伴隨頻繁的火山與地震。地盾與內陸沉積盆地地殼穩定、少地震；中洋脊屬張裂帶，主要出現在海底而非陸上山脈。"},{"level":"basic","topic":"地形－巴西高原與圭亞那高地","q":"南美洲東部有兩塊地勢和緩、岩層古老的高地，分別位於巴西境內與南美洲北部。這兩塊高地是？","choices":["巴西高原與圭亞那高地","墨西哥高原與巴塔哥尼亞高原","安地斯山脈與洛磯山脈","衣索比亞高原與東非高原"],"answer":0,"explain":"南美洲東部由巴西高原與圭亞那高地構成，屬古老陸塊，長期侵蝕後地勢起伏較小。墨西哥高原位於中美洲北部、巴塔哥尼亞高原在南美南端；安地斯與洛磯屬西部年輕褶曲山地；衣索比亞高原則在漠南非洲。"},{"level":"basic","topic":"地形－拉布拉他平原與彭巴草原","q":"南美洲南部的拉布拉他平原一帶分布著大片溫帶草原，是重要的小麥產區與牧牛區。此草原的名稱是？","choices":["塞倫蓋提草原","北美大平原的長草草原","彭巴草原","西伯利亞的針葉林區"],"answer":2,"explain":"拉布拉他平原上的溫帶草原稱為彭巴草原，地勢平坦、土壤肥沃，適合農牧。塞倫蓋提位於東非，屬熱帶莽原；北美大平原在北美洲中部；西伯利亞針葉林屬寒帶森林而非草原。"},{"level":"basic","topic":"氣候－熱帶雨林氣候","q":"亞馬孫盆地終年高溫、雨量豐沛且季節變化不明顯，其氣候類型為？","choices":["熱帶雨林氣候","熱帶莽原氣候","溫帶地中海型氣候","高地氣候"],"answer":0,"explain":"赤道附近終年高溫多雨、無明顯乾季，即熱帶雨林氣候。熱帶莽原有明顯乾濕季之分；地中海型氣候夏乾冬雨且屬溫帶；高地氣候隨高度分層，出現在安地斯山區而非低平盆地。"},{"level":"basic","topic":"生態－亞馬孫雨林的功能","q":"亞馬孫雨林常被稱為「世界之肺」，主要著眼於它的哪一項功能？","choices":["提供全球主要的石油與天然氣","決定全球洋流的流動方向","供應世界大部分的小麥產量","森林行光合作用，對大氣中氧與二氧化碳的調節具重要作用"],"answer":3,"explain":"「世界之肺」形容雨林龐大的植物群落透過光合作用吸收二氧化碳、釋出氧氣，對大氣成分具調節作用，同時也是生物多樣性最豐富的地區之一。雨林並非能源或小麥產地，也無法決定洋流方向。"},{"level":"basic","topic":"經濟－熱帶栽培業作物","q":"中南美洲熱帶地區常見大規模、以外銷為主的栽培業，其代表性作物組合為？","choices":["小麥、燕麥、裸麥、甜菜","咖啡、可可、香蕉、甘蔗","橄欖、葡萄、無花果、軟木櫟","大麥、亞麻、苜蓿、蕎麥"],"answer":1,"explain":"熱帶栽培業以咖啡、可可、香蕉、甘蔗等熱帶經濟作物為主，多供外銷。小麥、燕麥、甜菜、大麥等屬溫帶作物；橄欖、葡萄、軟木櫟則是地中海型農業的代表作物。"},{"level":"basic","topic":"資源－礦產分布","q":"下列哪一種礦產是智利重要的出口項目，產量在世界名列前茅？","choices":["鑽石","石油","銅","錫"],"answer":2,"explain":"智利位於安地斯山區，銅礦儲量與產量居世界前列，是該國重要外匯來源。石油常與委內瑞拉一帶連結；錫礦多與玻利維亞相關；鑽石則主要與漠南非洲相關，皆非智利的代表礦產。"},{"level":"basic","topic":"位置－中美地峽","q":"位於墨西哥以南、南美洲以北，狹長而連接南、北美洲的陸地，稱為？","choices":["猶加敦半島","西印度群島","巴塔哥尼亞","中美地峽"],"answer":3,"explain":"連接南、北美洲的狹長陸地稱為中美地峽，巴拿馬運河即開鑿於此。猶加敦半島只是其北側伸入海中的半島；西印度群島是加勒比海上的島群；巴塔哥尼亞位於南美洲南端。"},{"level":"basic","topic":"人文－語言分布","q":"中南美洲多數國家以西班牙語為主要語言，下列何國則以葡萄牙語為主？","choices":["巴西","阿根廷","墨西哥","祕魯"],"answer":0,"explain":"受殖民歷史影響，巴西通行葡萄牙語；阿根廷、墨西哥、祕魯等國則以西班牙語為主，故其餘三個選項皆屬西班牙語區。"},{"level":"basic","topic":"人文－宗教","q":"受近代歐洲殖民過程影響，中南美洲居民信仰人數最多的宗教是？","choices":["天主教","伊斯蘭教","印度教","東正教"],"answer":0,"explain":"西班牙、葡萄牙殖民時期將天主教傳入，成為當地信仰人數最多的宗教。伊斯蘭教主要分布於西亞、北非等地；印度教以南亞為主；東正教主要分布於東歐與獨立國協地區。"},{"level":"basic","topic":"人文－族群組成","q":"中南美洲人口組成中所稱的「麥士蒂索人」，是指下列何種族群？","choices":["由歐洲直接移入、未與當地通婚的白人","歐洲白人與印第安人的混血後裔","自非洲移入的黑人後裔","自亞洲移入的華人與日本人後裔"],"answer":1,"explain":"麥士蒂索人指歐洲白人與印第安人的混血後裔，在不少國家是人口的重要組成。其餘選項分別指稱白人、非洲裔與亞洲裔族群，未涵蓋「混血」這項關鍵定義。"},{"level":"basic","topic":"人文－印第安古文明分布","q":"下列印第安古文明與其主要分布地區的配對，何者正確？","choices":["馬雅－安地斯山區","印加－猶加敦半島","阿茲提克－墨西哥高原","馬雅－巴西高原"],"answer":2,"explain":"阿茲提克文明以墨西哥高原為核心；馬雅文明主要分布於猶加敦半島一帶；印加文明則位於安地斯山區。因此把馬雅放在安地斯山區或巴西高原、把印加放在猶加敦半島的配對皆有誤。"},{"level":"basic","topic":"農業－作物原生地","q":"今日全球廣泛栽種的馬鈴薯與玉米，其原生地位於？","choices":["南亞與東南亞","中南美洲","地中海沿岸","漠南非洲"],"answer":1,"explain":"馬鈴薯源自安地斯山區、玉米源自中美洲一帶，都是中南美洲的原生作物，後隨大航海時代傳布世界。南亞、地中海沿岸與漠南非洲皆為傳入地而非原生地。"},{"level":"adv","topic":"氣候－垂直氣候與高地農業","q":"厄瓜多、玻利維亞等國雖然位處低緯，重要城市與農業聚落卻多分布在安地斯山區的高原與谷地，主要原因是？","choices":["高地地勢平坦且面積廣大","高地距海近，便於發展遠洋漁業","高地雨量最豐沛，河運特別發達","熱帶地區氣溫隨高度增加而遞減，高地較涼爽，適合居住與耕作"],"answer":3,"explain":"熱帶高山因氣溫垂直遞減而形成垂直氣候，高地涼爽宜人，並可種植馬鈴薯、玉米等作物，故人口與農業向高處集中。安地斯山區地形崎嶇、並非平坦廣大；山區水流湍急難以發展河運；雨量也不必然以高地最多。"},{"level":"adv","topic":"經濟－單一經濟的風險","q":"某中美洲國家的出口以香蕉為大宗。若國際香蕉價格大幅下跌，該國最可能面臨的處境是？","choices":["工業產品出口隨之增加，正好抵銷損失","因價格下跌，外匯收入反而不受影響","外匯收入明顯減少，整體經濟受到較大衝擊","對進口工業產品的依賴迅速降低"],"answer":2,"explain":"出口高度集中於單一初級產品時，國際價格波動會直接牽動外匯收入，這正是單一經濟的風險。價格下跌不可能使收入不變，短期內也難以轉換為工業出口，更不會因此降低對進口工業品的依賴。"},{"level":"adv","topic":"生態－雨林開發與保育","q":"關於亞馬孫雨林開發的討論，下列敘述何者較為適切？","choices":["開發可帶來農牧、礦業與交通建設的收益，但也伴隨森林減少與生物多樣性下降，需在發展與保育間權衡","雨林開發只有經濟利益，不會造成環境改變","雨林砍伐後土壤肥力可長期維持，適合持續耕作","森林大量減少完全不影響區域降水與碳的循環"],"answer":0,"explain":"雨林開發同時涉及經濟需求與環境代價，屬於需要權衡取捨的議題。雨林養分多儲存於植物體內，砍伐後地力衰退迅速；森林減少也會影響水氣循環與碳的吸收，因此其餘三個選項與地理事實不符。"},{"level":"adv","topic":"人文－都市化與居住問題","q":"中南美洲不少大都市周圍出現大片自建的簡陋住宅區，此現象形成的主要背景是？","choices":["都市人口長期外移，房屋大量閒置老化","政府有計畫地將市中心居民遷往郊區","鄉村人口大量移入都市，住宅與就業機會一時難以配合","山地地形迫使居民只能居住於陡坡"],"answer":2,"explain":"快速都市化使鄉村人口在短期內大量湧入，都市的住宅、就業與公共設施供應跟不上需求，於是形成自建的簡陋住宅區，反映都市發展過程中的居住問題。選項一與人口移入方向相反；選項二誤把自發遷移說成政府規劃；地形則非主要成因。"},{"level":"adv","topic":"交通－巴拿馬運河的價值","q":"一艘貨輪要由美國東岸運貨至亞洲，選擇通過巴拿馬運河而非繞行南美洲南端，最直接的效益是？","choices":["可完全避開颱風等惡劣天候","大幅縮短航程與航行時間，降低運輸成本","可免除沿途各國的關稅與檢查","可將貨物改由陸路直接運送"],"answer":1,"explain":"巴拿馬運河開鑿於中美地峽狹窄處，溝通大西洋與太平洋，使船隻不必繞行南美洲南端，航程與時間大幅縮短，運輸成本隨之降低。運河無法左右天候，也與關稅減免無關，更不是陸運路線。"},{"level":"adv","topic":"區域比較－亞馬孫盆地與彭巴草原","q":"比較亞馬孫盆地與彭巴草原的自然環境與土地利用，下列敘述何者正確？","choices":["兩地同屬熱帶雨林氣候，差別只在面積大小","亞馬孫盆地緯度較高，彭巴草原緯度較低","彭巴草原終年多雨、森林密布，農耕不易","亞馬孫盆地以熱帶雨林為主；彭巴草原屬溫帶草原，較適合小麥種植與牧牛"],"answer":3,"explain":"亞馬孫盆地位於赤道附近，為終年多雨的熱帶雨林；彭巴草原緯度較高，屬溫帶草原，草質良好且地形平坦，是重要農牧區。兩地氣候類型不同，且緯度高低關係與選項二所述相反。"},{"level":"adv","topic":"人文－殖民歷史與文化景觀","q":"中南美洲今日「巴西通行葡萄牙語、多數國家通行西班牙語」的分布，最主要與下列何者有關？","choices":["印第安古文明原本即普遍使用這些語言","二十世紀以後大量亞洲移民帶入","近代歐洲國家在此殖民，西班牙與葡萄牙的勢力範圍不同","各國政府近年才以法律加以統一規定"],"answer":2,"explain":"大航海時代後西班牙與葡萄牙先後在此建立殖民地，語言與天主教信仰隨之傳入，形成巴西通行葡萄牙語、多數國家通行西班牙語的分布。印第安古文明使用的是原住民語言；亞洲移民人數有限；近年立法亦非主因。"},{"level":"adv","topic":"氣候－熱帶莽原判讀","q":"某地氣候資料顯示全年高溫，降水明顯集中於一段時期、其餘月份乾燥；地表以草原為主並散布疏林。此地最可能位於？","choices":["巴西高原一帶","亞馬孫盆地中心","安地斯山高山雪線以上","巴塔哥尼亞高原"],"answer":0,"explain":"全年高溫、乾濕季分明且草原夾雜疏林，是熱帶莽原的典型特徵，巴西高原一帶為其主要分布區。亞馬孫盆地終年多雨無明顯乾季；高山雪線以上終年低溫；巴塔哥尼亞高原位於安地斯山背風側，屬溫帶乾燥地區。"},{"level":"adv","topic":"經濟－區域經濟整合","q":"中南美洲部分國家組成區域性的經濟合作組織，其主要目的是？","choices":["統一各成員國的政治制度","限制成員國之間的人員與貨物往來","要求成員國完全放棄初級產品的生產","減少成員國間的貿易障礙、擴大市場，並提高在國際貿易中的談判力"],"answer":3,"explain":"區域經濟整合著重降低關稅等貿易障礙、擴大市場規模並增加集體議價能力，以減輕過度依賴初級產品輸出的風險。整合並不等於政治制度統一，也不是限制往來，更非要求放棄既有的農礦生產。"},{"level":"adv","topic":"人文－多元文化","q":"一位旅客先在巴西里約熱內盧參加熱鬧的嘉年華並欣賞森巴，之後到阿根廷布宜諾斯艾利斯觀賞探戈表演。這些現象最能說明中南美洲的何種特色？","choices":["各地文化彼此隔絕，少有交流","歐洲、非洲與印第安等多種文化長期交會，形成多元的文化樣貌","當地文化完全承襲印第安古文明，未受外來影響","文化表現以西亞的傳統為主"],"answer":1,"explain":"嘉年華、森巴與探戈都是不同來源的文化長期交會、融合後的產物，反映中南美洲多元的文化樣貌。選項一與文化交流的事實相反；選項三忽略殖民時期以來的外來影響；西亞傳統則與此區關聯甚微。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

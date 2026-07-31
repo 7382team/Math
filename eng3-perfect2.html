@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>現在完成式（since / for） 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0d9488;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "eng3-perfect2",
+  "title": "現在完成式（since / for）",
+  "subject": "英文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "since vs for",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>現在完成式（since / for）</h1><div class="sub">英文 · since vs for · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"for + 一段時間","q":"Peter has lived in Kaohsiung ___ five years, and he still likes it very much.","choices":["since","for","from","in"],"answer":1,"explain":"「five years」是一段時間的長度，前面要用 for。since 後面要接過去的時間點（如 since 2020）或過去式子句；from 表起點時通常要配 to（from 2020 to 2023），不能單獨這樣用；in five years 是「五年後」，用於未來的時間。"},{"level":"basic","topic":"since + 過去時間點","q":"Mike and I have known each other ___ 2020. We were in the same class then.","choices":["for","when","since","during"],"answer":2,"explain":"2020 是過去的「時間點」，前面用 since 表「自從」。for 後面要接一段時間的長度（for six years）；when 是連接詞，後面要接子句，不能直接接年份；during 後面接一段期間（during the summer），且不能表示「從過去持續到現在」。"},{"level":"basic","topic":"since + 過去式子句","q":"Amy has played the violin since she ___ eight years old.","choices":["is","has been","will be","was"],"answer":3,"explain":"since 引導的子句要用「過去簡單式」表示動作開始的過去起點，主句才用現在完成式，所以用 was。is 是現在式、will be 是未來式，都無法表示過去的起點；since 子句不用現在完成式，故 has been 錯誤。"},{"level":"basic","topic":"How long 問答","q":"A: How long have you studied English?  B: ___","choices":["For about six years.","Since six years.","In six years.","About six years ago."],"answer":0,"explain":"How long 問「持續多久」，要用 for + 一段時間來回答。since 後面必須接過去的時間點，不能接「six years」這種長度；In six years 是「六年後」，用於未來；six years ago 是明確的過去時間，且 ago 不能與現在完成式並用。"},{"level":"basic","topic":"already 的用法與位置","q":"I have ___ finished my homework, so I can watch TV with you now.","choices":["yet","ago","already","ever"],"answer":2,"explain":"肯定句中表「已經」用 already，位置在 have/has 之後、過去分詞之前。yet 用於否定句或疑問句，且放在句尾；ago 表「…之前」，必須配過去簡單式；ever 多用於疑問句（Have you ever...?）或否定、最高級之後，不用於這種肯定敘述句。"},{"level":"basic","topic":"yet（否定句）","q":"It's almost noon, but Sam hasn't gotten up ___. He went to bed very late last night.","choices":["already","yet","just","ever"],"answer":1,"explain":"否定句表「還沒」要用 yet，放在句尾。already 主要用於肯定句表「已經」；just 表「剛剛」，要放在 have/has 之後（has just gotten up）；ever 多用於疑問句（Have you ever...?），不能放在否定句尾表「還沒」。"},{"level":"basic","topic":"It has been + 時間 + since + 過去式","q":"It has been three months since Mr. Chen ___ to Taipei with his family.","choices":["moved","moves","has moved","is moving"],"answer":0,"explain":"「It has been + 一段時間 + since + 過去簡單式」是固定句型，since 子句要用過去式 moved 表示過去發生的那一刻。moves 是現在式、is moving 是現在進行式，都無法表示過去的起點；since 子句也不使用現在完成式，故 has moved 錯誤。"},{"level":"basic","topic":"現在完成式不可與明確過去時間並用","q":"Which sentence uses the present perfect correctly?（考點：現在完成式與時間副詞的搭配）","choices":["I have seen that movie last night.","I have finished my report yesterday.","She has called me two hours ago.","We have already cleaned the classroom."],"answer":3,"explain":"現在完成式不能與 yesterday、last night、… ago、in 2019 這類「明確的過去時間」並用，所以 (A)(B)(C) 都必須改成過去簡單式：saw、finished、called。already 沒有指出明確的過去時間點，可以和現在完成式一起使用，故 (D) 正確。"},{"level":"basic","topic":"never（現在完成式的否定）","q":"Tina has ___ been abroad, so she is really excited about her first trip to Japan next month.","choices":["ever","yet","never","already"],"answer":2,"explain":"表「從未」用 never，形式是肯定句但語意為否定，位置在 have/has 之後、過去分詞之前。ever 多用於疑問句（Have you ever...?），不用於這種肯定敘述句；yet 只能用於否定句尾（hasn't ... yet）或疑問句；already 表「已經」，與「第一次出國」的語意矛盾。"},{"level":"basic","topic":"since + 時間點的主句動詞形式","q":"My sister ___ in that small bookstore since last summer. She works there every weekend.","choices":["works","has worked","worked","is working"],"answer":1,"explain":"since last summer 表示「從去年夏天持續到現在」，主句要用現在完成式 has worked。works 是現在式，只表示現在的習慣；worked 是過去式，不能與 since 連用表持續；is working 只描述此刻正在進行的動作，無法表達從過去到現在的一段時間。"},{"level":"basic","topic":"just 的位置","q":"Kevin ___ come back from the library. He is putting his books on the shelf now.","choices":["has just","just has","has been just","is just"],"answer":0,"explain":"just「剛剛」要放在助動詞 have/has 之後、過去分詞之前，所以是 has just come back。just has 位置錯誤；has been just 動詞形式不通；is just come 不是正確的動詞結構（come 的過去分詞要配 have/has）。"},{"level":"basic","topic":"so far","q":"___ this year, I have read three English novels, and I want to read two more before the summer ends.","choices":["Ago","Since now","From now on","So far"],"answer":3,"explain":"so far 是「到目前為止」，常與現在完成式並用。ago 必須放在時間長度之後（two years ago）並配過去簡單式，不能放句首；Since now 不合語法，since 後面要接過去的時間；From now on 是「從現在起」，指未來，與後面的 have read（已經讀完）語意不合。"},{"level":"basic","topic":"recently 與明確過去時間的區別","q":"My cousin has changed a lot ___. He looks much taller and stronger now.","choices":["last year","in 2020","recently","two years ago"],"answer":2,"explain":"recently「最近」沒有指出明確的過去時間點，可以和現在完成式並用。last year、in 2020、two years ago 都是明確的過去時間，只能搭配過去簡單式（changed），不能和 has changed 一起用。"},{"level":"basic","topic":"for 與 since 的判別","q":"Ben has had this dog ___ 2023, and he has taken care of it ___ three years.","choices":["for / since","since / for","since / since","for / for"],"answer":1,"explain":"2023 是過去的「時間點」，用 since；three years 是「一段時間的長度」，用 for。判別方法：since 後面回答「從什麼時候開始」（年份、日期、過去事件），for 後面回答「持續多久」。"},{"level":"adv","topic":"句型轉換：It has been + 時間 + since","q":"Mr. Wang moved to Tainan three years ago. = It ___ three years since Mr. Wang moved to Tainan.","choices":["was","have been","is being","has been"],"answer":3,"explain":"「It has been + 一段時間 + since + 過去簡單式」表示「自從…已經多久了」，主詞 It 是單數，用 has been。was 是過去式，無法表達「一直到現在」；have been 與單數主詞 It 不一致；is being 用法錯誤，be 動詞的進行式不用於此。"},{"level":"adv","topic":"句意相同的句子（since + 年份）","q":"Kevin started working at this bakery in 2019, and he still works there now. Which sentence has the same meaning?","choices":["Kevin has worked at this bakery for 2019.","Kevin worked at this bakery since 2019.","Kevin has worked at this bakery since 2019.","Kevin has worked at this bakery since seven years."],"answer":2,"explain":"動作從 2019 開始且持續到現在，要用「現在完成式 + since + 過去時間點」。(A) for 後面要接一段時間長度，不能接年份；(B) 過去簡單式不與 since 連用表持續，且暗示現在已經不在那裡工作，與題意矛盾；(D) seven years 是長度，要用 for seven years，不能用 since。"},{"level":"adv","topic":"How long 疑問句的時態","q":"You want to know how long your friend has known Jason. Which question is correct?","choices":["How long do you know Jason?","How long have you known Jason?","How long are you knowing Jason?","How long did you know Jason since 2020?"],"answer":1,"explain":"問「認識多久（到現在）」要用現在完成式 How long have you known...?，know 的過去分詞是 known。(A) 現在簡單式無法表達持續的時間長度；(C) know 是狀態動詞，不用進行式；(D) 過去式 did...know 表示現在已經不認識了，與 since 2020（持續到現在）矛盾。"},{"level":"adv","topic":"have been to / have gone to","q":"A: Where's Mia?  B: She ___ to the airport to pick up her cousin. She'll be back at six.","choices":["has gone","has been","has been going","goes"],"answer":0,"explain":"have/has gone to 表示「去了某地，人還沒回來」，符合「她六點才會回來」的情境。has been to 表示「曾經去過，現在已經回來了」，與句意矛盾；has been going 語意不通；goes 是現在式，表示習慣性動作，不能回答此刻人在哪裡。"},{"level":"adv","topic":"Have you ever been to...?","q":"A: ___ you ever ___ to Kenting?  B: Yes, twice. I went there with my family last year.","choices":["Did / go","Have / gone","Have / been","Are / going"],"answer":2,"explain":"問「是否曾經去過」（說話者現在人在這裡）用 Have you ever been to...?。Have you ever gone to 表示「去了還沒回來」，與對話情境不合；Did you go 是問過去特定一次的事，不與 ever 這樣搭配；Are you going 是問未來的計畫，也與回答 twice 不合。"},{"level":"adv","topic":"過去簡單式與現在完成式的判別","q":"My uncle ___ this car in 2018, and he ___ it for eight years.","choices":["bought / has had","has bought / had","buys / has","bought / had"],"answer":0,"explain":"in 2018 是明確的過去時間，只能用過去簡單式 bought；for eight years 表示「擁有這輛車已經八年並持續到現在」，要用現在完成式 has had。has bought 不能與 in 2018 並用；had 是過去式，無法表達持續到現在。"},{"level":"adv","topic":"yet 用於疑問句與否定簡答","q":"A: Have you finished your science report ___?  B: Not ___. I still need one more day.","choices":["already / already","yet / yet","yet / already","ever / already"],"answer":1,"explain":"yet 用於疑問句表「已經…了嗎」，也用於否定簡答 Not yet.「還沒」，因此兩格都填 yet。already 主要用於肯定句表「已經」，Not already 不是正確的說法；ever 不能放在句尾表「已經」，它多用於 Have you ever + 過去分詞 的句型中。"},{"level":"adv","topic":"間接問句語序","q":"Could you tell me how long ___ in Taichung? I heard she moved there a few years ago.","choices":["has she lived","does she live","has lived she","she has lived"],"answer":3,"explain":"間接問句（名詞子句）要用「主詞 + 動詞」的直述句語序，不能倒裝，所以是 she has lived。has she lived 是疑問句的倒裝語序；does she live 既倒裝又用現在式，無法表達持續的時間；has lived she 語序完全錯誤。"},{"level":"adv","topic":"主句完成式 + since 子句過去式","q":"Ann and I ___ good friends since we ___ in the same class in Grade 7.","choices":["have been / were","were / have been","are / were","have been / have been"],"answer":0,"explain":"主句表示「從過去到現在一直是好朋友」，用現在完成式 have been；since 子句表示過去的起點，用過去簡單式 were。are 是現在式，無法表達「從七年級到現在」的持續；since 子句不能用現在完成式。"},{"level":"adv","topic":"already / yet / just 的位置","q":"Which sentence puts the adverb in the correct place?（考點：already、yet、just 在現在完成式中的位置）","choices":["I have finished already my lunch.","He has gone already to bed.","She hasn't called back me yet.","We have just seen that new movie."],"answer":3,"explain":"already 和 just 要放在 have/has 與過去分詞之間，所以 (A) 應改為 have already finished，(B) 應改為 has already gone；(C) 受詞代名詞 me 要放在 call 和 back 之間（called me back），yet 才放句尾；(D) have just seen 位置正確。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

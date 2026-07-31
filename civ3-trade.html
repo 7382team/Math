@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>國際分工與貿易 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ3-trade",
+  "title": "國際分工與貿易",
+  "subject": "公民",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "第5課 國際分工與貿易",
+  "tag": "比較利益·匯率·全球化",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>國際分工與貿易</h1><div class="sub">公民 · 比較利益·匯率·全球化 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"國際分工的成因","q":"冰島擁有豐富的地熱資源，發展出耗能較高的鋁冶煉工業；泰國氣候濕熱、平原廣大，成為重要的稻米出口國。這兩個例子最能說明國際分工形成的原因是什麼？","choices":["各國擁有的自然條件與資源不同，適合生產的產品也不同","各國的人口數量必須相近，才有辦法進行貿易","各國的政治制度必須相同，才會形成分工","只要提高關稅，任何國家都能發展任何產業"],"answer":0,"explain":"冰島因地熱電力便宜而發展耗能高的鋁冶煉，泰國因氣候與平原適合稻作而外銷稻米，可見國際分工源於各國自然條件、資源與技術的差異，各自發展相對有利的產業。認為人口數量或政治制度必須相同才能分工的說法弄反了道理，正因條件不同才需要分工交換；認為提高關稅就能發展任何產業也不成立，關稅無法憑空創造缺乏的資源與技術。"},{"level":"basic","topic":"專業化與生產效率","q":"在國際分工下，各國集中生產自己較擅長的產品，再透過貿易彼此交換。這種「專業化生產」帶來的主要效益是什麼？","choices":["使每個國家都必須自給自足，不再需要外國商品","讓所有國家的產業結構逐漸變得完全相同","使各國交易時不再需要使用任何貨幣","提高生產效率、降低生產成本，使可消費的產品總量增加"],"answer":3,"explain":"專業化使各國把資源投入最擅長的領域，熟練度提高、成本下降，交換後雙方可消費的商品都變多。專業化的結果是更依賴貿易而非自給自足；分工也會讓各國產業更具特色，而非結構完全相同；國際貿易仍須以貨幣（外匯）結算，分工並不會使貨幣消失。"},{"level":"basic","topic":"比較利益的概念","q":"關於「比較利益」的基本概念，下列敘述何者最正確？","choices":["一個國家必須樣樣都比別國生產得好，才有進行貿易的必要","只有工業先進的國家才適用比較利益，資源不足的國家無法適用","各國專門生產機會成本較低的產品，再互相交換，雙方都可能獲益","比較利益是指哪一國商品的售價最低，哪一國就一定會出口該商品"],"answer":2,"explain":"比較利益看的是機會成本高低：即使某國樣樣生產條件都較差，只要專門生產自己放棄最少的產品再交換，雙方仍可同時獲益。要求「樣樣領先」是把比較利益誤認為絕對優勢；認為只有先進國適用也錯，條件較弱的國家反而更能藉分工受益；只看售價而忽略機會成本，同樣偏離比較利益的判斷標準。"},{"level":"basic","topic":"進口與出口","q":"台灣某工具機廠商把機器賣到德國，同時國內鋼鐵業向澳洲購買鐵礦砂。就台灣而言，這兩項交易分別屬於什麼？","choices":["出口、進口","進口、出口","兩者都屬於出口","兩者都屬於進口"],"answer":0,"explain":"把本國商品賣到國外是出口，向國外購買商品運入本國是進口，所以賣工具機到德國是出口、買澳洲鐵礦砂是進口。把兩者顛倒，或認為兩筆交易同屬出口（或同屬進口），都忽略了商品流動的方向剛好相反。"},{"level":"basic","topic":"貿易順差與逆差","q":"某國在一段期間內，商品出口總值小於進口總值。這種情形通常稱為什麼？","choices":["貿易障礙","貿易順差","貿易平衡","貿易逆差"],"answer":3,"explain":"出口總值小於進口總值稱為貿易逆差（入超）；出口大於進口才是順差（出超）；兩者相當則為貿易平衡。貿易障礙指的是關稅、配額等限制貿易的措施，屬於政策手段，並不是貿易收支的結果。"},{"level":"basic","topic":"關稅的作用","q":"政府對進口商品課徵關稅，最直接的效果是什麼？","choices":["使進口品在國內的售價提高，削弱其價格競爭力","使進口品在國內的售價降低，鼓勵民眾大量購買","直接規定該商品每年只能進口一定的數量","使本國貨幣立刻升值，出口隨之大幅增加"],"answer":0,"explain":"關稅是對進口商品課徵的稅，稅負多半反映在售價上，使進口品變貴、價格競爭力下降，藉此保護國內產業。說進口品因此變便宜是方向弄反；直接限制每年進口數量的作法是「配額」而非關稅；關稅也不是決定匯率升貶的直接機制。"},{"level":"basic","topic":"進口配額","q":"「進口配額」這種貿易障礙的具體作法是什麼？","choices":["補貼本國出口廠商的運輸費用","對進口商品課徵較高的稅金","禁止本國人民出國旅遊與消費","限制某項商品在一定期間內可以進口的數量"],"answer":3,"explain":"配額是以「數量」設限，規定一定期間內某商品的進口上限。課徵較高稅金屬於關稅，與配額同為貿易障礙但手段不同；補貼出口廠商運費是出口補貼；禁止人民出國旅遊限制的是人的行為，都不是配額的作法。"},{"level":"basic","topic":"世界貿易組織的宗旨","q":"世界貿易組織（WTO）成立的主要宗旨是什麼？","choices":["統一所有會員國國內使用的貨幣","為各會員國訂定一致的最低工資標準","降低關稅與非關稅障礙，促進國際貿易自由化","代替各會員國政府決定其國內的產業政策"],"answer":2,"explain":"WTO 的核心宗旨是建立貿易規範、處理貿易爭端，並推動降低關稅與各種非關稅障礙，促進貿易自由化。統一貨幣屬於貨幣整合，訂定最低工資屬各國勞動政策，國內產業政策更是各會員國自己的權責，都不在 WTO 的職權範圍。"},{"level":"basic","topic":"區域經濟整合","q":"若干地理位置相近的國家簽訂協定，相互降低或取消關稅、使商品與資金流通更便利。這種現象最適合稱為什麼？","choices":["貿易逆差持續擴大","匯率制度的全面改革","保護主義的全面升高","區域經濟整合"],"answer":3,"explain":"地理相近的國家以協定相互減免關稅、擴大合作，就是區域經濟整合。保護主義升高是提高而非降低貿易障礙，方向與題幹相反；貿易逆差講的是收支結果；匯率制度改革談的是貨幣兌換方式，都與關稅減免無關。"},{"level":"basic","topic":"外匯與匯率的意義","q":"關於「外匯」與「匯率」的意義，下列敘述何者正確？","choices":["外匯是政府對進口商品課徵的稅；匯率是這種稅的稅率","外匯是本國貨幣的另一種別稱；匯率是物價上漲的比率","外匯是可用於國際支付的外國貨幣及外幣資產；匯率是兩國貨幣交換的比率","外匯是各國中央銀行持有的黃金總量；匯率是黃金每日的價格"],"answer":2,"explain":"外匯指可用於國際間支付的外國貨幣及以外幣計價的資產，匯率則是兩種貨幣互相兌換的比率。把外匯說成關稅、把匯率說成物價上漲率，或把外匯限縮為黃金存量，都偏離了定義。"},{"level":"basic","topic":"匯率升值的判讀","q":"當新台幣對美元「升值」時，下列敘述何者正確？","choices":["同樣的一美元，可以換到比以前更多的新台幣","同樣的一美元，只能換到比以前更少的新台幣","新台幣升值後，就不能再兌換任何外國貨幣","新台幣升值代表國內物價一定會跟著下跌"],"answer":1,"explain":"新台幣升值表示台幣變得比較「值錢」，因此同樣一美元只能換到較少的新台幣。一美元能換到更多新台幣是貶值的情形；升值並不會使台幣無法兌換外幣；國內物價受多重因素影響，也不會因升值就必然下跌。"},{"level":"basic","topic":"匯率貶值的影響","q":"在其他條件不變的情況下，新台幣貶值對下列何者最為有利？","choices":["準備出國留學、要把新台幣換成外幣的學生","打算購買進口名牌包的國內消費者","以外銷為主、貨款以外幣收取的台灣製鞋廠商","需要大量進口原油的國內能源業者"],"answer":2,"explain":"新台幣貶值時，同額外幣可換回更多台幣，出口商收到外幣貨款換回的台幣增加，我國商品在國外也相對便宜，因此最有利。要把台幣換成外幣的留學生、購買進口精品的消費者、進口原油的業者，都必須付出更多台幣，屬於不利的一方。"},{"level":"basic","topic":"全球化與跨國企業","q":"某跨國企業在美國設立研發中心、在越南設廠組裝，再把產品行銷到世界各地。這最能說明全球化下的什麼現象？","choices":["各國生產逐漸走向完全的自給自足","國際分工延伸到同一產品生產流程的不同階段","世界各國的關稅已一律大幅提高","世界各國使用的貨幣已經完全統一"],"answer":1,"explain":"跨國企業把研發、製造、行銷分散到條件最合適的國家，代表分工已從「不同產品之間」細化到「同一產品的不同生產階段」。這與走向自給自足的說法相反；題幹也沒有提到關稅大幅提高，且各國目前仍使用各自的貨幣。"},{"level":"basic","topic":"外匯的收入與支出","q":"下列哪一項活動，最可能為我國「賺取外匯」（使外匯收入增加）？","choices":["國人到國外旅遊，在當地以外幣刷卡消費","廠商向國外購買生產設備，並以美元支付貨款","外國旅客來台觀光，將外幣兌換成新台幣消費","家長定期匯出外幣，供在國外留學的子女使用"],"answer":2,"explain":"外國旅客把外幣換成新台幣在台灣消費，等於我國提供商品與服務而取得外幣，屬於外匯收入。國人出國旅遊消費、進口設備付款、匯款給國外留學的子女，都是把新台幣換成外幣付給外國，屬於外匯支出。"},{"level":"adv","topic":"比較利益與機會成本","q":"假設甲、乙兩國都能生產「布料」與「電子零件」。甲國每多生產一單位電子零件所須放棄的布料較少；乙國每多生產一單位布料所須放棄的電子零件較少。依比較利益原理，最合理的分工方式是什麼？","choices":["甲國專門生產電子零件、乙國專門生產布料，再互相交換","甲、乙兩國都集中生產電子零件，布料交給市場自然出現","兩國都應停止貿易，各自同時生產兩種產品才最安全","由總生產成本較高的國家包辦兩種產品的全部生產"],"answer":0,"explain":"「多生產某項產品所須放棄的另一項較少」就是機會成本較低：甲國生產電子零件的機會成本低、乙國生產布料的機會成本低，各自專業化再交換，雙方都能獲益。兩國都生產電子零件會使布料無人供應，違背比較利益；都停止貿易則放棄了分工的好處；由成本較高的一方包辦兩種產品，更是浪費資源。"},{"level":"adv","topic":"匯率變動與出口廠商","q":"一家以外銷歐洲為主的台灣自行車廠商，發現近期新台幣對歐元持續升值。在其他條件不變的情況下，該廠商最可能面臨下列哪一種情況？","choices":["收到的外幣貨款換回更多新台幣，獲利明顯提高","收到的外幣貨款換回的新台幣減少，出口的價格競爭力下降","進口零組件的成本上升，使生產成本大幅增加","完全不受影響，因為匯率變動只會影響觀光旅遊業"],"answer":1,"explain":"新台幣升值時，同額外幣換回的台幣變少，出口收益縮水；若想維持原本的台幣收入就得調高外幣售價，商品在國外變貴，價格競爭力隨之下降。換回更多台幣是貶值時的情形；升值時進口零組件反而變便宜；把匯率影響限縮在觀光業也不正確，進出口廠商受到的影響最為直接。"},{"level":"adv","topic":"匯率變動與出國旅遊","q":"小美計畫寒假到日本自助旅行。若在她出發前，新台幣對日圓的情形由「1元新台幣只能換到較少日圓」變成「1元新台幣可以換到較多日圓」，則這趟旅行以新台幣計算的花費最可能如何？","choices":["花費變多，因為新台幣貶值了","花費變少，因為新台幣升值了","完全不受影響，因為匯率只與貿易商有關","花費變多，因為日本的物價必定同步上漲"],"answer":1,"explain":"1元新台幣能換到更多日圓，代表新台幣變得較值錢，也就是升值；支付同樣的日圓花費只需準備較少的新台幣，旅費因此減少。把這種情形判成貶值是方向弄反；出國旅遊本身就是外匯需求，並非只有貿易商受匯率影響；題幹也沒有提供日本物價上漲的訊息。"},{"level":"adv","topic":"關稅提高的影響","q":"某國政府大幅提高進口小麥的關稅。在其他條件不變的情況下，下列推論何者最為合理？","choices":["國內麵粉與麵包的價格可能上漲，消費者負擔加重","國內種植小麥的農民處境將變得更加不利","該國小麥的進口數量一定會明顯增加","該國政府從小麥進口取得的關稅收入必定歸零"],"answer":0,"explain":"進口小麥的關稅提高使成本上升，以小麥為原料的麵粉、麵包價格隨之上漲，消費者負擔加重，這正是保護國內產業所付出的代價。國內小麥農民因進口品變貴而相對受惠；關稅提高通常使進口數量減少而非增加；只要仍有小麥進口，關稅收入就不會歸零。"},{"level":"adv","topic":"貿易收支的判讀","q":"某國連續三年的商品貿易概況如下：第一年出口總值大於進口總值、第二年出口與進口總值大致相當、第三年出口總值小於進口總值。依此判讀，下列敘述何者正確？","choices":["這三年該國的貿易收支都呈現順差","第一年為貿易順差，第三年為貿易逆差","第二年的貿易逆差情形最為嚴重","第三年的出口總值必然已經降為零"],"answer":1,"explain":"出口大於進口為順差、大致相當為平衡、小於進口為逆差，因此第一年順差、第二年接近平衡、第三年逆差。說三年都是順差忽略了後兩年的變化；第二年是收支相當而非逆差最嚴重；出口小於進口也不代表出口降為零。"},{"level":"adv","topic":"貿易的衝擊與因應","q":"某國開放大量低價成衣進口後，國內部分成衣廠因競爭不過而關廠，員工失業。針對這個現象，下列分析何者最為合理？","choices":["消費者的權益因此受損，但國內廠商與勞工同時受益","這證明國際貿易對所有國家而言都只會帶來壞處","消費者買到較便宜的成衣，但部分勞工失業，政府可提供轉業訓練與就業協助","政府唯一可行的作法，是永久禁止所有商品進口以保護產業"],"answer":2,"explain":"貿易的利益與衝擊往往同時出現：消費者與相關產業受惠，被進口品衝擊的產業則有勞工失業，因此需要職業訓練、就業媒合等配套。說消費者受損而廠商、勞工受益是把對象弄反；據此否定貿易的整體利益則以偏概全；全面禁止進口會使消費者與出口產業一併受害，並不可行。"},{"level":"adv","topic":"兩國貨幣升貶的判讀","q":"假設「甲國幣」與「乙國幣」的兌換情形變化如下：原本1單位乙國幣可兌換較多甲國幣，後來1單位乙國幣只能兌換較少甲國幣。依此判讀，下列敘述何者正確？","choices":["甲國幣貶值，甲國商品出口到乙國較為有利","兩國幣值其實都沒有改變，只是計價單位不同","甲國幣升值，甲國人民到乙國旅遊的負擔會加重","甲國幣升值，甲國從乙國進口商品變得較為便宜"],"answer":3,"explain":"1單位乙國幣能換到的甲國幣變少，代表甲國幣變得較值錢，也就是甲國幣升值；升值時以甲國幣購買外國商品較便宜，因此對進口有利。把方向判成甲國幣貶值並不正確；兌換比率確實改變了，並非只是計價單位不同；甲國幣升值時到乙國旅遊的花費反而減輕，而非加重。"},{"level":"adv","topic":"自由貿易與保護主義的爭論","q":"班上舉行辯論，正方主張「應降低關稅、擴大自由貿易」，反方主張「應維持一定的關稅保護」。下列何者最可能是反方提出的論點？","choices":["降低關稅可使國內消費者有更多樣、更便宜的選擇","自由貿易的競爭壓力能促使廠商提升技術與經營效率","各國依比較利益專業分工，可提高全球的整體產量","過度依賴進口可能使本國重要產業萎縮，影響就業與供應安全"],"answer":3,"explain":"保護主義（反方）關切的是國內產業存續、就業穩定與重要物資的供應安全，因此主張保留一定的關稅。消費者選擇更多元便宜、競爭促使廠商提升效率、依比較利益分工提高整體產量，則都是正方支持自由貿易的典型論點。"},{"level":"adv","topic":"全球化的文化影響","q":"全球化使外國的飲食、影視與流行文化大量進入台灣，同時台灣的珍珠奶茶也在許多國家流行。關於這個現象，下列敘述何者最為適當？","choices":["文化交流是雙向的，但強勢文化大量湧入時，本土文化也可能面臨被稀釋的挑戰","文化交流的結果，必然使世界各國原有的文化完全消失","只有經濟強國的文化才能向外輸出，其他國家絕無輸出的機會","文化交流純屬個人喜好，與國際貿易及跨國企業的活動毫無關聯"],"answer":0,"explain":"全球化下的文化流動是雙向的，既帶來多元選擇，也可能使本土文化受到擠壓，因此需要兼顧交流與在地文化的保存。說各國文化必然完全消失過於絕對；認為只有強國才能輸出文化，已被珍珠奶茶行銷海外的事實否定；跨國企業與貿易更是文化傳播的重要管道。"},{"level":"adv","topic":"國際分工的風險","q":"某國電子業所需的關鍵零組件幾乎全部仰賴單一國家供應，當該供應國因重大天災停工時，該國工廠被迫大幅減產。這個例子最能說明國際分工可能帶來什麼問題？","choices":["國際分工必然造成該國長期的貿易逆差","高度依賴特定國家的供應，會使本國產業承受較高的中斷風險","專業分工在生產效率上完全沒有任何好處","只要調整匯率，就能立即解決零組件短缺的問題"],"answer":1,"explain":"國際分工能提高效率，但供應鏈過度集中於單一國家時，任一環節中斷就會牽動整體生產，因此常以分散供應來源作為因應。供應風險與貿易收支沒有必然關係；題幹也未否定分工的效率利益；匯率影響的是價格，無法解決實體零組件短缺的問題。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
