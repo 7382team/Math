@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>楚人養狙 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-churen",
+  "title": "楚人養狙",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "明代寓言散文",
+  "ready": true,
+  "author": "劉基"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>楚人養狙</h1><div class="sub">國文 · 明代寓言散文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"字詞解釋","q":"〈楚人養狙〉篇名中的「狙」，依課文內容所指是哪一種動物？","choices":["山羊","狐狸","獼猴","野狗"],"answer":2,"explain":"「狙」即獼猴（猴子）。課文開頭寫「楚有養狙以為生者，楚人謂之狙公」，指楚國有人靠飼養猴子維生，因而被稱為「狙公」，全篇的「狙」都指他所豢養、驅使入山採果的猴群。"},{"level":"basic","topic":"字詞解釋","q":"課文「賦什一以自奉」一句中的「賦」，意思最接近下列何者？","choices":["徵收、索取","吟詠、作賦","分派、指派工作","賞賜、給予"],"answer":0,"explain":"「賦」本指賦稅，此處作動詞用，是「徵收、索取」之意。白話是：（狙公）向群猴索取牠們採得果實的一定比例，用來供養自己。要注意：「分派工作」是前文「部分眾狙」的「部分」之意，不是「賦」。"},{"level":"basic","topic":"字詞解釋","q":"課文「必部分眾狙於庭」中的「部分」一詞與今日常用意思不同，它在文中應解釋為？","choices":["整體中的一小塊","部署、分派","機關的部門單位","軍隊的番號編制"],"answer":1,"explain":"「部分」在文中是動詞，意為「部署、分派」。白話是：（狙公）每天一定在庭院裡把群猴部署分派好（再叫老猴帶牠們上山）。今日「部分」多作「整體中的一塊」解，屬古今異義詞，讀文言文須依上下文判斷。"},{"level":"basic","topic":"字詞解釋","q":"課文寫群猴採果若交不足額，狙公便「加鞭箠焉」。「鞭箠」的意思是什麼？","choices":["用言語嚴厲辱罵","罰牠不准進食","關進柙中不准外出","用鞭子抽打"],"answer":3,"explain":"「鞭」「箠」都是鞭打用的刑具，合用即「用鞭子抽打」。原文「或不給，則加鞭箠焉」，白話是：如果有猴子交不足果實，狙公就用鞭子抽打牠。這正是狙公以威嚇役使群猴的具體手段，故下文說群猴「畏苦之，弗敢違也」。"},{"level":"basic","topic":"字詞解釋","q":"課文「言未既，眾狙皆寤」中的「寤」字，應如何解釋？","choices":["睡熟","醒悟、覺悟","偶然相遇","產生誤會"],"answer":1,"explain":"「寤」通「悟」，是醒悟、覺悟之意。白話是：（小猴的）話還沒說完，眾猴就都醒悟過來了。這個「寤」字是全篇情節的轉捩點，群猴自此不再受狙公擺布。"},{"level":"basic","topic":"字詞解釋","q":"群猴覺悟後，趁狙公熟睡時破壞「柵」、「柙」而逃入山林。「柵」在文中指的是什麼？","choices":["採果用的竹籃","上山的小徑","用木條圍成、圈養群猴的欄舍","儲放果實的倉庫"],"answer":2,"explain":"「柵」是用木條或竹條圍成的欄圈，即狙公圈養群猴之處（「柙」則是關獸的木籠）。白話是：群猴趁夜破壞欄柵木籠，取走積存的果實，相偕逃入山林不再回來。毀柵象徵掙脫不合理的束縛。"},{"level":"basic","topic":"字詞解釋","q":"「然則吾何假於彼而為之役乎？」句中的「假」，意思是下列何者？","choices":["憑藉、依賴","虛假、不真實","假裝、偽裝","借出、出借"],"answer":0,"explain":"白話翻譯：既然這樣，我們為什麼要依賴他，而替他做牛做馬呢？「假」在此是「憑藉、依靠」，與「假借」的「假」同源，不作「虛假」解。這句是小猴三問的結論，直接引出眾猴的覺悟。"},{"level":"basic","topic":"字詞解釋","q":"篇末郁離子的議論中，「世有以術使民」「其術窮矣」的「術」應解釋為什麼？","choices":["醫術","技藝","學術思想","權謀詐術"],"answer":3,"explain":"兩處的「術」都指統治者用來擺布、役使他人的權謀詐術。白話是：世上有靠權術役使人民而毫無法度的人……（人民一旦覺悟）他的權術就走到盡頭了。並非醫術或技藝之意。"},{"level":"basic","topic":"字詞解釋","q":"「言未既，眾狙皆寤」的「既」字，在此是什麼意思？","choices":["已經","既然","完畢、終了","竭盡全力"],"answer":2,"explain":"白話翻譯：話還沒說完（眾猴就都醒悟了）。「既」在此作「完畢、結束」解，「未既」即「還沒說完」。作者用「言未既」寫眾猴反應之快，可見小猴的提問一針見血。"},{"level":"basic","topic":"文學常識","q":"關於本文作者劉基（劉伯溫），下列敘述何者正確？","choices":["唐代詩人，號香山居士","北宋文學家，名列唐宋八大家","元末明初人，輔佐明太祖建國的開國功臣","清代考據學者，樸學的代表人物"],"answer":2,"explain":"劉基字伯溫，元末明初人，輔佐明太祖朱元璋建立明朝，是開國功臣，同時也是重要文學家，寓言散文尤為後世稱道。號香山居士者為唐代白居易；唐宋八大家中並無劉基。"},{"level":"basic","topic":"文學常識","q":"〈楚人養狙〉選自劉基的《郁離子》，《郁離子》是一部怎樣的著作？","choices":["劉基所著的寓言故事集","記錄孔子言行的語錄體著作","唐代傳奇小說的總集","專記山川地理的地理專書"],"answer":0,"explain":"《郁離子》是劉基所寫的寓言集，全書多藉短小故事寄託對世事與政治的批判，篇末常以「郁離子曰」發表議論，〈楚人養狙〉即其中名篇。"},{"level":"basic","topic":"文意理解","q":"依課文「賦什一以自奉」所述，狙公從群猴採得的果實中取走多少比例供自己享用？","choices":["二分之一","三分之一","五分之一","十分之一"],"answer":3,"explain":"「什一」即十分之一。狙公每天派群猴入山採果，再取其中十分之一自用。比例看似不多，但這些果實全靠群猴勞動而得，狙公未付出任何勞力，正是全文批判的關鍵。"},{"level":"basic","topic":"文意理解","q":"小猴問眾猴「山之果，公所樹與？」，眾猴的回答內容是什麼？","choices":["是狙公親手栽種的","不是，是天生自然長成的","是眾猴從前一起種下的","是山神特地賜給狙公的"],"answer":1,"explain":"白話翻譯——小猴問：「山上的果子，是狙公種的嗎？」眾猴答：「不是，是天生自然長成的。」這個回答揭穿狙公對果實其實毫無貢獻，為後文的覺悟鋪路。"},{"level":"basic","topic":"文意理解","q":"群猴覺悟出走之後，狙公最後的下場為何？","choices":["終於餓死","改行耕種維生","另外買了一批猴子","進入山林尋回群猴"],"answer":0,"explain":"原文作「狙公卒餒而死」，「餒」即飢餓。群猴毀柵逃入山林後，狙公失去勞動力來源，再也得不到果實，最後活活餓死。這個結局說明：靠剝削他人而不憑真本事維生的人，終究無以為繼。"},{"level":"adv","topic":"主旨深究","q":"綜觀全文，〈楚人養狙〉最主要想表達的主旨是什麼？","choices":["勸人應善待動物，不可任意鞭打驅使","說明養猴取果是一門辛苦卻正當的行業","強調群體行動必須有領袖統率才能成功","諷刺在上位者以權術與威勢役使百姓，一旦百姓覺醒便無以為繼"],"answer":3,"explain":"狙公不種果、不採果，卻靠分派工作與鞭打威嚇坐享其成；群猴一旦看清真相便棄他而去，他隨即餓死。篇末議論明言「世有以術使民而無道揆者，其如狙公乎」，可見旨在諷刺不憑法度、只靠權術役使人民的統治者。"},{"level":"adv","topic":"寫作手法","q":"就文體特色而言，〈楚人養狙〉最能代表寓言的哪一項寫作方式？","choices":["以人物對話推展情節，屬紀傳體史書筆法","藉具體故事寄寓抽象道理，篇末再以議論點明題旨","通篇寫景抒情，藉山水寄託身世之感","以駢句對仗鋪陳，著重辭藻的華美"],"answer":1,"explain":"寓言的核心是「借事寓理」。本文先講一個完整的養猴故事，結尾再以「郁離子曰」的議論指出以權術役使人民而無法度者「其如狙公乎」，把故事的道理明白點出，是典型的寓言結構。"},{"level":"adv","topic":"推論","q":"故事中「小狙（小猴）」這個角色，在情節發展上的關鍵作用是什麼？","choices":["年紀最小，最先受不了勞苦而獨自逃走","以連續發問引導眾猴看清受役使的荒謬，成為群猴覺醒的推動者","代表眾猴與狙公談判，替大家爭取更好的待遇","只是旁觀者，真正帶頭反抗的是年長的猴子"],"answer":1,"explain":"小猴並未使用武力，只是連續發問，讓眾猴自己說出果實「天生也」「皆得而取也」，於是「言未既，眾狙皆寤」。牠是引發集體覺悟的關鍵，說明思想的啟蒙比蠻力更有力量。"},{"level":"adv","topic":"文意理解","q":"篇末「世有以術使民而無道揆者」一句中，「無道揆」的意思最接近下列何者？","choices":["不懂得測量與計算的方法","路途遙遠而無路可以通行","沒有正當的道理與法度作為準則","沒有道德的人不配擔任官職"],"answer":2,"explain":"「道揆」指以道義度量事物，即可依循的道理法度（語出《孟子》「上無道揆也，下無法守也」）。全句白話是：世上有靠權術役使人民、卻沒有正當法度可依循的人，大概就像狙公一樣吧。這三字是全文批判的核心。"},{"level":"adv","topic":"文意理解","q":"篇末「一旦有開之，其術窮矣」所要傳達的意思，最接近下列何者？","choices":["百姓一旦被啟發而覺悟，權術就再也行不通了","權術用得愈久自然愈精妙","貧窮的人才需要使用權術","權術必須配合刑罰才能發揮效果"],"answer":0,"explain":"白話翻譯：一旦有人啟發了他們（人民），他的權術就走到盡頭、再也施展不開了。「窮」是窮盡、行不通之意。此句與群猴「皆寤」後狙公餓死的結局互相呼應，點出權術的脆弱。"},{"level":"adv","topic":"結構分析","q":"小猴的三次提問，在推論邏輯上呈現怎樣的層次？","choices":["先問狙公的來歷，再問果實的歸屬，最後問眾猴的去向","先描寫山中景物之美，再引出眾猴對自由的嚮往","先歷數狙公的惡行，再號召眾猴以武力報復","先確認果實不是狙公所種，再確認人人都可自行採取，最後逼出「何必依賴他而受他役使」的結論"],"answer":3,"explain":"三問層層推進：果實「天生也」（狙公無功）→「皆得而取也」（狙公無權獨占）→「然則吾何假於彼而為之役乎」（既然如此，何必依賴他而受他役使）。由事實推向結論，眾猴自然醒悟，展現嚴密的推論層次。"},{"level":"adv","topic":"意象分析","q":"本文以「狙公」與「群猴」構成核心象徵，二者分別比喻什麼？","choices":["狙公比喻辛勤的農人，群猴比喻不知感恩的子女","狙公比喻懷才不遇的士人，群猴比喻排擠他的小人","狙公比喻以權術御下的在上位者，群猴比喻受役使而尚未覺醒的百姓","狙公比喻嚴格的師長，群猴比喻頑劣的學生"],"answer":2,"explain":"篇末議論已明白指出：世上以權術役使人民而無法度的人，就像狙公一樣。可見狙公象徵統治者，群猴象徵百姓，「破柵毀柙」則象徵人民覺醒後掙脫不合理的統治。"},{"level":"adv","topic":"推論","q":"作者安排群猴等到狙公入睡的夜晚才破柵取果、逃入山林，這樣的情節設計最能凸顯什麼？","choices":["群猴心中有愧，不敢在白天行動","趁狙公無法阻攔時一舉成功，凸顯覺悟之後行動的果決徹底","群猴仍然畏懼鞭箠，只敢偷偷摸摸過日子","群猴貪圖積存的果實，並非真心追求自由"],"answer":1,"explain":"原文「其夕，相與伺狙公之寢」，群猴等待最有利的時機才動手。覺悟若只停留在想法，仍會被鞭箠壓制；作者讓群猴挑狙公無法阻攔的時刻一舉而去，寫出「覺悟」立刻轉為「行動」的乾脆，也讓狙公的權術瞬間失效。"},{"level":"adv","topic":"篇章安排","q":"本文在故事結束後另加「郁離子曰」一段議論，這樣的安排產生什麼效果？","choices":["使故事的意義由狙公一人擴及世上一切以權術役使人民而無法度者，點明寓意","補述狙公死後群猴的生活，使情節更加完整","引用古人名言，證明作者的看法其來有自","說明故事是作者親眼所見，強調內容真實可信"],"answer":0,"explain":"篇末議論是寓言常見的「卒章顯志」手法。若只有故事，讀者可能只當作養猴軼事；加上議論後，狙公成為一類人的代表，批判的矛頭明確指向以權術治民而無法度的統治者。"},{"level":"adv","topic":"主旨深究","q":"若把〈楚人養狙〉的道理應用到治國上，下列何者最符合作者的主張？","choices":["只要待人寬厚，就不必訂立任何制度","人民本性愚昧，統治者應加強管束","只要掌握足夠的武力，統治就能長久穩固","治理若不依憑法度與正當道理，只靠矇騙與威嚇，終將難以為繼"],"answer":3,"explain":"篇末以狙公比喻「以術使民而無道揆者」，關鍵在「無道揆」三字。作者並非反對治理，而是強調統治須有正當的道理與法度；靠詐術與鞭箠維繫的統治，一旦人民覺醒便立即瓦解。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

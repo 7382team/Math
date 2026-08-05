@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>詞選 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-cixuan",
+  "title": "詞選",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "宋代韻文",
+  "ready": true,
+  "author": "李煜／蘇軾／李清照／辛棄疾"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>詞選</h1><div class="sub">國文 · 宋代韻文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－詞的別稱","q":"「詞」有不少別稱，其中因為「句子長短不一、參差不齊」這項形式特徵而得名的是哪一個？","choices":["長短句","詩餘","曲子詞","古體詩"],"answer":0,"explain":"詞的句式參差不齊，故稱「長短句」；「詩餘」是就其源出於詩而言，「曲子詞」則因最初可配樂歌唱而得名，三者都是詞的別稱，但直接指句式長短的只有「長短句」。「古體詩」是另一種文體，不是詞的別稱。"},{"level":"basic","topic":"文學常識－詞牌與題目","q":"辛棄疾〈西江月·夜行黃沙道中〉一詞中，「西江月」與「夜行黃沙道中」的性質，下列說明何者正確？","choices":["「西江月」點明詞的內容，「夜行黃沙道中」規定全詞格律","兩者都是詞牌名稱，可以任意調換位置","「西江月」是詞牌，決定字數、句數與平仄格律；「夜行黃沙道中」是題目，點明內容","兩者都是題目，與音樂和格律毫無關係"],"answer":2,"explain":"詞牌是填詞所依的曲調名稱，決定全詞的字數、句數、平仄與押韻；詞牌之後所加的標題才點明作品內容。〈西江月〉是詞牌，「夜行黃沙道中」是題目，說明這首詞寫的是夜裡走在黃沙道上的所見所聞。"},{"level":"basic","topic":"文學常識－小令、中調、長調","q":"詞可分為「小令」、「中調」、「長調」，這樣的分類主要是依據什麼標準？","choices":["依作者屬於豪放派或婉約派而分","依全詞字數的多寡而分","依作品創作朝代的先後而分","依是否能配樂歌唱而分"],"answer":1,"explain":"小令、中調、長調是就篇幅長短區分，一般以五十八字以內為小令、五十九至九十字為中調、九十一字以上為長調，判斷標準是字數多寡，與流派、朝代或能否入樂無關。"},{"level":"basic","topic":"文學常識－詞的源流與體製","q":"關於「詞」的發展歷程與分段稱呼，下列敘述何者正確？","choices":["詞起於唐代，到宋代發展至極盛；一首詞若分為兩段，通常稱上闋（上片）、下闋（下片）","詞起於元代，盛行於明清；分段時稱為首聯、頷聯","詞由元曲刪節而成，每首固定分為四段，各段字數相同","詞盛行於漢代樂府，段落一律稱為「起、承、轉、合」"],"answer":0,"explain":"詞萌芽於唐代，經五代發展，到宋代達到極盛，故有「唐詩、宋詞」並稱之說。詞多分為兩段，前段稱上闋（上片），後段稱下闋（下片）。首聯、頷聯是律詩的術語，起承轉合則是作文章法，都不是詞的分段名稱。"},{"level":"basic","topic":"文意理解－〈相見歡〉「月如鉤」","q":"李煜〈相見歡〉開頭「無言獨上西樓，月如鉤」，其中「月如鉤」所寫的景象與作用，下列何者最恰當？","choices":["寫滿月當空、清輝遍地，襯托詞人開闊愉快的心境","寫月亮被烏雲遮蔽，比喻小人當道、賢者不得志","寫天上只有一彎如鉤的月亮，以月的不圓映襯人事的殘缺與孤寂","寫月色像鉤子一樣鋒利，暗示詞人準備起兵復國"],"answer":2,"explain":"白話：默默無語，獨自登上西樓，抬頭只見一彎細如銀鉤的月亮。「鉤」形容彎月，月不圓正與詞人亡國被俘、親人離散無法團圓的處境相應，屬借景抒情。"},{"level":"basic","topic":"字詞解釋－〈相見歡〉「鎖」","q":"李煜〈相見歡〉「寂寞梧桐深院鎖清秋」中的「鎖」字，在句中的意思與作用是什麼？","choices":["有深深關住、封鎖之意，把無形的秋意寫得彷彿被囚禁在庭院中","指僕人將院門上鎖，說明宅第戒備森嚴","指秋天天氣轉寒，門窗都須上鎖以禦寒","指詞人親自鎖上房門，表示謝絕一切訪客"],"answer":0,"explain":"白話：寂寞的梧桐樹，把清冷的秋色深深鎖在幽深的庭院裡。「鎖」本指上鎖、關住，此處化虛為實，把看不見的「清秋」寫成可以被鎖住的東西；被鎖住的表面上是秋色，實際上正是身不由己的詞人自己。"},{"level":"basic","topic":"字詞解釋－〈相見歡〉「一般」","q":"李煜〈相見歡〉末句「別是一般滋味在心頭」的「一般」，意思最接近下列何者？","choices":["一律、全部","普通、平凡","同樣、一樣","一種"],"answer":3,"explain":"白話：那是另有一種難以言說的滋味湧上心頭。「一般」在此作「一種」解，「別是一般滋味」即「另是一種滋味」，寫出亡國之痛無法明言、只能自嘗的深沉。若解作「同樣」或「普通」，則與「別是」（另是）的語意衝突。"},{"level":"basic","topic":"字詞解釋－〈如夢令〉「常記」「沉醉」","q":"李清照〈如夢令〉「常記溪亭日暮，沉醉不知歸路」，句中「常記」與「沉醉」的意思分別是什麼？","choices":["常記：經常忘記／沉醉：沉沉睡去","常記：時常記起／沉醉：喝醉了酒，兼含沉浸於遊賞之樂","常記：偶爾提及／沉醉：沉迷於賭博","常記：從此難以忘記仇恨／沉醉：昏迷不醒"],"answer":1,"explain":"白話：時常記起那次在溪亭遊玩到黃昏，喝得大醉，連回家的路都找不到了。「常」是時常，「記」是記得，可見這段遊賞經驗令人難忘；「沉醉」既指酒醉，也含沉浸在美景與歡樂中的意味。"},{"level":"basic","topic":"字詞解釋－〈如夢令〉「興盡」「藕花」","q":"李清照〈如夢令〉「興盡晚回舟，誤入藕花深處」中「興盡」與「藕花」的解釋，何者正確？","choices":["興盡：遊玩的興致已經滿足／藕花：荷花","興盡：興致全失、覺得掃興／藕花：菊花","興盡：盡全力地划船／藕花：蘆葦","興盡：工程興建完成／藕花：桃花"],"answer":0,"explain":"白話：玩得十分盡興，天色晚了才划船回去，卻誤闖進荷花叢的深處。「興」指遊興，「盡」是盡情、滿足，並非掃興；「藕花」就是荷花（蓮花），因其地下莖為藕而得名。"},{"level":"basic","topic":"字詞解釋－〈水調歌頭〉「嬋娟」","q":"蘇軾〈水調歌頭〉「但願人長久，千里共嬋娟」中的「嬋娟」，在句中指的是什麼？","choices":["美好的姻緣","遠方的親人","明月","動聽的樂曲"],"answer":2,"explain":"白話：只希望人人都能平安長久，即使相隔千里，也能共同欣賞這一輪明月。「嬋娟」本用來形容姿態美好，此處借指明月；月光普照，遠隔千里的人同望一月，正好寄託思念與祝福。"},{"level":"basic","topic":"文意理解－〈水調歌頭〉「此事」指代","q":"蘇軾〈水調歌頭〉「人有悲歡離合，月有陰晴圓缺，此事古難全」，句中的「此事」是指什麼？","choices":["指朝廷中的政治鬥爭","指詞人仕途的升遷與貶謫","指中秋賞月的節慶習俗","指人的悲歡離合與月的陰晴圓缺這類聚散盈虧之事"],"answer":3,"explain":"白話：人世間有悲傷、歡樂、離別、相聚，月亮也有陰晴圓缺，這種事自古以來就難以十全十美。「此事」承接上面兩句而來，總指人事與自然都免不了有缺憾，並非專指官場或節俗。"},{"level":"basic","topic":"作者背景－李煜","q":"下列關於李煜生平與詞風的敘述，何者正確？","choices":["他是北宋抗金名將，詞中充滿沙場豪情","他是南唐後主、亡國之君，詞風前期綺麗，後期轉為沉痛","他是唐代宰相，因直言進諫遭貶，詞多寫山水閒適之趣","他是南宋詞人，一生專力於蒐集整理金石文物"],"answer":1,"explain":"李煜是五代南唐的末代君主，世稱「南唐後主」。前期身為國君，生活優裕，詞多寫宮廷享樂，風格綺麗；亡國被俘之後，飽嘗屈辱與亡國之痛，詞風轉為沉痛真摯，〈相見歡〉即屬後期作品。"},{"level":"basic","topic":"文學常識－詞的流派與代表作家","q":"下列「詞的流派」與「代表作家」的配對，何者正確？","choices":["豪放派——李煜、李清照","婉約派——蘇軾、辛棄疾","豪放派——蘇軾、辛棄疾","豪放派——李清照、柳永"],"answer":2,"explain":"宋詞大致分為豪放、婉約兩派：豪放派以蘇軾、辛棄疾為代表，題材開闊、氣勢雄健，並稱「蘇辛」；婉約派以李煜、李清照、柳永為代表，情致細膩、音律和婉。故只有「豪放派——蘇軾、辛棄疾」的配對正確。"},{"level":"basic","topic":"文意理解－〈西江月〉「說豐年」","q":"辛棄疾〈西江月·夜行黃沙道中〉「稻花香裡說豐年，聽取蛙聲一片」，句意的說明何者最恰當？","choices":["農人在稻田邊談論今年收成不好，個個愁苦不已","詞人聞到稻花香，回想起從前豐年時的宴飲場面","蛙聲喧鬧使詞人無法安睡，只好連夜趕路離開","在稻花香中彷彿聽見人們談說豐收，而那「說豐年」的正是滿耳的蛙鳴"],"answer":3,"explain":"白話：在稻花的香氣裡談說著豐收的年成，聽到的是一片蛙鳴。詞人把此起彼落的蛙聲想像成農人談論豐年的話語，既寫出夏夜田野的生機，也流露出對農村豐收的期待與喜悅。"},{"level":"adv","topic":"修辭手法－〈相見歡〉以絲喻愁","q":"李煜〈相見歡〉「剪不斷，理還亂，是離愁」，最主要運用了下列哪一種寫作手法？","choices":["以誇飾手法極言離愁沉重，說愁重得無法搬動","以絲線設喻，把無形的離愁寫成可剪可理的具體事物","以自問自答的方式，強調離愁無人能夠理解","以擬人手法讓離愁開口說話，直接訴說亡國之痛"],"answer":1,"explain":"白話：這離愁剪也剪不斷，愈整理反而愈紛亂。「剪」「理」本是處理絲線的動作，作者藉「絲」比喻愁緒，把抽象的情感化為具體可感的形象，愁緒纏繞糾結、無法排解的情狀因此格外鮮明。"},{"level":"adv","topic":"修辭手法－〈水調歌頭〉設問","q":"蘇軾〈水調歌頭〉開篇「明月幾時有？把酒問青天」，就修辭與情意而言，下列分析何者最恰當？","choices":["運用譬喻，把明月比作青天，突顯天地的遼闊","運用映襯，以明月的圓滿反襯青天的孤單","運用類疊，反覆詠嘆使音節更為和諧","運用設問，藉著向青天發問，帶出對宇宙與人生的探問和感慨"],"answer":3,"explain":"白話：明月是從什麼時候開始有的呢？我端起酒杯問那青天。開篇以問句起筆，屬設問修辭，語勢突兀而超逸，既寫出中秋對月的遐想，也為下文思索人生聚散、發出「此事古難全」的感悟預作鋪墊。"},{"level":"adv","topic":"寫作手法－〈如夢令〉疊句與動態畫面","q":"李清照〈如夢令〉結尾「爭渡，爭渡，驚起一灘鷗鷺」，下列賞析何者最恰當？","choices":["以疊句「爭渡，爭渡」寫出急著把船划出荷叢的慌急，末句由靜轉動，畫面頓時鮮活","「爭渡」指兩船比賽划行，末句寫鷗鷺列隊相送，場面莊嚴隆重","以層遞手法由近而遠鋪陳景物，末句總結全詞的哀愁","以擬人手法讓鷗鷺開口說話，勸告詞人早些回家"],"answer":0,"explain":"白話：急著把船划出去啊、划出去啊，一陣慌亂竟驚起了滿灘的水鳥。「爭」有搶著、急著之意，「爭渡」重複使用屬類疊中的疊句，讀來急促，寫出誤入荷叢後急著找路的慌張；末句鷗鷺群飛，使原本靜謐的荷塘瞬間充滿動感，畫面歡快而有聲有色。"},{"level":"adv","topic":"作者背景－蘇軾","q":"下列關於蘇軾的敘述，何者正確？","choices":["南宋詞人，因力主抗金而長期閒居，與李清照並稱「濟南二安」","唐代詩人，以邊塞詩著稱，一生未曾填詞","北宋文學家，詩、詞、散文、書畫兼擅，詞風豪放曠達，與辛棄疾並稱「蘇辛」","五代南唐的末代君主，亡國被俘後詞多寫故國之思"],"answer":2,"explain":"蘇軾是北宋人，字子瞻，號東坡居士，詩、詞、文、書、畫皆有極高成就，詞作開拓題材、氣象闊大，為豪放派代表，與辛棄疾並稱「蘇辛」。選項一所述為辛棄疾（「濟南二安」指李清照易安與辛棄疾幼安），選項四所述為李煜，皆非蘇軾。"},{"level":"adv","topic":"主旨深究－〈水調歌頭〉結句","q":"就〈水調歌頭〉結尾「但願人長久，千里共嬋娟」而言，最能貼切說明作者情感的是下列何者？","choices":["感嘆人生短暫，勸人及時行樂、莫負良辰","由個人的思念提升為對天下離人的祝福，願彼此平安並共享同一輪明月","決心從此辭官歸隱，與明月為伴、不問世事","埋怨路途遙遠，責備親人不肯前來相會"],"answer":1,"explain":"白話：只希望人人都能平安長久，即使相隔千里，也能共同欣賞這一輪明月。作者從自身思念親人的心情出發，最後化為對所有離別之人的祝願；經過「此事古難全」的體認，情感由感傷轉為溫厚曠達，境界也由個人擴大到人間。"},{"level":"adv","topic":"推論－李清照前期詞風","q":"由〈如夢令〉「常記溪亭日暮，沉醉不知歸路」等句所呈現的情調來看，最可以推知下列何者？","choices":["此詞作於南渡之後，字裡行間充滿家破人亡的悲痛","詞人藉遊湖失路，暗喻自己在官場中進退失據","詞人借酒澆愁，抒發懷才不遇的憤懣不平","此詞筆調輕快活潑，反映李清照前期生活優裕、心情歡愉"],"answer":3,"explain":"白話：時常記起那天在溪亭遊玩到日暮，喝得大醉，連回家的路都不記得了。全詞寫遊賞之樂，用語明快、節奏輕盈，毫無愁苦之音，正是李清照前期作品的特色；她後期因國破家亡、丈夫過世，詞風才轉為淒苦沉痛。"},{"level":"adv","topic":"意象分析－〈西江月〉感官摹寫","q":"辛棄疾〈西江月·夜行黃沙道中〉「明月別枝驚鵲，清風半夜鳴蟬。稻花香裡說豐年，聽取蛙聲一片」，下列賞析何者最恰當？","choices":["兼用視覺、聽覺與嗅覺摹寫，並以鵲驚、蟬鳴、蛙聲的聲響反襯夏夜的寧靜","全用視覺摹寫鋪陳夜色，完全沒有聲音方面的描寫","藉鵲、蟬、蛙的驚擾，寫出戰亂中農村的殘破與不安","以誇飾手法極寫蛙聲之大，表達詞人被吵得不能成眠的煩躁"],"answer":0,"explain":"白話：明亮的月光驚動了枝頭的鵲鳥，半夜的清風裡傳來蟬鳴；稻花香中彷彿聽見人們談說豐年，原來是一片蛙聲。「明月」屬視覺，鵲驚、蟬鳴、蛙聲屬聽覺，「稻花香」屬嗅覺，多重感官交織；而聲音愈清晰，愈顯出鄉間夏夜的靜謐，屬以動襯靜，情調安詳喜悅。"},{"level":"adv","topic":"寫作手法－〈相見歡〉借景抒情","q":"李煜〈相見歡〉「無言獨上西樓，月如鉤。寂寞梧桐深院鎖清秋」，關於這幾句的寫法，下列說明何者最恰當？","choices":["先議論後抒情，直接說明南唐滅亡的原因","以熱鬧的節慶場面反襯個人的孤單寂寞","以「無言」「獨上」刻畫孤寂身影，再藉彎月、梧桐、深院、清秋等景物借景抒情","以人物對話展開，藉他人之口說出詞人的心事"],"answer":2,"explain":"白話：默默無語，獨自登上西樓，只見一彎如鉤的月亮；寂寞的梧桐把清冷的秋色深鎖在幽深的庭院中。前半以「無言」「獨上」寫人，後半全是景語，卻句句含情，屬典型的借景抒情；「寂寞」用於梧桐、「鎖」用於清秋，更把人的心境移注到景物之上。"},{"level":"adv","topic":"推論－李煜詞風轉變","q":"李煜的詞在後期出現明顯轉變，最主要的原因與下列何者關係最密切？","choices":["他晚年潛心佛道修行，因此詞境轉為空靈淡泊","南唐滅亡、身為亡國之君被俘，使他的詞由前期的綺麗轉為後期的沉痛","他中年遍遊各地、見識廣闊，因此改寫邊塞從軍的豪情","他改投豪放派門下，刻意模仿蘇軾曠達的詞風"],"answer":1,"explain":"李煜是南唐後主，前期身為君主，生活安逸，詞多寫宮廷歡宴，風格綺麗柔美；南唐亡國、他被俘北上之後，嘗盡屈辱與亡國之痛，情感真摯而沉重，遂寫出〈相見歡〉這類意境深沉的作品。（蘇軾為北宋人，年代晚於李煜，李煜不可能模仿蘇軾。）"},{"level":"adv","topic":"推論－流派畫分與題材","q":"辛棄疾與蘇軾並稱，同為豪放派的代表作家，但〈西江月·夜行黃沙道中〉所寫卻是農村夏夜的清新景致。對此現象最合理的說明是下列何者？","choices":["這首詞其實不是辛棄疾所作，而是後人偽託之作","可見辛棄疾已完全放棄恢復中原的志向，從此歸隱不問世事","可見豪放派詞人只能寫軍旅題材，這首詞應改歸入婉約派","流派只是就作家的主要風格傾向而言，豪放派詞人同樣能寫出清新自然的田園之作"],"answer":3,"explain":"辛棄疾是懷抱恢復中原之志的愛國詞人，作品多慷慨激昂，因而歸入豪放派；但流派的畫分只就整體風格傾向而論，並不限定題材。〈西江月·夜行黃沙道中〉寫夜行途中的月色、蟬鳴、稻香與蛙聲，明快自然，正說明同一位作家可以有多樣的筆調。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

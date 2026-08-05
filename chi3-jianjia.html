@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>詩經選：蒹葭 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-jianjia",
+  "title": "詩經選：蒹葭",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "先秦韻文",
+  "ready": true,
+  "author": "詩經"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>詩經選：蒹葭</h1><div class="sub">國文 · 先秦韻文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"字詞解釋－蒹葭","q":"「蒹葭蒼蒼，白露為霜」中的「蒹葭」所指為何？","choices":["蘆葦","菱角","竹子","稻穀"],"answer":0,"explain":"「蒹葭」即蘆葦，是生長在水邊的植物。白話翻譯：蘆葦長得一片茂密蒼青，晶瑩的白露凝結成了霜。「蒼蒼」形容蘆葦茂盛而呈青蒼之色。"},{"level":"basic","topic":"字詞解釋－伊人","q":"「所謂伊人，在水一方」的「伊人」，意思最接近下列何者？","choices":["詩人自己","撐船渡河的船夫","那個人，即心中思慕、追尋的對象","水邊捕魚的漁人"],"answer":2,"explain":"「伊」是「那」的意思，「伊人」即「那個人」，指詩中主角心中思慕、苦苦追尋的對象。白話翻譯：我所說的那個人，就在河水的另一邊。"},{"level":"basic","topic":"字詞解釋－溯洄","q":"「溯洄從之，道阻且長」的「溯洄」是什麼意思？","choices":["順著水流往下游走","逆著水流往上游走","橫向渡過河面","沿著岸邊繞圈徘徊"],"answer":1,"explain":"「溯洄」是逆流而上。白話翻譯：逆著河流往上游去追尋她，道路艱險而且漫長。"},{"level":"basic","topic":"字詞解釋－溯游","q":"「溯游從之，宛在水中央」的「溯游」是什麼意思？","choices":["在水中游泳前進","逆流而上去尋找","停在原地等待對方前來","順著水流往下游走"],"answer":3,"explain":"「溯游」是順流而下。白話翻譯：順著河流往下游去追尋她，她卻彷彿就在水的中央。"},{"level":"basic","topic":"字詞解釋－阻","q":"「道阻且長」的「阻」，最恰當的解釋是下列何者？","choices":["攔截、阻止他人前進","泥濘濕滑","艱險難行","音訊隔絕、無法聯繫"],"answer":2,"explain":"「阻」在此形容道路艱險難行。白話翻譯：道路艱險而且漫長。"},{"level":"basic","topic":"字詞解釋－躋","q":"第二章「道阻且躋」的「躋」，意思是下列何者？","choices":["地勢升高","道路狹窄","滿布碎石而崎嶇","中途斷絕不通"],"answer":0,"explain":"「躋」是升高的意思，指道路愈走地勢愈高、愈難攀行。白話翻譯：道路艱險而且愈走愈高。"},{"level":"basic","topic":"字詞解釋－右","q":"第三章「道阻且右」的「右」，在文中的意思是下列何者？","choices":["必須靠著右邊行走","向右一轉就能到達","右邊有高山阻擋","迂迴曲折"],"answer":3,"explain":"「右」在此指道路迂迴曲折、不能直達。白話翻譯：道路艱險而且迂迴曲折。"},{"level":"basic","topic":"字詞解釋－晞","q":"第二章「白露未晞」的「晞」，意思是下列何者？","choices":["稀少","乾","明亮","灑落"],"answer":1,"explain":"「晞」是乾的意思，「白露未晞」指露水還沒有被曬乾。白話翻譯：白露還沒有乾。"},{"level":"basic","topic":"字詞解釋－湄、涘","q":"詩中「在水之湄」與「在水之涘」的「湄」、「涘」，共同的意思是？","choices":["水邊、岸邊","水中的小島","河流的源頭","停船的渡口"],"answer":0,"explain":"「湄」與「涘」都是水邊、岸邊的意思。白話翻譯：（我所說的那個人）就在河水的岸邊。這兩字與第一章的「在水一方」相呼應，只是換字而意近。"},{"level":"basic","topic":"字詞解釋－坻、沚","q":"「宛在水中坻」與「宛在水中沚」的「坻」、「沚」，共同的意思是？","choices":["水流湍急的地方","水邊平緩的沙灘","高聳的山崖","水中的小洲"],"answer":3,"explain":"「坻」與「沚」都指水中的小洲（水中央的小塊陸地）。白話翻譯：她彷彿就在水中的小洲上。"},{"level":"basic","topic":"文意理解－景物描寫","q":"「蒹葭蒼蒼，白露為霜」一句，最能傳達出下列何種訊息？","choices":["描寫春天萬物萌發的蓬勃生機","點出深秋清晨天寒露重的蕭瑟景象","說明河水暴漲、船隻無法通行","表示夜色已深、月光十分皎潔"],"answer":1,"explain":"白露凝結成霜，是深秋清晨天氣寒冷的景象。白話翻譯：蘆葦一片蒼青茂密，白露凝結成了霜。此句既點明時節與時間，也以蕭瑟的秋景烘托出淒清悵惘的心情。"},{"level":"basic","topic":"文學常識－詩經地位","q":"下列關於《詩經》的敘述，何者正確？","choices":["是我國最早的一部詞集","全書收錄戰國至西漢的作品","是我國最早的詩歌總集，收錄西周初年至春秋中葉的作品","全書句式以七言為主"],"answer":2,"explain":"《詩經》是我國最早的詩歌總集，收錄西周初年至春秋中葉的作品，句式以四言為主，也是儒家五經之一。"},{"level":"basic","topic":"文學常識－詩三百","q":"《詩經》共收錄三百餘篇作品，因此又被稱為下列何者？","choices":["樂府","楚辭","古詩十九首","詩三百"],"answer":3,"explain":"《詩經》收詩三百餘篇，故又稱「詩三百」，《論語》中孔子亦有「詩三百，一言以蔽之」之語。本課〈蒹葭〉出自〈秦風〉，屬十五國風之一。"},{"level":"basic","topic":"文學常識－六義","q":"下列關於《詩經》體例與表現手法的說明，何者正確？","choices":["依內容分為賦、比、興三部分","依表現手法分為風、雅、頌三類","內容分為風、雅、頌三部分，表現手法為賦、比、興","「風」是宗廟祭祀的樂歌，「頌」是各地的民間歌謠"],"answer":2,"explain":"《詩經》依內容分為風（各地民歌）、雅（朝廷樂歌）、頌（宗廟祭祀樂歌）三部分；表現手法則為賦（直敘）、比（譬喻）、興（先言他物以引起所詠之詞），合稱「六義」。〈蒹葭〉即出自〈秦風〉。"},{"level":"adv","topic":"主旨深究","q":"〈蒹葭〉三章反覆詠唱，最主要表達的情感是下列何者？","choices":["苦苦追尋思慕之人卻始終無法企及的悵惘","對故鄉風物的深切懷念與眷戀","對戰亂流離、生民塗炭的哀傷與控訴","隱居水濱、與世無爭的閒適自得"],"answer":0,"explain":"全詩寫主角在深秋水邊反覆追尋「伊人」，無論逆流或順流，結果總是「宛在水中央」。白話翻譯：逆流而上去追尋她，道路艱險又漫長；順流而下去追尋她，她卻彷彿就在水的中央。可望而不可即，流露出深深的悵惘。"},{"level":"adv","topic":"寫作手法－重章疊唱","q":"〈蒹葭〉三章句式相近，只更換少數字詞，這種「重章疊唱」（複沓）的寫法，主要效果為何？","choices":["使詩意前後急轉，製造強烈的對比","反覆詠嘆以強化節奏，並使情感層層加深","便於後人考證各章寫作年代的先後","依序交代事件的起因、經過與結果"],"answer":1,"explain":"重章疊唱藉由句式反覆造成迴環往復的音樂節奏，並在更換的少數字詞（蒼蒼／萋萋／采采、為霜／未晞／未已）中推移情境，使情感層層加深，凸顯追尋之久與思慕之切。"},{"level":"adv","topic":"寫作手法－起興","q":"「蒹葭蒼蒼，白露為霜」置於全詩開頭，就《詩經》的表現手法而言，屬於下列何者？","choices":["賦：直接鋪陳敘述事情發生的完整經過","比：以物品比擬人物品德的高下優劣","興：先寫眼前景物，藉以引起下文所詠的情事","頌：歌頌先祖功業的宗廟祭祀樂章"],"answer":2,"explain":"「興」是先言他物以引起所詠之詞。詩人先寫蒹葭、白露的秋景，再帶出「所謂伊人，在水一方」，既引出下文，也以蒼茫蕭瑟之景烘托惆悵之情，兼具借景抒情之美。"},{"level":"adv","topic":"意象分析－時間推移","q":"三章中露水的描寫由「白露為霜」而「白露未晞」而「白露未已」，最主要的作用是什麼？","choices":["說明秦地的氣候變化十分劇烈","強調露水對蘆葦生長的重要影響","表示天氣轉暖，象徵希望即將到來","暗示時間由清晨逐漸推移，顯示主角追尋之久"],"answer":3,"explain":"露水由凝結成霜，到尚未曬乾，再到仍未消盡，寫出時間隨日出而緩緩推移。白話翻譯：白露凝成了霜／白露還沒有乾／白露還沒有消盡。主角自清晨起便在水邊徘徊追尋，可見用情之深、尋覓之久。"},{"level":"adv","topic":"意象分析－空間變換","q":"伊人所在由「在水一方」而「在水之湄」而「在水之涘」，結尾也由「宛在水中央」而「水中坻」而「水中沚」，這樣的變換最能表現下列何者？","choices":["主角終於順利渡河，與伊人歡喜相見","伊人的身影若隱若現、忽遠忽近，可望而不可即","河水逐漸乾涸，使追尋的難度大幅降低","主角改往不同的河流去尋找另一個人"],"answer":1,"explain":"地點看似不斷變換、似乎愈來愈具體可尋，但每章結尾都用一個「宛」（彷彿）字，說明始終只是遙望而無法接近，營造出朦朧含蓄、虛實相生的意境。"},{"level":"adv","topic":"推論－道路描寫","q":"「道阻且長」「道阻且躋」「道阻且右」三句在三章中依序出現，由此最可推知下列何者？","choices":["追尋之路漫長、高險又迂迴，阻礙一層深過一層","主角其實不願前往，只是隨口找藉口推託","詩中所寫的河流其實極為短小","追尋的道路已被他人刻意破壞阻斷"],"answer":0,"explain":"「長」寫路途遙遠、「躋」寫地勢升高、「右」寫迂迴曲折，從不同角度層層加寫道路的艱難。白話翻譯：道路艱險而且漫長／而且愈走愈高／而且迂迴曲折。愈難行愈要追尋，正襯托出主角的執著。"},{"level":"adv","topic":"寫作手法－虛實相生","q":"「宛在水中央」的「宛」字，在藝術表現上發揮了什麼作用？","choices":["以「彷彿」之意使伊人似真似幻，形成虛實相生、朦朧含蓄的意境","明確標示出伊人所站立的確切位置","說明主角視力不佳，因而認錯了人","強調河水中央確實有一座可以登臨的島嶼"],"answer":0,"explain":"「宛」是彷彿、好像的意思。白話翻譯：她彷彿就在水的中央。一個「宛」字使伊人的身影似有若無，可望而不可即，正是本詩意境朦朧、虛實相生的關鍵所在。"},{"level":"adv","topic":"主旨深究－象徵引申","q":"後人常認為〈蒹葭〉中的「伊人」不必坐實為某一個人。就此而言，本詩可引申出下列何種意涵？","choices":["說明古代秦地婚嫁習俗的嚴格限制","忠實記錄一次真實的渡河失敗事件","象徵人對理想或美好事物的追求：雖執著嚮往，卻難以真正企及","諷刺當時在位者的貪婪無道與橫徵暴斂"],"answer":2,"explain":"詩中並未交代「伊人」的身分、面貌，形象十分朦朧，因此除了解為思慕的人，也常被引申為心中的理想或美好境界；「溯洄」「溯游」的反覆追尋，正象徵人對理想執著追求卻始終難以到達的處境。"},{"level":"adv","topic":"推論－人物心境","q":"由主角既「溯洄從之」又「溯游從之」的行為，最可推知其心境為何？","choices":["猶豫不決，始終不敢有所行動","不畏艱難、往復追尋，執著中又帶著失落與惆悵","因追尋失敗而心生怨恨，決意報復","已然看破世情，決定放棄追尋而歸隱"],"answer":1,"explain":"白話翻譯：逆流而上去追尋她，順流而下去追尋她。上溯下行、往復不停，可見其不畏道路艱險的執著；而結果總是「彷彿就在水的中央」，又流露出求之不得的失落與惆悵。"},{"level":"adv","topic":"寫作手法－借景抒情","q":"下列對〈蒹葭〉一詩寫作特色的說明，何者最為恰當？","choices":["以大量典故層層堆疊，展現作者學識的淵博","通篇議論說理，逐條分析追尋失敗的原因","以誇飾與對話推動情節，戲劇性十分強烈","融情入景、借景抒情，以秋水蒹葭的蒼茫烘托思慕與惆悵之情"],"answer":3,"explain":"全詩幾乎不直接說出「思念」「惆悵」等字眼，而是藉蒹葭、白露、秋水等蒼茫朦朧的景物烘托心境，達到情景交融、含蓄雋永的藝術效果，這也是《詩經》國風常見的抒情方式。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
