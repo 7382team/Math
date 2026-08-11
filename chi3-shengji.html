@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>生機 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-shengji",
+  "title": "生機",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "現代散文",
+  "ready": true,
+  "author": "陳冠學"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>生機</h1><div class="sub">國文 · 現代散文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者與作品","q":"散文集《田園之秋》的作者是下列哪一位？","choices":["琦君","楊喚","陳冠學","廖鴻基"],"answer":2,"explain":"陳冠學（西元一九三四～二○一一）為台灣自然書寫的重要作家，《田園之秋》是其代表散文集。琦君以懷舊憶親散文著稱；楊喚為兒童詩人；廖鴻基以海洋書寫聞名，三者皆非本書作者。"},{"level":"basic","topic":"文學常識－作者生平經歷","q":"關於本課作者陳冠學的生平，下列敘述何者正確？","choices":["一生任職外交界，長年旅居海外從事翻譯工作","師大國文系畢業，曾任教職與出版社編輯，後歸隱屏東鄉間躬耕寫作","出身漁村，以遠洋漁船船員的經歷寫成海洋文學","擔任報社戰地記者，作品多記錄戰爭見聞"],"answer":1,"explain":"陳冠學為屏東人，臺灣師大國文系畢業，曾任教職及出版社編輯，後辭去工作歸隱鄉間耕讀，才有《田園之秋》這部田園日記。其餘三項分別是外交、海洋、戰地作家的經歷，與作者背景不符。"},{"level":"basic","topic":"文體辨識－日記體散文","q":"《田園之秋》標明日期、逐日記下當日見聞與感想，這種散文形式應稱為什麼？","choices":["書信體散文","章回體小說","日記體散文","語錄體論說"],"answer":2,"explain":"逐日標記日期、記錄當日見聞感想，正是日記體散文的特徵。書信體以收信人為傾訴對象；章回體是長篇小說的分回形式；語錄體多為師徒問答的言論紀錄，皆與本書形式不同。"},{"level":"basic","topic":"文學常識－全書體例與時序","q":"《田園之秋》全書分為「初秋」、「仲秋」、「晚秋」三卷，其所記錄的時間範圍是下列何者？","choices":["九月一日至十一月三十日的秋日","農曆春節前後的一個月","三月至五月的春日","一整年十二個月的四季"],"answer":0,"explain":"全書以初秋、仲秋、晚秋三卷，自九月一日記至十一月三十日，恰好貫串一整季秋天，故書名為《田園之秋》。其餘時間範圍與書名及三卷體例都不相合。"},{"level":"basic","topic":"文意理解－取材內容","q":"依本課與《田園之秋》全書的內容，作者日日記錄的主要對象是什麼？","choices":["農產運銷的行情與收益盈虧","田園的農事勞動與草木蟲鳥、天候季節的變化","都市友人來訪時的宴飲談笑","鄉里人際糾紛的發生與調解經過"],"answer":1,"explain":"本書以貼近土地的農事與自然觀察為主體，寫草木蟲鳥與節候的細微推移。市場行情、宴飲交遊、人際糾紛都不是作者著墨的重點。"},{"level":"basic","topic":"詞語理解－「生機」詞義","q":"本課題為「生機」，此處「生機」最主要的意思是什麼？","choices":["賴以維生的職業與收入來源","遇險脫困的機會與運氣","農作物播種栽植的時機節令","蓬勃旺盛的生命力與生長的可能"],"answer":3,"explain":"「生機」指生命力的旺盛與生長的可能性，呼應作者在平凡景物中發現生命蓬勃的用意。其餘三項分別誤解為生計、生路、農時，皆非本課用法。"},{"level":"basic","topic":"修辭辨識－擬人","q":"描寫草木蟲鳥時，賦予它們人的動作與情感，使其如人一般活動，這種修辭手法稱為什麼？","choices":["擬人","誇飾","排比","設問"],"answer":0,"explain":"把人的動作、情感加在非人的事物上，屬於擬人法。誇飾是刻意誇大或縮小；排比是三個以上結構相似的句子並列；設問是明知故問以引起注意，皆與此處手法不同。"},{"level":"basic","topic":"修辭辨識－譬喻","q":"描寫自然景物時，拿讀者熟悉的事物來比方眼前所見，使景象更鮮明可感，這種修辭是？","choices":["對偶","頂真","譬喻","反諷"],"answer":2,"explain":"以熟悉的事物比方陌生或抽象的景象，是譬喻的基本作用。對偶重字數相等、詞性相對；頂真是前句末字作後句首字；反諷是言在此而意在彼，皆非此處所指。"},{"level":"basic","topic":"修辭辨識－摹寫","q":"寫田野時兼及光影色彩、鳥聲蟲鳴與泥土氣息，訴諸多種感官加以描繪，這在修辭上屬於下列何者？","choices":["借代","摹寫","映襯","引用"],"answer":1,"explain":"訴諸視覺、聽覺、嗅覺等感官的細膩描繪即為摹寫。借代是以相關事物代替本體；映襯是相反事物並列對照；引用是援用他人語句，皆不合此例。"},{"level":"basic","topic":"文章結構－景與情的安排","q":"文中先細寫眼前的田園景物，再由此帶出作者的感受與體悟。這種行文安排最適合稱為？","choices":["開門見山，起筆即直接說理","倒敘全篇，先寫結果再補原因","先抑後揚，刻意貶低以待翻轉","由景入情，緣景生發感懷"],"answer":3,"explain":"先寫景、後生情，是自然寫作常見的行文次序，也是本課的安排方式。文章並非一開始就直接議論，也未刻意倒敘或先貶後褒，故其餘選項皆不符合。"},{"level":"basic","topic":"文類特色－自然書寫","q":"下列何者最能說明「自然書寫（自然寫作）」這一類作品的特色？","choices":["以虛構人物的曲折情節推展故事","藉神話傳說解釋自然現象的由來","立足實地觀察，記錄自然生態並省思人與環境的關係","以華麗辭藻鋪陳想像中的仙境"],"answer":2,"explain":"自然書寫強調親身踏查與真實觀察，並帶有生態關懷與反省。虛構情節、神話解釋、想像仙境都偏離「實地觀察、關懷環境」的核心，非此文類特色。"},{"level":"basic","topic":"語言風格判斷","q":"本課的語言風格，下列描述何者最為貼切？","choices":["用典繁密，句句刻意雕琢對仗","文字樸實平易，於平凡景物中見人生哲思","語多誇張諷刺，以嬉笑怒罵取勝","大量堆疊文言虛詞，行文艱深難解"],"answer":1,"explain":"作者以平實自然的文字寫日常所見，卻能引出深刻體悟，正是其風格特色。堆砌典故、嬉笑怒罵、艱澀難懂，都與本課清淡樸實的筆調不合。"},{"level":"basic","topic":"詞語辨識－近義成語","q":"下列成語，何者與「生機盎然」的意思最相近？","choices":["欣欣向榮","萬籟俱寂","荒煙蔓草","日暮途窮"],"answer":0,"explain":"「欣欣向榮」形容草木茂盛、事物蓬勃發展，與「生機盎然」相近。「萬籟俱寂」寫寂靜；「荒煙蔓草」寫荒涼；「日暮途窮」比喻走投無路，語意都與生機相反或無關。"},{"level":"basic","topic":"作者態度－對簡樸生活的看法","q":"依課文所示，作者對簡樸的田園生活抱持何種態度？","choices":["珍視並樂在其中，認為簡樸之中自有豐足","視為不得已的暫時棲身，隨時準備重返城市","覺得勞苦無趣，只為換取基本生活所需","刻意以此標榜清高，時時向人炫耀"],"answer":0,"explain":"作者主動辭去工作歸隱躬耕，字裡行間流露對簡樸生活的珍惜與滿足。把務農視為權宜之計、苦差事或炫耀的手段，都違背課文所呈現的真誠心境。"},{"level":"basic","topic":"文學常識－台灣自然書寫作家辨識","q":"下列有關台灣自然書寫作家的敘述，何者正確？","choices":["夏曼‧藍波安是屏東客家作家，以描寫茶園採茶生活著稱","廖鴻基長年書寫高山林場的伐木生活","陳冠學以描寫清末官場黑暗的譴責小說聞名","徐仁修創辦荒野保護協會，長期從事生態攝影與自然寫作"],"answer":3,"explain":"徐仁修為荒野保護協會創辦人，以生態攝影與自然寫作著稱。夏曼‧藍波安是蘭嶼達悟族作家，多寫飛魚與海洋文化；廖鴻基以海洋、鯨豚書寫聞名；陳冠學寫的是田園散文，譴責小說則是劉鶚《老殘遊記》一類的清末作品。"},{"level":"adv","topic":"主旨深究","q":"本課的主旨，下列說明何者最為貼切？","choices":["記述農事技術的改良歷程，鼓勵科學種田","描寫農村人口外流的社會問題，呼籲政府正視","從田園自然的細微觀察中體悟生命的堅韌蓬勃，並抒發對土地的深情","追憶童年往事，抒發對親人的深切思念"],"answer":2,"explain":"課文由自然觀察出發，體會生命的力量並流露對土地的情感，這正是主旨所在。改良農技、人口外流、憶親懷舊皆非本課的寫作重心，屬張冠李戴。"},{"level":"adv","topic":"意象與象徵－題名的呼應","q":"自然寫作中，若以幼苗頂開土石、野草在乾旱後重新萌發之類的景象入文，扣合本課題名「生機」，其象徵意涵最可能是什麼？","choices":["象徵生命面對困境仍不屈的韌性，喚起人對生機的珍視","說明農作物必須靠人工細心照料才能存活","暗示自然環境惡劣，生存的希望十分渺茫","比喻農村勞動繁重，農人生活備極艱辛"],"answer":0,"explain":"弱小植物突破阻礙、旱後復生，正象徵生命的堅韌與生生不息，與題名「生機」互相呼應。強調人工照料偏離重點；解為希望渺茫或勞動艱辛，則與全文昂揚的生命感相反。"},{"level":"adv","topic":"手法賞析－以小見大","q":"作者常從一株小草、一隻昆蟲寫起，最後推及對生命與天地的思索。這種寫法產生的效果是什麼？","choices":["東拉西扯，使文章焦點分散而顯得凌亂","以小見大，使抽象的體悟有具體可感的依託","層層設問製造懸疑，藉以吸引讀者追讀","以誇張想像取代真實觀察，增添趣味"],"answer":1,"explain":"由細微具體之物引出宏大體悟，即是「以小見大」，能讓哲思落實於畫面而不流於空談。此寫法脈絡分明並非凌亂，也不是靠設問懸疑或誇張想像取勝。"},{"level":"adv","topic":"推論－對現代文明的態度","q":"從作者辭去教職、離開都市而歸隱田園躬耕的選擇推知，他對現代文明的看法最接近下列何者？","choices":["現代科技萬能，終將徹底解決所有環境問題","人應盡速開發山林，以創造更高的經濟價值","自然只是供人取用的資源，無須顧慮其他生命","文明過度追求物質便利，反使人疏離自然、失去感受生命的能力"],"answer":3,"explain":"作者返璞歸真的選擇，正建立在對物質文明的省思之上。其餘三項是科技萬能論、開發至上與人類中心的資源觀，恰與作者的關懷背道而馳。"},{"level":"adv","topic":"延伸應用－環境關懷的實踐","q":"若要延續本課的精神並落實於生活，下列哪一項做法最為貼切？","choices":["為求美觀，將住家附近的野草全面剷除並鋪上水泥","到郊外採集稀有植物帶回家中栽種收藏","在野地餵食野生動物，讓牠們習慣親近人類","觀察並記錄社區裡的植物與鳥類，了解在地生態的變化"],"answer":3,"explain":"長期觀察記錄、認識在地生態，最能承接作者親近土地、尊重生命的態度。剷草鋪水泥破壞棲地；採集稀有植物與餵食野生動物都會干擾生態，違背環境關懷。"},{"level":"adv","topic":"比較閱讀－與古典田園詩之別","q":"本課的田園書寫與中國古典田園詩（如陶淵明的作品）相較，最明顯的不同在哪裡？","choices":["本課立基於現代台灣鄉土的實地觀察，並加入對現代文明與生態的省思","兩者都完全不觸及個人的生活感受","本課全以格律詩寫成，講究平仄與押韻","本課主張徹底否定農耕勞動的價值"],"answer":0,"explain":"古典田園詩多寄託歸隱情懷，本課則以現代散文記錄台灣鄉土實況，並延伸出生態與文明的思考。兩者皆抒個人感受，本課亦非格律詩，更未否定農耕，故其他選項有誤。"},{"level":"adv","topic":"手法賞析－日記體的藝術效果","q":"以日記體書寫田園生活，最主要的藝術效果是什麼？","choices":["便於安排曲折離奇的情節高潮，加強戲劇性","貼合日常時序，使觀察顯得真實親切，並自然展現季節與生命的推移","可以隱去作者身分，使敘述更為客觀冷靜","能大量堆疊史料考證，增強論述的說服力"],"answer":1,"explain":"逐日記錄使自然的細微推移得以呈現，也讓讀者感受第一手觀察的真切。日記體不以情節取勝，反而更凸顯作者的主觀感受，亦非史料考證之作。"},{"level":"adv","topic":"意象分析－「秋」的意涵","q":"本書以「秋」為時序背景書寫田園，配合本課題名「生機」，秋在文中所呈現的意涵，下列說明何者最恰當？","choices":["純粹象徵人生的衰老與無可挽回的絕望","主要用來襯托作者仕途不順的悲憤不平","既有草木成熟凋零的變化，也蘊含孕育來年的力量，呈現循環不息的生命觀","僅為交代農忙時節，別無其他寓意"],"answer":2,"explain":"作者筆下的秋不只是凋零，更含收成與蓄積新生的意味，扣合「生機」主題。視秋為純粹的絕望，或只當成時間背景，都窄化了文意；本課亦非抒發仕途牢騷之作。"},{"level":"adv","topic":"寫作手法－夾敘夾議的效果","q":"本課在描寫田園景物之餘，常帶出作者的感想與體悟，這種「夾敘夾議」的寫法，就閱讀效果而言，下列說明何者最恰當？","choices":["敘述與議論各自獨立成篇，讀者須分開閱讀才能理解","只要夾雜議論，文章就由散文轉為說明文","議論一旦出現，景物描寫必然失去真實感","使具體的觀察與抽象的體悟互相印證，讀來既有畫面又有思想"],"answer":3,"explain":"敘事與議論交錯，能讓景物描寫承載思想，思想又有畫面支撐，是本課耐讀之處。敘議相互交融而非各自獨立；適度議論並不損及真實感，文體仍屬散文。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

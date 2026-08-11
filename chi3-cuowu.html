@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>錯誤 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-cuowu",
+  "title": "錯誤",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "現代詩",
+  "ready": true,
+  "author": "鄭愁予"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>錯誤</h1><div class="sub">國文 · 現代詩 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者","q":"〈錯誤〉一詩的作者，因詩中常寫漂泊行旅之情、風格飄逸，而有「浪子詩人」之稱。這位作者是誰？","choices":["余光中","洛夫","鄭愁予","瘂弦"],"answer":2,"explain":"〈錯誤〉為鄭愁予的代表作，收入詩集《夢土上》，他因常寫浪跡天涯的過客情懷，被稱為「浪子詩人」。余光中、洛夫、瘂弦雖同為台灣現代詩重要詩人，但都不是本詩作者。"},{"level":"basic","topic":"文學常識－文體歸類","q":"就文體分類而言，〈錯誤〉屬於下列何者？","choices":["古體詩","樂府詩","近體詩","現代詩（新詩）"],"answer":3,"explain":"本詩以白話寫成、分行自由、不受字數與平仄限制，屬現代詩（新詩）。古體詩、樂府詩、近體詩皆為古典韻文，句式與語言都與本詩不同。"},{"level":"basic","topic":"詞語解釋－打","q":"「我打江南走過」句中的「打」，意思最接近下列何者？","choices":["從","敲擊","打算","打聽"],"answer":0,"explain":"「打」在此作介詞用，等於「從、由」，全句意為「我從江南經過」。「敲擊」是「打」的常見本義，「打算」「打聽」則是另外的詞義，代入句中文意都不通。"},{"level":"basic","topic":"詞語解釋－跫音","q":"「跫音不響」的「跫音」，指的是什麼聲音？","choices":["馬蹄聲","琴聲","風聲","腳步聲"],"answer":3,"explain":"「跫音」即腳步聲，「跫音不響」表示始終沒有人走近。馬蹄聲是後文「達達的馬蹄」，並非「跫音」；琴聲、風聲則是詩中未曾出現的聲響。"},{"level":"basic","topic":"詞語解釋－春帷","q":"「三月的春帷不揭」中的「春帷」與「揭」，解釋最恰當的是下列何者？","choices":["春帷指春天垂掛的帷幕（簾子），揭指掀開","春帷指春季的帳目，揭指公布","春帷指春天的圍牆，揭指拆除","春帷指春日的旗幟，揭指高舉"],"answer":0,"explain":"「春帷」是室內垂掛的簾幕，「不揭」即簾幕始終不被掀起，暗示女子無人可待、也無心張望。其餘三項都是就字面附會的誤解，帷幕並非帳目、圍牆或旗幟。"},{"level":"basic","topic":"詞語解釋－扉","q":"「你底心是小小的窗扉緊掩」的「扉」，本義是指什麼？","choices":["窗紙","窗臺","門扇","屋簷"],"answer":2,"explain":"「扉」本義為門扇，「窗扉」即窗上可開闔的門板，「緊掩」寫其閉合不開。窗紙、窗臺、屋簷雖同屬屋舍構件，卻都不是「扉」的意思。"},{"level":"basic","topic":"詞語解釋－底","q":"「你底心如小小的寂寞的城」中的「底」，用法相當於現代漢語的哪一個字？","choices":["得","地","的","低"],"answer":2,"explain":"早期白話文常以「底」表示所屬關係，即今日的「的」，「你底心」就是「你的心」。「得」「地」是另外兩個結構助詞，「低」為形容詞，皆不合此處用法。"},{"level":"basic","topic":"文意理解－人物身分","q":"依據詩意判斷，詩中一再訴說的「你」，最可能是什麼身分？","choices":["江南渡口的船夫","隨馬隊遠行的商旅","趕赴考場的書生","在深閨中苦候良人的女子"],"answer":3,"explain":"「等在季節裡的容顏」「春帷不揭」「窗扉緊掩」都指向一位長期閉門守候的閨中女子。船夫、商旅、書生都是奔波在外的人，與詩中「等待」的處境不符。"},{"level":"basic","topic":"文意理解－東風柳絮","q":"「東風不來，三月的柳絮不飛」在詩中主要用來暗示什麼？","choices":["江南春天遲遲未到，農事因此受阻","詩人厭惡春天的景色","所盼之人音訊全無，心事無從舒展","柳絮紛飛擾人，令人心煩"],"answer":2,"explain":"東風與柳絮本是春天到來的訊息，「不來」「不飛」正象徵等待中的消息始終不至，寫的是人事而非氣候。談農事受阻是拘泥字面，厭惡春景、嫌柳絮擾人則與全詩含蓄期待的情感相反。"},{"level":"basic","topic":"文意理解－歸人過客","q":"「我不是歸人，是個過客……」這兩句在詩中的作用是什麼？","choices":["表明說話者只是路過，並非女子所等待的人","說明說話者已決定留下來陪伴女子","強調說話者正是遠行歸來的丈夫","暗示說話者因迷路而誤入江南"],"answer":0,"explain":"「歸人」是女子日夜等待的對象，「過客」則是偶然經過的陌生人，此句明白點破馬蹄聲並不是歸來的訊號。留下陪伴、正是歸人兩項與「我不是歸人」直接矛盾，迷路一說詩中亦無根據。"},{"level":"basic","topic":"修辭辨識－譬喻","q":"「你底心如小小的寂寞的城」一句，主要運用了何種修辭？","choices":["設問","譬喻","誇飾","排比"],"answer":1,"explain":"以「城」比喻封閉寂寞的心，喻詞「如」清楚可見，屬譬喻中的明喻。設問須有提問形式，誇飾為刻意鋪張渲染，排比須有三個以上結構相似的句子，本句都不具備。"},{"level":"basic","topic":"修辭辨識－映襯","q":"「我達達的馬蹄是美麗的錯誤」中，「美麗」與「錯誤」意義相反卻並置一處，這種修辭稱為？","choices":["映襯","轉品","借代","層遞"],"answer":0,"explain":"把兩種相反的感受並列，使彼此對照而情意更鮮明，屬映襯（矛盾修辭）。轉品是改變詞性，借代是以相關事物代稱本體，層遞須有輕重先後的次第，都不是此處的手法。"},{"level":"basic","topic":"詩眼判定","q":"一般認為本詩的「詩眼」（全篇最精警、足以統攝全詩之語）是下列哪一句？","choices":["我打江南走過","東風不來，三月的柳絮不飛","恰若青石的街道向晚","我達達的馬蹄是美麗的錯誤"],"answer":3,"explain":"「美麗的錯誤」同時凝聚了希望燃起與希望落空的雙重情感，是全詩情意所繫，故稱詩眼。「我打江南走過」只是敘事起頭，另兩句則是烘托氣氛的景語，分量都不及。"},{"level":"basic","topic":"新詩形式特色","q":"下列關於〈錯誤〉一詩形式特色的敘述，何者正確？","choices":["每句字數整齊，並須押固定韻腳","分行自由、句式長短不一，不受格律限制","必須四句一節，講究平仄相對","以對仗工整為最主要的形式要求"],"answer":1,"explain":"現代詩不受字數、平仄、韻腳的約束，本詩句子長短相間、依情感節奏分行。字數整齊押韻、四句一節講平仄、對仗工整，都是古典近體詩或對聯的規範，不能套用在新詩上。"},{"level":"adv","topic":"主旨深究","q":"下列何者最能概括〈錯誤〉全詩的主旨？","choices":["藉江南風光抒發對故鄉的濃厚思念","以過客的視角，寫閨中人苦候良人不歸的寂寞與期待落空","描寫戰亂中百姓流離失所的痛苦","歌詠江南三月柳絮飛舞的明媚春光"],"answer":1,"explain":"全詩由「我打江南走過」起筆，中段刻畫等待者封閉寂寞的心境，末段點明「我不是歸人」，主旨正在等待落空的悵惘。思鄉、戰亂、詠春三項都只抓住詩中片面詞語，未觸及核心情感。"},{"level":"adv","topic":"意象與象徵－蓮花開落","q":"「那等在季節裡的容顏如蓮花的開落」，其中「蓮花的開落」最主要象徵什麼？","choices":["江南水鄉四季分明的自然景致","女子性情高潔、出淤泥而不染","女子早晚都在池邊賞花消遣","女子容顏在漫長等待中由盛轉衰"],"answer":3,"explain":"蓮花由開到落是一段完整的榮枯過程，用以譬喻等待中容顏逐漸憔悴，「等在季節裡」更點出時間之久。「出淤泥而不染」雖是蓮花的傳統寓意，卻不是本句重點；寫四季景致、池邊賞花則停留在字面。"},{"level":"adv","topic":"意象與象徵－城與窗扉","q":"詩中「小小的寂寞的城」與「小小的窗扉緊掩」兩個意象並用，主要用意為何？","choices":["由外而內反覆強化封閉、寂寞的心境","說明女子的住處狹小而且年久失修","對比城的宏大與窗的細小，表現空間的變化","描寫江南建築低矮緊密的地方特色"],"answer":0,"explain":"「城」寫心的封閉孤絕，「窗扉緊掩」再從細部收束，兩者層層強化同一種寂寞，都是心的比喻而非實景。住處狹小、建築特色兩項把比喻誤讀為寫實描述，空間對比一項則誤以為重點在大小差異。"},{"level":"adv","topic":"手法賞析－美麗的錯誤","q":"關於「美麗的錯誤」何以既是「美麗」又是「錯誤」，下列說明何者最貼切？","choices":["馬蹄聲清脆悅耳故美麗，擾人清夢故是錯誤","過客走錯了路是錯誤，沿途風景秀麗是美麗","女子誤把過客的馬蹄聲當成歸人到來，剎那的驚喜是美麗，終究認錯人則是錯誤","女子錯過良緣是錯誤，回憶往事甜美是美麗"],"answer":2,"explain":"「美麗」來自等待者聽見蹄聲時瞬間燃起的希望，「錯誤」則因來者只是過客，希望隨即落空，二者並存才形成矛盾之美。只就聲音本身立論，或把「錯誤」解為走錯路、錯過姻緣，都偏離了詩境。"},{"level":"adv","topic":"手法賞析－借景抒情","q":"「恰若青石的街道向晚」一句在詩中的作用，說明最恰當的是？","choices":["交代女子外出散步的具體時間","以青石街道在暮色中的冷清，烘托心境的寂寥","補充說明江南街道多以青石鋪成的建築常識","描寫黃昏市集熱鬧將散的景象"],"answer":1,"explain":"此句承接前句對「心」的比喻，用暮色中空無人跡的青石街道，把抽象的寂寞化為可見的畫面，屬以景寫情。其餘選項把比喻句誤當寫實敘事或知識說明，「熱鬧將散」更與全詩冷清氛圍不合。"},{"level":"adv","topic":"句意理解－語序還原","q":"「那等在季節裡的容顏如蓮花的開落」一句，若改以較貼近散文的語序與說法表達，下列何者最接近原意？","choices":["那容顏等在季節裡，如蓮花般開了又落","那如蓮花般的季節，開落在容顏裡","那蓮花等在季節裡，開落有如容顏","那季節等在容顏裡，如蓮花般開落"],"answer":0,"explain":"原句把長長的修飾語「等在季節裡的」置於主語「容顏」之前，再以蓮花的開落設喻，還原後即「容顏在季節裡等待，像蓮花開了又落」。其餘三項把主語（容顏）與喻體（蓮花）、時間（季節）任意對調，文意隨即不可解。"},{"level":"adv","topic":"修辭賞析－轉化","q":"「那等在季節裡的容顏」一語，把原本不會有動作的「容顏」寫成能夠「等待」，這種修辭稱為？","choices":["雙關","轉化（擬人）","頂真","類疊"],"answer":1,"explain":"將無情之物賦予人的行為與情感，屬轉化中的擬人。雙關須一語兼含兩層意義，頂真須前句末字作為後句首字，類疊須同一字詞語句重複出現，本句都不符合。"},{"level":"adv","topic":"結構與敘事觀點","q":"就全詩安排而言，把「我不是歸人，是個過客」置於最後一行，最主要的效果是什麼？","choices":["讓讀者一開始就清楚說話者的身分，避免誤會","先讓讀者隨等待者一同升起期待，最後才揭曉真相，造成強烈的失落感","說明詩人打算不久之後再度返回江南","把敘事觀點由「你」轉回自然景物"],"answer":1,"explain":"詩以「我打江南走過」起、以「我不是歸人」收，中間讓讀者與等待者同步期待，末句才揭曉，落差最大、餘韻最深。「一開始就清楚身分」與末句才點明的安排自相矛盾，重返江南、轉向景物兩項詩中都無依據。"},{"level":"adv","topic":"詩風賞析","q":"論者常稱本詩「以現代語言寫古典意境」，下列說明何者最能支持這個評價？","choices":["全詩通篇使用文言虛詞，句式刻意模仿唐詩","詩中大量引用歷史典故並逐一加註","以江南、蓮花、春帷、青石街道等古典意象，寫成自由分行的白話詩句","以嚴格的平仄與對仗營造古典韻味"],"answer":2,"explain":"江南、蓮花、春帷、青石街道等意象承自古典閨怨傳統，語言與形式卻是自由分行的現代白話，正是「古典意境＋現代語言」。文言句式、用典加註、平仄對仗這三種作法，本詩其實都未採用。"},{"level":"adv","topic":"比較閱讀－閨怨題材","q":"若把〈錯誤〉與古典詩詞中常見的「閨怨」題材相比，本詩最特別之處在於？","choices":["改以女子自述的口吻，直接傾訴心中哀怨","完全捨棄等待的情節，只寫沿途所見風景","把等待的結局寫成良人終於歸來的團圓","由一位路過的「我」來敘述，等待者的心事因外來的馬蹄聲而被映照出來"],"answer":3,"explain":"傳統閨怨多由思婦自道其苦，本詩卻讓一個偶然經過的過客擔任敘述者，等待者的寂寞被陌生的蹄聲照亮，視角新穎。女子自述正是傳統寫法而非特別之處，捨棄等待情節、寫成團圓結局兩項則與詩意不符。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

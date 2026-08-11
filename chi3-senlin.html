@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>森林最優美的一天 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-senlin",
+  "title": "森林最優美的一天",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "現代自然寫作",
+  "ready": true,
+  "author": "徐仁修"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>森林最優美的一天</h1><div class="sub">國文 · 現代自然寫作 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者生平","q":"關於本課作者徐仁修的介紹，下列敘述何者最為正確？","choices":["他是台灣現代詩壇的代表詩人，以田園詩創作聞名","他是生態攝影家兼自然作家，並創辦荒野保護協會，長期投入生態攝影與自然教育","他是專治古典文學的學者，主要成就在於文學批評與注疏","他是報導文學作家，作品多以都市勞工的生活處境為題材"],"answer":1,"explain":"徐仁修為台灣重要的自然作家與生態攝影家，也是荒野保護協會的創辦人，長年以影像與文字推廣自然教育與生態保育。選項0誤把他歸為詩人；選項2把他說成古典文學研究者；選項3所述題材為都市勞工，皆與其自然觀察、生態關懷的創作方向不符。"},{"level":"basic","topic":"文類判別－自然寫作","q":"就文類而言，本課最適合歸入下列何者？","choices":["抒發男女情愛的抒情散文","虛構人物與情節的短篇小說","以自然觀察與生態關懷為核心的自然寫作（生態文學）","記錄歷史事件始末的史傳文學"],"answer":2,"explain":"本課以作者親身進入森林的觀察與記錄為基礎，兼具文學筆法與生態關懷，屬自然寫作（生態文學）。選項0主題為情愛，與本文旨趣不合；選項1的小說須有虛構人物與情節，本文則為真實觀察；選項3屬記史之作，與本文性質不同。"},{"level":"basic","topic":"篇章結構－組織順序","q":"本文敘寫森林景象時，主要是依循下列何種順序安排材料？","choices":["依一天當中時間的推移，順序鋪寫森林景象與生命活動的變化","由森林外圍逐步深入核心地帶的空間移動","由現在回溯童年往事，再拉回現在的倒敘","依物種分類逐項介紹的說明順序"],"answer":0,"explain":"由篇名的「一天」即可見全文以時間流動為主軸，讓森林的種種景象隨時序依次展開。選項1的空間移動、選項2的倒敘、選項3的分類說明，都不是貫串全篇的結構主軸。"},{"level":"basic","topic":"修辭與描寫－摹寫種類（聽覺）","q":"描寫林中鳥鳴與蟲聲交織的句子，屬於下列何種摹寫？","choices":["觸覺摹寫","味覺摹寫","嗅覺摹寫","聽覺摹寫"],"answer":3,"explain":"描寫鳥鳴、蟲聲是訴諸耳朵所聞，屬聽覺摹寫。選項0觸覺寫冷熱軟硬，選項1味覺寫酸甜苦辣，選項2嗅覺寫氣味，皆非聲音的摹寫。"},{"level":"basic","topic":"寫作手法－視覺摹寫的效果","q":"作者運用視覺摹寫呈現林間光影與霧氣的變化，這種寫法最主要的效果是什麼？","choices":["使讀者如見其景，感受森林畫面隨時間推移而變化的層次","使文章充滿論辯色彩，強化說理的邏輯性","使敘事節奏加快，凸顯情節的緊張刺激","使人物形象鮮明，突出主角的性格特質"],"answer":0,"explain":"光影與霧氣屬視覺摹寫，作用在於呈現畫面感與時間層次。選項1的論辯、選項2的情節緊張、選項3的人物形象，都不是景物摹寫的主要功能，本文亦非以情節或人物取勝。"},{"level":"basic","topic":"修辭辨識－轉化（擬人）","q":"自然寫作中，作者常把動植物寫得彷彿具有人的情感或動作，使其顯得親切生動。這種修辭手法稱為：","choices":["誇飾","擬人","排比","借代"],"answer":1,"explain":"把物寫成人，賦予人的情態動作，是轉化中的擬人。選項0誇飾是誇大或縮小事實；選項2排比是三個以上結構相似的語句並列；選項3借代是以相關事物代替本名，三者皆與「以物為人」不同。"},{"level":"basic","topic":"修辭辨識－譬喻","q":"自然寫作常以讀者熟悉的事物來比方陌生的自然景象（例如以輕紗形容山間薄霧），所運用的修辭是：","choices":["映襯","轉化","譬喻","設問"],"answer":2,"explain":"以甲物比方乙物，具備喻體、喻詞、喻依的結構，即為譬喻。選項0映襯是把相反事物並列對照；選項1轉化是改變事物本來的性質（如以物為人）；選項3設問是明知故問以引起注意，皆不符題意。"},{"level":"basic","topic":"詞語辨析－描寫天色","q":"下列詞語中，最適合用來形容清晨天色初亮、光線微弱的是：","choices":["熹微","皎潔","燠熱","蓊鬱"],"answer":0,"explain":"「熹微」正指天將明而光線微弱之貌。選項1「皎潔」多形容月光明亮潔白；選項2「燠熱」形容悶熱，寫的是氣溫；選項3「蓊鬱」形容草木茂盛，寫的是植物，皆非描寫破曉天色。"},{"level":"basic","topic":"詞語辨析－描寫聲音","q":"若要形容森林中鳥鳴蟲唱接連不斷、彼此呼應的熱鬧景況，下列詞語何者最恰當？","choices":["萬籟俱寂","鴉雀無聲","此起彼落","一鳴驚人"],"answer":2,"explain":"「此起彼落」指聲音接連不斷、四處響起，最切合森林聲響交織的情形。選項0、1都是形容極為安靜，與熱鬧相反；選項3「一鳴驚人」比喻平時默默無聞而一舉成名，與聲音實況無關。"},{"level":"basic","topic":"文意理解－題目意涵","q":"就篇名「森林最優美的一天」來看，作者所謂的「最優美」主要指的是什麼？","choices":["森林木材品質最佳、經濟價值最高的一天","觀光客人數最多、森林最為熱鬧的一天","作者依循自然節奏所見到的、完整而豐富的森林生命之美","氣候最涼爽、最適合登山健行的一天"],"answer":2,"explain":"篇名的「優美」著眼於森林生態隨時間展現的豐富層次與生命之美。選項0以木材經濟價值衡量森林，正與本文尊重自然的立場相反；選項1、3把重點放在遊客與人的舒適度，仍是以人為中心，未觸及本文旨趣。"},{"level":"basic","topic":"文意理解－觀察方法","q":"從本文可以看出，作者為了記錄森林一天中的變化，所採取的方式最可能是：","choices":["長時間停留於森林中，靜靜等候並仔細觀察、隨手記錄","大量捕捉動物帶回實驗室解剖研究","僅蒐集書本與網路資料整理成文，並未親自前往","全程以遙控設備監測，人始終不進入森林"],"answer":0,"explain":"自然觀察講求耐心與長時間的守候，作者親身入林、靜觀細錄，才能捕捉不同時段的生態變化。選項1的捕捉解剖違背保育精神；選項2、3都否定了作者的親身經驗，與本文以第一手觀察為基礎的性質不符。"},{"level":"basic","topic":"寫作手法－敘議結合","q":"本文除了描寫森林景象，也在敘寫之中表達對生態保育的看法。這種寫法一般稱為：","choices":["借景抒情，全篇完全不涉及任何議論","夾敘夾議（敘議結合），在敘寫中自然融入見解","通篇論說，以層層推論證明單一主張","純粹說明，客觀羅列物種特徵而不見作者立場"],"answer":1,"explain":"本文以觀察敘寫為主體，並適時帶出對人與自然關係的省思，屬夾敘夾議。選項0排除議論、選項3排除作者立場，皆與文中的保育呼籲不合；選項2把本文說成純論說文，忽略了大量的景物描寫。"},{"level":"basic","topic":"寫作手法－細節描寫的作用","q":"作者細膩描寫昆蟲與小動物出沒的種種細節，最主要的作用是：","choices":["增加篇幅，使文章顯得艱深難懂","逐一說明各物種的學名與分類系統","炫耀作者所使用的攝影器材與技術","營造真實的臨場感，使讀者彷彿身歷其境"],"answer":3,"explain":"細節愈具體，讀者愈能感受現場氛圍，這是細節描寫的核心功能。選項0把細節誤解為湊篇幅；選項1是科學圖鑑的寫法，非文學散文的重點；選項2談器材，與文本表現手法無關。"},{"level":"basic","topic":"修辭與描寫－摹寫種類（嗅覺）","q":"自然寫作中，若描寫林間濕潤泥土與落葉所散發的氣息，這樣的句子屬於下列何種摹寫？","choices":["聽覺摹寫","視覺摹寫","觸覺摹寫","嗅覺摹寫"],"answer":3,"explain":"氣味訴諸鼻子所聞，屬嗅覺摹寫。選項0聽覺寫聲響，選項1視覺寫形色光影，選項2觸覺寫冷熱軟硬乾濕的接觸感受，皆非氣味的摹寫。"},{"level":"adv","topic":"主旨深究","q":"綜觀全文，作者最想傳達的核心旨意是下列何者？","choices":["森林蘊藏豐富資源，應積極開發以提升經濟效益","人類應敬重自然，謙卑地作為自然的一員，共同守護生態之美","都市生活壓力沉重，唯有長久隱居山林才能獲得解脫","觀察自然是專業研究者的工作，一般民眾不宜介入"],"answer":1,"explain":"本文由森林生態之美導向保育呼籲，主張人不是自然的主宰，而是其中的一員。選項0的開發主張與全文立場相反；選項2把重點轉為個人避世，非本文重心；選項3的排他觀點也違背作者推廣自然教育、鼓勵人親近自然的用意。"},{"level":"adv","topic":"人與自然關係","q":"依本文的觀點，人類在自然中應扮演的角色，最接近下列何者？","choices":["主宰者：憑藉智慧支配並改造自然","旁觀者：與自然完全隔絕、互不相干","參與者與守護者：以謙卑之心融入自然，尊重其他生命","消費者：把自然視為滿足人類需求的資源庫"],"answer":2,"explain":"作者主張人應謙卑地作自然的一員，既參與其中又負有守護之責。選項0的主宰、選項3的消費，都是人類中心的態度，正是本文所要反省的；選項1的完全隔絕則忽略了作者親身入林、與自然共處的實踐。"},{"level":"adv","topic":"意象與象徵","q":"文中天光由暗轉明的變化，除了寫實之外，還可以引申象徵下列何者？","choices":["生命的甦醒與自然生生不息的循環","人類文明征服荒野的漫長過程","作者個人事業由低谷邁向高峰的歷程","時間流逝所帶來的無可挽回的悲哀"],"answer":0,"explain":"天光漸亮與萬物隨之甦醒相互呼應，可象徵自然生命循環不息。選項1的征服意象與全文尊重自然的態度相牴觸；選項2把自然景象窄化為個人際遇；選項3的悲哀情調與本文對生命之美的讚嘆不符。"},{"level":"adv","topic":"結構賞析－時間軸線的作用","q":"以時間推移作為結構軸線，對本文而言最主要的好處是：","choices":["便於作者大量插入歷史典故以增添學問","可以完全隱藏作者情感，使文章絕對客觀","能製造懸疑效果，使讀者不斷猜測結局","使森林中各種生命的活動依序展開，呈現生態運行的節奏與層次"],"answer":3,"explain":"不同時段有不同的生物活動，依時間鋪排最能顯出生態的秩序與層次感。選項0與本文題材無關；選項1誤以為時間結構等於客觀，實則作者情感貫串全篇；選項2的懸疑是敘事性作品的手法，非本文重點。"},{"level":"adv","topic":"手法賞析－多重感官","q":"作者不僅寫森林中所見的景物，也著力描寫所聽見的各種聲響，這樣安排的用意最可能是：","choices":["因為森林景物單調，只好以聲音充篇幅","藉聲音掩飾自己觀察不夠仔細的缺點","為了證明錄音設備的效果勝過相機","使森林的生命訊息更立體，讓讀者從多重感官感受生態的活絡"],"answer":3,"explain":"視覺與聽覺並用可使畫面立體、氛圍完整，讀者更能體會森林的生機。選項0、1把多感官描寫誤讀為補救缺失；選項2扯到器材優劣，與文學表現手法無關。"},{"level":"adv","topic":"推論理解－作者態度","q":"自然觀察者進入森林時，往往刻意放輕腳步、避免驚擾生物。依本文的精神，這樣的舉止最能反映何種態度？","choices":["害怕遭到野生動物攻擊，因此不敢發出聲音","體認森林是野生生物的家，人類只是訪客，理應予以尊重","想要節省體力，以便走更遠的路程","為了不讓其他遊客發現自己的拍攝地點"],"answer":1,"explain":"不驚擾的舉止背後是「以生物為主人、以人為客」的謙卑態度，正呼應全文主旨。選項0出於恐懼、選項2出於體力考量、選項3出於私心，都把行為動機降為個人利害，未觸及尊重生命的核心。"},{"level":"adv","topic":"環境教育延伸","q":"若要在日常生活中實踐本文的精神，下列做法何者最為恰當？","choices":["到山林步道時，將喜愛的野生植物挖回家中栽種","主動餵食野生動物，讓牠們更親近人類","進入自然環境時走在既有步道上，不採摘、不喧嘩，並帶走自己製造的垃圾","在樹幹上刻字留念，記錄自己到此一遊"],"answer":2,"explain":"減少干擾、不留痕跡是尊重生態的具體實踐。選項0的採挖破壞棲地；選項1的餵食會改變野生動物覓食習性，反而有害；選項3的刻字傷害樹木，三者都與本文的保育精神背道而馳。"},{"level":"adv","topic":"文類價值與影響","q":"自然寫作在當代備受重視，其最主要的價值在於：","choices":["文字華麗典雅，最適合作為修辭練習的範本","情節曲折離奇，能充分滿足讀者的娛樂需求","內容淺顯簡單，便於初學者臨摹寫作","能喚起讀者對環境的關注，促使人重新思考人與自然的關係"],"answer":3,"explain":"自然寫作的核心價值在於透過文學感染力引發環境意識與行動。選項0僅著眼於辭藻，選項1誤把自然寫作當娛樂性敘事，選項2貶低其內涵，皆未指出此一文類真正的社會意義。"},{"level":"adv","topic":"推論理解－刪節影響","q":"假設把文中對動植物細部觀察的段落全部刪去，只保留作者對保育的呼籲，最可能造成的結果是：","choices":["主張變得空泛，缺乏具體感受作支撐，說服力與感染力都隨之減弱","文章更為精練，主旨反而更容易被讀者接受","文章由散文轉為小說，文類因此產生改變","內容更加客觀，正好符合科學論文的格式要求"],"answer":0,"explain":"正因先讓讀者「看見」森林之美，後面的保育呼籲才有情感依據；抽去觀察即成口號。選項1誤以為刪繁就簡必然更好；選項2的文類變化毫無根據；選項3把文學散文誤當論文，標準錯置。"},{"level":"adv","topic":"敘事觀點賞析","q":"本文以作者親身入林、第一人稱敘寫觀察所得，最主要的表達效果是：","choices":["使讀者無從判斷內容的真偽","增強真實感與親切感，讓讀者跟隨作者的視線一同走入森林","便於作者臧否人物、評論時政","使文章帶有濃厚的虛構色彩"],"answer":1,"explain":"第一人稱能拉近讀者與現場的距離，強化紀實與參與感。選項0、3把第一人稱與不可信、虛構相連，恰與自然寫作重視實地觀察的特性相反；選項2的評論時政並非本文取向。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

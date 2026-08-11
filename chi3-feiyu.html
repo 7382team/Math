@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>飛魚 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-feiyu",
+  "title": "飛魚",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "現代海洋文學",
+  "ready": true,
+  "author": "夏曼‧藍波安"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>飛魚</h1><div class="sub">國文 · 現代海洋文學 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者身分與創作題材","q":"關於本課作者夏曼‧藍波安的敘述，下列何者正確？","choices":["他是花蓮的阿美族人，長年書寫平原上的農耕生活","他是屏東的排灣族人，以山林狩獵文化為主要創作內容","他是蘭嶼的達悟族（雅美族）人，作品多以海洋與族群文化為題材","他是漢人作家，以田野調查的方式記錄原住民的傳說"],"answer":2,"explain":"夏曼‧藍波安是蘭嶼達悟族（雅美族）人，為台灣原住民文學與海洋文學的重要作家，寫作核心即族人與海洋的關係。誤作阿美族的平原農耕、排灣族的山林狩獵，族群與題材皆不相符；說成漢人旁觀記錄者，也忽略本文出自族人親身經驗的書寫。"},{"level":"basic","topic":"文意理解－飛魚季的時序規範","q":"依本文所述，達悟族捕撈飛魚有嚴格的季節與時序規範，這樣的規範主要顯示什麼？","choices":["族人依循祖先傳下的秩序作息，使人的行為與自然節奏相合","族人擔心漁獲太多不易保存，才限制出海次數","族人想藉此與鄰近部落競爭捕魚技術的高下","族人認為只有特定季節的飛魚才賣得到好價錢"],"answer":0,"explain":"飛魚季的時序規範源自祖先傳承，使族人的生活節奏配合魚群來去的自然規律，是文化與生態相結合的展現。把規範窄化為食物保存問題，或誤解為部落之間的競技，都偏離傳承的本意；以價格、利益解釋，更違背文中取用有節、不以牟利為目的的精神。"},{"level":"basic","topic":"詞語理解－「禁忌」的意涵","q":"達悟族文化中所謂的「禁忌」，其意涵最接近下列何者？","choices":["族人臨時商議、隨時可以更改的比賽規則","外來政府為管理蘭嶼所頒布的行政法令","個人可依喜好自行決定是否遵守的生活習慣","族群長期流傳、族人共同遵守而不可觸犯的規範"],"answer":3,"explain":"禁忌指族群世代相傳、具約束力且不容違犯的行為規範，往往與信仰、儀式相連。誤為臨時性、可任意更改的規則，或誤為外來政府的法令，都忽略禁忌出自族群內部的傳統；當作個人可自由取捨的習慣，則抹去了它的強制性與集體性。"},{"level":"basic","topic":"文化知識－魚類分類的用意","q":"達悟族將魚分為「老人魚」「男人魚」「女人魚」等類別，其主要用意最接近下列何者？","choices":["依魚價高低區分，把昂貴的留給長輩","依族人身分與飲食倫理分配漁獲，兼顧敬老與資源的合理取用","依捕魚者技術好壞決定誰可以吃哪一種魚","為了方便向外地遊客介紹蘭嶼的特產"],"answer":1,"explain":"魚類分類是達悟族的飲食倫理與資源分配制度，依身分決定可食的種類，既表現對長者的敬重，也避免特定魚種被過度捕食。以金錢價格作為分類依據並非其本意；把制度誤解為技術好壞的獎懲，或視為觀光宣傳的手段，都與傳統文化的內在邏輯無關。"},{"level":"basic","topic":"寫作手法－第一人稱敘寫","q":"本文以第一人稱敘寫作者親身出海捕魚的經驗，這種寫法最主要的效果是什麼？","choices":["便於作者置身事外，冷靜評論族人的優點與缺點","可以自由切換多位人物的內心世界，使情節曲折離奇","使讀者如臨其境，增強敘述的真實感與情感的說服力","讓文章帶有濃厚的虛構色彩，突顯故事的想像趣味"],"answer":2,"explain":"第一人稱以「我」的親歷見聞展開，讀者彷彿隨作者一同出海，真實感與情感濃度因此提高。置身事外的冷靜評論屬第三人稱旁觀視角；自由出入多人內心是全知觀點的特性，第一人稱受限於個人所見所感；強調虛構想像更與本文重在真實經驗的取向相反。"},{"level":"basic","topic":"文類常識－海洋文學","q":"下列關於「海洋文學」的說明，何者最為恰當？","choices":["專指以航海探險為題材、情節緊張刺激的通俗小說","必須採用韻文形式，並以描寫海景的華麗辭藻取勝","專指外國作家所寫、再由台灣譯介進來的海事作品","以海洋及人與海洋的關係為書寫核心，常呈現對海的情感與體悟"],"answer":3,"explain":"海洋文學以海洋為書寫核心，關注人如何在海上勞動、生活，並抒發由此而生的敬畏、感恩與省思。把它窄化為探險小說，或另加韻文形式與華麗辭藻的限制，都不符實情；認為僅限外國譯介之作亦誤，台灣本地即有夏曼‧藍波安等重要的海洋文學作家。"},{"level":"basic","topic":"詞語運用－文化傳承的成語","q":"本文寫捕魚技藝由父執輩親身示範、子弟隨行習得而代代不絕。最適合形容這種文化傳遞情形的語詞是：","choices":["各行其是","薪火相傳","曇花一現","閉門造車"],"answer":1,"explain":"「薪火相傳」比喻學問、技藝或文化世代承續不絕，正合父執輩傳授、子弟承接之意。「各行其是」指各自照自己的想法做事，與共同承續相反；「曇花一現」指短暫出現隨即消失，與代代不絕相悖；「閉門造車」指不合實際地自行摸索，與親身隨行學習的情形不符。"},{"level":"basic","topic":"文意理解－隨父執輩出海的作用","q":"作者敘寫自己隨父執輩出海捕魚的經歷，在文中的主要作用是：","choices":["呈現捕魚技藝與文化價值如何在實際行動中被傳授與承接","說明自己體力不佳而放棄捕魚，轉以寫作維生","藉此批評長輩教導的方式過於嚴苛，令人難以承受","比較蘭嶼與台灣本島捕魚設備的優劣差距"],"answer":0,"explain":"出海的過程正是文化傳承的現場：長輩以身示範，晚輩在勞動中習得技藝與規矩，抽象的文化因而具體可見。把敘寫動機說成個人退卻，或解讀為對長輩的不滿，都與文中珍視傳承的情感不合；捕魚設備的優劣比較亦非本文重點。"},{"level":"basic","topic":"詞語辨析－取之有節","q":"「取之有節」一語的意思，與下列何者最為相近？","choices":["予取予求","揮霍無度","適可而止","半途而廢"],"answer":2,"explain":"「取之有節」指取用時有所節制，「適可而止」正是到了適當程度就停止之意。「予取予求」指任意索求毫不客氣，「揮霍無度」指浪費而毫無節制，兩者皆與節制相反；「半途而廢」指事情做到一半就放棄，重點在中斷而非節制，語意實不相同。"},{"level":"basic","topic":"文意理解－現代文明的衝擊","q":"本文觸及現代文明對達悟族傳統文化的影響，作者所呈現的情況最接近下列何者？","choices":["傳統文化已完全消失，族人不再舉行任何祭儀","現代文明帶來的改變全屬正面，使族人生活更加富足","族人一致拒絕現代事物，堅持完全不與外界往來","傳統的生活方式與價值觀受到擠壓，文化的延續面臨考驗"],"answer":3,"explain":"作者寫出傳統在現代化浪潮下被邊緣化的處境，流露對文化能否延續的憂心，但傳統並未就此消失。說成完全消失過於絕對；只看見富足的一面則忽略作者的省思；把族人寫成全然封閉、拒絕往來，也與實際情形不符。"},{"level":"basic","topic":"寫作手法－文化細節的描寫","q":"作者在文中細膩交代祭儀過程、魚類分類與捕魚規矩等文化細節，其主要作用是：","choices":["使達悟文化具體可感，讓讀者理解其中的生活智慧與精神","以繁複資料的堆疊，凸顯文章的學術研究價值","為使篇幅加長，方便鋪陳後面的情節高潮","表達作者對族人守舊作風的不以為然"],"answer":0,"explain":"細節描寫把外人陌生的文化化為可感的畫面，讀者由此體會規範背後的智慧與情感。把散文當成學術論文，是誤判文類；視細節為湊篇幅的手段，則貶低了它的功能；解讀為批評族人守舊，更與作者珍視傳統的態度相反。"},{"level":"basic","topic":"文學常識－台灣原住民族文學","q":"下列關於台灣原住民族文學的敘述，何者最為恰當？","choices":["一律以族語書寫而不使用漢語，故一般讀者無法閱讀","多由原住民作家以自身族群經驗出發，書寫文化、土地與族群認同","內容僅限神話傳說的蒐集整理，不涉及當代生活處境","因起步較晚，至今尚未有作家獲得文學獎項的肯定"],"answer":1,"explain":"原住民族文學多由族人以親身經驗書寫文化、土地與認同，本課即為代表。認為只用族語書寫並不正確，實際上多以漢語書寫或漢語與族語並用；說內容僅限神話傳說，忽略了當代處境的書寫，本課即觸及現代衝擊；謂尚未獲獎更與事實不符，此類作品早已屢受文學獎肯定。"},{"level":"basic","topic":"文意理解－飛魚的文化地位","q":"依本文所述，飛魚對達悟族人而言最主要的意義是什麼？","choices":["只是漁季中偶然捕獲、可有可無的漁獲之一","主要用來換取現金、供應外地市場的經濟漁產","因外形特殊而被族人視為不可食用的神聖之物","既是重要的食物來源，也是牽動祭儀、時序與規範的文化核心"],"answer":3,"explain":"飛魚不僅供人食用，更決定祭儀的舉行、生活的作息與各種行為規範，是達悟文化的核心。說它可有可無明顯低估其地位；以經濟交易解讀則忽略文化意義；視為不可食用的聖物，也與族人依身分食用飛魚的事實矛盾。"},{"level":"adv","topic":"主旨深究－全文旨趣","q":"綜觀全文，本文所要傳達的主旨最接近下列何者？","choices":["詳實記錄蘭嶼的漁業技術，以供後人研究參考","感嘆捕魚生活艱辛，勸年輕族人及早離開部落","藉飛魚文化的敘寫，呈現達悟族人與海洋相依的生活智慧、文化傳承與族群認同","說明現代漁法效率較高，傳統捕魚方式應盡速改良"],"answer":2,"explain":"全文由飛魚文化切入，寫族人與海洋的相處之道、技藝的世代傳遞，以及作者身為達悟人的認同，三者合為主旨。把散文當技術報告，遺漏了情感與認同；勸人離開部落與作者珍視傳統的立場相反；以效率評斷傳統，正是本文所要反省的觀點。"},{"level":"adv","topic":"象徵分析－飛魚的象徵意涵","q":"就象徵意涵而言，文中的「飛魚」最能代表下列何者？","choices":["維繫族群時序、規範與信仰的文化命脈","族人渴望脫離島嶼、飛向遠方的心願","現代文明帶進部落的各種新奇事物","個人在競爭中力求出人頭地的企圖心"],"answer":0,"explain":"飛魚牽動祭儀、季節與禁忌，象徵支撐族群運作的文化命脈，其存續也象徵文化的存續。只抓住「飛」字而聯想為離島遠去，與文中守分、扎根於島嶼的精神相反；把飛魚錯置為外來新事物，或解為個人爭勝的企圖，皆與族群共守的意涵不合。"},{"level":"adv","topic":"意象分析－海洋的意涵","q":"文中的「海洋」在達悟族人生命中的意涵，最恰當的理解是：","choices":["是阻隔族人與外界往來、令人厭棄的障礙","既是供養族人的生活場域，也是需要敬畏與守分的對象","只是一處供人觀賞、與日常生活無關的美麗風景","是族人用來證明勇氣、彼此較勁高下的競技場"],"answer":1,"explain":"海洋既給予食物與生計，也因其力量與規律而令人敬畏，族人取用時必須守分，兼具養育與神聖兩重意義。寫成負面的阻隔，忽略了它的養育之恩；當作純供觀賞的風景，割斷了它與勞動生活的血脈相連；解為競技場，則把敬畏誤讀成逞勇好強。"},{"level":"adv","topic":"手法賞析－敘事與抒情交融","q":"本文一面記述出海捕魚的過程，一面流露對族人與海洋的深厚情感，這種筆法最適合稱為：","choices":["借古諷今","層層設問、逐一辯駁","先議論後舉例的論說筆法","敘事與抒情交融"],"answer":3,"explain":"文章在敘述事件的同時自然帶出情感，情由事生、事中含情，正是典型的敘事與抒情交融。「借古諷今」須以古事影射今事，本文寫的是當下親身經歷；設問辯駁的語氣與本文平實的敘寫不合；先議論後舉例屬論說文結構，本文則為抒情記敘之作。"},{"level":"adv","topic":"推論－文化規範中的生態觀","q":"從達悟族依身分分配魚類、依季節捕撈的作法，最能推論出的觀念是：","choices":["族群內部階級森嚴，資源分配全由少數人決定","只要漁具日益進步，捕撈量便可不受限制地擴大","以文化規範節制人的欲望，使海洋資源得以生生不息","飲食習慣純屬個人自由，與整體生態並無關聯"],"answer":2,"explain":"分類食用與季節限制都在約束取用的種類與時機，使魚群有繁衍的餘裕，展現永續的生態智慧。把身分分工誤讀為階級壓迫，並非文意；認為漁具進步便可無限捕撈，恰是本文所要對治的濫捕心態；否定飲食與生態的關聯，更與全文立場相反。"},{"level":"adv","topic":"延伸思考－多元文化的尊重","q":"閱讀本文後，面對與自己不同的族群文化習俗，最恰當的態度是：","choices":["理解其形成的自然環境與生活脈絡，尊重並欣賞文化的差異","以自己熟悉的生活方式為標準，評斷他族習俗的優劣","認為傳統習俗妨礙進步，應盡速以現代方式取代","保持距離、不去了解，以免產生誤解"],"answer":0,"explain":"每一種習俗都在特定環境與生活需要中形成，先理解其脈絡才能真正尊重，這正是本課的延伸啟示。以己度人地評斷高下，是典型的文化偏見；把差異一律視為落後而急欲取代，忽略其存在的合理性；刻意保持距離看似謹慎，實則以冷漠取代理解，同樣不是尊重。"},{"level":"adv","topic":"手法賞析－質樸的語言風格","q":"本文語言質樸、少用華麗辭藻，這樣的風格所產生的效果是：","choices":["使文章顯得含蓄隱晦，須反覆推敲才能理解","貼近族人真實的生活與情感，讀來真摯而具說服力","刻意營造距離感，使讀者不易與作者產生共鳴","強化說理的層次，使文章適合作為論辯之用"],"answer":1,"explain":"質樸的語言與海上勞動的生活相稱，情感不假雕飾而更顯真誠可信。說它隱晦難解並不切合，本文文字平實易懂；謂其造成距離感，與真摯動人的效果恰恰相反；強調說理層次，則把抒情記敘之作誤判為論辯文章。"},{"level":"adv","topic":"延伸應用－生態永續的實踐","q":"下列現代作法中，與本文所呈現的生態觀念最為相符的是：","choices":["改用更大型的漁網作業，提高單次出海的漁獲量","將海域全面開放，讓民眾自由捕撈以促進地方經濟","大量放養外來魚種，使海中魚類數量迅速增加","訂定禁漁期與魚體大小的限制，讓魚群有繁衍生息的機會"],"answer":3,"explain":"禁漁期與體長限制的精神，正與達悟族依季節捕撈、取之有節相通，都在為資源保留再生的空間。加大漁網與全面開放皆以漁獲最大化為目標，與節制相悖；大量放養外來魚種可能破壞原有生態，數量的增加並不等於永續。"},{"level":"adv","topic":"主旨深究－族群認同的形成","q":"作者藉親身參與捕飛魚的經驗來呈現自身的族群認同，下列說明何者最為貼切？","choices":["在實踐傳統技藝、遵守文化規範的過程中，逐漸確認並珍視達悟人的身分","認同源自書本知識的累積，與實際生活經驗無關","因體會捕魚辛苦，而對達悟人的身分感到猶豫","認同建立在與其他族群比較後所生的優越感之上"],"answer":0,"explain":"作者的認同不是抽象的宣告，而是在出海、學藝、守禁忌的實踐中一步步生成並被珍視。認為認同與生活經驗無關，正與本文相反；解讀為因辛苦而動搖退卻，誤讀了文中的情感；以貶低他族換取自我肯定，也違背本文尊重多元的精神。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

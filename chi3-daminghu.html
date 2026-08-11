@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大明湖 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-daminghu",
+  "title": "大明湖",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "清代古典小說",
+  "ready": true,
+  "author": "劉鶚"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>大明湖</h1><div class="sub">國文 · 清代古典小說 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者時代","q":"〈大明湖〉的作者劉鶚，是哪一個時代的小說家？","choices":["清朝末年的小說家","元代著名的雜劇作家","明代中葉的小說家","民國初年新文學運動的作家"],"answer":0,"explain":"劉鶚字鐵雲，為晚清（清末）小說家，代表作《老殘遊記》。元代以雜劇著稱、明代中葉盛行神魔與世情小說，時代皆不合；劉鶚卒於清末，並未參與民國新文學運動。"},{"level":"basic","topic":"文學常識－本文出處","q":"〈大明湖〉一文選自劉鶚所寫的哪一部作品？","choices":["《儒林外史》","《陶庵夢憶》","《老殘遊記》","《徐霞客遊記》"],"answer":2,"explain":"本文選自《老殘遊記》。《儒林外史》為清代吳敬梓的諷刺小說、《陶庵夢憶》是明末張岱的小品文集、《徐霞客遊記》為明代徐弘祖的地理遊記，作者與書名皆不相符。"},{"level":"basic","topic":"文學常識－文體（章回小說）","q":"《老殘遊記》全書分回敘事、每回各有回目，就形式而言屬於下列哪一類作品？","choices":["語錄體的散文集","章回小說","可供搬演的傳奇雜劇","評論詩作的詩話"],"answer":1,"explain":"分回標目、逐回接續敘事是章回小說的基本特徵。語錄體以記錄言論為主、雜劇是搬演用的戲曲劇本、詩話是評論詩歌的著作，都與本書的形式不符。"},{"level":"basic","topic":"文學常識－小說流派","q":"《老殘遊記》與《官場現形記》、《二十年目睹之怪現狀》、《孽海花》合稱為什麼？","choices":["明代四大奇書","元曲四大家","唐宋古文八大家","清末四大譴責小說"],"answer":3,"explain":"這四部晚清作品並稱清末四大譴責小說。明代四大奇書指《三國演義》、《水滸傳》等；元曲四大家為關漢卿等劇作家；唐宋古文八大家是散文名家，均與這四部小說無關。"},{"level":"basic","topic":"文學常識－全書主旨","q":"作者安排主角老殘四處行醫、遊歷各地，藉他的見聞主要想表達什麼？","choices":["反映當時社會與吏治的種種弊病","介紹各地名醫與祕傳藥方","宣揚訪仙修道、超脫塵世的思想","考證各地山川地理的沿革"],"answer":0,"explain":"《老殘遊記》屬譴責小說，藉老殘遊歷所見揭露社會與官場的弊端。行醫只是主角的身分設定，並非為了介紹藥方；全書也不是修道故事或地理考證之作。"},{"level":"basic","topic":"文學常識－書中名段","q":"《老殘遊記》書中另有一段廣受傳誦的文字，描寫哪一位人物高超的說書技藝？","choices":["杜十娘","王小玉","崔鶯鶯","林黛玉"],"answer":1,"explain":"〈明湖居聽書〉描寫王小玉說書，是書中最著名的段落。杜十娘出自明代話本、崔鶯鶯是《西廂記》人物、林黛玉是《紅樓夢》人物，都不屬於本書。"},{"level":"basic","topic":"文意理解－濟南城的景觀特色","q":"老殘進入濟南城後，最先感受到的城市景觀特色是什麼？","choices":["高樓夾道，市集喧囂熱鬧","城牆高聳，戍卒往來森嚴","家家泉水，戶戶垂楊","古剎相連，鐘磬之聲不絕"],"answer":2,"explain":"作者以「家家泉水，戶戶垂楊」八字概括濟南泉水遍布、綠柳成蔭的獨特風貌。其餘選項寫的是商業、軍事或寺廟景象，都不是文中所寫的濟南特色。"},{"level":"basic","topic":"文意理解－比較的對象","q":"作者將濟南的城市風光與哪一個地區相比，並認為濟南更有趣味？","choices":["塞北","蜀中","嶺南","江南"],"answer":3,"explain":"文中以江南為比較對象，認為濟南泉柳交織的風貌比江南更有趣。塞北荒寒、蜀中多山、嶺南濕熱，都不是文中相比的地區。"},{"level":"basic","topic":"文意理解－遊蹤起點","q":"老殘是在哪裡僱了一隻小船，開始遊覽大明湖？","choices":["鵲華橋邊","千佛山山下","城外的驛站","湖心的小島"],"answer":0,"explain":"老殘步行到鵲華橋邊僱小船入湖，此處是遊湖的起點。千佛山是遊湖時所見倒影的對象，並非上船處；驛站與湖心小島皆非文中僱船的地方。"},{"level":"basic","topic":"文意理解－千佛山的呈現方式","q":"遊湖時，老殘所見的千佛山主要是以什麼樣貌呈現在眼前？","choices":["山上香客往來的熱鬧場面","清楚地倒映在湖水之中","被雲霧完全遮蔽，只能聽見鐘聲","山頂積雪映著夕陽的景象"],"answer":1,"explain":"作者寫千佛山的倒影映入湖中，顯得明明白白，使景致更加動人。文中並未描寫香客、雲霧遮山或積雪夕照，這些都是憑空添加的情節。"},{"level":"basic","topic":"文意理解－湖岸植物","q":"老殘遊湖時看見湖的南岸被一片正值花期的植物密密遮住，那是什麼？","choices":["茂密的竹林","成排的桃樹","正在開花的蘆葦","高大的松柏"],"answer":2,"explain":"文中寫湖的南岸有一層蘆葦，正當開花時節，白花映著帶水氣的斜陽，景致奇絕。竹林、桃樹、松柏都不是文中所寫的湖岸植物。"},{"level":"basic","topic":"詞語辨識－澄淨","q":"「澄淨」一詞用來形容水，意思最接近下列何者？","choices":["清澈潔淨，毫無汙濁","深不見底，難以測量","水流湍急，聲勢浩大","水面遼闊，一望無際"],"answer":0,"explain":"澄指水靜而清、淨指潔淨無雜，合起來形容水質清澈潔淨。深度、流速、面積都不是這個詞的重點，「水流湍急」更與澄字所含的靜定之意相反。"},{"level":"basic","topic":"修辭辨識－對偶","q":"「家家泉水，戶戶垂楊」上下兩句字數相同、詞性相對、結構相稱，主要運用了哪一種修辭？","choices":["誇飾","設問","對偶","轉化"],"answer":2,"explain":"字數相等、結構相對、詞性相稱即為對偶。誇飾須誇大事實、設問須提出問題、轉化須把物擬人或把人擬物，這兩句都沒有這些現象。"},{"level":"basic","topic":"寫作手法－移步換景","q":"本文隨著老殘由城中街巷走到湖上，所寫的景物也隨之改變。這種遊記常用的寫作方法稱作什麼？","choices":["開門見山","首尾呼應","欲揚先抑","移步換景"],"answer":3,"explain":"觀察點隨腳步移動，景物也隨之轉換，正是移步換景。開門見山指起筆直入主題、首尾呼應指前後照應、欲揚先抑是先貶後褒的手法，都不是本文寫景的方式。"},{"level":"basic","topic":"寫作手法－感官摹寫","q":"本文寫垂楊的青綠、湖水的澄澈與山影的層次，主要是透過哪一種感官摹寫來呈現？","choices":["視覺摹寫","聽覺摹寫","嗅覺摹寫","觸覺摹寫"],"answer":0,"explain":"文中所寫多為顏色、形狀與光影，屬於視覺摹寫。本段並未著墨聲響、氣味或觸感，因此其餘三種摹寫都不是主要方式。"},{"level":"adv","topic":"主旨深究","q":"本課這段文字的主旨，最適合用下列哪一項來概括？","choices":["藉遊湖的孤寂抒發自己懷才不遇的憤慨","描寫濟南泉柳交織的城市風貌與大明湖的明麗景致，表現遊賞的樂趣","藉湖景的荒蕪暗諷地方官吏的昏庸無能","藉憑弔古蹟感嘆朝代興亡的無常"],"answer":1,"explain":"本段純為寫景記遊，重心在濟南的泉柳風貌與大明湖的明麗景色，字裡行間流露遊賞之樂。暗諷官吏雖切合《老殘遊記》全書的譴責主旨，但本段並未諷刺吏治；孤寂之憤與興亡之嘆在文中也找不到依據。"},{"level":"adv","topic":"手法賞析－側面描寫","q":"作者沒有直接說湖水有多清，而是寫千佛山的影子清楚地映在湖面上。這樣寫的用意是什麼？","choices":["強調千佛山比大明湖更值得遊覽","表現山勢的高聳與磅礴氣勢","以側面烘托的方式，讓湖水的澄澈更具體可感","說明湖面遼闊得足以容納整座山"],"answer":2,"explain":"倒影能映得清楚，正說明水面平靜、水質澄淨，屬於不直說而借他物烘托的側面描寫。說千佛山更值得遊覽是顛倒主客；著眼山勢則重點在山而非水；把倒影理解成湖面大小，更是誤解了倒影的原理。"},{"level":"adv","topic":"名句賞析－概括力","q":"「家家泉水，戶戶垂楊」之所以成為傳誦不絕的名句，最主要的原因是什麼？","choices":["用字冷僻艱深，足以顯示作者學問淵博","直接抒發作者對故鄉的深切思念","化用唐人詩句，增添用典的趣味","以極精簡的對偶句概括全城普遍的景象，畫面鮮明又富音節之美"],"answer":3,"explain":"八字之中沒有難字，卻用疊字與對偶把全城處處有泉、家家有柳的普遍現象一語道盡，兼具畫面感與節奏感。說它用字艱深恰與其平易相反；此句寫景而非抒發鄉愁，也不是化用前人詩句的用典之筆。"},{"level":"adv","topic":"結構分析－空間推移","q":"文章的景物由城中街巷推移到湖上風光，這樣的安排產生什麼效果？","choices":["使文章失去中心，顯得雜亂無章","讓讀者彷彿隨作者同行，一層一層看見不同的景致","刻意顛倒時間順序，以製造懸疑氣氛","反覆描寫同一處景物，以加深印象"],"answer":1,"explain":"依遊蹤先後安排景物，讀者的視線隨作者移動，景象由城中到湖上逐層展開，臨場感強。遊記次序井然，並非雜亂；文中既無倒敘，也沒有反覆描寫同一景物。"},{"level":"adv","topic":"手法賞析－譬喻","q":"作者以鏡子來比喻湖面，這個譬喻同時傳達了湖水的哪兩種特質？","choices":["遼闊與深邃","溫暖與柔和","平靜與清澈","湍急與冰冷"],"answer":2,"explain":"能像鏡子一樣映照景物，必須水面無波且水質潔淨，故此喻兼寫平靜與清澈。遼闊深邃說的是面積與深度、溫暖柔和是溫度與觸感，而湍急更與能映出倒影的水面互相矛盾。"},{"level":"adv","topic":"意象分析－城市風情","q":"濟南城中泉水湧流、垂楊處處相接，所營造出的整體意象是什麼？","choices":["蕭瑟荒涼的邊塞風光","車馬喧囂的商業重鎮","莊嚴肅穆的帝王古都氣象","水木相依、清新靈秀的城市風情"],"answer":3,"explain":"泉水的清與垂楊的綠彼此交融，形成柔美靈秀、充滿生機的城市意象。荒涼、喧囂、肅穆三種情調，都與這片水綠交映的柔和景致不合。"},{"level":"adv","topic":"推論－濟南勝於江南的原因","q":"作者認為濟南的景致比江南更有趣味，最主要的理由可以推知為何？","choices":["江南雖多水鄉柳色，卻少見泉水湧於家家戶戶、又與垂楊處處相映的獨特景象","濟南的樓臺建築比江南更宏偉壯麗","濟南的氣候比江南更溫暖宜人","濟南的物產比江南更為豐富"],"answer":0,"explain":"作者著眼的是泉水遍及全城、與垂楊交織成景的特殊風貌，這是江南水鄉所沒有的。建築、氣候、物產三者文中都未比較，也偏離了寫景的重點。"},{"level":"adv","topic":"延伸應用－寫作方法","q":"如果要模仿本文的寫景方法完成一篇遊記，下列哪一種做法最接近作者的手法？","choices":["先提出論點再舉例論證，層層說理","依行進路線依序記下沿途所見，並藉倒影、映襯等間接方式烘托景物的特點","全篇以人物對話推展情節","採用倒敘法先寫結局，再回頭補述經過"],"answer":1,"explain":"本文的特色正是移步換景加上側面烘托，故此項最為貼近。先論後證是論說文的寫法、以對話推展情節偏向小說或劇本、倒敘是敘事技巧，都不是本文寫景的方法。"},{"level":"adv","topic":"情景推論－人物心境","q":"由本段的寫景筆調推測，老殘遊覽大明湖時的心情最可能是下列何者？","choices":["焦急不安，只想盡快趕路","悲愁滿懷，觸景生情而落淚","憤慨不平，藉景物諷刺時政","從容悠閒，因景色明麗而心曠神怡"],"answer":3,"explain":"作者細看泉柳、倒影與蘆花，筆調從容，可見遊興正濃、心情愉悅。既然特地僱船慢慢遊賞，就與焦急趕路矛盾；悲愁與憤慨的情緒，在本段明麗的景物描寫中也全無跡象。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

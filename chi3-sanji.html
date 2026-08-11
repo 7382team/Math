@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>傘季 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#c1352b;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "chi3-sanji",
+  "title": "傘季",
+  "subject": "國文",
+  "grade": "國三",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "現代散文",
+  "ready": true,
+  "author": "蓉子"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>傘季</h1><div class="sub">國文 · 現代散文 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"文學常識－作者與詩社","q":"〈傘季〉作者蓉子是台灣現代詩壇重要的女詩人，她長期參與的詩社是下列何者？","choices":["創世紀詩社","藍星詩社","笠詩社","現代派（現代詩社）"],"answer":1,"explain":"蓉子與夫婿羅門同為藍星詩社的重要成員，故選(1)。(0)創世紀詩社以張默、洛夫、瘂弦為代表；(2)笠詩社以本土詩人為主要成員；(3)現代派由紀弦發起，均與蓉子無涉。"},{"level":"basic","topic":"文學常識－作者生平","q":"蓉子的夫婿同為台灣現代詩壇名家，兩人並稱詩壇佳偶。這位詩人是誰？","choices":["余光中","鄭愁予","羅門","楊牧"],"answer":2,"explain":"蓉子與羅門結為夫妻，同屬藍星詩社，故選(2)。(0)余光中亦為藍星詩社健將，但與蓉子並無夫妻關係；(1)鄭愁予以〈錯誤〉聞名，有「浪子詩人」之稱；(3)楊牧早期筆名葉珊，三者皆為以名家姓名設計的誘答。"},{"level":"basic","topic":"文學常識－作者稱號由來","q":"蓉子素有「永遠的青鳥」的美譽，這個稱號的由來與下列何者關係最密切？","choices":["她的第一部詩集名為《青鳥集》","她曾以「青鳥」為筆名發表作品","她的作品多以賞鳥經驗為主要題材","她曾主編一份名為《青鳥》的詩刊"],"answer":0,"explain":"蓉子的第一部詩集《青鳥集》問世後廣受注目，後人遂以「永遠的青鳥」稱之，故選(0)。(1)(2)(3)所述的筆名、題材與編務之說，皆非此一稱號的來源。"},{"level":"basic","topic":"文類特色－現代詩形式","q":"〈傘季〉屬於現代詩（新詩）。就這一文類的形式特色而言，下列敘述何者正確？","choices":["句數固定，且須嚴守平仄與對仗","每句字數必須整齊劃一，並且一韻到底","形式自由，不受格律拘束，特別重視意象經營與內在節奏","每首以四句為一段，須依起承轉合的順序安排"],"answer":2,"explain":"現代詩以白話寫成，不受平仄、對仗、句數與押韻的規範，主要憑意象與語言節奏傳情達意，故選(2)。(0)(1)(3)所述皆屬近體詩等格律文體的要求，與現代詩的自由特質不符。"},{"level":"basic","topic":"詩題理解－題目用意","q":"詩人不以「雨季」為題，而題為「傘季」，最主要的用意是什麼？","choices":["說明台灣的雨季長達一整個季節","以傘代季，凸顯多雨時節裡傘成為街頭最鮮明的景象","記錄雨傘店家生意最為興隆的時節","強調製傘的技術會隨季節而不斷改良"],"answer":1,"explain":"以「傘」名「季」，等於用傘來代表整個多雨的季節，凸顯此時傘影處處的景象，故選(1)。(0)偏向氣候常識；(2)(3)把詩題誤讀為商業或工藝訊息，皆非題旨。"},{"level":"basic","topic":"核心意象－描寫對象","q":"由詩題與全詩的鋪展可知，本詩最主要的描寫對象是什麼？","choices":["雨中一把把撐開的傘","雨後天邊出現的彩虹","屋簷下避雨的燕子","街角新開的花店"],"answer":0,"explain":"全詩以多雨時節街頭的傘為核心意象，並由此生發種種聯想，故選(0)。(1)(2)(3)雖同屬雨天可能見到的景物，卻非本詩聚焦描寫的對象。"},{"level":"basic","topic":"取材特色","q":"就取材角度而言，〈傘季〉最突出的特色是下列何者？","choices":["取材自歷史典故，藉古人事蹟諷喻今事","取材自神話傳說，營造奇幻瑰麗的世界","取材自戰爭經驗，抒發深沉的家國之痛","取材自日常生活中隨處可見的景物，於平凡中發現美"],"answer":3,"explain":"傘是雨天人人可見的尋常事物，詩人卻能從中翻出新意，正見於平凡中見美的功力，故選(3)。(0)(1)(2)所指的題材類型在本詩中皆未出現。"},{"level":"basic","topic":"修辭辨識－譬喻","q":"下列句子皆為自擬，何者運用了「譬喻」的修辭？","choices":["雨停了，你打算去哪裡呢？","撐開的傘，像一朵朵盛開的花","風啊風，請你走慢一點","雨下得整座城市都要浮起來了"],"answer":1,"explain":"以「像」連接本體（傘）與喻體（花），藉相似點作比方，屬譬喻，故選(1)。(0)是設問；(2)是呼告，並把風當人來說話，屬轉化；(3)刻意誇大，屬誇飾。"},{"level":"basic","topic":"修辭辨識－轉化","q":"若詩人把原本無生命的傘，寫得彷彿會綻放、會飛掠，具有生命與情態，這種寫法屬於哪一種修辭？","choices":["借代（以相關事物代替本名）","對偶（上下句字數相等、詞性相對）","引用（援引成語典故或前人語句）","轉化（將物賦予生命或人的情態）"],"answer":3,"explain":"賦予無生命之物以生命的動作或情態，是轉化（擬人、擬物）的典型表現，故選(3)。(0)借代重在以特徵或相關事物代替本體；(1)對偶講求句式整齊相對；(2)引用須有典故或前人語句為據。"},{"level":"basic","topic":"修辭辨識－排比","q":"連續使用三個以上結構相似的語句，一層層鋪陳同一對象的各種樣貌，這種修辭稱為什麼？","choices":["倒裝","雙關","反諷","排比"],"answer":3,"explain":"三個或三個以上結構相似的語句並列鋪陳，可增強氣勢與節奏感，稱為排比，故選(3)。(0)倒裝是語序的調動；(1)雙關是一語兼含兩義；(2)反諷是言在此而意相反。"},{"level":"basic","topic":"寫作手法－摹寫類別","q":"描寫傘面的色彩、形狀以及雨中的光影，這類訴諸眼睛所見的描寫屬於哪一種摹寫？","choices":["視覺摹寫","聽覺摹寫","嗅覺摹寫","觸覺摹寫"],"answer":0,"explain":"色彩、形狀、光影都由眼睛感知，屬視覺摹寫，故選(0)。(1)寫聲響；(2)寫氣味；(3)寫肌膚接觸的冷暖軟硬，皆與此處的描寫重點不同。"},{"level":"basic","topic":"詞語運用","q":"若要形容雨天街頭傘影色彩繁多、交錯紛呈，下列詞語何者最適合？","choices":["蕭索","齊整","繽紛","單調"],"answer":2,"explain":"「繽紛」指繁盛雜多、交錯紛呈的樣子，最能形容色彩多樣的傘影，故選(2)。(0)蕭索是冷清蕭條；(1)齊整強調秩序井然；(3)單調指缺乏變化，語意皆不合。"},{"level":"adv","topic":"主旨深究","q":"下列何者最能概括〈傘季〉一詩的主旨？","choices":["批判都市人情冷漠，呼籲人們返回鄉村生活","感嘆雨季漫長難耐，藉以抒發濃厚的思鄉愁緒","說明雨具形制的演進歷程與實用價值","藉多雨時節的傘影，展現對日常景物的細膩觀察與美感想像"],"answer":3,"explain":"全詩由尋常的傘生發聯想，重心在發掘平凡景物中的詩意與生命情調，故選(3)。(0)詩中並無批判都市、勸人歸鄉之意；(1)基調是欣賞而非愁苦；(2)把抒情詩誤讀為說明文。"},{"level":"adv","topic":"意象內涵分析","q":"關於「傘」在本詩中的意涵，下列理解何者最為周延？","choices":["傘只是烘托氣氛的背景，全詩真正的主角其實是雨","傘專指人與人之間的隔閡與防備","傘既是遮雨的實用器物，又被賦予美感與生命情調的想像","傘用以象徵社會階級的差距與貧富的距離"],"answer":2,"explain":"傘在詩中兼具實用器物與美感意象的雙重身分，想像空間因而擴大，故選(2)。(0)顛倒了主從關係，傘才是核心意象；(1)(3)把本詩導向隔閡、階級等社會批判，與全詩明亮的美感情調不合。"},{"level":"adv","topic":"手法賞析－化靜為動","q":"把原本靜止的景物寫成綻放、流動、飛掠的畫面，這種「化靜為動」的寫法，主要的藝術效果是什麼？","choices":["使畫面顯得凝滯，強化沉悶壓抑的氣氛","使原本單調的景象轉為富有動感與生機","使敘事層次分明，便於逐條說理","使語言趨於平實直白，更貼近日常口語"],"answer":1,"explain":"化靜為動能讓靜態景物頓時活潑起來，展現流動的美感與生機，故選(1)。(0)與動感的效果正好相反；(2)本詩重寫景抒情而非說理；(3)豐富的意象語言反而使表達更凝練優美。"},{"level":"adv","topic":"文類特色－意象功能","q":"在現代詩中，「意象」最主要的功能是下列何者？","choices":["藉具體可感的形象承載情思，使抽象的感受得以呈現","標示押韻的位置，方便讀者誦讀","交代人物身分與情節發生的先後順序","增加字數，使各行篇幅顯得整齊"],"answer":0,"explain":"意象是以可見可感的形象傳達內在情思，使抽象的感受變得具體，故選(0)。(1)意象與押韻無關；(2)那是敘事文的功能；(3)把意象窄化為湊字數的工具，全然誤解。"},{"level":"adv","topic":"情景關係","q":"就情與景的安排來看，本詩的表現方式最接近下列何者？","choices":["先長篇議論說理，再補敘事件的經過","由眼前的景物引發聯想，情意自描寫中自然流露","先直接宣告心中情感，再舉景物印證所說的道理","通篇純作客觀記錄，完全看不出作者的情感態度"],"answer":1,"explain":"本詩屬「由景生情」，詩人的欣賞之情隱含在描寫與聯想之中，不必直接說出，故選(1)。(0)本詩並非以議論說理為主；(2)順序顛倒，且本詩重點不在印證道理；(3)描寫中已寓含情意，並非全無情感。"},{"level":"adv","topic":"推論－觀察力與想像力","q":"詩人能在人人撐傘的尋常雨景中看出詩意，由此最可以推知什麼？","choices":["詩人視力不佳，因而時常把眼前事物看錯","詩人偏愛山水田園，內心排斥現實生活","詩人觀察敏銳，並能由觀察生發豐富的想像","詩人只是刻意堆砌華麗辭藻，內容其實空洞"],"answer":2,"explain":"能從同一景物看出多重情味，正說明觀察細膩且想像豐富，故選(2)。(0)把藝術聯想誤解為知覺錯誤；(1)本詩取材自現實所見的景物，並無排斥之意；(3)這些聯想皆有依據，並非空洞堆砌。"},{"level":"adv","topic":"延伸思考－生活態度","q":"閱讀〈傘季〉之後，下列哪一種生活態度最切合本詩帶給讀者的啟發？","choices":["凡事應未雨綢繆，出門記得隨身攜帶雨具","面對困境時要懂得忍耐，靜靜等待雨過天晴","應努力追求物質享受，藉此提升生活品質","以審美的眼光留心身邊平凡的事物，便能發現生活的情趣"],"answer":3,"explain":"本詩的可貴在於從人人視而不見的傘中看出美，啟發讀者以審美之眼看待日常，故選(3)。(0)停留在字面的生活常識；(1)把本詩誤讀為勵志勸勉之作；(2)與詩中所寫的精神美感背道而馳。"},{"level":"adv","topic":"文類比較－現代詩與古典詩詞","q":"若將本詩與古典詩詞中的寫雨之作相比，在表現形式上最明顯的差異是什麼？","choices":["本詩以白話的自由句式與新穎意象呈現，不受格律拘束","本詩嚴守字數與押韻，古典詩詞反而形式自由","本詩全用文言書寫，古典詩詞則全用白話","本詩專以說理論辯為主，古典詩詞則專事抒情"],"answer":0,"explain":"現代詩最大的特點是語言用白話、形式不受格律限制，並著力經營新鮮的意象，故選(0)。(1)(2)所述恰好顛倒；(3)古典詩詞亦有說理之作，且本詩並非說理。"},{"level":"adv","topic":"文學常識－詩社與詩人配對","q":"下列有關台灣現代詩社與代表詩人的配對，何者正確？","choices":["笠詩社－洛夫","現代派（現代詩社）－羅門","創世紀詩社－瘂弦","藍星詩社－紀弦"],"answer":2,"explain":"創世紀詩社由張默、洛夫、瘂弦等人推動，瘂弦為其代表詩人，故選(2)。(0)洛夫屬創世紀，並非笠詩社；(1)羅門與蓉子同屬藍星詩社；(3)紀弦是現代派的發起人，並非藍星成員。"},{"level":"adv","topic":"閱讀方法－現代詩鑑賞","q":"閱讀〈傘季〉這類現代詩時，下列哪一種方法最能掌握詩意？","choices":["逐字翻查典故出處，力求還原史實","循著詩中的意象與聯想，體會其中蘊含的情思","先數算每行字數與韻腳，判斷格律是否工整","把每一句都改寫成說明文，歸納出具體結論"],"answer":1,"explain":"現代詩以意象與聯想承載情思，順著意象體會最能掌握詩意，故選(1)。(0)本詩並非用典之作；(2)現代詩不受格律規範，數字數、找韻腳無助於理解；(3)改寫為說明文將破壞詩的想像與美感。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
