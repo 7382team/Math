@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>臺灣原住民族的社會與文化 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#b45309;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "hist-indigenous",
+  "title": "臺灣原住民族的社會與文化",
+  "subject": "歷史",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "南島語系·部落·祭典",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>臺灣原住民族的社會與文化</h1><div class="sub">歷史 · 南島語系·部落·祭典 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"南島語系","q":"臺灣原住民族所使用的各族語言，在語言分類上屬於下列哪一個語系？","choices":["漢藏語系","南島語系","印歐語系","阿爾泰語系"],"answer":1,"explain":"臺灣原住民族各族的語言都屬於南島語系。漢藏語系包含漢語、藏語等；印歐語系主要分布於歐洲與南亞；阿爾泰語系多見於中亞與東北亞，三者皆與臺灣原住民族語言無關。"},{"level":"basic","topic":"南島語族的分布範圍","q":"關於南島語族在世界上的分布範圍，下列敘述何者正確？","choices":["北到日本北海道，南到菲律賓群島","分布僅限於臺灣與中國東南沿海一帶","東到日本列島，西到阿拉伯半島，南到南極大陸","東到復活節島，西到馬達加斯加，南到紐西蘭"],"answer":3,"explain":"南島語族分布極為廣大，東到南太平洋的復活節島、西到非洲東岸外海的馬達加斯加、南到紐西蘭。北海道、中國東南沿海、日本列島與阿拉伯半島並非南島語族的傳統分布區；南極大陸則沒有原住民族居住。"},{"level":"basic","topic":"南島語族的概念","q":"「南島語族」這個名稱，主要是依據下列何者來界定的？","choices":["各族群所使用的語言同屬南島語系","各族群都居住在同一個國家之內","各族群都信仰同一種宗教","各族群的體型與膚色完全相同"],"answer":0,"explain":"「南島語族」是以語言分類為基礎的概念，指使用南島語系語言的各族群。它並不以國籍、宗教或體質特徵來界定，各地南島語族的文化與生活方式其實相當多樣。"},{"level":"basic","topic":"原住民族的分布","q":"過去人們常依原住民族的居住地與生活方式，將其概略分為哪兩大類？","choices":["沿海族群與離島族群","農耕族群與游牧族群","高山（山地）各族與平埔各族群","北部族群與南部族群"],"answer":2,"explain":"依居住地與生活方式，過去常概分為居住在山地丘陵的高山（山地）各族，以及居住在平原地帶的平埔各族群；這只是舊有的概分方式，現今則以各族族名與族人的自我認同為準。其餘選項都不是常見的概分方式，原住民族傳統生計也少有大規模游牧。"},{"level":"basic","topic":"部落組織與決策","q":"臺灣原住民族傳統上以部落為社會生活的基本單位。當部落遇到重大事務時，較常見的決策方式是下列何者？","choices":["由部落中最年輕的男子投票決定","由頭目或長老等具威望者召集會議共同商議","由前來交易的外來商人代為裁決","以抽籤方式決定，不需任何討論"],"answer":1,"explain":"傳統部落的重大事務，多由頭目、長老等具威望者召集會議商議取得共識；各族制度不盡相同，有的以長老會議為核心，有的則透過年齡組織運作。年輕成員須遵守部落規範，外來商人並無決策權，抽籤也不是原住民族的傳統決策制度。"},{"level":"basic","topic":"年齡階級","q":"部分原住民族（如阿美族）依男子的年齡分成不同階層，各階層承擔不同的工作與訓練，並隨年齡逐級晉升。這種制度稱為什麼？","choices":["科舉制度","保甲制度","封建制度","年齡階級"],"answer":3,"explain":"依年齡劃分階層、分擔部落任務並逐級晉升的制度稱為年齡階級。科舉是選拔官員的考試制度，保甲是政府的基層治安組織，封建制度則是土地與身分的分封關係，皆與此不同。"},{"level":"basic","topic":"母系社會","q":"下列關於部分原住民族（如阿美族、卑南族）母系社會的敘述，何者較為適當？","choices":["家族世系與財產多依母親一方傳承，女性在家庭中具有重要地位","部落所有公共事務一律由女性單獨決定，男性完全不參與","男性不得參加部落中的任何祭典或儀式活動","家庭成員之間沒有任何分工，各人的角色完全相同"],"answer":0,"explain":"母系社會指世系認定與財產繼承主要依循母親一方，女性在家庭中地位重要。但部落公共事務仍常由男性透過年齡階級或會所組織參與，並非由女性單獨決定；男性也會參與祭典，家庭內部同樣存在分工。"},{"level":"basic","topic":"歲時祭儀：豐年祭","q":"阿美族的豐年祭，主要與下列何者的關係最為密切？","choices":["紀念部落城牆修築完工","歡送族人前往海外經商","慶祝作物收成、感謝祖靈並凝聚部落成員的情感","感謝外來政權賜予土地"],"answer":2,"explain":"豐年祭屬歲時祭儀，與農作收穫、感謝祖靈及凝聚部落情感密切相關。原住民族傳統聚落不以修築城牆為特色，也與海外經商、外來政權賜地無關。"},{"level":"basic","topic":"歲時祭儀：飛魚祭","q":"蘭嶼的達悟族（雅美族）每年舉行飛魚祭，這項祭儀最能反映該族何種生活特色？","choices":["以山田燒墾為主的高山農耕生活","以海洋漁撈為重要生計的海島生活","以馬匹為主的草原游牧生活","以絲織品貿易為主的商業生活"],"answer":1,"explain":"飛魚祭與飛魚洄游的季節、捕撈方式及相關規範有關，反映達悟族依海而生的海島漁撈生活。高山農耕、草原游牧與絲織貿易皆非其傳統生計特色。"},{"level":"basic","topic":"歲時祭儀：矮靈祭","q":"賽夏族每隔一段時間盛大舉行、與傳說中矮人有關的重要祭典是下列何者？","choices":["飛魚祭","打耳祭","戰祭（瑪雅斯比）","矮靈祭"],"answer":3,"explain":"矮靈祭是賽夏族與矮人傳說相關的重要祭儀。飛魚祭為達悟族的祭儀，打耳祭與布農族的狩獵文化有關，戰祭（瑪雅斯比）則是鄒族的祭典。"},{"level":"basic","topic":"傳統生計：山田燒墾","q":"原住民族傳統的「山田燒墾」是指什麼樣的耕作方式？","choices":["焚燒林地上的草木後開墾種植，耕作一段時間後休耕、另闢新地","在河口築堤圍海，把海埔地改造成農田","以水車引水灌溉，全年連續耕種同一塊土地","以牛隻拉犁深耕水田，並大量施用化學肥料"],"answer":0,"explain":"山田燒墾是先焚燒林木，利用灰燼中的養分耕種，待地力下降後休耕、另闢新地的輪耕方式。圍海造田、全年連作與施用化學肥料的水田深耕，都不是原住民族的傳統耕作方式。"},{"level":"basic","topic":"傳統工藝","q":"下列哪一組物品，最能代表臺灣原住民族的傳統工藝？","choices":["青花瓷的燒製","青銅鼎的鑄造","織布、木雕與琉璃珠","活字印刷的排版"],"answer":2,"explain":"織布（如泰雅族）、木雕（如排灣族、魯凱族）與琉璃珠（如排灣族）都是原住民族具代表性的傳統工藝。青花瓷、青銅鼎與活字印刷屬於中國歷史上的手工業或技術，並非原住民族的傳統工藝。"},{"level":"basic","topic":"口傳文學與神話","q":"原住民族傳統上主要透過什麼方式，保存並傳遞祖先的歷史、神話與生活經驗？","choices":["以甲骨文刻寫於龜甲上","以口耳相傳的神話、傳說與歌謠","以石碑刻寫年表，公布於部落入口","以印刷成冊的書籍發行給各家戶"],"answer":1,"explain":"原住民族傳統上未發展出自己的文字系統，主要以口傳文學（神話、傳說、歌謠）由長輩口耳相傳。甲骨文、石碑年表與印刷書籍都不是原住民族的傳統傳承方式。"},{"level":"basic","topic":"正名運動","q":"近數十年來，原住民族積極推動「正名運動」，其主要訴求是下列何者？","choices":["要求恢復山田燒墾，全面停止其他耕作方式","要求政府為各族群另外劃設新的行政區","要求全面禁止外界人士進入部落","要求以「原住民（族）」取代過去帶有歧視意味的稱呼，並爭取恢復族群名稱與傳統姓名"],"answer":3,"explain":"正名運動的核心訴求，是改變過去帶有歧視意味的舊稱呼，改以「原住民（族）」相稱，並爭取恢復族群名稱與傳統姓名的權利。恢復燒墾、另設行政區或禁止外界進入部落，都不是正名運動的主張。"},{"level":"adv","topic":"平埔族群的變遷","q":"清代以後，平埔族群的傳統生活出現明顯改變，其中土地大量流失的主要原因，最可能是下列何者？","choices":["漢人移民日益增加，透過開墾、租佃、買賣與借貸等方式，逐漸取得原屬平埔族群的土地","大量族人自願遷往海外定居，使土地長期無人使用","政府明令禁止平埔族群使用土地，並將土地全數收歸國有","颱風與地震使平埔族群居住的平原完全消失"],"answer":0,"explain":"平原地區漢人移民日增，透過開墾、租佃、買賣與借貸等方式逐步取得土地，是平埔族群土地流失的主要原因，部分族人因而遷往內山或其他地區。族人並未大規模遷居海外，土地也不是被政府全數沒收，自然災害更不足以使整片平原消失。"},{"level":"adv","topic":"文化涵化","q":"部分平埔族群長期與漢人接觸後，逐漸改用漢姓、學習漢語，並採行漢人的信仰與生活習慣。這種現象在文化上稱為什麼？","choices":["分化","同盟","涵化","遷徙"],"answer":2,"explain":"一個族群在長期接觸另一族群後，逐漸吸收對方文化特質的過程稱為涵化，這是族群互動下的文化變遷，並不代表文化有高下之分。分化指群體內部的分裂，同盟指政治上的結盟，遷徙則是居住地的移動，都無法說明文化內涵的改變。"},{"level":"adv","topic":"年齡階級的社會功能","q":"某族部落中，少年階段的男子負責跑腿與傳訊，青年階段負責警戒與勞動，年長者則負責指導與參與決策。由這樣的安排，最能推論出年齡階級具有什麼功能？","choices":["讓年長者可以完全不必參與部落事務","使部落成員依年齡分工合作，並在過程中學習部落的規範與技能","使每個人的工作內容一生固定不變","用來決定部落成員能否擁有自己的姓名"],"answer":1,"explain":"不同年齡承擔不同任務，可看出年齡階級同時具有分工與教育（社會化）的功能。長者仍以指導、決策的方式參與部落事務；成員職責會隨晉升而改變，並非終身固定；年齡階級也與能否擁有姓名無關。"},{"level":"adv","topic":"母系社會與父系社會的比較","q":"小華整理原住民族中母系社會與父系社會的資料，下列哪一項比較最為恰當？","choices":["母系社會沒有頭目，只有父系社會才有頭目","母系社會不重視祭典，只有父系社會才重視祭典","父系社會的部落規模一定比母系社會大","兩者的差別主要在於世系與財產依母方或父方傳承，並無高下優劣之分"],"answer":3,"explain":"母系與父系的主要差異在於世系認定與財產繼承循母方或父方，只是不同的社會運作方式，沒有優劣之分。頭目制與祭典並非某一類社會獨有，部落規模大小也與世系制度沒有必然關係。"},{"level":"adv","topic":"山田燒墾與環境適應","q":"傳統山田燒墾在耕作一段時間後，族人會讓原有土地休耕，另外開闢新地。這樣的做法最主要的用意是什麼？","choices":["讓地力得以恢復，使土地能長期持續利用","讓族人有更多時間外出經商","增加土地可以課徵的稅額","配合政府所規定的輪作制度"],"answer":0,"explain":"焚燒後灰燼提供的養分有限，連續耕作會使地力下降，休耕輪替可讓土地恢復肥力、長期使用，反映與自然環境共存的生活智慧。外出經商、課稅或政府規定都不是傳統輪耕的原因。"},{"level":"adv","topic":"南島語族原鄉的推論","q":"學者指出，臺灣原住民族各族語言彼此間的差異程度，比臺灣以外其他南島語地區更為多樣。這項現象最常被用來支持下列哪一種說法？","choices":["臺灣原住民族的語言其實不屬於南島語系","南島語族應該是由紐西蘭遷入臺灣","臺灣是南島語族發展較早、並向外擴散的重要地區之一","語言差異愈大，代表族群之間從未有任何往來"],"answer":2,"explain":"一地語言分化愈多樣，通常代表該語言在當地發展的時間愈久，因此常被用來支持臺灣是南島語族重要原鄉之一。臺灣原住民族語言確屬南島語系；紐西蘭是南島語族擴散所及的南端而非起點；語言差異也不等於族群之間毫無往來。"},{"level":"adv","topic":"族語與文化傳承","q":"近年部分原住民族語的使用人口有逐年下降的情形。為改善這種狀況，下列哪一項做法最為適當？","choices":["推動族語教學與族語認證，並在學校、家庭與部落活動中鼓勵年輕世代實際使用","禁止族人使用族語以外的任何語言","把族語僅保存在博物館的錄音檔中，日常生活不再使用","要求全國國民都必須改說某一族的族語"],"answer":0,"explain":"語言要靠實際使用才能傳承，透過族語課程、認證制度與部落文化活動讓年輕世代開口說，是可行且尊重多元的做法。禁止使用其他語言或強制全民改說某族語都不合理；只做靜態保存則無法讓語言在生活中延續。"},{"level":"adv","topic":"原住民族日與正名的意義","q":"政府設立「原住民族日」，並將過去帶有歧視意味的稱呼改為「原住民（族）」。這些措施最主要的意義是什麼？","choices":["表示原住民族從此不必遵守國家的法律","承認過去對原住民族的不當對待，並肯定其身分、文化與應有的權利","鼓勵所有原住民族族人都遷回山區居住","說明原住民族的文化優於其他族群的文化"],"answer":1,"explain":"設立原住民族日與正名，是面對歷史、承認過去不當對待，並肯定原住民族身分、文化與權利的作為。它並不代表免除法律義務，也不是要求族人遷居特定地區，更不是主張某一族群的文化較為優越。"},{"level":"adv","topic":"尊重多元文化的態度","q":"某校舉辦文化參訪，前往部落觀賞歲時祭儀。下列哪一位同學的態度最為適當？","choices":["小安：把族人的傳統服飾當成好笑的裝扮，拍照上傳並加上嘲弄的文字","小美：認為祭典只是表演，隨意走進祭場中央並打斷儀式","小威：事先了解祭典的意義與禁忌，遵守部落規定，並徵得同意後才拍照","小文：認為這樣的文化已經落伍，勸族人不要再舉辦祭典"],"answer":2,"explain":"祭典具有信仰與文化上的意義，事先了解其內涵與禁忌、遵守部落規範並徵得同意後拍照，才是尊重多元文化的表現。嘲弄傳統服飾、擅闖祭場打斷儀式，或以「落伍」為由勸阻，都是不尊重且帶有刻板印象的做法。"},{"level":"adv","topic":"海洋文化與資源永續","q":"達悟族傳統上對於捕撈飛魚的時間、方式與可食用的魚種訂有許多規範，違反者會受到族人的約束。這些規範最能反映下列何種意涵？","choices":["以宗教理由限制族人捕魚，實際上不利於生活","顯示該族其實並不依賴海洋維生","目的在於禁止全族食用任何魚類","藉由文化規範節制海洋資源的取用，使漁獲能夠持續利用"],"answer":3,"explain":"依季節與魚種訂定捕撈規範，可避免過度捕撈，使海洋資源得以永續，是傳統生態智慧的展現。這些規範並非不利生活；達悟族正因依海維生，才需要管理資源；規範也不是全面禁食魚類。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

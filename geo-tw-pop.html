@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>臺灣的人口與族群 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo-tw-pop",
+  "title": "臺灣的人口與族群",
+  "subject": "地理",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "人口分布·少子化·多元族群",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>臺灣的人口與族群</h1><div class="sub">地理 · 人口分布·少子化·多元族群 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"臺灣人口分布特徵","q":"下列關於臺灣人口分布最主要特徵的敘述，何者正確？","choices":["西部平原地區人口稠密，東部與山地人口稀疏","東部平原地區人口稠密，西部山地人口稀疏","全島人口分布相當平均，各縣市之間差異不大","人口集中在中央山脈一帶，沿海平原反而稀少"],"answer":0,"explain":"臺灣地形東高西低，西部有較廣大的平原與盆地，加上開發較早、交通與產業發達，人口明顯集中；東部受中央山脈阻隔、平地有限，人口較稀疏。選項1把東西部弄反；選項2忽略臺灣各地人口密度差距懸殊的事實；選項3的中央山脈為高山地帶，坡陡地狹，反而是人口最稀少的區域。"},{"level":"basic","topic":"北部大都會區","q":"臺灣人口最為密集、各都市相連而發展成大都會區的是下列哪一個地區？","choices":["花東縱谷一帶","北北基桃（臺北、新北、基隆、桃園）一帶","恆春半島一帶","中央山脈沿線地區"],"answer":1,"explain":"北北基桃位於臺北盆地與桃園臺地一帶，政治、商業、交通與就業機會集中，各都市相連形成大都會區，是全臺人口最密集之處。花東縱谷雖有平地但腹地小、產業機會較少；恆春半島位於南端且開發程度有限；中央山脈為高山區，人口最稀少。"},{"level":"basic","topic":"人口密度的概念","q":"地理課本中所說的「人口密度」，是指下列何者？","choices":["一個地區每年新出生的人口數","一個地區男性與女性人口的比例","一個地區平均每一平方公里居住的人口數","一個地區老年人口占總人口的比例"],"answer":2,"explain":"人口密度＝總人口數÷土地面積，用來表示人口在空間上的疏密程度，單位通常是「人／平方公里」。選項0講的是出生人口數，選項1是性別比，選項3是老年人口比例，三者都是不同的人口指標，容易與人口密度混淆。"},{"level":"basic","topic":"臺灣人口密度偏高","q":"關於臺灣整體人口密度的敘述，下列何者最正確？","choices":["臺灣土地遼闊，整體人口密度在世界上屬於偏低","臺灣各地人口密度完全一致，山地與平原沒有差別","臺灣近年因少子化，人口密度已降為世界最低","臺灣面積不大而人口眾多，整體人口密度在世界上屬於偏高"],"answer":3,"explain":"臺灣本島面積不大，且丘陵與山地占了相當大的比例，可居住的平地有限，人口卻相當多，因此整體人口密度在世界上偏高。選項0與事實相反；選項1忽略西部平原與東部山地之間的巨大差異；選項2誤把出生數下降誇大為人口密度驟降，少子化使人口成長趨緩，但整體密度仍屬偏高。"},{"level":"basic","topic":"影響人口分布的因素","q":"下列哪一組自然與人文條件，最有利於一個地區吸引人口聚集？","choices":["地形崎嶇、對外交通不便、就業機會有限","地形平坦、交通便利、產業與就業機會較多","氣候條件嚴苛、可耕地稀少、公共服務不足","遠離主要道路、產業活動稀少、生活機能不便"],"answer":1,"explain":"影響人口分布的因素包括地形是否平坦、氣候是否溫和、交通是否便利、產業與就業機會多寡，以及開發歷史的先後。選項1兼具有利的自然與人文條件，最能吸引人口聚集；選項0、2、3描述的都是不利條件，通常對應人口較稀疏的地區。"},{"level":"basic","topic":"少子化的意義","q":"新聞常提到臺灣的「少子化」現象，它主要是指什麼？","choices":["兒童人口的死亡率快速上升","老年人口占總人口的比例明顯下降","每年出生的嬰兒數逐年減少，幼年人口比例隨之下降","家庭中孩子的平均身高逐年下降"],"answer":2,"explain":"少子化的關鍵在於「出生數減少」，使幼年人口在總人口中所占比例下降。選項0講的是死亡率，與出生數無關；選項1剛好相反，出生數減少時老年人口比例通常上升；選項3是對「少子」字面的誤解。"},{"level":"basic","topic":"少子化對教育的影響","q":"少子化對國中小學校造成的最直接影響是下列何者？","choices":["學生人數減少，部分學校出現減班或併校","升學考試的科目大幅增加","學校校地面積被迫大幅擴大","學校教師必須全部改教成人課程"],"answer":0,"explain":"出生數減少會使學齡人口下降，招生不足時學校便可能減班，偏遠地區甚至併校，教師員額需求也隨之調整。選項1的考試科目與人口變遷沒有直接因果；選項2方向相反，學生變少不需擴大校地；選項3過度推論，學校並不會全面轉型。"},{"level":"basic","topic":"高齡社會","q":"「高齡社會」一詞主要是用來描述下列哪一種情形？","choices":["全國人口總數不斷增加的社會","幼年人口比例特別高的社會","男性人口明顯多於女性人口的社會","老年人口占總人口的比例達到一定標準以上的社會"],"answer":3,"explain":"高齡社會是以「老年人口占總人口比例」達到一定標準來界定，屬於人口組成（年齡結構）的概念。選項0講的是人口總量而非年齡結構；選項1描述的是年輕型人口，與高齡相反；選項2是性別結構，屬於不同面向。"},{"level":"basic","topic":"人口老化的因應","q":"面對人口老化，下列哪一項是政府與社會最需要優先規劃因應的需求？","choices":["大量增建幼兒園與國小校舍","擴充兒童遊樂場等遊憩設施","大幅增加國中小的教師員額","加強長期照顧服務與醫療資源的規劃"],"answer":3,"explain":"老年人口增加，會提高對長期照顧、居家服務與醫療資源的需求，這是高齡社會最迫切的課題。選項0、1、2都是因應幼年人口增加才需要的措施，與少子化、人口老化的趨勢方向不符，是典型的反向誘答。"},{"level":"basic","topic":"人口金字塔的變化","q":"近數十年來，臺灣人口金字塔的形狀變化趨勢為何？","choices":["由底部寬大的金字塔型，逐漸轉為底部縮小的燈籠型，甚至趨近倒三角","由燈籠型逐漸轉為底部寬大的金字塔型","始終維持底部寬、頂端窄的標準金字塔型","由倒三角型再度轉回底部最寬的金字塔型"],"answer":0,"explain":"人口金字塔的底部代表幼年人口。出生數減少使底部變窄，加上平均壽命延長使頂端加寬，整體由金字塔型轉為中間寬、上下較窄的燈籠型，並有走向倒三角的趨勢。選項1、3都描述底部重新變寬、出生數回升，與臺灣情形相反；選項2認為形狀始終未變，忽略了近數十年的明顯轉變。"},{"level":"basic","topic":"鄉村人口外移","q":"臺灣鄉村人口大量移往都市，最主要的原因是下列何者？","choices":["都市的空氣品質與自然環境普遍優於鄉村","都市的工作機會較多，就學、就醫等生活機能也較完善","政府規定鄉村居民必須遷入都市居住","鄉村地區完全沒有可以耕種的土地"],"answer":1,"explain":"人口移動多受經濟與生活機能的拉力影響，都市提供較多就業機會與較完整的教育、醫療、交通服務，因而吸引鄉村人口移入。選項0與事實不符，都市環境品質未必較佳；選項2屬於強制遷移，臺灣並無此規定；選項3把鄉村說成毫無農地，過度誇大。"},{"level":"basic","topic":"人口自然增加率","q":"一個地區的「人口自然增加率」，主要是由下列哪兩項數值相減而得？","choices":["遷入率與遷出率","出生率與死亡率","男性人口比例與女性人口比例","幼年人口比例與老年人口比例"],"answer":1,"explain":"人口自然增加率＝出生率－死亡率，反映一地人口因生育與死亡而產生的增減。選項0相減得到的是社會增加率，屬於人口遷移造成的變化；選項2是性別結構的比較；選項3是年齡結構的比較，三者都不是自然增加率的算法。"},{"level":"basic","topic":"臺灣的族群組成","q":"臺灣社會常提到的主要族群，除了原住民族、閩南、客家與外省族群之外，近年來還包括因跨國婚姻等因素移居並定居臺灣的哪一群人？","choices":["來臺觀光的旅客","新住民","短期交換的學生","過境轉機的旅客"],"answer":1,"explain":"新住民多因婚姻、工作等因素長期定居臺灣，並在此組成家庭、參與社會生活，已被視為臺灣主要族群之一。選項0、2、3所指的都是短期停留、未在臺定居者，不屬於族群組成的範疇。"},{"level":"basic","topic":"原住民族的多樣性","q":"下列關於臺灣原住民族的敘述，何者正確？","choices":["原住民族只有單一族，語言與文化完全相同","原住民族全部集中居住在都市的市中心","原住民族包含多個族群，各族有不同的語言、祭典與生活文化","原住民族沒有自己的語言，僅使用漢字書寫溝通"],"answer":2,"explain":"臺灣原住民族由多個族群組成，各族的語言、歲時祭儀、工藝與社會組織各具特色，呈現高度多樣性。選項0把不同族群混為一談；選項1與實際居住分布不符，原住民族分布於山地、平地與都市各處；選項3否定各族固有語言，並不正確。"},{"level":"adv","topic":"人口密度的比較","q":"甲縣的土地面積約為乙縣的兩倍，但兩縣的總人口數十分接近。關於兩縣人口密度的比較，下列何者正確？","choices":["甲縣人口密度較低，約為乙縣的一半","甲縣人口密度較高，約為乙縣的兩倍","兩縣總人口相近，人口密度必定相同","人口密度只看人口數，與面積無關，無法比較"],"answer":0,"explain":"人口密度＝人口數÷面積。人口數相近時，面積較大者密度較低，故甲縣約為乙縣的一半。選項1弄反了分母大小與密度的關係；選項2忽略面積這個變因；選項3誤解人口密度的定義，面積正是計算時不可或缺的一項。"},{"level":"adv","topic":"交通、產業與人口聚集","q":"小玲發現臺灣西部走廊有高速公路與高速鐵路通過，沿線都市工商業活動熱絡，人口也持續成長。針對這個現象，最合理的推論是下列何者？","choices":["交通建設會促使沿線人口大量移往山地","工商業愈發達的地方，人口密度反而愈低","交通條件與人口分布之間並沒有關聯","交通便利且工商業發達，就業機會較多，容易吸引人口移入聚集"],"answer":3,"explain":"便捷的交通降低了通勤與運輸成本，帶動工商業發展並創造就業機會，形成吸引人口的拉力，這正是西部走廊人口稠密的重要原因。選項0與人口實際流向相反；選項1把產業發展與人口密度的正向關係說反；選項2否定了人文因素對人口分布的影響。"},{"level":"adv","topic":"東部人口稀疏的原因","q":"花蓮縣、臺東縣的土地面積並不小，但人口數與人口密度都明顯低於西部多數縣市。造成此現象最主要的原因是下列何者？","choices":["東部地區完全沒有任何平原可供居住","東部氣候終年嚴寒，完全不適合人類居住","東部山地所占比例高、可利用的平地有限，且交通與產業發展條件不如西部","政府法令規定東部不得設置任何工商業"],"answer":2,"explain":"東部受中央山脈與海岸山脈夾峙，可利用平地集中於狹長的縱谷與沿海地帶，加上聯外交通受地形限制、工商業機會相對較少，人口自然較稀疏。選項0說「完全沒有平原」過於絕對，花東縱谷即為平地；選項1誤述臺灣氣候，臺灣屬熱帶與副熱帶，並無終年嚴寒；選項3的法令規定並不存在。"},{"level":"adv","topic":"歷史開發先後的影響","q":"臺灣西部與南部沿海一帶開發時間較早，聚落與市街形成也較早。這項歷史因素對今日人口分布的影響，下列推論何者最合理？","choices":["開發較早的地區，今日人口一定最為稀少","開發較早使聚落、農業與交通基礎較早建立，較容易累積人口，成為今日人口稠密區之一","歷史開發的先後對今日的人口分布完全沒有影響","開發較早代表土地資源已耗盡，居民必須全數遷離"],"answer":1,"explain":"早期開發的地區先形成聚落與市街，交通與各項建設隨之累積，人口得以持續成長，成為今日西部人口稠密帶的基礎之一。選項0因果相反；選項2忽略歷史因素也是影響人口分布的重要條件；選項3的「土地耗盡、全數遷離」屬誇大推論，與事實不符。"},{"level":"adv","topic":"人口變遷的綜合判讀","q":"某鄉鎮的國中近年新生人數逐年減少，同時鄉內陸續增設多家長期照顧機構與日間照顧據點。這最可能反映該地區出現下列哪一種人口變遷？","choices":["少子化與人口老化同時發生","出生率上升，且老年人口比例下降","大量幼年人口移入，人口結構趨於年輕","幼年人口與老年人口的比例同時明顯上升"],"answer":0,"explain":"新生人數減少反映出生數下降（少子化），長照與日照需求增加則反映老年人口比例提高（人口老化），兩者常同時出現。選項1與兩項線索都相反；選項2無法解釋長照機構增設，也與新生減少矛盾；選項3的「幼年比例上升」與新生人數減少互相牴觸。"},{"level":"adv","topic":"扶養比與社會負擔","q":"若一個社會中，幼年人口與老年人口相對於工作年齡人口的比例持續上升，最可能造成下列哪一種結果？","choices":["工作年齡人口的扶養負擔明顯減輕","政府在社會福利與醫療方面的支出需求下降","勞動力供給更加充足，缺工問題因此消失","工作年齡人口的扶養負擔加重，社會福利與醫療支出的需求隨之增加"],"answer":3,"explain":"扶養比是被扶養人口（幼年＋老年）相對於工作年齡人口的比例，比例上升代表每位工作者需分擔更多扶養責任，政府在年金、長照與醫療上的支出壓力也隨之增加。選項0、1的方向與扶養比上升的意義相反；選項2誤把「被扶養人口增加」當成「勞動力增加」。"},{"level":"adv","topic":"人口金字塔的判讀","q":"甲、乙兩地的人口金字塔中，甲地底部寬大、頂端狹窄；乙地底部明顯縮小、頂端逐漸加寬。關於兩地人口結構的判讀，下列何者最適當？","choices":["甲地人口老化的程度比乙地嚴重","乙地幼年人口所占比例高於甲地","甲地屬於較年輕型的人口結構，乙地則少子化與人口老化較為明顯","兩地的年齡結構完全相同，只是總人口數多寡不同"],"answer":2,"explain":"人口金字塔的底部代表幼年人口、頂端代表老年人口。甲地底部寬表示幼年人口比例高，屬年輕型結構；乙地底部窄、頂端寬，代表出生數減少且老年人口比例提高。選項0、1都把兩地的情形對調；選項3與圖形所呈現的明顯差異不符。"},{"level":"adv","topic":"城鄉人口移動的影響","q":"鄉村地區的青壯年人口長期移往都市，對鄉村與都市分別造成的影響，下列敘述何者最合理？","choices":["鄉村勞動力減少、人口老化情形加劇；都市則出現住宅擁擠與交通壅塞等問題","鄉村人口老化的情形因此減緩；都市土地價格大幅下跌","鄉村與都市的人口結構都會同時趨於年輕化","鄉村學校學生人數增加；都市學校反而面臨減班"],"answer":0,"explain":"移出者多為青壯年，鄉村因此流失勞動力並使老年人口比例相對升高；都市人口快速增加則帶來住宅、交通與環境壓力，形成城鄉差距的兩面。選項1、2、3都把移出地與移入地的影響弄反，屬於方向性錯誤的誘答。"},{"level":"adv","topic":"移工與臺灣社會","q":"近年臺灣部分產業與家庭照顧工作出現人力需求，來自其他國家的移工在臺工作。從人口與社會的角度來看，下列理解何者較為適當？","choices":["移工的到來會使臺灣原有的族群文化完全消失","移工只會帶來社會問題，因此應避免與其往來","移工從事的工作與臺灣的產業人力需求並無關聯","移工補充了部分產業與照顧工作的人力需求，也使臺灣社會更加多元，應以尊重的態度相處"],"answer":3,"explain":"移工的人力需求，與臺灣勞動力結構改變、照顧需求增加等人口變遷密切相關；不同文化背景的人共同生活，也使社會更加多元，彼此尊重是相處的基礎。選項0誇大文化影響，多元並存不等於原有文化消失；選項1帶有負面標籤，既不客觀也不符合尊重多元的態度；選項2與實際的人力需求情形不符。"},{"level":"adv","topic":"多元文化與族群平等","q":"某國中舉辦「多元文化週」，安排原住民族歌舞展演、客家美食製作與東南亞語言體驗等活動。這項活動最主要想傳達的觀念是下列何者？","choices":["各族群文化應分出高低優劣，讓學生選擇最好的一種學習","只有人口數較多的族群，其文化才值得被介紹","各族群文化各有其特色，應相互尊重、彼此欣賞，落實族群平等","族群之間的文化差異容易造成衝突，因此應盡量避免接觸"],"answer":2,"explain":"多元文化教育的核心是認識差異、相互尊重，並肯定各族群文化的價值，以落實族群平等。選項0把文化排出優劣，違反文化平等原則；選項1以人口多寡決定文化價值，屬於不當的判斷標準；選項3主張避免接觸，反而不利於理解與共處。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

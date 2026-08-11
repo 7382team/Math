@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>臺灣的水文與水資源 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#0891b2;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "geo-tw-water",
+  "title": "臺灣的水文與水資源",
+  "subject": "地理",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "河川·水庫·缺水",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>臺灣的水文與水資源</h1><div class="sub">地理 · 河川·水庫·缺水 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"臺灣河川特性（短、陡、急）的成因","q":"臺灣的河川普遍具有「流路短、坡度陡、流速急」的特徵，形成這種特徵最主要的原因是什麼？","choices":["臺灣的年降水量偏低，河川得到的水量補注不足","臺灣位於亞熱帶，氣溫偏高使河水蒸發得特別快","臺灣島東西寬度狹窄，加上中央山脈縱貫，地勢高聳、起伏大","臺灣河川下游多築有攔河堰，使水流被人為加速"],"answer":2,"explain":"臺灣島東西寬度小，中央山脈縱貫全島使地勢陡峻，河水從高山急速奔流入海，因而流路短、坡度陡、流速急。「年降水量偏低」與事實相反，臺灣年雨量其實偏高；「下游攔河堰使水流加速」是把人工設施誤當成自然特性的成因，攔河堰反而會減緩水流；「氣溫高、蒸發快」與河川的坡度、流速無關。"},{"level":"basic","topic":"主要分水嶺與東西分流","q":"臺灣的河川大多以哪一座山脈作為主要分水嶺，分別向東、向西入海？","choices":["中央山脈","海岸山脈","阿里山山脈","雪山山脈"],"answer":0,"explain":"中央山脈縱貫南北、位置偏東且最為高聳，是全島最主要的分水嶺，河川因而向東流入太平洋、向西流入臺灣海峽。海岸山脈位於花東縱谷以東，範圍小，只影響東部少數短小河川；阿里山山脈與雪山山脈分布範圍有限，都不是全島的主要分水嶺。"},{"level":"basic","topic":"主要河川－長度最長的河川","q":"臺灣本島長度最長的河川是下列何者？","choices":["淡水河","大甲溪","高屏溪","濁水溪"],"answer":3,"explain":"濁水溪發源於中部山區，橫貫中部後注入臺灣海峽，是臺灣本島長度最長的河川。淡水河是北部最重要的河川，但長度並非第一；高屏溪以流域面積全臺最大著稱，長度不是第一；大甲溪以水力發電發達聞名，長度較短。"},{"level":"basic","topic":"主要河川－流域面積最大","q":"下列臺灣河川中，流域面積最大的是哪一條？","choices":["濁水溪","高屏溪","淡水河","曾文溪"],"answer":1,"explain":"高屏溪匯集南部多條支流，集水範圍廣，流域面積為全臺最大。濁水溪是「長度」最長，最容易與流域面積混淆；淡水河的流域主要限於北部；曾文溪位於南部，流域規模不及高屏溪。"},{"level":"basic","topic":"主要河川－大甲溪與水力發電","q":"中部有一條河川，上游河谷落差大、水流湍急，沿線興建多座水庫與發電廠，是臺灣水力發電相當發達的河川。這條河川是？","choices":["蘭陽溪","淡水河","秀姑巒溪","大甲溪"],"answer":3,"explain":"大甲溪上游落差大、水量較穩定，沿線進行梯級開發並設有多座水庫與發電廠，是水力發電發達的代表性河川。蘭陽溪與秀姑巒溪為東部河川，水力開發程度不如大甲溪；淡水河流經人口密集的臺北盆地，主要功能在民生供水與早期航運，而非水力發電。"},{"level":"basic","topic":"主要河川－淡水河的特色","q":"關於淡水河的敘述，下列何者正確？","choices":["它是臺灣本島長度最長的河川","它的流域面積是全臺最大","它流經臺北盆地，是北部地區最重要的河川","它發源於中央山脈東側，向東注入太平洋"],"answer":2,"explain":"淡水河流經臺北盆地，早期具航運功能，現今仍是北部重要的水源與都市河川。長度最長的是濁水溪；流域面積最大的是高屏溪；淡水河位於北部，向西北注入臺灣海峽，不是向東注入太平洋。"},{"level":"basic","topic":"流量的季節變化－豐水期","q":"臺灣河川流量的豐水期主要出現在哪個季節？與哪些天氣現象關係最密切？","choices":["夏季，主要來自初夏的梅雨與夏、秋的颱風","冬季，主要來自寒流帶來的降水","春季，主要來自東北季風帶來的暴雨","秋末，主要來自焚風帶來的降水"],"answer":0,"explain":"臺灣的降水集中在初夏梅雨與夏、秋颱風時期，此時河川水量暴增，形成豐水期；冬季雨量少則為枯水期，豐枯差距懸殊。寒流是氣溫現象，不是主要降水來源；東北季風主要影響冬季，且集中於北部、東北部；焚風是氣流越山後的乾熱風，反而不帶來降水。"},{"level":"basic","topic":"降水的空間分布不均","q":"就臺灣降水的空間分布而言，下列敘述何者正確？","choices":["平地的降水量明顯多於山區","全島各地的降水量大致相同","西部平原的降水量普遍多於東部山地","山區的降水量多於平地"],"answer":3,"explain":"氣流被地形抬升後容易成雲致雨，因此臺灣山區（迎風坡）的雨量普遍比平地多。「平地多於山區」與事實相反；「各地大致相同」忽略了臺灣降水在空間上分布極不均勻；東部山地迎東北季風與颱風水氣，雨量通常多於西部平原。"},{"level":"basic","topic":"降水的時間分布－北部冬雨","q":"臺灣北部在冬季仍有較多降水，主要與下列何者關係最密切？","choices":["西南季風帶來大量水氣，在北部形成降雨","東北季風帶來水氣，北部與東北部正位於迎風坡","颱風在冬季頻繁登陸北部","午後強烈對流形成的雷陣雨"],"answer":1,"explain":"冬季盛行東北季風，北部與東北部位於迎風坡，水氣被地形抬升而降雨，因此冬季仍不缺雨。西南季風盛行於夏季，主要為中南部帶來雨水；颱風集中在夏、秋兩季；午後雷陣雨是夏季常見的天氣現象，不是冬雨的來源。"},{"level":"basic","topic":"缺水風險－每人可分配水量偏低","q":"臺灣的年雨量偏高，卻常被視為缺水風險較高的地區，最主要的原因是什麼？","choices":["臺灣完全沒有興建水庫，無法蓄存水量","臺灣降下的雨水多為鹹水，無法直接使用","人口稠密，平均每人可分配到的水量偏低，加上降水集中、雨水不易留存","臺灣的河川全年都處於枯水期，沒有水源可用"],"answer":2,"explain":"雨量總數雖多，但要除以稠密的人口，平均每人可分配到的水量就偏低；再加上降水集中於特定季節、河短流急使雨水迅速入海，因此缺水風險高。臺灣已興建多座水庫，「完全沒有水庫」與事實不符；降雨屬淡水，「雨水為鹹水」的敘述錯誤；臺灣河川豐枯分明，並非全年皆枯。"},{"level":"basic","topic":"水庫的功能－調節豐枯","q":"水庫能發揮「調節豐枯」的功能，這句話的意思是？","choices":["在豐水期把水蓄存起來，於枯水期放流供民生、灌溉等使用","能使河川流速加快，讓洪水更快排入海中","能提高集水區的年降水量，增加雨水來源","能阻擋海水由河口倒灌進入內陸農田"],"answer":0,"explain":"臺灣降水集中，水庫在雨量多的豐水期蓄水，於少雨的枯水期放流，可平衡季節間的供水落差，並兼具灌溉、發電與防洪功能。水庫是攔蓄水流、減緩洪峰，而非加快流速；水庫也無法改變降水量；防止海水倒灌屬於海堤、防潮閘門的功能。"},{"level":"basic","topic":"地下水超抽的影響","q":"長期大量超抽地下水，最可能造成下列哪一種問題？","choices":["河川的坡度變陡、流速加快","地層下陷，沿海地區並可能發生海水入侵、地下水鹽化","山區的年降水量明顯減少","水庫中的泥沙淤積速度加快"],"answer":1,"explain":"抽取速度超過地下水的補注量時，地層會壓密而下陷；沿海地區地下水位下降後，海水便可能入侵含水層，造成水質與土壤鹽化。河川坡度由地形決定，與抽地下水無關；水庫淤積來自上游泥沙沖刷；降水量受季風、地形與天氣系統影響，不會因抽水而減少。"},{"level":"basic","topic":"水庫的問題－泥沙淤積","q":"造成臺灣許多水庫蓄水量逐年下降、使用年限縮短的主要問題是什麼？","choices":["水庫水面在冬季結冰，導致無法取水","水庫下游興建橋梁，阻擋了水流","水庫周邊居民改抽地下水，使水庫水位下降","上游沖刷下來的泥沙不斷在水庫中淤積"],"answer":3,"explain":"臺灣坡陡流急、豪雨集中，上游土石容易被沖刷帶入水庫沉積，使有效蓄水空間逐漸減少、壽命縮短。臺灣平地與多數水庫不會結冰；橋梁位於下游，不影響水庫蓄水容量；居民改抽地下水也不是水庫蓄水量下降的原因。"},{"level":"basic","topic":"多元水源－再生水","q":"把生活或工業使用後的廢污水加以處理，使水質達到一定標準後，再供工業等用途使用，這種水稱為？","choices":["地下水","雨水","再生水","海水"],"answer":2,"explain":"再生水是廢污水經處理後重新利用的水源，可減少對水庫與地下水的依賴。地下水是抽取自地下含水層的水；雨水回收是直接收集降水，未經過「使用後再處理」的過程；海水則須經淡化才能使用，屬於另一種替代水源。"},{"level":"basic","topic":"河川特性與航運價值","q":"臺灣本島的河川大多不利於航運，最主要的原因是什麼？","choices":["河道短、坡度陡，且流量季節變化大，枯水期常水量不足","河川下游全都是深邃峽谷，河道過於狹窄","河川沿岸都是人口稀少地區，沒有任何運輸需求","河川終年結冰，船隻無法通行"],"answer":0,"explain":"臺灣河川短促陡急、水流湍急，加上豐枯差距懸殊，枯水期水淺，難以維持穩定的航道，因此航運價值低。西部河川下游多為沖積平原，並非全是狹窄峽谷；西部河川沿岸人口其實相當稠密，並不缺運輸需求；臺灣平地河川不會結冰。"},{"level":"adv","topic":"河川特性與水位變化的因果推論","q":"小明在中部一條河川旁觀察：颱風來襲時河水暴漲又混濁，颱風過後兩、三天水位便迅速下降，河床再度露出大片礫石。針對此現象，最合理的推論是？","choices":["該河流域面積廣大、坡度平緩，所以洪水能長時間留在河道中","該河川流路短、坡度陡、流速急，降水迅速匯流入海，水位變化因此十分劇烈","該河川全年流量相當穩定，這只是偶發的特例","水位下降完全是因為上游水庫大量取水，與地形沒有關係"],"answer":1,"explain":"暴漲暴退正反映臺灣河川短、陡、急的特性：降雨迅速匯集造成洪峰，雨停後水又很快入海，留不住水。「坡度平緩、洪水滯留久」與觀察到的現象相反；「全年流量穩定」與暴漲暴退的觀察互相矛盾；把原因完全歸給水庫取水，則忽略了臺灣河川的基本地形特性。"},{"level":"adv","topic":"南北降水季節分配的比較判斷","q":"甲、乙兩地皆位於臺灣本島西部。甲地降水集中在五至九月，十月到隔年三月明顯乾燥；乙地夏季有雨，冬季也有一定雨量，全年分配較為平均。兩地位置最可能是？","choices":["甲、乙兩地都位於北部","甲位於北部，乙位於南部","甲、乙兩地都位於南部","甲位於南部，乙位於北部"],"answer":3,"explain":"南部降水高度集中於夏半年（梅雨與颱風），冬季乾燥；北部冬季受東北季風影響仍有雨，全年分配較平均，故甲在南部、乙在北部。「甲北乙南」恰好把南北顛倒；兩地同在北部或同在南部，都無法解釋兩者雨量分配的明顯差異。"},{"level":"adv","topic":"水庫集水區開發的影響","q":"若在水庫的集水區內大規模開發果園、民宿與聯外道路，最可能帶來下列哪一種影響？","choices":["水庫的蓄水量因此增加，供水變得更穩定","集水區的年降水量因此明顯增加","地表裸露與污水排放增加，泥沙淤積加快且水質變差","水庫的使用年限因此明顯延長"],"answer":2,"explain":"集水區開發會使坡地裸露、水土保持變差，豪雨時大量泥沙沖入水庫，同時生活與農業污水也會污染水質，縮短水庫壽命。「蓄水量增加」與「使用年限延長」都與事實相反，開發只會加速淤積；地表開發也無法改變降水量，降水多寡取決於天氣系統與地形。"},{"level":"adv","topic":"地層下陷的成因判斷與對策","q":"西南沿海某地區產業用水需求大，長期抽取地下水。近年當地地勢逐漸低窪，大雨後積水不易排除，部分農田也出現鹽化現象。下列判斷與對策何者最適當？","choices":["原因是地下水超抽造成地層下陷與海水入侵，對策是減少抽取並發展替代水源，如水庫供水、再生水與雨水回收","原因是當地降水太多，只要加高海堤就能根本解決","原因是河川改道沖刷農田，對策是全面疏濬河道","原因是水庫泥沙淤積，對策是停止使用水庫改抽地下水"],"answer":0,"explain":"低窪積水與土壤鹽化是地下水超抽後地層下陷、海水入侵的典型後果，根本對策在於減少抽取並以其他水源替代。「降水太多、加高海堤」把結果（易積水）誤當成原因，海堤只能治標；河川改道無法解釋地層普遍下陷與鹽化；改抽地下水方向相反，只會使問題惡化。"},{"level":"adv","topic":"節約用水與水資源保育作法的辨別","q":"下列作法中，何者「無助於」水資源的保育與節約？","choices":["選用具有省水標章的馬桶與洗衣機","枯水期時加大抽取地下水，以維持原本的用水量","修補老舊的自來水管線，減少輸水過程的漏損","在校園設置雨水儲存設施，用於澆灌植物"],"answer":1,"explain":"題目問的是「無助於」保育的作法。枯水期加大抽取地下水只是把用水壓力轉嫁到地下水源，長期會導致地層下陷與海水入侵，屬於不永續的作法。選用省水器具是從器具端節水、修補管線可減少漏損、設置雨水儲存設施能提高雨水再利用，都是正確的節水與保育方式。"},{"level":"adv","topic":"枯水期缺水現象的綜合判斷","q":"某年春季，臺灣多座水庫蓄水率偏低，政府陸續採取減壓供水、分區供水與農田休耕等措施。對此現象的說明，何者最完整？","choices":["因為臺灣的年雨量遠低於世界各地，所以全年都處於缺水狀態","因為地下水已完全枯竭，完全沒有其他水源可用","因為臺灣河川全年流量平均穩定，缺水與季節變化無關","冬季到春季本來就是枯水期，若前一年梅雨、颱風帶來的降水偏少，加上河短流急、雨水不易留存，水庫蓄水量便明顯不足"],"answer":3,"explain":"春季缺水是「季節性枯水＋前期降水偏少＋雨水留不住」共同造成的結果，把時間分布不均與河川特性都納入的說明最完整。臺灣年雨量其實偏高，「遠低於世界各地」前提錯誤；「地下水完全枯竭」說法過於絕對；「全年流量平均穩定」與臺灣河川豐枯懸殊的事實相反。"},{"level":"adv","topic":"分水嶺與河川流向的推論","q":"有兩條河川的源頭相距不遠，卻分別注入臺灣海峽與太平洋。對此最合理的解釋是？","choices":["兩條河川的長度一定相同，所以會流向不同的海域","兩條河川都受到潮汐影響而改變了流向","兩條河川的源頭分別位於主要分水嶺（中央山脈）的西側與東側，水流方向因而相反","東部的河川一定比西部的河川長，因此流向不同"],"answer":2,"explain":"分水嶺是相鄰流域的分界，水往兩側低處分流，因此源頭雖近，卻分別向西與向東入海。河川長度與流向沒有因果關係；潮汐只影響河口一小段，無法決定整條河的流向；中央山脈位置偏東，東側河川通常較短，「東部河川一定較長」的敘述也與事實不符。"},{"level":"adv","topic":"中央山脈位置與東西部河川的差異","q":"中央山脈的位置偏東，受此影響，臺灣東部與西部河川的差異，下列敘述何者最合理？","choices":["東部河川多短小、坡度更陡；西部河川相對較長，流域範圍也較大","東部河川普遍較長、流域面積較大；西部河川則短小而坡度平緩","東、西部河川在長度與坡度上幾乎沒有差別","東部河川全年流量穩定，只有西部河川才有豐枯差異"],"answer":0,"explain":"分水嶺偏東，距離東岸近，東流的河川因而更短促陡急；西側坡面寬廣，河川較長、集水範圍較大，長度最長的濁水溪與流域面積最大的高屏溪都位於西部。把東西部對調的敘述恰好相反；「幾乎沒有差別」忽略分水嶺偏東的影響；豐枯懸殊是全島河川的共同特性，並非只有西部才有。"},{"level":"adv","topic":"雨水回收再利用的意義","q":"某國中在屋頂加裝集水設施，把雨水導入儲水槽，用來澆灌花圃與沖洗廁所。此作法最主要的意義是？","choices":["可以提高學校所在地的年降水量","提高雨水的再利用率，減少自來水的使用量","可以完全取代自來水，學校從此不需要外部供水","可以防止該地區發生地層下陷，因此不必再節約用水"],"answer":1,"explain":"雨水回收把原本會直接流失的降水留下來，用於不需飲用水質的用途，可減少自來水的取用，是節約用水的具體作法。裝設設施無法改變降水量；雨水量受季節影響，只能作為補充，說成「完全取代自來水」太過絕對；把單一作法誇大成不必再節水，也忽略了節水必須持續進行。"},{"level":"adv","topic":"離島的水源條件與多元水源選擇","q":"澎湖等離島缺乏長流的河川，地勢低平不易興建大型水庫，降水又集中於夏季。若要較穩定地增加當地的用水來源，下列作法何者最為適合？","choices":["大量增建攔河堰，攔取島上河川的水量","完全依賴超抽地下水，以滿足全部用水需求","興建海水淡化設施，將海水處理後供應民生用水","等待冬季東北季風帶來大量降水，自然補足水源"],"answer":2,"explain":"離島四周環海，海水取之不竭，經淡化處理後可提供較不受季節影響的水源，是常見的替代方案。島上河川短小、水量稀少，增建攔河堰效果有限；完全依賴地下水會造成水位下降、海水入侵與水質鹽化；離島冬季雖風勢強勁，但地勢低平缺乏地形抬升，降水並不多。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
