@@ -62,18 +62,28 @@
 ### 子 →父（單元回報）
 ```js
 // 載入完成，回報支援的技能（MMO 據此決定顯示哪些技能鈕）
-{ type:'unit-ready', supports:['hint'] }            // 數學題
-{ type:'unit-ready', supports:['hint','fifty'] }    // 選擇題
+{ type:'unit-ready', supports:['hint','reroll'] }            // 計算題（keypad）
+{ type:'unit-ready', supports:['hint','fifty','reroll'] }    // 選擇題
 
 // 每次作答
 { type:'unit-progress', unitDone:1, unitCorrect:0|1 }              // 做了 1 題、對或錯
 { type:'unit-mistake', q, ans, given, choices?, steps?, tip? }     // 答錯時（含正解、詳解、選項）
 ```
 
+⚠️ **`unit-mistake.steps` 就是「詳解」，寫進 DB 時要放 `p_explain`**（不是丟掉！）。
+錯題本（index.html）是靠 `mistakes.explain` 這欄顯示詳解的；若父層傳空字串，孩子的錯題本就只有題目沒有解說。
+兩端都必須這樣接：
+```js
+sb.rpc('log_mistake', { p_unit, p_q:d.q, p_ans:d.ans, p_given:d.given,
+                        p_explain: d.steps || '',   // ← 關鍵：steps → explain
+                        p_tip: d.tip || '', p_choices: d.choices || null });
+```
+
 ### 父 →子（下技能）
 ```js
-iframe.contentWindow.postMessage({ type:'unit-command', cmd:'hint'  }, '*'); // 提示（不洩答案）
-iframe.contentWindow.postMessage({ type:'unit-command', cmd:'fifty' }, '*'); // 選擇題：刪去一個錯選項
+iframe.contentWindow.postMessage({ type:'unit-command', cmd:'hint'   }, '*'); // 提示（不洩答案）
+iframe.contentWindow.postMessage({ type:'unit-command', cmd:'fifty'  }, '*'); // 選擇題：刪去一個錯選項
+iframe.contentWindow.postMessage({ type:'unit-command', cmd:'reroll' }, '*'); // 換一題（已批改的題不會被換掉）
 ```
 
 MMO 端最小接收範例：
@@ -526,3 +536,37 @@ const inTerm = units.filter(u => key(u) === selected);   // 選了某學期 → 
 - **SQL 以你們的為準**：請使用者跑**你們的 `sql/public-profile.sql`**（自我修復版）。我先前給的 `LEADERBOARD_SETUP.sql` 欄位不符、**已退役，請勿執行**（我會從 repo 移除，免得使用者跑錯）。
 
 → 我這邊會把遊戲端的 `upsertProfile()` 改成只寫上面 6 欄、拿掉遊戲內的綽號/班級碼/opt-in 輸入框（改成唯讀顯示 + 導回 parent.html）。改完回報。
+
+---
+
+## 16.【2026-08-11】出題不重複機制 ＋ 遊戲端三項修正（★兩端共用，改任一邊都要看這段）
+
+> 起因：家長回報「打一趟副本（5 關 × 答對 3 題 = 15 題）會出現重複題目」，懷疑是題目太少。
+> 實查後**不是題數問題，是出題與狀態管理的問題**，已全數修正。
+
+### 16.1 病因（三層，全在單元端）
+1. **純隨機抽題**：舊 `nextProblem()` 只避開「上一題」，其餘每次都 `Math.random()` 重抽。就算單元有 24 題，隨機抽 15 次不重複的機率不到 1%（生日悖論）→ 幾乎必定重複。
+2. **每隻怪重載 iframe → 狀態歸零**：`game.html` 的 `startUnitMode()` 每個節點都重設 `iframe.src`（帶 `t=Date.now()` 防快取）。單元頁一重載，出題紀錄就沒了 → **跨關卡撞題**。這是實際看到重複的主因。
+3. 複習題可能抽到剛看過的，感覺像 bug 而不像複習。
+
+### 16.2 現行機制（**所有題庫單元頁已內建**，父層不必做任何事）
+- **不重複發牌**：從「本難度池中尚未出過的題」隨機抽（等同洗牌發牌），整池出完才重置該池紀錄；**不同難度各自計算**，`basic` 出過的題，`adv`/`mix` 不會再出。
+- **跨 iframe 重載延續**：出題紀錄存在 `sessionStorage`，key 為 `qq:<單元檔名>`（例：`qq:es-astronomy.html`）。因為單元頁與遊戲**同源**，重載後會接續，不會從頭洗牌。
+- **刻意複習**：每出 **10 題新題**，插 1 題複習（從已出過的題隨機抽）；複習題會避開**最近 5 題**，若沒有夠格的候選就**延後複習、先發新題**，不會出現「才剛看過又出」。
+- 實測（每單元 300 趟，模擬 `basic/basic/adv/adv/mix` 五關逐關重載）：**219/219 單元「意外重複」為 0**，複習題平均間隔 9 題。真瀏覽器跑完整 15 題：不重複 14 題，唯一重複是第 12 題複習第 7 題。
+
+**父層要注意的兩件事**
+- 想讓某單元「重新開始出題」（例如新的一天／新一輪副本要洗牌重來）：清掉該 key 即可
+  `sessionStorage.removeItem('qq:' + unitFileName)`；不清就是延續（推薦，變化最多）。
+- **不要**改用 `localStorage` 或跨分頁共享；用 `sessionStorage` 才會在關閉分頁後自然重置。
+
+### 16.3 遊戲端（game.html）三項修正
+1. 🔴 **錯題詳解遺失（資料遺失，已修）**：`unit-mistake` 的 `d.steps` 被丟掉、`p_explain` 硬寫空字串，導致**在遊戲裡答錯的題，錯題本沒有詳解**（網頁端 index.html 一直是對的）。已改為 `p_explain: d.steps || ''`。→ 契約見 §2。
+2. **提示技能不消耗次數（已修）**：iframe 戰鬥的 💡 提示鈕原本直接發指令，不檢查也不扣 `SKILLS.hint.n`，等於無限使用；商店賣的「提示強化」形同無效。已改為與內建題型共用同一份次數，按鈕顯示剩餘量（`💡 提示 ×n`），用完變灰。
+3. **重骰技能無法使用（已修）**：`reroll` 原本只有內建題型能用。已在**所有單元**加上 `unit-command: reroll`（並在 `unit-ready.supports` 回報），遊戲端新增 🎲 重骰鈕、同樣扣次數。**已批改的題不能重骰**（避免跳過錯題）。
+
+### 16.4 維護原則（兩端共用，請一起遵守）
+- **能在單元端解的，不要改遊戲端**：16.1 的跨關撞題看起來是遊戲的鍋，實際在單元端加狀態保存就解決了，風險小得多。
+- **技能一律走 `unit-command`**，並由 `unit-ready.supports` 決定顯示哪些鈕，**父層不要寫死技能清單**；日後單元新增技能（如 `freeze`、`show-steps`）父層自動就能用。
+- **技能次數由父層管**（單元只負責執行指令、不管次數），這樣網頁端／遊戲端可以各自決定要不要限量。
+- 改動任一端的 postMessage 欄位，**一定要同步更新本文件的 §2**，另一端才知道怎麼接。

@@ -229,6 +229,8 @@
   .ubar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);flex-shrink:0;}
   .ubar .utitle{font-size:13px;font-weight:700;color:var(--card-ink);}
   .ubar .uhint{background:linear-gradient(90deg,#22d3ee,#3b82f6);color:#fff;border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;}
+  .ubar .uroll{background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;margin-left:6px;}
+  .ubar .uhint[disabled],.ubar .uroll[disabled]{filter:grayscale(1);opacity:.45;}
   #unitFrame{flex:1;width:100%;border:none;background:#fff;}
 </style>
 </head>
@@ -285,7 +287,7 @@
     </div>
     <button class="act" id="act">⚔ 攻 擊 <small>(Enter)</small></button>
   </div>
-  <div id="unitWrap"><div class="ubar"><span class="utitle" id="uTitle"></span><button class="uhint" id="uHint">💡 提示</button></div><iframe id="unitFrame" title="題目" src="about:blank"></iframe></div>
+  <div id="unitWrap"><div class="ubar"><span class="utitle" id="uTitle"></span><button class="uhint" id="uHint">💡 提示</button><button class="uroll" id="uRoll">🎲 重骰</button></div><iframe id="unitFrame" title="題目" src="about:blank"></iframe></div>
   <div class="skmenu" id="skMenu"></div>
 </div>
 
@@ -313,7 +315,7 @@ const MAXF=3; let flames=MAXF;
 const SKILLS={ hint:{ic:'💡',name:'提示',desc:'顯示解題方法,不給答案',n:2}, reroll:{ic:'🎲',name:'重骰',desc:'換一題同類型的',n:1} };
 let shields=2;   // 防風罩:常駐持有,答錯自動擋、不用施放
 let askedQ=new Set();   // 這趟副本已經出過的題目(避免同一趟裡重複出題)
-function resetSkills(){ SKILLS.hint.n=2+((typeof shop!=='undefined'&&shop.skill.hint)||0); SKILLS.reroll.n=1+((typeof shop!=='undefined'&&shop.skill.reroll)||0); askedQ.clear(); }   // 防風罩不再每場重置(改常駐消耗);每趟副本重置已出題紀錄
+function resetSkills(){ SKILLS.hint.n=2+((typeof shop!=='undefined'&&shop.skill.hint)||0); SKILLS.reroll.n=1+((typeof shop!=='undefined'&&shop.skill.reroll)||0); askedQ.clear(); if(typeof renderUnitSkills==='function') renderUnitSkills(); }   // 防風罩不再每場重置(改常駐消耗);每趟副本重置已出題紀錄與技能列
 function renderShields(){ $('shieldBadge').textContent='🛡 ×'+shields; $('shieldBadge').classList.toggle('on',shields>0); }
 function useShield(){ if(shields<=0) return false; shields--; shop.shields=shields; renderShields(); renderMats(); saveState(); return true; }   // 擋一次=消耗一個,存檔
 
@@ -548,12 +550,12 @@ let ifBattle=null, unitSeq=0, examRun=null;   // examRun:段考綜合測驗(逐�
 function setInlineMode(){ ifBattle=null; examRun=null; hideExamNext(); $('unitWrap').classList.remove('on'); $('unitFrame').src='about:blank'; $('panel').style.display=''; $('bubble').style.display=''; }
 function startUnitMode(node){ ifBattle=node;
   $('panel').style.display='none'; $('bubble').style.display='none';
-  $('uTitle').textContent=node.unitTitle||''; $('uHint').style.display='none';
+  $('uTitle').textContent=node.unitTitle||''; ifSupports=[]; renderUnitSkills();
   $('unitFrame').src=node.unitFile+'?level='+(node.unitLevel||'basic')+'&t='+Date.now()+'_'+(++unitSeq);   // 難度依關卡遞進(前段基礎、後段進階、BOSS 混合=全題型),而不是全鎖 basic;Date.now() 防快取
   $('unitWrap').classList.add('on'); }
 /* 段考綜合測驗 runner:把整組單元「逐題交錯」——每一題換一個單元的題庫頁(?exam=1 隱藏單元自己的下一題/難度),用各單元原生批改(postMessage),記到真正來源單元 */
 function startExamMode(node){ ifBattle=node; examRun={list:node.examUnits, last:null};
-  $('panel').style.display='none'; $('bubble').style.display='none'; $('uHint').style.display='none';
+  $('panel').style.display='none'; $('bubble').style.display='none'; ifSupports=[]; renderUnitSkills();
   $('unitWrap').classList.add('on'); loadExamQ(); }
 function loadExamQ(){ if(!examRun||!ifBattle) return; const L=examRun.list;
   const pool = L.length>1 ? L.filter(u=>u!==examRun.last) : L;
@@ -575,10 +577,19 @@ function onUnitAnswer(correct){ if(!battle||!ifBattle) return;
     if(siege&&flames<=0){ setTimeout(endSiege,800); return; } }   // 守城:靈焰熄=結束
   if(examRun){ showExamNext(); } }   // 段考:單元不會自己換題,顯示「下一題」讓玩家換到下一個單元
 window.addEventListener('message',e=>{ const d=e.data; if(!d||!ifBattle) return;
-  if(d.type==='unit-ready'){ $('uHint').style.display=(d.supports&&d.supports.indexOf('hint')>=0)?'':'none'; }
+  if(d.type==='unit-ready'){ ifSupports=d.supports||[]; renderUnitSkills(); }
   else if(d.type==='unit-progress'){ onUnitAnswer(!!d.unitCorrect); }
-  else if(d.type==='unit-mistake'){ if(user&&sb) sb.rpc('log_mistake',{p_unit:ifBattle.unitId,p_q:d.q||'',p_ans:String(d.ans==null?'':d.ans),p_given:String(d.given==null?'':d.given),p_explain:'',p_tip:d.tip||'',p_choices:d.choices||null}).then(r=>{},e=>{}); } });
-if($('uHint')) $('uHint').onclick=()=>{ const f=$('unitFrame'); if(f&&f.contentWindow) f.contentWindow.postMessage({type:'unit-command',cmd:'hint'},'*'); };
+  else if(d.type==='unit-mistake'){ if(user&&sb) sb.rpc('log_mistake',{p_unit:ifBattle.unitId,p_q:d.q||'',p_ans:String(d.ans==null?'':d.ans),p_given:String(d.given==null?'':d.given),p_explain:d.steps||'',p_tip:d.tip||'',p_choices:d.choices||null}).then(r=>{},e=>{}); } });
+let ifSupports=[];
+/* iframe 戰鬥的技能列：與內建題型共用同一份次數(SKILLS)，商店買的強化才真的有用 */
+function renderUnitSkills(){ const h=$('uHint'), r=$('uRoll'); if(!h||!r) return;
+  const canH=ifSupports.indexOf('hint')>=0, canR=ifSupports.indexOf('reroll')>=0;
+  h.style.display=canH?'':'none'; r.style.display=canR?'':'none';
+  h.textContent='💡 提示 ×'+SKILLS.hint.n; r.textContent='🎲 重骰 ×'+SKILLS.reroll.n;
+  h.disabled=SKILLS.hint.n<=0; r.disabled=SKILLS.reroll.n<=0; }
+function sendUnitCmd(cmd){ const f=$('unitFrame'); if(f&&f.contentWindow) f.contentWindow.postMessage({type:'unit-command',cmd},'*'); }
+if($('uHint')) $('uHint').onclick=()=>{ if(SKILLS.hint.n<=0){ toast('提示用完了,可到商店強化'); return; } SKILLS.hint.n--; renderUnitSkills(); sendUnitCmd('hint'); };
+if($('uRoll')) $('uRoll').onclick=()=>{ if(SKILLS.reroll.n<=0){ toast('重骰用完了,可到商店強化'); return; } SKILLS.reroll.n--; renderUnitSkills(); sendUnitCmd('reroll'); toast('🎲 換了一題!'); };
 function renderMonHP(){let h='';for(let i=0;i<battle.max;i++)h+=`<span class="pip ${i<battle.hp?'on':''}"></span>`;$('monHP').innerHTML=h;}
 /* 出題:同一趟副本內不重複(最多試 30 次;題型空間用盡就重置紀錄) */
 function pickProblem(){ const isBoss = battle.node.t==='boss' && !!TOPIC.boss;
