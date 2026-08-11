@@ -92,14 +92,19 @@ const BANK=[{"level":"basic","topic":"守株待兔","q":"「守株待兔」用�
 /* ===== bank-end ===== */
 
 const AB=['A','B','C','D','E'];
-let level='basic', poolIdx=[], problem=null, answered=false, streak=0, lastIdx=-1;
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
 
-function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); }
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
 /* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
 function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
   for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
   return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
-function nextProblem(){ let i; do{ i=poolIdx[Math.floor(Math.random()*poolIdx.length)]; }while(poolIdx.length>1 && i===lastIdx); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
 function qText(){ return problem.q; }
 
 function render(){

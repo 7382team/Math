@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>家庭型態與社會支持 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ-family",
+  "title": "家庭型態與社會支持",
+  "subject": "公民",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "多元家庭·社福·防治",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>家庭型態與社會支持</h1><div class="sub">公民 · 多元家庭·社福·防治 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"家庭的功能－經濟功能","q":"小美的父母每個月用薪水支付房租、水電費與全家的伙食費，也為她準備學用品。這主要展現家庭的哪一項功能？","choices":["生育功能","經濟功能","情感支持功能","保護照顧功能"],"answer":1,"explain":"家庭共同分擔生計、提供成員生活所需的物質資源與消費，屬於經濟功能。生育功能指繁衍後代；情感支持功能指提供關懷與歸屬感；保護照顧功能偏重人身安全與生活照料，都不是「支付生活開銷」所直接對應的功能。"},{"level":"basic","topic":"家庭的功能－情感支持","q":"阿哲月考失利心情低落，回家後家人耐心傾聽、給予鼓勵，讓他重新振作。這最能說明家庭的哪一項功能？","choices":["教育與社會化功能","經濟功能","情感支持功能","生育功能"],"answer":2,"explain":"家人的傾聽與鼓勵提供情緒上的慰藉與歸屬感，屬情感支持功能。教育與社會化功能重點在學習規範與價值；經濟功能重點在生活資源的供給；生育功能指繁衍後代，皆與此情境不符。"},{"level":"basic","topic":"家庭的功能－教育與社會化","q":"小玲從小在家中學會用餐禮儀、與長輩問候，也逐漸了解社會上的規範與價值觀。這主要屬於家庭的哪一項功能？","choices":["教育與社會化功能","保護照顧功能","經濟功能","休閒娛樂功能"],"answer":0,"explain":"家庭是個人最早接受社會化的場所，透過家人的教導學習語言、禮儀與社會規範，屬教育與社會化功能。保護照顧功能指提供安全與生活照料；經濟功能指生計的分擔；休閒娛樂功能指共同從事休閒活動，與學習規範不同。"},{"level":"basic","topic":"家庭的組成方式－收養","q":"關於「收養」所組成的家庭關係，下列敘述何者正確？","choices":["收養須經法院裁定認可，養父母與養子女之間即成立法律上的親子關係","收養只是暫時照顧，養父母與養子女之間不會有法律上的親子關係","收養家庭因為成員之間沒有血緣，所以不算是家庭的組成方式","只有完全沒有生育能力的人才可以收養子女"],"answer":0,"explain":"家庭可經由婚姻、血緣或收養組成；收養須經法院裁定認可，成立後養父母與養子女具有法律上的親子關係。收養並非暫時性的照顧安排；沒有血緣仍是正式的家庭組成方式；能否收養也不是以有無生育能力作為唯一條件。"},{"level":"basic","topic":"親屬關係－直系血親的判斷","q":"下列何者屬於小華的「直系血親」？","choices":["小華的外祖母","小華的姑姑","小華的表哥","小華的舅舅"],"answer":0,"explain":"直系血親是彼此有上下相生關係的親屬，如父母、（外）祖父母、子女、孫子女，外祖母即屬之。姑姑是父親的姊妹、舅舅是母親的兄弟、表哥為同輩親屬，三者都是從共同祖先分支出來的旁系血親。"},{"level":"basic","topic":"親屬關係－旁系血親與輩分（阿姨）","q":"媽媽的妹妹（阿姨）與自己的親屬關係，下列判斷何者正確？","choices":["屬於直系血親，因為她和媽媽有血緣關係","屬於旁系血親，輩分比自己高一輩","屬於直系姻親，因為和自己不同姓氏","屬於旁系血親，且與自己是同輩分"],"answer":1,"explain":"阿姨與自己並非上下直接相生，而是透過共同的祖先（外祖父母）分支，屬旁系血親，且長自己一輩。與媽媽有血緣不等於對自己是直系；親屬關係與姓氏無關，也不是姻親；阿姨與媽媽同輩，因此不會與自己同輩。"},{"level":"basic","topic":"親屬稱謂與輩分（伯父、姑姑）","q":"小安稱呼爸爸的哥哥為「伯父」，稱呼爸爸的姊妹為「姑姑」。關於這兩種親屬關係，下列敘述何者正確？","choices":["兩者都是小安的旁系血親，輩分都高於小安","伯父是直系血親，姑姑則是旁系血親","兩者都與小安同輩分，只是稱呼方式不同","兩者都屬於姻親，與小安沒有血緣關係"],"answer":0,"explain":"伯父、姑姑都是父親的兄弟姊妹，與小安由共同祖父母分支而來，屬旁系血親，且長一輩。伯父並非直系血親；他們與父親同輩，不會與小安同輩；兩者與小安有血緣，並非因婚姻而生的姻親。"},{"level":"basic","topic":"家庭型態－核心家庭","q":"陳先生、陳太太與就讀國中的兒子同住，家中沒有其他同住的親屬。這樣的居住組成最符合下列哪一種家庭型態？","choices":["折衷家庭","大家庭","核心家庭","繼親家庭"],"answer":2,"explain":"核心家庭由父母與未婚子女組成，是現代常見的家庭型態之一。折衷家庭是祖父母、父母、子女三代同住；大家庭包含更多親屬或數個小家庭同住；繼親家庭則是再婚後重組而成的家庭。"},{"level":"basic","topic":"家庭型態－折衷家庭（三代同堂）","q":"小婷家中有祖父母、父母，以及她和弟弟共同居住，三代同住在一起。這種家庭型態一般稱為什麼？","choices":["核心家庭","折衷家庭（三代同堂家庭）","單親家庭","隔代教養家庭"],"answer":1,"explain":"祖父母、父母與未婚子女三代同住，稱為折衷家庭（又稱主幹家庭、三代同堂）。核心家庭只有父母與未婚子女；單親家庭由單一親長與未婚子女組成；隔代教養家庭則是由祖父母擔任主要照顧者，父母並未同住照顧。"},{"level":"basic","topic":"家庭型態－隔代教養家庭","q":"小凱的父母長年在外地工作，平日由祖父母負責照顧他的生活起居與課業。小凱家的情形最接近下列哪一種家庭型態？","choices":["繼親家庭","收養家庭","跨國（新住民）家庭","隔代教養家庭"],"answer":3,"explain":"隔代教養家庭指父母因工作、健康或其他因素無法親自照顧，改由祖父母（或外祖父母）擔任主要照顧者。繼親家庭是再婚重組；收養家庭是經法定程序收養子女；跨國（新住民）家庭指成員中有來自其他國家的配偶，三者情境都不同。"},{"level":"basic","topic":"家庭型態－繼親（重組）家庭的定義","q":"下列何者最符合「繼親（重組）家庭」的意義？","choices":["夫妻雙方協議不生育子女，家中僅由夫妻二人組成","父母因故無法照顧，改由祖父母照顧孫子女","至少有一方帶著前一段婚姻的子女再婚，重新組成的家庭","透過法律程序收養與自己沒有血緣關係的子女"],"answer":2,"explain":"繼親（重組）家庭是離婚或喪偶後再婚，且至少一方帶有前段婚姻的子女而重新組成的家庭。選項一是頂客家庭；選項二是隔代教養家庭；選項四是收養家庭，都是不同的家庭型態。"},{"level":"basic","topic":"家庭型態－頂客家庭","q":"一對夫妻兩人都有工作，並共同決定不生育子女，家中僅有夫妻二人。這樣的家庭最常被稱為下列哪一種型態？","choices":["單親家庭","折衷家庭","頂客家庭","大家庭"],"answer":2,"explain":"頂客（DINK）家庭指雙薪、且選擇不生育子女的夫妻家庭，家中僅有夫妻兩人。單親家庭仍有子女，但由單一親長照顧；折衷家庭是祖父母、父母與子女三代同住；大家庭則有眾多親屬或數個小家庭共同居住。"},{"level":"basic","topic":"現代家庭的變遷趨勢","q":"關於臺灣近年來家庭的變遷，下列敘述何者較為適當？","choices":["家庭平均人口數逐漸增加，大家庭重新成為主流","家庭規模有縮小的趨勢，家庭型態也更加多元","婦女就業比率明顯下降，多數婦女回到家庭專職家務","生育率明顯上升，人口老化的問題已完全消失"],"answer":1,"explain":"現代家庭的主要變遷包括家庭規模縮小、成員人數減少、家庭型態日趨多元。大家庭比例並未回升；婦女就業參與整體上是增加而非下降；生育率呈現下降趨勢，人口老化的挑戰也依然存在。"},{"level":"basic","topic":"求助管道－113保護專線","q":"當兒童、少年或家庭成員遭遇家庭暴力、虐待或疏忽照顧時，可以撥打下列哪一支專線尋求協助？","choices":["119 消防救護專線","113 保護專線","165 反詐騙諮詢專線","1999 地方政府市民服務專線"],"answer":1,"explain":"113保護專線提供家庭暴力、性侵害及兒少保護等事件的通報與諮詢服務，由專業人員接聽並協助轉介。119主要處理火災與緊急救護；165受理詐騙諮詢與通報；1999為地方政府一般市民服務，都不是保護性案件的專責管道。"},{"level":"adv","topic":"家庭型態的判斷－跨國（新住民）家庭","q":"小葉的爸爸是臺灣人，媽媽從越南來到臺灣定居並取得身分，家中只有父母與小葉三人同住。關於小葉的家庭型態，下列判斷何者最適當？","choices":["屬於繼親家庭，因為父母來自不同的國家","屬於隔代教養家庭，因為媽媽來自國外","屬於大家庭，因為必須同時照顧兩邊的親戚","屬於跨國（新住民）家庭，就同住成員來看也符合核心家庭的組成"],"answer":3,"explain":"家庭型態可以從不同角度描述：從成員的國籍背景看，這是跨國（新住民）家庭；從同住成員看，是父母與未婚子女的核心家庭，兩者並不衝突。繼親家庭指再婚並帶有前段婚姻子女而重組的家庭；隔代教養指由祖父母擔任主要照顧者；大家庭指多位親屬同住，皆與題意不符。"},{"level":"adv","topic":"家務分工與性別平等","q":"小杰家過去家務幾乎由媽媽一人承擔，後來全家討論後改為依各人時間與能力分工：爸爸負責採買與倒垃圾，小杰與姊姊輪流洗碗。關於這樣的改變，下列說明何者最適當？","choices":["會削弱媽媽在家中的地位，不利於家庭和諧","家務本來就該依性別分配，男性做家事只算是「幫忙」","家務是全家共同的責任，依能力與時間協商分工，體現性別平等的精神","只要家庭經濟主要由爸爸負擔，家務就理應全部由媽媽承擔"],"answer":2,"explain":"家務勞動是維持家庭運作的共同責任，依成員的能力、時間協商分工，可減輕單一成員負擔並落實性別平等。分工並不會削弱誰的地位；把家務視為女性專責、男性只是「幫忙」，或以誰賺錢多來決定誰做家事，都是以性別或收入劃分責任的刻板觀念。"},{"level":"adv","topic":"婦女就業增加與托育需求","q":"雙薪家庭日漸普遍，白天家中常無人可照顧年幼子女。這樣的家庭變遷，最可能直接帶動下列何種需求增加？","choices":["對兵役制度改革的需求","對觀光旅遊景點開發的需求","對高速公路路網擴建的需求","對托育服務（如托嬰中心、幼兒園、居家托育）的需求"],"answer":3,"explain":"父母都就業時，幼兒的日間照顧需求無法由家庭內部滿足，因而使托育服務的需求上升，這也是政府推動平價托育的重要背景。兵役、觀光開發與交通建設雖是公共議題，但與雙薪家庭的照顧空窗並沒有直接的因果關係。"},{"level":"adv","topic":"人口老化與長期照顧","q":"阿嬤中風後行動不便，日常生活需要長期協助，但家人白天都要上班，照顧壓力沉重。下列何種社會支持最能直接回應這個家庭的需要？","choices":["申請就學貸款以減輕孩子的學費負擔","報名社區運動比賽以增進體能","申請兒童及少年保護安置服務","運用長期照顧服務，例如居家照顧、日間照顧或喘息服務"],"answer":3,"explain":"長期照顧制度針對因老化、疾病或身心障礙而長期需要協助者，提供居家照顧、日間照顧、喘息服務等，能分擔家庭的照顧負荷。就學貸款屬教育經濟協助；社區運動不是照顧服務；兒少保護安置的對象是受虐或失依的兒童少年，與長者照顧需求不同。"},{"level":"adv","topic":"多元家庭型態的尊重","q":"班上討論不同家庭型態時出現以下四種說法，何者最符合「尊重多元家庭」的態度？","choices":["核心家庭才是最正常的家庭，其他型態都是不得已的結果","各種家庭的組成原因不同，只要能發揮愛與照顧的功能，都應受到同樣的尊重","單親家庭的孩子一定缺乏管教，家庭功能必然不完整","三代同堂的家庭一定比其他家庭幸福，應該讓大家都學習"],"answer":1,"explain":"家庭型態沒有優劣之分，重點在能否發揮情感支持、照顧與教育等功能，並應相互尊重與包容。宣稱某種型態「最正常」或「一定比較幸福」，都是把單一標準套在所有家庭上的價值判斷；把單親家庭與缺乏管教畫上等號，則是缺乏根據的刻板印象。"},{"level":"adv","topic":"兒少保護與通報管道","q":"小欣發現鄰居的小朋友身上經常出現不明傷痕，而且長期被單獨留在家中無人照顧。下列作法何者最為適當？","choices":["認為那是別人的家務事，不應該過問","自行前往鄰居家中把小朋友帶走照顧","把小朋友的照片與住址公開在社群網站，請網友評理","撥打113保護專線或告知師長，由專業人員了解狀況並提供協助"],"answer":3,"explain":"兒少保護採取通報與專業介入的機制，發現疑似受虐或疏忽照顧時，應循113專線或師長等正式管道反映，由社工評估後提供協助。視為家務事而不理會，可能延誤救援；自行帶走孩子屬不當作為；公開照片與住址會侵害隱私，並可能造成當事人二次傷害。"},{"level":"adv","topic":"家庭暴力防治－保護令的概念","q":"關於「保護令」的基本概念，下列敘述何者最為正確？","choices":["保護令由被害人自行書寫，張貼在住家門口即可生效","保護令只保護配偶，家庭中的其他成員一律不適用","保護令由法院核發，可禁止加害人繼續施暴、騷擾或接近被害人，以保障其安全","一旦聲請保護令，被害人就必須立刻與加害人離婚"],"answer":2,"explain":"保護令是法院核發的命令，內容可包括禁止施暴、禁止騷擾或接近、命遷出住居所、暫定未成年子女權利義務等，用以保障被害人安全。保護令不是私人文件，無法自行書寫生效；家庭暴力防治保護的是家庭成員，不限於配偶；聲請保護令與是否離婚是兩件不同的事。"},{"level":"adv","topic":"社會救助與家庭經濟壓力","q":"陳家因家長失業，家庭收入中斷，連基本生活開銷與孩子的就學費用都難以負擔。下列何種社會支持制度最能直接回應這個家庭的處境？","choices":["社會救助，例如生活扶助、急難救助等經濟協助","家庭暴力防治的保護令制度","戶籍遷徙登記的相關規定","少年不良行為的輔導措施"],"answer":0,"explain":"社會救助是政府針對經濟弱勢或突遭變故的家庭，提供生活扶助、急難救助等基本生活保障，正對應收入中斷的困境。保護令用於防治家庭暴力；戶籍登記屬身分登記制度；少年輔導措施處理的是偏差行為，都無法直接解決家庭的經濟壓力。"},{"level":"adv","topic":"生育率下降的成因推論","q":"臺灣的生育率呈現逐年下降的趨勢。下列何者最可能是造成此現象的主要原因？","choices":["養育子女的經濟與時間成本偏高，工作與育兒不易兼顧，婚育年齡也普遍延後","政府明文禁止每個家庭生育超過一名子女","醫療技術退步，使新生兒難以順利存活","國人普遍認為家庭功能已經完全被學校取代"],"answer":0,"explain":"育兒的經濟與時間成本偏高、職場與家庭難以兼顧、婚育年齡延後等，是生育率下降常被討論的原因。臺灣並無限制生育子女數的規定；醫療技術是持續進步而非退步；學校可分擔部分教育功能，但無法取代家庭的情感支持與照顧功能。"},{"level":"adv","topic":"社會支持系統與家庭功能","q":"老師說明：「當家庭因失業、疾病或暴力等因素，暫時無法照顧成員時，社會會提供必要的協助。」關於社會支持系統，下列說明何者最適當？","choices":["社會支持會完全取代家庭，家庭從此不必再負擔任何責任","只有低收入家庭才可能需要社會支持，其他家庭都不會遇到困難","向外尋求協助代表這個家庭失敗，應盡量隱瞞不讓外人知道","社會支持系統包含社會福利、社會救助與各項保護服務，目的在協助家庭恢復並發揮應有的功能"],"answer":3,"explain":"社會支持系統是在家庭功能不足時提供補充與支援，透過社會福利、社會救助、兒少保護、家庭暴力防治等措施，協助家庭重新發揮功能。它是「補充」而非「取代」家庭；疾病、意外、照顧壓力等困境可能發生在任何家庭，不限於低收入戶；主動求助是解決問題的正確作法，隱瞞反而可能使情況惡化。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>學校與公共生活 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ-school",
+  "title": "學校與公共生活",
+  "subject": "公民",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "校規·自治·霸凌",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>學校與公共生活</h1><div class="sub">公民 · 校規·自治·霸凌 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"學校的功能－社會化","q":"小新升上國中後，學會準時到校、輪流擔任值日生，並和不同的同學合作完成分組報告，也慢慢懂得團體生活中應遵守的規範。這最能說明學校具有下列哪一項功能？","choices":["提供學生家庭經濟上的支援","促進學生社會化，學習團體生活的規範","代替司法機關審理校內的各種糾紛","訓練學生取得專業職業證照"],"answer":1,"explain":"社會化是個人學習社會規範、價值與行為方式的過程，學校是家庭之外重要的社會化場域，題目中的守時、輪值、合作都屬於團體生活規範的學習。選項0錯在學校並不負擔家庭經濟功能；選項2錯在校園紛爭的處理屬教育與輔導範疇，學校不是司法機關，不能審判；選項3錯在專業證照訓練屬技職或更高教育階段的任務，並非國中學校的主要功能。"},{"level":"basic","topic":"學校的功能－培養公民素養","q":"某國中除了各科教學外，還安排班級討論校園公共議題、辦理學生自治組織選舉，並推動服務學習活動。這些安排最主要想達成的目標是什麼？","choices":["培養公民素養，讓學生練習參與公共事務","提高學生在紙筆測驗中的答題速度","增進學生的體能與運動競技表現","替學校行政人員分擔日常工作負擔"],"answer":0,"explain":"討論公共議題、選舉與服務學習，重點都在讓學生練習表達、討論、決定與負責，屬於公民素養的培養。選項1錯在這些活動並非以應試技巧為目的；選項2錯在體能訓練是體育課程的目標，與選舉、議題討論無關；選項3錯在活動的核心是學生的學習與參與，不是替行政人員分擔工作。"},{"level":"basic","topic":"學校中的角色與期待","q":"就學校中不同成員的角色分工與應有期待來看，下列敘述何者最為適當？","choices":["教師只要維持班級秩序即可，不需要引導學生學習","學生只要學業成績優異，就可以不必遵守校規","行政人員負責規劃與支援校務，使教學活動能順利進行","校長可以不受任何法令與程序限制，決定校內一切事務"],"answer":2,"explain":"學校中不同角色各有分工：教師教學與輔導、學生學習與守規、行政人員（如教務、學務、總務等處室人員）負責規劃與支援，使教學順利運作。選項0錯在教師的核心角色是教學與引導，不只是管理秩序；選項1錯在校規對全體學生一體適用，成績好壞與是否守規無關；選項3錯在校長仍須依教育相關法令與校內程序行事，並非不受限制。"},{"level":"basic","topic":"校規的意義","q":"某校校規規定「上課鐘響後應立即回到座位，不得在走廊追逐奔跑」。就校規的意義而言，這項規定最主要的目的是什麼？","choices":["方便學校統一管理，因此不必向學生說明理由","限制學生對校內事務表達不同意見","處罰違規的同學本身就是校規的最終目的","維持校園秩序與安全，保障全體學生的學習權益"],"answer":3,"explain":"校規的核心意義在於維持校園秩序與安全，讓每位學生的受教與學習權益都能受到保障。選項0錯在校規涉及學生權益，訂定與執行都應說明理由並可受檢視，管理便利不能取代正當理由；選項1錯在校規規範的是行為，學生仍可循正當管道對校務表達意見；選項2錯在處罰只是維持秩序的手段之一，不是校規的目的。"},{"level":"basic","topic":"校規訂定的正當程序","q":"某校打算修訂服裝儀容相關規定，下列哪一種作法最符合校規訂定應有的正當程序？","choices":["由校長一人決定後直接公告，當天開始實施","由校內成績最好的班級投票，決定全校適用的規定","先公告草案，邀集學生、教師與家長代表共同討論，再依規定程序議決後公告","由少數熱心家長私下商議後，請學校照著辦理"],"answer":2,"explain":"正當程序強調公開、參與、討論並依既定程序議決，且應讓受規範者（學生）有表達意見的機會。選項0錯在由一人片面決定並立即實施，缺乏參與與討論；選項1錯在以成績作為代表資格並不合理，也無法代表全校學生；選項3錯在少數人私下決定同樣缺乏公開性與代表性。"},{"level":"basic","topic":"班級自治－班會","q":"就班會的性質與功能而言，下列敘述何者最為正確？","choices":["班會是導師單向宣布事項的時間，同學不需要發言","班會是全班討論班級事務、依民主程序形成共同決定的自治活動","班會的決議效力高於校規與法律，可以與相關規定牴觸","班會唯一的功能就是公開檢討並處罰違規的同學"],"answer":1,"explain":"班會是班級自治的核心，透過提案、討論、表決等民主程序形成共同決定，是學生練習公共參與的重要場合。選項0錯在班會若只是單向宣布，就失去自治與討論的意義；選項2錯在班級決議仍不得牴觸校規與法律；選項3錯在班會功能包含班級事務規劃、活動籌備與意見交流，並非只用來檢討處罰。"},{"level":"basic","topic":"班級自治－班級幹部","q":"班級每學期選出班長、風紀股長、學藝股長等幹部，就班級自治而言，其主要意義為何？","choices":["讓幹部取得可以任意處罰同學的特權","由幹部代替全班同學承擔所有責任","減輕學校聘請人力所需的支出","透過分工合作處理班級事務，學習服務他人與承擔責任"],"answer":3,"explain":"班級幹部制度的意義在於分工合作、共同經營班級，並在服務中學習責任感，是自治的具體練習。選項0錯在幹部只是協助班級運作，並無處罰同學的權力；選項1錯在班級事務是全班共同的責任，不能由幹部一肩扛起；選項2錯在幹部的設置目的是教育與自治，不是替學校節省人事費用。"},{"level":"basic","topic":"學生自治－學生會","q":"就學生自治組織（例如學生會）的產生方式與職權而言，下列敘述何者最適當？","choices":["由學生依規定選舉產生，代表學生表達意見並參與校內公共事務","由學校行政人員直接指派成員，學生不得參與運作","主要任務是代替學校對違規的學生進行懲處","其決議可以直接取代校務會議的所有決定"],"answer":0,"explain":"學生會由學生依校內規定選舉產生，代表學生反映意見、推動與學生相關的校園事務，是學生自治的具體組織。選項1錯在若由行政人員指派，就失去「自治」的意義；選項2錯在懲處學生屬學校依規定辦理的權責，不是學生會的任務；選項3錯在學生會的提案須循校內既有程序討論，不能取代校務會議的決議。"},{"level":"basic","topic":"受教育權與義務","q":"依我國憲法與相關法律規定，國民接受國民教育的性質為何？","choices":["只是人民的權利，與義務無關","只是人民的義務，人民並沒有相對的權利","既是人民受教育的權利，也是應盡的義務","完全由家長自行決定是否讓子女就學，法律不加以規範"],"answer":2,"explain":"國民教育具有「權利」與「義務」的雙重性質：國家應提供就學機會以保障人民的受教育權，學齡國民也有依法就學的義務。選項0、1都只看到其中一面而不完整；選項3錯在法律對學齡兒童及少年的就學有明確規範，家長負有使子女就學的責任，並非可任意決定。"},{"level":"basic","topic":"校園中的隱私權","q":"就尊重他人隱私而言，下列哪一種行為最為適當？","choices":["趁同學離開座位時，翻看他手機裡的訊息","把知道的同學家庭狀況拿到班上公開談論","將同學私下傳給自己的照片轉發到班級群組","同學信任而告知的私事，未經同意就不向他人透露"],"answer":3,"explain":"隱私權是指個人有權決定自己的私人資訊是否公開、由誰知悉，尊重隱私就是不擅自窺看、散布或轉傳。選項0是未經同意窺看他人通訊；選項1是擅自散布他人的個人與家庭資訊；選項2是把原本只供自己觀看的照片擴散給更多人，三者都屬侵犯隱私的行為。"},{"level":"basic","topic":"霸凌類型辨識－關係霸凌","q":"班上幾位同學相約「都不要理阿德」，還故意在分組時把他排除在外，使他長期被孤立。這種行為最接近下列哪一種霸凌類型？","choices":["肢體霸凌","言語霸凌","關係霸凌","網路霸凌"],"answer":2,"explain":"關係霸凌是透過排擠、孤立、散布謠言等方式，破壞被害人的人際關係與歸屬感，題目中的「不要理他」「排除在分組外」正是典型情形。選項0指推、打、踢等身體上的侵害；選項1指嘲笑、辱罵、取難聽綽號等口語攻擊；選項3須透過網路或通訊軟體進行，本題並未提及網路。"},{"level":"basic","topic":"網路霸凌的特性","q":"與其他霸凌型態相比，關於網路霸凌的特性，下列敘述何者最適當？","choices":["只會發生在校園裡，放學回家後就不會再持續","訊息散布快速且不易完全刪除，傷害可能不分時間地點持續擴大","因為沒有身體接觸，所以不會對當事人造成任何傷害","只要使用匿名帳號，發言就完全不必負任何責任"],"answer":1,"explain":"網路霸凌的特點是傳播快、範圍廣、內容不易徹底刪除，受害者可能在不同時間與地點被反覆傷害。選項0錯在網路不受校園時空限制，離校後仍可能持續；選項2錯在心理與名譽上的傷害同樣真實且可能相當嚴重；選項3錯在匿名不等於免責，散布不實或侮辱性言論仍須負相應的法律與校規責任。"},{"level":"basic","topic":"社區的意義","q":"就「社區」的意義而言，下列敘述何者最為適當？","choices":["社區是居住在一定地區、彼此互動並具有共同生活關係的人群","社區只是行政區劃上的名稱，居民之間並沒有任何往來","社區事務應全部交由政府處理，居民不需要也不應該參與","社區與學校分屬不同領域，兩者不可能有任何合作"],"answer":0,"explain":"社區指生活在一定地理範圍內、彼此互動並形成共同生活關係與認同感的人群。選項1錯在社區的重點在於居民互動與共同生活，不只是地圖上的區域名稱；選項2錯在社區公共事務需要居民共同參與，政府與居民是合作關係；選項3錯在學校常與社區合作辦理服務學習、環境維護或社區活動，兩者關係密切。"},{"level":"basic","topic":"志願服務","q":"阿豪利用週末到社區圖書館協助整理書籍，並陪伴長輩讀報，過程中並未支領任何報酬。他所從事的活動屬於下列何者？","choices":["支領時薪的假日工讀","學校因其違規而要求的懲罰性勞動","依法律規定必須履行的義務役","出於自願、不以獲取報酬為目的的志願服務"],"answer":3,"explain":"志願服務的要件是出於自願、不以獲取報酬為目的，並為增進公共利益而付出時間與心力。選項0錯在工讀以領取薪資為目的；選項1錯在懲罰性勞動並非出於自願；選項2錯在依法應履行的義務同樣不具自願性，與志願服務的性質不同。"},{"level":"adv","topic":"同儕壓力的辨識與因應","q":"小婕的幾位好朋友最近常慫恿她一起在便利商店「順手」拿走小東西，並說「不一起做就不夠朋友」。小婕心裡覺得不安，卻擔心拒絕之後被排擠。下列因應方式何者最適當？","choices":["為了維持友誼先配合一次，事後再私下把東西放回去","清楚表明自己不參與並說明理由，必要時向師長或家人求助","不參與也不表態，但仍照樣跟著他們一起行動","把過程拍下來放上網路，公開嘲笑這群朋友"],"answer":1,"explain":"面對同儕壓力，應先判斷該行為是否違反規範與法律，再以明確、堅定但不激烈的方式拒絕，並在需要時尋求可信任成人的協助。選項0錯在一旦配合就已參與竊取行為，事後歸還不能使行為變成正當；選項2錯在不表態卻持續同行等於默許，也可能被認為是共同參與；選項3錯在公開嘲笑屬網路上的攻擊行為，會造成新的傷害，也無助於解決問題。"},{"level":"adv","topic":"霸凌事件中的旁觀者","q":"阿凱多次看到同學小豪被幾位同學嘲笑外號、故意撞肩，他覺得很不忍心，卻擔心自己成為下一個目標。就旁觀者的角色而言，下列作法何者最適當且安全？","choices":["跟著一起笑，避免自己被鎖定","把過程錄影上傳網路，讓網友評理","私下關心小豪，並將情形告知導師或輔導室","號召同學與加害者互毆，用武力制止對方"],"answer":2,"explain":"旁觀者的關鍵作為是「不加入、不助長、願意通報並支持受害者」，向導師或輔導室反映能讓學校依程序介入處理。選項0錯在附和等於助長霸凌，使受害者更加孤立；選項1錯在把影像公開上網可能造成受害者二次傷害，也涉及隱私問題；選項3錯在以暴制暴會使自己也成為加害者，讓衝突升高。"},{"level":"adv","topic":"霸凌的處理與求助管道","q":"小宣連續數週被同學在班級群組張貼嘲諷的圖片與文字，心情低落、不想上學。就求助與處理方式而言，下列何者最為妥當？","choices":["保留截圖等紀錄，並向導師、輔導室或學校受理霸凌申訴的管道反映","立刻刪除所有訊息並退出群組，當作沒有發生過","用更難聽的話回擊，讓對方知難而退","先忍耐，等自己也蒐集到對方的把柄再公開"],"answer":0,"explain":"遭遇網路霸凌時，保存紀錄有助於學校查明事實，並應循導師、輔導室或校內受理霸凌申訴的正式管道求助，必要時也可請家長協助。選項1錯在刪除紀錄會使後續處理困難，一味忍讓也常使行為持續；選項2錯在以攻擊回擊可能使自己也成為加害者，讓衝突擴大；選項3錯在報復心態無法解決問題，拖延求助只會延長受害時間。"},{"level":"adv","topic":"校規與法令的關係","q":"就校規與法令的關係，以及校規對學生權利的限制而言，下列敘述何者最適當？","choices":["校規不得牴觸法律，對學生權利的限制也應在必要且合理的範圍內","校規屬學校內部規定，即使與法律牴觸也仍然有效","只要多數師生同意，校規就可以剝奪特定學生的受教育權","校規一經訂定就不得再修改，學生也不得對其提出異議"],"answer":0,"explain":"校規是學校依教育相關法令訂定的內部規範，位階低於法律，不得與法律牴觸；其對學生權利的限制，也應以維持教育目的與校園秩序所必要者為限。選項1錯在牴觸法律的規定不能發生效力；選項2錯在受教育權受憲法與法律保障，不是多數同意就能剝奪；選項3錯在校規可依既定程序檢討修訂，學生也能循申訴或自治管道表達意見。"},{"level":"adv","topic":"權利與責任的相互性","q":"班會中老師說：「每一位同學都有表達意見的權利。」這句話同時隱含下列哪一項責任？","choices":["只要是自己的想法，就可以任意評論他人的外貌或家庭","與多數人意見不同的同學，應該主動退出討論","少數同學的意見可以不必被聽見，以節省討論時間","發言時應遵守討論規則、尊重他人，不妨害別人表達的機會"],"answer":3,"explain":"權利與責任相互對應：自己享有表達意見的權利，就必須同樣尊重他人的相同權利，並遵守討論秩序。選項0錯在表達意見不等於可以攻擊他人人格或揭露他人隱私；選項1錯在民主討論本來就容納不同意見，退出反而使討論失去多元；選項2錯在少數意見同樣應被聽見，這正是尊重他人表達權的展現。"},{"level":"adv","topic":"學生自治的實際運作","q":"學生會蒐集到不少同學反映「操場旁的飲水機不足，下課常排長隊」。下列哪一種推動方式最符合民主參與與學生自治的精神？","choices":["由學生會幹部直接向廠商下訂單，再要求學校付款","整理同學意見與使用情形，提出具體方案，循校內既有會議與行政程序討論","號召全校同學罷課，逼學校立刻答應","在校園牆面噴漆寫下訴求，讓全校注意這件事"],"answer":1,"explain":"學生自治是在既有制度中理性提案、溝通並尋求可行方案，蒐集意見、提出具體建議並循程序討論最能發揮效果。選項0錯在採購涉及學校經費與行政程序，學生會無權逕行決定；選項2錯在罷課會損害同學自身的受教權，屬對抗而非溝通；選項3錯在噴漆破壞公物，反而使訴求失焦並須負相應責任。"},{"level":"adv","topic":"公共議題的討論與理性溝通","q":"社區居民對「公園球場是否開放到夜間使用」意見分歧：常運動的居民希望延長時間，鄰近住戶則擔心噪音影響作息。下列何者最符合公共議題理性溝通的原則？","choices":["由人數較多的一方直接決定，不必再進行討論","在社群網站上批評立場不同者的人格，逼對方讓步","召開說明會或協調會，讓雙方說明理由，尋求兼顧各方的解決方案","認為這是別人的事，不表示任何意見也不參與"],"answer":2,"explain":"公共議題常涉及不同利益，理性溝通強調就事論事、說明理由、傾聽對方，並尋求折衷或兼顧的方案（例如調整開放時段或設置降噪措施）。選項0錯在多數決若略過討論，容易忽視少數的權益；選項1錯在人身攻擊使討論無法進行；選項3錯在公共事務與每位居民相關，冷漠不參與無助於問題解決。"},{"level":"adv","topic":"校園安全與隱私權的權衡","q":"某校因教室常發生財物遺失，考慮在所有教室內全天候裝設監視器。就學生權利的權衡而言，下列思考何者最適當？","choices":["只要目的是為了安全，任何範圍與時間的監看都沒有問題","應評估必要性與範圍，兼顧校園安全與學生隱私，並經適當程序討論與說明","學生在校園內本來就沒有隱私可言，因此不需要考慮","為了保護隱私，學校完全不應採取任何防範財物遺失的措施"],"answer":1,"explain":"不同權利發生衝突時，應在必要範圍內取得平衡，並透過公開討論與說明形成共識，例如限定裝設地點、時段與影像的使用及保存方式。選項0錯在目的正當不代表手段可以毫無限制；選項2錯在學生在校仍享有隱私權，只是可能受到合理限制；選項3錯在校園安全同樣重要，完全不作為並非合理選擇。"},{"level":"adv","topic":"家庭與學校社會化功能的比較","q":"就家庭與學校在個人社會化過程中所扮演的角色比較，下列敘述何者最適當？","choices":["社會化只發生在學校，家庭對個人幾乎沒有影響","學校只負責學科教學，不會影響學生的態度與價值觀","家庭與學校的影響方式完全相同，兩者並沒有差異","家庭以親密互動傳遞生活習慣，學校則以課程與團體生活擴展人際學習"],"answer":3,"explain":"家庭與學校都是重要的社會化場域，但方式不同：家庭的互動較親密、個別化；學校則有制度化的課程、規範與同儕團體，讓學生練習在較大的群體中相處與合作。選項0、1分別低估了家庭與學校其中一方的影響；選項2錯在兩者在互動方式、規模與規範性質上確實不同，不能說毫無差異。"},{"level":"adv","topic":"公共空間的使用與公德心","q":"週末社區裡只有一座籃球場，一群國中生已連續使用一段時間，另一群居民在場邊等候。下列作法最能兼顧公共空間的合理使用與公德心？","choices":["雙方協商輪流使用的時段，或以混隊比賽的方式共用場地","先到的人有權一直使用到自己想離開為止","等候的人直接進場打斷比賽，宣示自己也有使用權","把球場出入口圍起來，只讓自己認識的人進入使用"],"answer":0,"explain":"公共空間屬於全體居民共有，使用時應顧及他人需求，透過協商輪替或共同使用最能兼顧公平與和諧。選項1錯在「先到」不等於可以無限期獨占公共資源；選項2錯在強行打斷容易引發衝突，並非理性溝通；選項3錯在圍起場地排除他人，等於把公共空間私有化，違反公共性與公德心。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>

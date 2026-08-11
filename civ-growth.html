@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>自我與生命成長 練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1d26; --ink-soft:#5b606f;
+    --pos:#2563eb; --neg:#ea580c;
+    --right:#16a34a; --wrong:#e11d48;
+    --line:#e6e8ef; --card:#ffffff; --key:#f3f5f9; --key-press:#e3e7f0; --bg:#f7f8fb;
+    --subj:#7c3aed;   /* 科目主色 */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Noto Sans TC',system-ui,-apple-system,sans-serif;color:var(--ink);
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+    display:flex;justify-content:center;padding:14px;}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;}
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0;}
+  header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px;}
+  header .sub{font-size:12px;color:var(--ink-soft);}
+  .streak{font-family:'Lexend',sans-serif;font-size:13px;color:var(--ink-soft);} .streak b{color:var(--ink);font-weight:600;}
+  .levels{display:flex;gap:8px;}
+  .lv{flex:1;border:none;border-radius:12px;padding:10px 0;font-family:inherit;font-size:14px;font-weight:500;
+      background:var(--card);color:var(--ink-soft);border:1.5px solid var(--line);cursor:pointer;transition:.15s;}
+  .lv.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 18px;box-shadow:0 8px 24px -18px rgba(20,25,50,.35);}
+  .q{font-size:18px;font-weight:500;line-height:1.65;min-height:52px;}
+  .q .tag{display:inline-block;font-size:11px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;margin-bottom:10px;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fbfcfe;
+       border-radius:14px;padding:13px 15px;font-family:inherit;font-size:16px;color:var(--ink);cursor:pointer;transition:.12s;line-height:1.4;}
+  .opt:active{transform:scale(.99);}
+  .opt .mk{width:26px;height:26px;flex:none;border-radius:8px;background:var(--key);color:var(--ink-soft);
+           font-family:'Lexend',sans-serif;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .opt.pick{border-color:var(--ink);}
+  .opt.ok{border-color:var(--right);background:#f0fdf4;color:var(--right);} .opt.ok .mk{background:var(--right);color:#fff;}
+  .opt.no{border-color:var(--wrong);background:#fff1f4;color:var(--wrong);} .opt.no .mk{background:var(--wrong);color:#fff;}
+  .opt.lock{cursor:default;}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-6px)}}
+  .shake{animation:shake .35s;}
+  .explain{margin-top:16px;border-top:1.5px dashed var(--line);padding-top:14px;display:none;}
+  .explain.show{display:block;}
+  .explain .lead{font-size:12px;color:var(--subj);letter-spacing:1px;margin-bottom:4px;}
+  .explain .body{font-size:15px;line-height:1.8;color:var(--ink);}
+  .explain .kp{font-size:12px;color:var(--subj);background:#fbeeec;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:6px;}
+  .go{border:none;border-radius:16px;height:56px;width:100%;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:1px;
+      background:var(--pos);color:#fff;cursor:pointer;transition:.12s;}
+  .go:active{transform:scale(.98);} .go:disabled{opacity:.35;}
+</style>
+<script type="application/json" id="unit-meta">
+{
+  "id": "civ-growth",
+  "title": "自我與生命成長",
+  "subject": "公民",
+  "grade": "國一",
+  "term": "上",
+  "chapter": 0,
+  "ch": "",
+  "tag": "青春期·情緒·生涯",
+  "ready": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>自我與生命成長</h1><div class="sub">公民 · 青春期·情緒·生涯 · 選擇題 · 附詳解</div></div>
+    <div class="streak">連對 <b id="streak">0</b></div>
+  </header>
+  <div class="levels">
+    <button class="lv active" data-lv="basic">基礎</button>
+    <button class="lv" data-lv="adv">進階</button>
+    <button class="lv" data-lv="mix">混合</button>
+  </div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="explain" id="explain"><div class="lead">詳解</div><div class="body" id="ebody"></div></div>
+  </div>
+  <button class="go" id="go" disabled>下一題</button>
+</div>
+
+<script>
+/* ===== bank-start ===== 原創題庫（論語選）：字詞義、文意翻譯、國學常識、成語 */
+const BANK=[{"level":"basic","topic":"自我概念的形成－他人回饋","q":"小柔常聽到老師和同學說她「說話很有條理，能把事情講清楚」，久而久之她也認為自己擅長表達。這最能說明自我概念的形成受到下列何者影響？","choices":["第二性徵出現的早晚","班級人數的多寡","他人的回饋與評價","個人的血型與星座"],"answer":2,"explain":"自我概念是個人對自己的整體看法，重要他人（師長、同儕、家人）的回饋與評價是主要來源之一，小柔正是從他人的回應中形成「我很會表達」的看法。第二性徵出現的早晚屬生理發育；血型與星座並非自我概念的形成來源；班級人數只是外在環境條件，與此判斷無直接關係。"},{"level":"basic","topic":"自我概念的形成－社會比較","q":"阿哲月考後把自己的成績與班上同學一一對照，藉此判斷自己的數學程度在班上算好還是不好。這種認識自己的方式稱為下列何者？","choices":["社會比較","自我省思","他人回饋","自我接納"],"answer":0,"explain":"以他人為參照標準來評估自己的能力或表現，稱為社會比較。自我省思是向內回顧自己的想法與行為，並未以他人為標準；他人回饋是別人主動說出對你的看法，本題是阿哲自己去比較；自我接納是承認並肯定自己的優缺點，屬態度而非認識自己的方法。"},{"level":"basic","topic":"自我概念的形成－自我省思","q":"小欣每天睡前寫日記，回想今天做得好的地方與可以改進之處，也想想自己真正重視什麼。這種認識自己的方法最接近下列何者？","choices":["社會比較","他人回饋","從眾行為","自我省思"],"answer":3,"explain":"自我省思是透過回顧、檢視自己的行為、感受與價值觀來更了解自己，寫日記是典型方式。社會比較須以別人為參照，題幹並未提到與人比較；他人回饋來自別人的評價，日記是自己寫的；從眾是跟隨多數人的行為，與省思無關。"},{"level":"basic","topic":"自我認同的意義","q":"下列關於「自我認同」的敘述，何者最正確？","choices":["自我認同就是完全照著同儕的想法過生活","自我認同是個人對「我是誰」的整體理解與肯定，會在成長歷程中逐漸形成與調整","自我認同一旦形成便終生固定，不會再調整","自我認同是指外表與興趣都要和別人一模一樣"],"answer":1,"explain":"自我認同是個人統整自己的特質、角色與價值觀後，對「我是誰」形成的理解與肯定，並會隨經驗與環境持續調整。完全照著同儕想法過生活是從眾，反而不利自我認同；認為終生固定忽略了發展與調整的可能；要求外表與興趣和別人一模一樣是模仿他人，並非認同自己。"},{"level":"basic","topic":"自尊的意義","q":"關於「自尊」的意義，下列敘述何者最恰當？","choices":["自尊的高低完全由考試成績決定","自尊就是堅持己見、不接受任何人的意見","自尊是指青春期身體發育的成熟程度","自尊是個人對自我價值的整體評價與看重程度"],"answer":3,"explain":"自尊指個人是否肯定、看重自己的價值，是對自我價值的整體評價。成績只是影響自尊的因素之一，說「完全決定」過度化約；堅持己見、不接受任何意見是固執或自我防衛；身體發育成熟程度屬生理發展，都不是自尊的定義。"},{"level":"basic","topic":"正向的自我接納","q":"小杰的身高在班上偏矮，他不因此貶低自己，也承認自己在桌球場上反應快的優點，繼續投入練習。這種態度最符合下列何者？","choices":["正向的自我接納","自我膨脹","一味與人比較","逃避現實"],"answer":0,"explain":"正向的自我接納是能承認自己的限制，同時肯定自己的長處，並以此為基礎繼續努力。自我膨脹是過度誇大自己；一味與人比較容易只看見不足；逃避現實是否認或迴避自己的狀況，小杰並未否認身高的事實。"},{"level":"basic","topic":"青春期－第二性徵","q":"進入青春期後，男女生會出現「第二性徵」。下列何者屬於第二性徵的表現？","choices":["乳齒脫落並長出恆齒","男生喉結突出、聲音變低沉；女生乳房發育、骨盆變寬","身高體重完全停止成長","學會走路與說話"],"answer":1,"explain":"第二性徵是青春期在性荷爾蒙作用下出現、與生殖器官本身無直接關係的男女身體特徵，例如變聲、喉結突出、乳房發育、骨盆變寬、體毛增加等。換牙屬兒童期的生理發展；青春期反而是身高快速成長的階段；走路與說話是幼兒期的動作與語言發展。"},{"level":"basic","topic":"青春期－發育的個別差異","q":"七年級班上，有的同學已明顯抽高、變聲，有的同學外表變化還不明顯。對這個現象最正確的理解是下列何者？","choices":["發育較慢的同學一定是營養不良，需要立刻就醫","發育較快的同學心智一定比較成熟","青春期發育的早晚與速度本來就有個別差異，屬於正常現象","身體發育的快慢代表同學之間能力的高低"],"answer":2,"explain":"青春期起始的時間與發育速度受遺傳、體質等因素影響，早晚快慢不同都屬正常，應彼此尊重、不取笑或評論他人身體。發育較慢不等於營養不良，不宜妄下判斷；身體發育與心智成熟並非同步；生理發育更與能力高低無關。"},{"level":"basic","topic":"身體形象的正確態度","q":"關於青春期「身體形象」的正確態度，下列何者最適當？","choices":["為了符合流行審美，可用極端節食快速改變體型","依照網路上的「完美身材」標準評價同學的外表","身體形象不理想時應避免與人往來，以免被取笑","了解每個人體型外貌本來就不同，以健康而非單一審美標準看待自己的身體"],"answer":3,"explain":"健康的身體形象是接納自己的身體、重視健康與身體功能，而非追求單一審美標準。極端節食會傷害發育中的身體；用網路標準評價同學外表屬外貌歧視，可能造成傷害；因外表而自我孤立則會影響人際與心理健康。"},{"level":"basic","topic":"情緒管理－覺察與辨識情緒","q":"學習情緒管理時，通常最先要做的是下列何者？","choices":["立刻把情緒壓下去，假裝自己沒事","要求讓自己不高興的人先道歉","覺察並辨識自己此刻是什麼情緒、由何而來","用大吼大叫把情緒立刻宣洩出來"],"answer":2,"explain":"情緒管理的第一步是覺察與辨識，先看清楚自己的情緒種類與原因，才能選擇合適的表達與紓解方式。壓抑假裝沒事會使情緒累積；要求他人先道歉是把責任推給別人，並非管理自己的情緒；大吼大叫屬失控宣洩，可能傷害人際關係。"},{"level":"basic","topic":"情緒紓解方式的判斷原則","q":"判斷情緒紓解方式是否適當，常用「不傷害自己、不傷害他人、不破壞物品」為原則。下列做法何者最符合這個原則？","choices":["先深呼吸讓自己冷靜，再以運動、聽音樂或書寫等方式調節情緒","用力摔壞教室的公物來發洩怒氣","在班級群組公開辱罵讓自己生氣的同學","把情緒完全悶在心裡，長期不讓任何人知道"],"answer":0,"explain":"深呼吸、運動、聽音樂或書寫等方式能調節情緒，且不傷害自己與他人，也不破壞物品，最符合上述原則。摔壞公物是破壞物品且須負責；公開辱罵會造成他人的言語傷害；長期悶在心裡則是傷害自己，容易累積成更大的身心壓力。"},{"level":"basic","topic":"校園求助管道－輔導室的職掌","q":"小翔最近長期心情低落、睡不好，也不想上學，卻不知道能找誰談。在學校裡，下列何者是最適合協助他的專責單位？","choices":["學務處生教組","輔導室","總務處","教務處註冊組"],"answer":1,"explain":"輔導室（輔導處）負責學生的心理輔導、生活適應與生涯輔導，是校內最適合協助情緒困擾的專責單位。生教組主要處理校園安全與學生違規事務；總務處負責校園設備與事務管理；註冊組辦理成績與學籍事務。"},{"level":"basic","topic":"挫折容忍力的意義","q":"下列何者最符合「挫折容忍力」的意思？","choices":["運氣很好，一生都不會遇到任何挫折","遇到困難就立刻放棄，以免自己受傷","遇到失敗時，把原因全部推給別人或運氣","遇到失敗或不如意時，能承受並調適情緒，繼續面對與解決問題的能力"],"answer":3,"explain":"挫折容忍力指面對失敗或不如意時，能承受壓力、調適情緒並持續面對與解決問題的能力，可透過經驗累積與適當支持逐漸培養。不會遇到挫折是運氣而非能力；立刻放棄是逃避；把原因全推給別人或運氣是自我防衛，都無法真正提升挫折容忍力。"},{"level":"basic","topic":"生涯發展－興趣與性向的區辨","q":"下列關於「興趣」與「性向」的說明，何者最正確？","choices":["興趣是目前已學會的技能，性向是自己喜歡做的事","興趣與性向完全由天生決定，不會因學習與經驗而改變","興趣是個人喜歡、願意主動投入的事物；性向是學習某方面事物的潛在能力","興趣與性向意思完全相同，只是說法不同"],"answer":2,"explain":"興趣是喜好與投入的意願，性向是學習某方面事物尚未完全展現的潛在能力，能力則是目前已具備的表現水準。把興趣說成已學會的技能，是混淆了興趣與能力；興趣與性向都會受環境、學習與經驗影響而改變；兩者概念不同，不可視為相同。"},{"level":"adv","topic":"社會比較與自我概念的情境判斷","q":"小安常看到同學在社群平台分享比賽得獎與出遊照片，覺得自己樣樣不如人，情緒越來越低落。就自我概念的形成來看，下列判斷何者最適當？","choices":["社會比較必然有害，應完全避免與任何人比較","他多以「向上比較」看待他人刻意呈現的片面訊息，宜再透過自我省思與多元回饋認識自己","得獎次數的多寡就等於一個人的整體價值","只要在社群上呈現更好的形象，自我概念自然就會提升"],"answer":1,"explain":"社會比較本身是中性的認識方法，關鍵在於比較的對象與所依據的訊息是否完整；社群貼文多為精選片段，容易造成失真的向上比較，應搭配自我省思與多方回饋。完全禁止比較過於極端；把得獎次數等同整體價值，是以單一面向取代全面的自我；只經營形象並未真正認識自己。"},{"level":"adv","topic":"自尊與自信的比較","q":"下列關於「自尊」與「自信」的比較，何者最恰當？","choices":["自尊偏重對自我價值的肯定，自信偏重相信自己有能力完成某件事，兩者會相互影響","自尊是相信自己能完成特定任務，自信是對自我整體價值的看重","自尊與自信都只能靠他人不斷稱讚才可能建立","一個人自信愈高，自尊必然愈低"],"answer":0,"explain":"自尊是「我是否有價值」的整體評價，自信是「我做不做得到」的能力信念，兩者不同但會相互影響，例如成功經驗提升自信，也可能帶動自尊。把兩者定義對調並不正確；他人稱讚只是來源之一，成功經驗與自我肯定同樣重要；兩者也不是此消彼長的反比關係。"},{"level":"adv","topic":"青春期身心發展與情緒起伏","q":"小豪升上七年級後，常為了小事和家人爭執，情緒起伏也比國小時明顯。下列解釋與做法何者最為適切？","choices":["這代表小豪本性變壞，家人應加重處罰","情緒起伏一定是疾病徵兆，必須立刻停止上學在家休養","等青春期過去，情緒問題都會自動消失，不需要學習管理","青春期身心變化較大，情緒起伏是常見現象，可學習覺察情緒並以適當方式表達與溝通"],"answer":3,"explain":"青春期身體、荷爾蒙與人際關係同時改變，情緒較易波動屬常見現象，重點是學習辨識與表達情緒、與家人溝通。解讀為本性變壞並加重處罰，容易惡化親子關係；一般的情緒起伏不等於疾病，不必貿然停學；認為長大就會自動消失，則忽略了情緒管理需要學習。"},{"level":"adv","topic":"挫折的解讀與因果推論","q":"考試失利後，小婷告訴自己：「我這次的準備方式不對，下次要調整讀書計畫。」小雲則告訴自己：「我就是笨，再怎麼努力都沒用。」造成兩人後續學習動機差異的最主要因素是下列何者？","choices":["兩人對挫折的解讀與想法不同，因而影響情緒與後續行動","兩人的智力高低不同","兩人第二性徵發育的速度不同","兩人在教室裡的座位安排不同"],"answer":0,"explain":"面對同一件挫折，把原因看成「方法可以調整」會帶來後續行動，看成「能力不可改變」則容易放棄，可見對挫折的解讀會影響情緒與行為。題幹並未提供智力差異的訊息；生理發育速度與讀書歸因無因果關係；座位安排更不是兩人反應不同的原因。"},{"level":"adv","topic":"情緒的適當表達與後續行動","q":"小凱因為球隊選拔落選而非常難過。就情緒的「表達」來看，下列做法何者最為適當且負責？","choices":["把難過藏起來，對關心他的人說「我根本不在乎」","向教練或家人說明自己的失落感受，並請教可以加強的方向","遷怒隊友，指責是別人害他落選","立刻退出所有社團活動，不再參加任何比賽"],"answer":1,"explain":"適當的情緒表達是誠實說出自己的感受、不傷害他人，並進一步面對問題、尋求改善方向。否認感受會讓身邊的人無從協助，也不利自我調適；遷怒隊友是把情緒轉嫁他人，破壞關係也無助改善；全面退出屬逃避行為，等於放棄調適與成長的機會。"},{"level":"adv","topic":"珍惜生命與求助資源的運用","q":"小玲發現要好的同學最近常說「活著沒什麼意思」，還把心愛的東西送人。小玲最適當的做法是下列何者？","choices":["答應同學保密，不告訴任何人，以免失去友誼","認為同學只是說說而已，不必理會","主動陪伴傾聽，並儘快告知輔導老師或信任的成人，必要時運用心理諮詢等求助資源","在班上公開討論同學的狀況，請大家一起評論"],"answer":2,"explain":"當同學出現持續的負面言語與異常行為（例如把心愛的東西送人），屬於需要成人協助的警訊，陪伴傾聽並儘快連結輔導老師或專業資源才是負責任的做法。為了友誼替這類訊息保密，可能延誤協助；認定只是說說而輕忽風險；在班上公開討論則侵犯隱私，可能造成二次傷害。"},{"level":"adv","topic":"壓力的調適方法","q":"小恩同時面對段考、社團成果發表與家中事務，壓力很大且常失眠。下列調適方式何者最為適當？","choices":["連續熬夜把所有事情一次做完，睡眠之後再補","為了避免壓力，乾脆全部放棄不做","整天打電動逃避，把所有期限先拋到腦後","排出事情的輕重緩急並分段完成，安排適度運動與休息，必要時向師長說明並尋求協助"],"answer":3,"explain":"面對多重壓力，可先評估事情的重要與急迫程度、分段完成，並維持運動與睡眠等身心調節，必要時求助，屬於問題導向的正向因應。長期熬夜會使身心狀況更差；全部放棄與整天逃避都只是暫時迴避，壓力來源依然存在甚至擴大。"},{"level":"adv","topic":"破除職業的性別刻板印象","q":"小明說：「護理師是女生的工作，工程師是男生的工作。」對這句話最適當的評論是下列何者？","choices":["這是職業的性別刻板印象；職業選擇應依個人興趣、性向與能力，不應以性別設限","這是社會既有的分工方式，大家應該遵守","這句話正確，因為男女的能力天生完全不同","這只是玩笑話，不會對任何人造成影響，不必理會"],"answer":0,"explain":"把特定職業與特定性別綁在一起，屬於職業的性別刻板印象，會限制個人依興趣、性向與能力發展的機會。既有分工是社會長期形成的現象，不代表應該延續；男女在能力上並非天生截然二分；即使出於玩笑，仍可能加深偏見並影響他人的選擇。"},{"level":"adv","topic":"生涯的初步規劃與探索","q":"七年級的阿倫想開始做生涯的初步規劃，下列做法何者最為恰當？","choices":["現在就決定唯一的職業目標，之後不再更動也不再探索","透過興趣與性向測驗、參加社團、職業試探與人物訪談等方式，逐步認識自己並蒐集職業資訊","完全依照家人指定的科系與職業去做，不必了解自己","只挑聽起來薪水最高的職業，不必考慮自己的能力與興趣"],"answer":1,"explain":"國中階段的生涯規劃重在「探索」，一方面透過測驗、社團、職業試探與人物訪談了解自己（興趣、性向、能力），一方面蒐集工作世界的資訊，並保持彈性隨經驗調整。過早鎖定單一目標會失去探索機會；完全交由他人決定忽略了自我了解；只看待遇而不顧興趣與能力，容易造成日後適應困難。"},{"level":"adv","topic":"青少年困擾與求助資源的選擇","q":"關於青少年遇到困擾時的資源運用，下列敘述何者最正確？","choices":["求助代表自己沒有能力，應盡量都靠自己解決","只有發生很嚴重的事情時，才可以去找輔導老師","可依問題性質選擇合適資源，例如向師長、家人求助，運用學校輔導室，或撥打心理諮詢與保護專線","網路上匿名網友的建議最可靠，應優先採用"],"answer":2,"explain":"懂得辨識問題性質並連結合適資源，是重要的生活能力；師長家人、學校輔導室與各類心理諮詢、保護專線，可依需要交互運用。把求助視為無能是常見迷思；輔導室也提供一般適應與生涯諮詢，不必等到嚴重才求助；匿名網友的身分與專業難以查證，不宜作為優先依據。"}];
+/* ===== bank-end ===== */
+
+const AB=['A','B','C','D','E'];
+let level='basic', poolIdx=[], queue=[], problem=null, answered=false, streak=0, lastIdx=-1;
+
+function buildPool(){ poolIdx = BANK.map((x,i)=>i).filter(i=> level==='mix' || BANK[i].level===level); if(poolIdx.length<2) poolIdx=BANK.map((x,i)=>i); queue=[]; }
+/* 洗牌後依序發牌：整池抽完才重洗，一輪內不重複；重洗時避免與上一題相接 */
+function refillQueue(){ queue = poolIdx.slice();
+  for(let k=queue.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=queue[k]; queue[k]=queue[r]; queue[r]=t; }
+  if(queue.length>1 && queue[queue.length-1]===lastIdx){ const t=queue[queue.length-1]; queue[queue.length-1]=queue[0]; queue[0]=t; }
+}
+/* 每題把選項順序洗牌（避免正解都固定在 A），並重新對映正解索引；原始 BANK 不動 */
+function shuffleChoices(p){ const order=p.choices.map((_,k)=>k);
+  for(let k=order.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); const t=order[k]; order[k]=order[r]; order[r]=t; }
+  return Object.assign({}, p, { choices: order.map(k=>p.choices[k]), answer: order.indexOf(p.answer) }); }
+function nextProblem(){ if(!queue.length) refillQueue(); const i=queue.pop(); lastIdx=i; problem=shuffleChoices(BANK[i]); render(); }
+function qText(){ return problem.q; }
+
+function render(){
+  answered=false;
+  document.getElementById('q').innerHTML=`<span class="tag">${problem.level==='basic'?'基礎':'進階'}</span><div>${problem.q}</div>`;
+  const box=document.getElementById('opts'); box.innerHTML='';
+  problem.choices.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.i=idx;
+    b.innerHTML=`<span class="mk">${AB[idx]}</span><span>${c}</span>`;
+    b.onclick=()=>choose(idx); box.appendChild(b);
+  });
+  document.getElementById('explain').className='explain';
+  document.getElementById('go').disabled=true;
+}
+
+function choose(idx){
+  if(answered) return; answered=true;
+  const correct = idx===problem.answer;
+  const opts=[...document.querySelectorAll('.opt')];
+  opts.forEach(o=>o.classList.add('lock'));
+  opts[problem.answer].classList.add('ok');
+  if(!correct){ opts[idx].classList.add('no'); opts[idx].classList.add('shake'); setTimeout(()=>opts[idx].classList.remove('shake'),400); }
+
+  streak = correct?streak+1:0; document.getElementById('streak').textContent=streak;
+
+  if(window.parent!==window){
+    window.parent.postMessage({type:'unit-progress', unitDone:1, unitCorrect:correct?1:0}, '*');
+    if(!correct){ window.parent.postMessage({type:'unit-mistake', q:qText(), ans:problem.choices[problem.answer], given:problem.choices[idx], choices:problem.choices, steps:`<div>${problem.explain}</div>`, tip:'知識點：'+(problem.topic||'')}, '*'); }
+  }
+
+  document.getElementById('ebody').innerHTML=`<span class="kp">知識點 · ${problem.topic||''}</span><br>正解 <b style="color:var(--right)">${AB[problem.answer]}　${problem.choices[problem.answer]}</b><br>${problem.explain}`;
+  document.getElementById('explain').className='explain show';
+  document.getElementById('go').disabled=false;
+}
+
+document.getElementById('go').onclick=()=>{ if(answered) nextProblem(); };
+document.querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lv').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); level=b.dataset.lv; buildPool(); nextProblem();
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&answered) nextProblem();
+  else if(/^[1-5]$/.test(e.key)&&!answered){ const i=+e.key-1; if(i<problem.choices.length) choose(i); } });
+
+(function(){ const lv=new URLSearchParams(location.search).get('level');
+  if(lv==='basic'||lv==='adv'||lv==='mix'){ level=lv; document.querySelectorAll('.lv').forEach(b=>b.classList.toggle('active',b.dataset.lv===lv)); }
+})();
+buildPool(); nextProblem();
+</script>
+<script>
+/* ===== 遊戲指令介面：外層 RPG 可對本題下技能（hint / fifty）。單獨用瀏覽器開啟時不受影響。 ===== */
+(function(){
+  function box(){var h=document.getElementById('game-hint');if(!h){h=document.createElement('div');h.id='game-hint';h.style.cssText='margin-top:12px;font-size:13px;background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;line-height:1.6';var o=document.getElementById('opts');if(o&&o.parentNode){o.parentNode.insertBefore(h,o.nextSibling);}else{(document.querySelector('.card')||document.body).appendChild(h);}}return h;}
+  function showHint(){if(answered||!problem)return;box().innerHTML='💡 提示 · 這題的知識點：'+(problem.topic||'');}
+  function eliminateOne(){if(answered||!problem)return;var opts=[].slice.call(document.querySelectorAll('.opt')).filter(function(o){return !o.classList.contains('gone')&&(+o.dataset.i)!==problem.answer;});if(!opts.length)return;var p=opts[Math.floor(Math.random()*opts.length)];p.classList.add('gone');p.disabled=true;p.style.opacity='.35';p.style.textDecoration='line-through';p.style.pointerEvents='none';}
+  if(typeof nextProblem==='function'){var _n=nextProblem;nextProblem=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','fifty']},'*');}
+})();
+</script>
+<script>
+/* ===== exam-mode-hook：綜合測驗模式，?exam=1 時交由外層 runner 控制 ===== */
+(function(){
+  if(new URLSearchParams(location.search).get('exam')!=='1') return;
+  document.documentElement.setAttribute('data-exam','1');
+  var lv=document.querySelector('.levels'); if(lv) lv.style.display='none';
+  var go=document.getElementById('go'); if(!go) return;
+  function upd(){ var isNext=go.classList.contains('next')||(go.textContent||'').indexOf('下一題')>=0;
+    go.style.display=isNext?'none':''; }
+  upd();
+  try{ new MutationObserver(upd).observe(go,{attributes:true,childList:true,characterData:true,subtree:true}); }catch(e){}
+})();
+</script>
+</body>
+</html>
