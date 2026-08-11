@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>靈焰之洞 · 原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Noto+Sans+TC:wght@500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--ink:#eaf1f5;--paper:#fffdf8;--card-ink:#2b2b28;--line:#e5e2d8;--seal:#c1352b;
+    --blue:#2563eb;--orange:#ea580c;--flame:#22d3ee;--gold:#f5c542;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;font-family:'Noto Sans TC',system-ui,sans-serif;}
+  body{background:#0e1418;color:var(--ink);overflow:hidden;}
+  .num{font-family:'Lexend',sans-serif;font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+
+  .flames{display:flex;gap:4px;justify-content:center;}
+  .flame{width:22px;height:26px;transition:.3s;}
+  .flame.out{opacity:.26;filter:grayscale(1);}
+  .flame.low{animation:flick .5s infinite alternate;}
+  @keyframes flick{from{transform:translateY(0) scale(1)}to{transform:translateY(-2px) scale(1.1)}}
+  .flame svg{width:100%;height:100%;filter:drop-shadow(0 0 4px rgba(34,211,238,.8));}
+
+  #village{position:fixed;inset:0;max-width:480px;margin:0 auto;background-size:cover;background-position:center;display:flex;flex-direction:column;overflow:hidden;}
+  #village::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,20,.12),transparent 28%,rgba(10,16,20,.28));}
+  .vhud{position:relative;z-index:3;padding:14px 16px 4px;display:flex;justify-content:space-between;align-items:center;}
+  .vttl{font-family:'Noto Serif TC',serif;font-size:18px;letter-spacing:1px;text-shadow:0 2px 8px #000;}
+  .vmats{display:flex;gap:12px;font-size:13px;text-shadow:0 1px 4px #000;} .vmats b{font-family:'Lexend';}
+  .vstage{position:relative;flex:1;z-index:2;}
+  .oval{position:absolute;left:8%;right:8%;bottom:5%;height:28%;border-radius:50%;border:2px dashed rgba(255,255,255,.3);background:rgba(140,200,255,.06);}
+  .vbar{position:relative;z-index:3;display:flex;gap:8px;padding:4px 14px 8px;}
+  .vbar button{flex:1;background:rgba(28,36,46,.72);border:1.5px solid rgba(255,255,255,.22);border-bottom:5px solid rgba(0,0,0,.5);border-radius:14px;padding:9px 4px 7px;color:#eaf1f5;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;backdrop-filter:blur(4px);transition:transform .07s,border-bottom-width .07s;}
+  .vbar button .i{font-size:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));} .vbar button:active{transform:translateY(3px);border-bottom-width:2px;}
+  .vbar button.main{background:rgba(201,118,42,.92);border-color:rgba(255,220,170,.55);border-bottom-color:#6e3d12;box-shadow:0 0 16px -3px rgba(240,150,60,.8);}
+  #vhero{position:absolute;transform:translate(-50%,-82%);z-index:3;width:56px;height:56px;transition:left .6s cubic-bezier(.4,0,.2,1),top .6s cubic-bezier(.4,0,.2,1);}
+  #vhero img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.6));}
+  #vhero.walk img{animation:bob .4s infinite alternate;}
+  .vhint{position:relative;z-index:3;text-align:center;font-size:12px;color:#e6f6ff;opacity:.8;padding:0 0 16px;text-shadow:0 1px 4px #000;}
+  .vcloud{position:relative;z-index:3;text-align:center;font-size:12px;color:#e6f6ff;padding:2px 14px 2px;text-shadow:0 1px 3px #000;}
+  .vcloud b{color:#7ef29a;}
+  .vlogin,.vlogout{border:none;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:700;margin-left:6px;}
+  .vlogin{background:rgba(34,211,238,.9);color:#08323a;} .vlogout{background:rgba(255,255,255,.25);color:#fff;}
+  .loginSheet{position:fixed;inset:0;z-index:60;background:rgba(8,14,18,.72);display:none;align-items:flex-end;}
+  .loginSheet.on{display:flex;}
+  .loginCard{background:var(--paper);color:var(--card-ink);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 18px 26px;}
+  .loginCard h3{margin:0 0 4px;font-size:17px;} .loginCard p{color:#8a857b;font-size:13px;margin:0 0 14px;line-height:1.5;}
+  .loginCard input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;margin-bottom:10px;background:#fff;}
+  .loginCard .lgP{width:100%;background:var(--card-ink);color:#fff;padding:13px;border-radius:12px;font-size:16px;font-weight:600;}
+  .loginCard .lgG{width:100%;background:none;color:var(--blue);padding:12px;font-size:14px;}
+  .loginCard .lgC{width:100%;background:#eceadf;color:var(--card-ink);padding:11px;border-radius:11px;font-size:14px;}
+  .loginCard .lgMsg{font-size:13px;color:var(--seal);min-height:16px;margin-bottom:8px;}
+  /* 通用面板(每日/商店/圖鑑/系統塔 共用)*/
+  .sheetBg{position:fixed;inset:0;z-index:55;background:rgba(8,14,18,.72);display:none;align-items:flex-end;}
+  .sheetBg.on{display:flex;}
+  .sheetCard{background:var(--paper);color:var(--card-ink);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:18px 18px 24px;max-height:82vh;overflow-y:auto;}
+  .sheetCard .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .sheetCard .sh h3{margin:0;font-size:17px;} .sheetCard .sh .x{background:#eceadf;border-radius:10px;padding:6px 12px;font-size:14px;color:var(--card-ink);}
+  .ph{color:#8a857b;font-size:14px;line-height:1.6;padding:8px 2px;} .ph .dLogin{background:var(--card-ink);color:#fff;border-radius:11px;padding:10px 18px;font-size:15px;margin-top:8px;}
+  .dtop{background:#fbeeec;border:1px solid #f0d5d1;border-radius:12px;padding:10px 12px;font-size:14px;color:var(--seal);margin-bottom:10px;} .dtop b{font-family:'Lexend';}
+  /* 魔物圖鑑 */
+  .cdxgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .cdx{position:relative;background:#faf8f1;border:1.5px solid var(--line);border-radius:12px;padding:8px 4px 6px;text-align:center;overflow:hidden;}
+  .cdx.tame{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);}
+  .cdx .cdxi{height:52px;display:flex;align-items:center;justify-content:center;}
+  .cdx .cdxi img{max-width:48px;max-height:48px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+  .cdx.lock .cdxi img{filter:brightness(0);opacity:.32;}
+  .cdx .cdxn{font-size:12px;font-weight:700;color:var(--card-ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cdx.lock .cdxn{color:#b9bdc9;} .cdx .cdxc{font-size:10px;color:#8a857b;margin-top:1px;}
+  .cdx .cdxbadge{position:absolute;top:4px;right:4px;background:var(--seal);color:#fff;font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;letter-spacing:1px;}
+  /* 商店 */
+  .sbuy{margin-top:5px;width:100%;background:var(--flame);color:#08323a;border-radius:9px;padding:5px 4px;font-size:12px;font-weight:700;}
+  .sbuy:disabled{opacity:.42;} .sbuy.on{background:var(--gold);color:#5a4405;} .sbuy.eq{background:#2f9e6b;color:#fff;}
+  .drow .sbuy{width:auto;padding:7px 14px;flex:0 0 auto;}   /* 技能列的購買鈕:靠右不撐滿,避免把文字擠成直排 */
+  .shophd{font-size:14px;font-weight:700;color:var(--card-ink);margin:16px 2px 8px;}
+  .vchips{display:flex;gap:6px;flex-wrap:wrap;} .vchip{background:#efeae0;color:#8a857b;border-radius:9px;padding:6px 11px;font-size:13px;font-weight:700;} .vchip.on{background:var(--card-ink);color:#fff;}
+  #vmount{position:absolute;transform:translate(-118%,-64%);z-index:2;width:50px;height:50px;transition:left .6s cubic-bezier(.4,0,.2,1),top .6s cubic-bezier(.4,0,.2,1);}
+  #vmount img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.5));}
+  .drow{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);} .drow:last-child{border-bottom:none;}
+  .drow .di{flex:1;min-width:0;} .drow .dn{font-weight:600;font-size:15px;} .drow .ds{font-size:12px;color:#8a857b;margin-top:2px;}
+  .drow .dgo{background:var(--flame);color:#08323a;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;} .drow .dsoon{font-size:12px;color:#b9bdc9;}
+  /* 遊戲風選單按鈕(副本/單元/綜合)*/
+  .gsel{display:flex;flex-direction:column;gap:10px;padding:2px 0 4px;}
+  .gbtn{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border-radius:15px;border:none;position:relative;transition:transform .08s,border-bottom-width .08s;}
+  .gbtn:not(:disabled):active{transform:translateY(3px);}
+  .gbtn .gth{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px;overflow:hidden;}
+  .gbtn .gth img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45));}
+  .gbtn .gmid{flex:1;min-width:0;} .gbtn .gname{font-size:15px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .gbtn .gsub{font-size:12px;margin-top:2px;opacity:.9;} .gbtn .gstars{font-size:12px;letter-spacing:2px;color:#ffd24a;margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .gbtn .ggo{font-size:13px;font-weight:700;flex-shrink:0;opacity:.92;}
+  .backbar{background:#eceadf;border-radius:10px;padding:7px 13px;font-size:14px;color:var(--card-ink);font-weight:600;margin-bottom:12px;}
+  .termtabs{display:flex;gap:8px;margin-bottom:12px;}
+  .termtabs .tt{flex:1;padding:9px 4px;border-radius:11px;background:#efeae0;color:#8a857b;font-size:14px;font-weight:700;border:1.5px solid transparent;}
+  .termtabs .tt.on{background:var(--card-ink);color:#fff;}
+  /* 村莊傳送門(走到門口進副本)*/
+  .portal{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
+  .portal .ring{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;border:2.5px solid rgba(255,255,255,.5);background:rgba(16,22,28,.42);backdrop-filter:blur(2px);animation:pfloat 3s ease-in-out infinite;}
+  .portal .pl{margin-top:6px;font-size:12px;font-weight:700;color:#eaf1f5;text-shadow:0 1px 4px #000;background:rgba(10,16,20,.55);padding:2px 10px;border-radius:20px;white-space:nowrap;}
+  .portal.soon .ring{filter:grayscale(.75);border-color:rgba(255,255,255,.22);animation:none;} .portal.soon .pl{opacity:.7;}
+  .portal:not(.soon):active{transform:translate(-50%,-50%) scale(.94);}
+  @keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  /* 錯題複習泡泡(村莊裡,有到期才冒)*/
+  .revbub{position:absolute;top:6%;left:7%;z-index:4;background:#fffdf8;color:#8a3b6a;border:2px solid #8a3b6a;border-radius:14px 14px 14px 3px;padding:7px 11px;font-size:12px;font-weight:700;text-align:center;line-height:1.35;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.45);animation:revb 1.6s ease-in-out infinite;}
+  .revbub b{font-family:'Lexend';font-size:15px;}
+  @keyframes revb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  /* 事件入口(村中央,紅色閃爍)*/
+  .evtportal{position:absolute;top:24%;left:50%;transform:translateX(-50%);z-index:4;text-align:center;cursor:pointer;}
+  .evtportal .er{width:64px;height:64px;margin:0 auto;border-radius:50%;background:#c1352b;border:4px solid #ff5a4a;display:flex;align-items:center;justify-content:center;font-size:27px;animation:evtpulse 1.1s ease-in-out infinite;}
+  .evtportal .el{margin-top:6px;font-size:12px;font-weight:700;color:#ffe;background:rgba(120,20,20,.65);border-radius:20px;padding:2px 11px;display:inline-block;text-shadow:0 1px 3px #000;}
+  .evtportal:active .er{transform:scale(.94);}
+  @keyframes evtpulse{0%,100%{box-shadow:0 0 14px -2px #ff5a4a;transform:scale(1)}50%{box-shadow:0 0 30px 3px #ff5a4a;transform:scale(1.06)}}
+  .vhelp{background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:12px;margin-left:6px;vertical-align:middle;cursor:pointer;line-height:1;}
+  .mapback{position:absolute;right:16px;top:14px;z-index:5;background:rgba(20,26,30,.6);border:1px solid rgba(255,255,255,.4);color:#eaf1f5;border-radius:10px;padding:7px 12px;font-size:13px;}
+  #map{position:fixed;inset:0;max-width:480px;margin:0 auto;background-size:cover;background-position:center;display:none;flex-direction:column;}
+  #map::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,20,.5),rgba(10,16,20,.12) 30%,rgba(10,16,20,.5));}
+  .hud{position:relative;z-index:3;padding:14px 16px 6px;}
+  .hud .ttl{font-family:'Noto Serif TC',serif;font-size:17px;letter-spacing:1px;text-shadow:0 2px 8px #000;}
+  .hud .ttl small{display:block;font-size:11px;opacity:.85;font-weight:400;letter-spacing:0;}
+
+  .stage{position:relative;flex:1;z-index:2;}
+  .trail{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;}
+  .node{position:absolute;transform:translate(-50%,-50%);z-index:2;}
+  .node .disc{width:58px;height:58px;border-radius:50%;background:rgba(20,26,30,.5);border:2px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+  .node.t-boss .disc{width:74px;height:74px;border-color:var(--seal);box-shadow:0 0 18px -2px rgba(193,53,43,.85);}
+  .node.t-machine .disc{width:64px;height:64px;border-color:var(--gold);box-shadow:0 0 20px -2px rgba(245,197,66,.9);}
+  .node.done .disc{border-color:var(--flame);box-shadow:0 0 14px -2px rgba(34,211,238,.8);}
+  .node img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5));}
+  .node.t-boss img{width:58px;height:58px;}
+  .node .lbl{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 4px #000,0 0 4px #000;white-space:nowrap;}
+  .node .stamp{position:absolute;top:-6px;right:-6px;font-family:'Noto Serif TC',serif;color:var(--flame);font-size:18px;text-shadow:0 0 8px #000;transform:rotate(12deg);}
+  .machineIcon{font-size:28px;}
+
+  #hero{position:absolute;transform:translate(-50%,-82%);z-index:4;display:flex;flex-direction:column;align-items:center;transition:left .7s cubic-bezier(.4,0,.2,1),top .7s cubic-bezier(.4,0,.2,1);}
+  #hero .carry{margin-bottom:2px;transform:scale(.85);}
+  #hero img{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.6));}
+  #hero.walk img{animation:bob .4s infinite alternate;}
+  @keyframes bob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+
+  .go{position:relative;z-index:3;margin:0 16px 20px;height:56px;border-radius:16px;background:var(--flame);color:#08323a;font-size:17px;font-weight:700;letter-spacing:1px;box-shadow:0 10px 26px -10px rgba(34,211,238,.7);}
+  .go small{font-weight:500;opacity:.7;font-size:12px;letter-spacing:0;} .go:disabled{opacity:.4;} .go.reach{background:var(--gold);color:#5a4405;}
+
+  #battle{position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:20;background-size:cover;background-position:center;display:none;flex-direction:column;}
+  #battle.on{display:flex;}
+  #battle::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,20,.42),rgba(10,16,20,.7));}
+  .btop{position:relative;z-index:2;padding:12px 16px 0;font-weight:600;text-shadow:0 1px 6px #000;}
+  .bstage{position:relative;z-index:2;flex:1;min-height:0;}
+  .mon{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:132px;height:132px;}
+  .mon img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.55));}
+  .mon.bob img{animation:mbob 2.4s ease-in-out infinite;} @keyframes mbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .mon.hit img{animation:mhit .4s;} @keyframes mhit{0%{transform:scale(1)}25%{transform:scale(1.15,.85) rotate(-5deg);filter:brightness(2)}55%{transform:translateX(-8px)}100%{transform:scale(1)}}
+  .mon.atk img{animation:matk .45s;} @keyframes matk{0%{transform:scale(1)}45%{transform:scale(1.25) translateY(8px)}100%{transform:scale(1)}}
+  .mon.die img{animation:mdie .6s forwards;} @keyframes mdie{to{transform:scale(.2) rotate(20deg);opacity:0}}
+  .monHP{position:absolute;top:-4px;left:50%;transform:translateX(-50%);display:flex;gap:4px;}
+  .pip{width:12px;height:12px;border-radius:50%;background:#5a2b2b;border:1px solid rgba(255,255,255,.4);}
+  .pip.on{background:var(--seal);box-shadow:0 0 6px rgba(193,53,43,.8);}
+  .bubble{position:absolute;top:150px;left:50%;transform:translateX(-50%);background:var(--paper);color:var(--card-ink);border:2px solid #1b1d26;border-radius:16px;padding:13px 22px;min-width:200px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+  .bubble::before{content:"";position:absolute;top:-15px;left:calc(50% - 9px);width:0;height:0;border:9px solid transparent;border-bottom-color:#1b1d26;}
+  .bubble::after{content:"";position:absolute;top:-11px;left:calc(50% - 7px);width:0;height:0;border:7px solid transparent;border-bottom-color:var(--paper);}
+  .bubble .eq{font-family:'Lexend','Noto Sans TC';font-size:25px;font-weight:600;letter-spacing:1px;}
+  .bubble .eq .neg{color:var(--orange);font-weight:700;} .bubble .eq .pos{color:var(--blue);font-weight:700;} .bubble .eq .qm{color:#9aa;}
+  .heroBox{position:absolute;left:14px;bottom:10px;display:flex;flex-direction:column;align-items:center;}
+  .heroBox .carry{margin-bottom:3px;}
+  .heroBox img{width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 5px 6px rgba(0,0,0,.6));transition:.15s;}
+  .heroBox img.lunge{transform:translateX(30px) scale(1.06);}
+  .heroBox img.cast{animation:cast .55s;}
+  @keyframes cast{0%{transform:scale(1)}25%{transform:scale(1.22);filter:brightness(2.3) drop-shadow(0 0 16px var(--gold))}55%{transform:scale(.95)}100%{transform:scale(1)}}
+  .shieldBadge{position:absolute;left:16px;bottom:118px;z-index:5;background:rgba(37,99,235,.92);color:#fff;border-radius:99px;padding:4px 11px;font-size:14px;font-weight:700;display:none;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .shieldBadge.on{display:block;}
+  .hintpop{position:absolute;left:14px;right:14px;bottom:8px;z-index:6;background:rgba(8,80,100,.96);color:#e6fbff;border:1.5px solid #22d3ee;border-radius:13px;padding:12px 14px;font-size:14px;line-height:1.5;box-shadow:0 6px 24px rgba(0,0,0,.5);display:none;}
+  .hintpop.on{display:block;animation:popin .25s;}
+  @keyframes popin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .floatL{position:absolute;inset:0;pointer-events:none;z-index:3;}
+  .dmg{position:absolute;font-family:'Lexend';font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 6px #000;animation:up .8s forwards;}
+  .dmg.out{color:var(--flame);} @keyframes up{0%{opacity:1}30%{transform:translateY(-12px) scale(1.3)}100%{opacity:0;transform:translateY(-56px)}}
+
+  .panel{position:relative;z-index:2;background:var(--paper);color:var(--card-ink);border-radius:20px 20px 0 0;padding:12px 16px 16px;}
+  .skbtn{width:100%;height:42px;border-radius:12px;background:linear-gradient(90deg,#22d3ee,#3b82f6);color:#fff;font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:9px;box-shadow:0 6px 16px -8px rgba(34,211,238,.7);}
+  .skbtn:disabled{opacity:.4;box-shadow:none;}
+  .box{height:44px;border:2px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Lexend';font-size:23px;color:#b9bdc9;background:#fbfcfe;}
+  .box.filled{color:var(--card-ink);} .box.ok{border-color:#16a34a;color:#16a34a;background:#f0fdf4;} .box.no{border-color:var(--seal);color:var(--seal);background:#fff1f4;}
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px;}
+  .pad.dim{opacity:.4;pointer-events:none;}
+  .k{height:40px;border:1px solid var(--line);border-radius:11px;background:#f1efe8;font-family:'Lexend';font-size:18px;color:var(--card-ink);}
+  .k:active{background:#e3e0d4;transform:scale(.96);} .k.sign{color:var(--orange);font-weight:700;} .k.del{color:#8a857b;}
+  .explain{margin-top:9px;background:#faf8f1;border:1.5px solid var(--line);border-radius:12px;padding:11px;display:none;}
+  .explain.show{display:block;}
+  .explain .lab{font-size:11px;color:#8a857b;letter-spacing:2px;margin-bottom:6px;}
+  .steps{font-family:'Lexend','Noto Sans TC';font-size:15px;line-height:1.85;}
+  .steps .pos{color:var(--blue);font-weight:700;} .steps .neg{color:var(--orange);font-weight:700;} .steps .res{color:#16a34a;font-weight:800;}
+  .tip{margin-top:6px;font-size:12px;color:#8a857b;}
+  .act{margin-top:9px;width:100%;height:50px;border-radius:14px;background:var(--seal);color:#fff;font-size:16px;font-weight:700;letter-spacing:2px;}
+  .act small{font-weight:500;opacity:.75;font-size:12px;letter-spacing:0;} .act.go2{background:var(--blue);}
+
+  /* 技能選單 */
+  .skmenu{position:absolute;left:12px;right:12px;bottom:12px;z-index:8;background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 -10px 34px rgba(0,0,0,.5);display:none;}
+  .skmenu.on{display:block;animation:popin .2s;}
+  .skmenu h4{margin:0 0 9px;font-size:13px;color:#8a857b;letter-spacing:2px;}
+  .skitem{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:12px;background:#eef6f8;border:1.5px solid #bce3ea;margin-bottom:8px;text-align:left;}
+  .skitem:disabled{opacity:.4;} .skitem .ic{font-size:22px;}
+  .skitem .nm{flex:1;font-weight:700;color:var(--card-ink);font-size:15px;} .skitem .nm small{display:block;font-weight:400;font-size:12px;color:#8a857b;margin-top:1px;}
+  .skitem .cnt{font-family:'Lexend';font-weight:700;color:#0e7490;font-size:16px;}
+  .skmenu .cancel{width:100%;padding:10px;border-radius:11px;background:#eceadf;color:var(--card-ink);font-size:14px;}
+
+  .toast{position:fixed;left:50%;top:34%;transform:translate(-50%,-50%);z-index:40;background:rgba(8,20,24,.94);color:var(--flame);padding:12px 20px;border-radius:14px;font-size:16px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;text-align:center;}
+  .toast.on{opacity:1;}
+
+  #ending{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 50% 40%,#12324a,#0a0f14);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+  #ending.on{display:flex;}
+  #ending h1{font-family:'Noto Serif TC',serif;font-size:29px;margin:0 0 6px;color:#fff;text-shadow:0 0 20px var(--gold);z-index:2;}
+  #ending .sub{color:#cfe3ee;font-size:15px;margin-bottom:22px;z-index:2;line-height:1.6;padding:0 24px;}
+  #ending .again{z-index:2;background:var(--flame);color:#08323a;padding:14px 26px;border-radius:14px;font-size:16px;font-weight:700;}
+  .spark{position:absolute;width:8px;height:8px;border-radius:50%;opacity:0;}
+  @keyframes boom{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}
+  /* 打倒魔物的勝利對話框(按確定才回地圖)*/
+  #examNext{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:30;background:var(--flame);color:#08323a;padding:13px 30px;border-radius:14px;font-size:16px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.45);display:none;border:none;}
+  #examNext.on{display:block;}
+  #winPop{position:fixed;inset:0;z-index:60;background:rgba(6,14,20,.74);display:none;align-items:center;justify-content:center;padding:20px;}
+  #winPop.on{display:flex;}
+  #winPop .card{background:linear-gradient(180deg,#173a4d,#0e2531);border:2px solid #2b6b7d;border-radius:18px;padding:18px 18px 15px;max-width:320px;width:100%;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.55);animation:winIn .22s ease-out;}
+  #winPop img.wm{width:96px;height:96px;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));}
+  #winPop h2{font-family:'Noto Serif TC',serif;font-size:20px;color:#fff;margin:4px 0 10px;text-shadow:0 0 16px var(--gold);}
+  #winPop .rw{background:rgba(255,255,255,.09);border-radius:10px;padding:9px 10px;color:#dff1f7;font-size:14px;line-height:1.75;margin-bottom:13px;}
+  #winPop .ok{background:var(--flame);color:#08323a;padding:12px 20px;border-radius:12px;font-size:15px;font-weight:800;width:100%;}
+  #winPop .ok small{font-weight:600;opacity:.65;}
+  @keyframes winIn{0%{transform:scale(.86);opacity:0}100%{transform:scale(1);opacity:1}}
+  /* iframe 單元戰鬥:把題庫單元頁塞進打怪畫面(答對→魔物扣血)*/
+  #unitWrap{position:relative;z-index:2;background:var(--paper);border-radius:20px 20px 0 0;display:none;flex-direction:column;height:46vh;min-height:300px;overflow:hidden;box-shadow:0 -8px 24px rgba(0,0,0,.4);}
+  #unitWrap.on{display:flex;}
+  .ubar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .ubar .utitle{font-size:13px;font-weight:700;color:var(--card-ink);}
+  .ubar .uhint{background:linear-gradient(90deg,#22d3ee,#3b82f6);color:#fff;border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;}
+  #unitFrame{flex:1;width:100%;border:none;background:#fff;}
+</style>
+</head>
+<body>
+
+<div id="village">
+  <div class="vhud"><div class="vttl">🔥 靈焰村 <button class="vhelp" onclick="openHelp()">❓</button></div><div class="vmats"><span>🪵 <b id="vWood">0</b></span><span>✦ <b id="vStar">0</b></span><span>🛡 <b id="vShield">0</b></span></div></div>
+  <div class="vbar">
+    <button class="main" onclick="villageAction('dungeon')"><span class="i">⚔️</span>副本</button>
+    <button onclick="villageAction('daily')"><span class="i">📜</span>每日委託</button>
+    <button onclick="villageAction('shop')"><span class="i">🏪</span>商店</button>
+    <button onclick="villageAction('tower')"><span class="i">📒</span>聯絡簿</button>
+    <button onclick="villageAction('codex')"><span class="i">📖</span>圖鑑</button>
+    <button onclick="villageAction('hero')"><span class="i">🧙</span>角色</button>
+  </div>
+  <div class="vcloud" id="vcloud"></div>
+  <div class="vstage" id="vstage">
+    <div class="oval"></div>
+    <div id="vhero" onclick="event.stopPropagation();openChar()"><img src="assets/sprites/players/paladin.png" alt="英雄"></div>
+  </div>
+  <div class="vhint" id="vhint">🌀 點傳送門進副本 · 👆 上面也有功能 · 點地面走走</div>
+</div>
+
+<div id="map">
+  <button class="mapback" id="mapBack">‹ 回村莊</button>
+  <div class="hud"><div class="ttl"><span id="dgName">靈焰之洞</span><small id="dgSub">正負數的乘除 · 第 1 章</small></div></div>
+  <div class="stage" id="stage">
+    <svg class="trail" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline id="trailLine" fill="none" stroke="rgba(34,211,238,.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2.6 2.6"/></svg>
+    <div id="nodes"></div>
+    <div id="hero"><div class="carry flames" id="flamesMap"></div><img src="assets/sprites/players/paladin.png" alt="英雄"></div>
+  </div>
+  <button class="go" id="go">前進 ▸ <small>(Enter / 空白)</small></button>
+</div>
+
+<div id="battle">
+  <div class="btop" id="bTitle"></div>
+  <div class="bstage">
+    <div class="mon bob" id="mon"><div class="monHP" id="monHP"></div><img id="monImg" alt="魔物"></div>
+    <div class="bubble" id="bubble"><div class="eq" id="eq"></div></div>
+    <div class="heroBox"><div class="carry flames" id="flamesBattle"></div><img id="bHero" src="assets/sprites/players/paladin.png" alt=""></div>
+    <div class="shieldBadge" id="shieldBadge">🛡</div>
+    <div class="hintpop" id="hintPop"></div>
+    <div class="floatL" id="floatL"></div>
+  </div>
+  <div class="panel" id="panel">
+    <button class="skbtn" id="skBtn">🪄 施放技能</button>
+    <div class="box" id="box">?</div>
+    <div class="explain" id="explain"><div class="lab">靈焰的低語 · 詳解</div><div class="steps" id="steps"></div><div class="tip" id="tip"></div></div>
+    <div class="pad" id="pad">
+      <button class="k" data-k="7">7</button><button class="k" data-k="8">8</button><button class="k" data-k="9">9</button>
+      <button class="k" data-k="4">4</button><button class="k" data-k="5">5</button><button class="k" data-k="6">6</button>
+      <button class="k" data-k="1">1</button><button class="k" data-k="2">2</button><button class="k" data-k="3">3</button>
+      <button class="k sign" data-k="sign">±</button><button class="k" data-k="0">0</button><button class="k del" data-k="del">⌫</button>
+    </div>
+    <button class="act" id="act">⚔ 攻 擊 <small>(Enter)</small></button>
+  </div>
+  <div id="unitWrap"><div class="ubar"><span class="utitle" id="uTitle"></span><button class="uhint" id="uHint">💡 提示</button></div><iframe id="unitFrame" title="題目" src="about:blank"></iframe></div>
+  <div class="skmenu" id="skMenu"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="sheetBg" id="sheet"><div class="sheetCard"><div class="sh"><h3 id="sheetHead"></h3><button class="x" onclick="closeSheet()">關閉</button></div><div id="sheetBody"></div></div></div>
+<div class="loginSheet" id="loginSheet"><div class="loginCard">
+  <h3>登入雲端 · 讓打怪算進聯絡簿</h3>
+  <p>用跟聯絡簿一樣的帳號登入,遊戲裡答的題就會進每日進度、月曆、錯題本。</p>
+  <div class="lgMsg" id="lgMsg"></div>
+  <input id="lgEmail" type="email" placeholder="電子郵件" autocomplete="username">
+  <input id="lgPass" type="password" placeholder="密碼" autocomplete="current-password">
+  <button class="lgP" onclick="doAuth('login')">登入</button>
+  <button class="lgG" onclick="doAuth('signup')">第一次?建立帳號</button>
+  <button class="lgC" onclick="closeLogin()">關閉</button>
+</div></div>
+<div id="ending"><h1 id="endTitle"></h1><div class="sub" id="endSub"></div><button class="again" id="again">回村莊 ▸</button></div>
+<div id="winPop"><div class="card"><img id="winImg" class="wm" alt=""><h2 id="winTitle"></h2><div class="rw" id="winRw"></div><button class="ok" id="winOk">確定 ▸ 回地圖 <small>(Enter)</small></button></div></div>
+<button id="examNext">下一題 ▸</button>
+
+<script>
+const $=id=>document.getElementById(id);
+const BUILD='2026-07-13';   // 版本標記:❓說明底部會顯示,用來確認線上跑的是不是最新的 game.html
+const P=(c,n)=>`assets/sprites/${c}/${n}.png`;
+const MAXF=3; let flames=MAXF;
+const SKILLS={ hint:{ic:'💡',name:'提示',desc:'顯示解題方法,不給答案',n:2}, reroll:{ic:'🎲',name:'重骰',desc:'換一題同類型的',n:1} };
+let shields=2;   // 防風罩:常駐持有,答錯自動擋、不用施放
+let askedQ=new Set();   // 這趟副本已經出過的題目(避免同一趟裡重複出題)
+function resetSkills(){ SKILLS.hint.n=2+((typeof shop!=='undefined'&&shop.skill.hint)||0); SKILLS.reroll.n=1+((typeof shop!=='undefined'&&shop.skill.reroll)||0); askedQ.clear(); }   // 防風罩不再每場重置(改常駐消耗);每趟副本重置已出題紀錄
+function renderShields(){ $('shieldBadge').textContent='🛡 ×'+shields; $('shieldBadge').classList.toggle('on',shields>0); }
+function useShield(){ if(shields<=0) return false; shields--; shop.shields=shields; renderShields(); renderMats(); saveState(); return true; }   // 擋一次=消耗一個,存檔
+
+/* ===== 接線:打怪=練習(寫回聯絡簿)、素材、雲端存檔 ===== */
+const SB_URL="https://xmkenwcqxbjeqyzigdoj.supabase.co";
+const SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta2Vud2NxeGJqZXF5emlnZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODYxMjEsImV4cCI6MjA5ODg2MjEyMX0.2Imp7H39wt5m4tZ4V3W0y0lyPqYu61a2liWnlytZzLc";
+const sb = window.supabase ? supabase.createClient(SB_URL,SB_ANON) : null;
+let user=null, saveTimer=null;
+let mats=JSON.parse(localStorage.getItem('kg2_mats')||'{"wood":0,"star":0}');
+let codex=JSON.parse(localStorage.getItem('kg2_codex')||'{}');   // 魔物圖鑑:{ mon_id: 擊敗次數 }
+let relics=JSON.parse(localStorage.getItem('kg2_relics')||'{}');   // 寶物圖鑑:{ 寶物名: 1 }(尋物委託尋回)
+let shop=JSON.parse(localStorage.getItem('kg2_shop')||'null')||{skins:['paladin'],mounts:[],skin:'paladin',mount:null,skill:{hint:0,reroll:0}};
+function normShop(){ shop.skins=shop.skins||['paladin']; shop.mounts=shop.mounts||[]; shop.skin=shop.skin||'paladin'; shop.skill=shop.skill||{hint:0,reroll:0}; if(shop.shields==null)shop.shields=3; if(!shop.skins.includes('paladin'))shop.skins.push('paladin'); }
+normShop(); shields=shop.shields;   // 防風罩=常駐消耗品(用完要去商店買)
+let courseSel=JSON.parse(localStorage.getItem('kg2_course')||'{}');   // 各科選的課本版本 {subject: courseId}(遊戲各記各的)
+let answered=+(localStorage.getItem('kg2_answered')||0);   // 累積答題數(排行榜 answered 欄用);每答一題 +1
+let myProfile=null;   // 自己那列的 public_profile(nickname/group_code/opted_in 由家長在 parent.html 設,遊戲端唯讀)
+function bumpAnswered(){ answered++; localStorage.setItem('kg2_answered',String(answered)); }
+const DUNGEON_UNIT='signed-muldiv';   // 這個副本對應的真單元 id
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function renderMats(){ $('vWood').textContent=mats.wood; $('vStar').textContent=mats.star; const vs=$('vShield'); if(vs) vs.textContent=shields; }
+function saveState(){ localStorage.setItem('kg2_mats',JSON.stringify(mats)); localStorage.setItem('kg2_codex',JSON.stringify(codex)); localStorage.setItem('kg2_relics',JSON.stringify(relics)); localStorage.setItem('kg2_answered',String(answered)); localStorage.setItem('kg2_shop',JSON.stringify(shop)); localStorage.setItem('kg2_course',JSON.stringify(courseSel));
+  if(user&&sb){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ if(!user||!sb) return; sb.from('game_state').upsert({user_id:user.id,data:{mats,codex,relics,answered,shop,courseSel},updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(r=>{},e=>{}); upsertProfile(); },700); } }
+/* 班級榜:遊戲端只寫自己的 4 個學習數值(level/answered/dex_count/streak)。nickname/group_code/opted_in 由家長在 parent.html 設,遊戲端唯讀、絕不 upsert(見 INTEGRATION.md §14)。需先在 Supabase 跑題庫側的 sql/public-profile.sql */
+function boardStats(){ const list=allCreatures(); const found=list.filter(c=>(codex[c.mon]||0)>0).length; const H=heroStat(); return {level:H.lvl, answered:answered, dex_count:found, streak:streakN}; }
+async function upsertProfile(){ if(!user||!sb) return; const s=boardStats();
+  try{ await sb.from('public_profile').upsert({user_id:user.id, level:s.level, answered:s.answered, dex_count:s.dex_count, streak:s.streak, updated_at:new Date().toISOString()},{onConflict:'user_id'}); }catch(e){} }   // 只寫這 6 欄,不碰家長那 3 欄
+async function loadMyProfile(){ if(!user||!sb){ myProfile=null; return; } try{ const {data}=await sb.from('public_profile').select('nickname,group_code,opted_in').eq('user_id',user.id).maybeSingle(); myProfile=data||null; }catch(e){ myProfile=null; } }
+async function loadCloud(){ try{ const {data}=await sb.from('game_state').select('data').eq('user_id',user.id).maybeSingle(); if(data&&data.data){ if(data.data.mats) mats=data.data.mats; if(data.data.codex) codex=data.data.codex; if(data.data.relics) relics=data.data.relics; if(data.data.answered!=null) answered=data.data.answered; if(data.data.shop){ shop=data.data.shop; normShop(); shields=shop.shields; } if(data.data.courseSel) courseSel=data.data.courseSel; } }catch(e){} }
+const pterm=t=>'('+(t.s<0?'−':'+')+t.v+')';
+function qTextOf(p){ return p.kind==='single'?pterm(p.a)+' '+p.op+' '+pterm(p.b)+' =':pterm(p.first)+p.steps.map(s=>' '+s.op+' '+pterm(s.f)).join('')+' ='; }
+function feedLog(correct,p,given){ if(!user||!sb) return;      // 登入才寫回;訪客只在本機
+  const t=(TOPIC&&TOPIC.id==='mix'&&p&&p._t)?TOPICS[p._t]:TOPIC;   // 綜合題記到它真正的來源單元
+  const uid=(t&&t.unit_id)||DUNGEON_UNIT;
+  sb.rpc('log_activity',{p_day:todayStr(),p_unit:uid,p_done:1,p_correct:correct?1:0}).then(r=>{},e=>{});
+  if(!correct){ sb.rpc('log_mistake',{p_unit:uid,p_q:t.qtext(p),p_ans:String(p.answer),p_given:given,p_explain:'',p_tip:t.tip(p),p_choices:null}).then(r=>{},e=>{}); } }
+function renderCloud(){ const el=$('vcloud'); if(!el) return;
+  el.innerHTML = user ? `☁️ <b>${user.email}</b> · 打怪已算進聯絡簿 <button class="vlogout" onclick="doLogout()">登出</button>`
+    : `📴 本機存檔(打怪還沒算進聯絡簿) <button class="vlogin" onclick="openLogin()">☁️ 登入</button>`; }
+window.openLogin=()=>{ if(!sb){ toast('這台沒載入到 Supabase(Artifact 沙盒會擋外部,請在你的網站開)'); return; } $('loginSheet').classList.add('on'); };
+window.closeLogin=()=>$('loginSheet').classList.remove('on');
+window.doAuth=async(mode)=>{ const email=($('lgEmail').value||'').trim(),pass=$('lgPass').value,m=$('lgMsg');
+  if(!email||!pass){ m.textContent='請輸入帳號密碼'; return; } m.style.color='#8a857b'; m.textContent='處理中…';
+  try{ const {error}= mode==='signup'? await sb.auth.signUp({email,password:pass}) : await sb.auth.signInWithPassword({email,password:pass});
+    if(error){ m.style.color='var(--seal)'; m.textContent=/Invalid login/.test(error.message)?'帳號或密碼不對':error.message; return; }
+    const {data:{user:u}}=await sb.auth.getUser(); if(!u){ m.style.color='var(--ok)'; m.textContent='帳號已建立,若需信箱驗證請收信後再登入'; return; }
+    user=u; await loadCloud(); await loadSettings(); await loadDaily(); await loadMyProfile(); renderMats(); renderCloud(); applySkin(); applyMount(); renderPortals(); renderReviewBubble(); upsertProfile(); closeLogin(); toast('已登入,打怪會算進聯絡簿 ☁️');
+  }catch(e){ m.style.color='var(--seal)'; m.textContent=e.message; } };
+window.doLogout=async()=>{ clearTimeout(saveTimer); if(sb) await sb.auth.signOut(); user=null; settings=null; dueReview={count:0,topics:[]}; todayProg={}; streakN=0; renderCloud(); renderPortals(); renderReviewBubble(); toast('已登出,改用本機存檔'); };   // 登出:清掉登入時的每日/錯題狀態並移除泡泡
+async function loadSettings(){ if(!user||!sb){ settings=null; return; }
+  try{ const {data}=await sb.from('settings').select('selected_units,daily_goals,rest_days,exam_groups,course_by_subject').eq('user_id',user.id).maybeSingle();
+    settings=data?{selected_units:data.selected_units||[],daily_goals:data.daily_goals||{},rest_days:data.rest_days||[],exam_groups:data.exam_groups||[],course_by_subject:data.course_by_subject||{}}:{selected_units:[],daily_goals:{},rest_days:[],exam_groups:[],course_by_subject:{}}; }catch(e){} }
+async function boot(){ await loadCatalog(); renderPortals();   // 讀單元目錄(含年級/學期),再依目錄重畫傳送門
+  if(sb){ try{ const {data:{session}}=await sb.auth.getSession(); user=session?.user||null;
+      sb.auth.onAuthStateChange((_e,s)=>{ user=s?.user||null; renderCloud(); }); }catch(e){} }
+  if(user){ await loadCloud(); await loadSettings(); await loadDaily(); await loadMyProfile(); upsertProfile(); } renderMats(); renderCloud(); applySkin(); applyMount(); renderPortals(); renderReviewBubble(); }   // settings 進來後再重畫傳送門/錯題泡泡
+
+/* 出題 */
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a, sgn=()=>Math.random()<.5?1:-1;
+function divs(n){const r=[];for(let d=2;d<=9;d++)if(n%d===0)r.push(d);return r;}
+function genSingle(){const op=Math.random()<.5?'×':'÷';let a,b;
+  if(op==='×'){a={s:sgn(),v:rand(2,12)};b={s:sgn(),v:rand(2,12)};}
+  else{const q=rand(2,9),d=rand(2,9);a={s:sgn(),v:d*q};b={s:sgn(),v:d};}
+  return{kind:'single',a,b,op,answer:op==='×'?a.s*a.v*b.s*b.v:(a.s*a.v)/(b.s*b.v)};}
+function genChain(){const first={s:sgn(),v:rand(2,9)};let val=first.s*first.v;const steps=[];
+  for(let i=0;i<2;i++){let op=Math.random()<.5?'×':'÷';if(op==='÷'&&!divs(Math.abs(val)).length)op='×';let f;
+    if(op==='×'){f={s:sgn(),v:rand(2,6)};val*=f.s*f.v;}else{const ds=divs(Math.abs(val));f={s:sgn(),v:ds[rand(0,ds.length-1)]};val/=f.s*f.v;}
+    steps.push({op,f});}return{kind:'chain',first,steps,answer:val};}
+const term=t=>`(<span class="${t.s<0?'neg':'pos'}">${t.s<0?'−':'+'}${t.v}</span>)`;
+const fmt=n=>n<0?`<span class="neg">−${Math.abs(n)}</span>`:`<span class="pos">${n}</span>`;
+function eqHTML(p){let h=p.kind==='single'?term(p.a)+' <span>'+p.op+'</span> '+term(p.b):term(p.first)+p.steps.map(s=>' <span>'+s.op+'</span> '+term(s.f)).join('');
+  return h+' <span>=</span> <span class="qm">?</span>';}
+function buildSteps(p){if(p.kind==='single'){const same=p.a.s*p.b.s>0;
+    return `<div>符號：${same?'同號 → 得正':'異號 → 得負'}</div><div>${p.a.v} ${p.op} ${p.b.v} = ${Math.abs(p.answer)}</div><div>= <span class="res">${fmt(p.answer)}</span></div>`;}
+  let acc=p.first.s*p.first.v,out='';p.steps.forEach((s,i)=>{const pr=acc;acc=s.op==='×'?acc*s.f.s*s.f.v:acc/(s.f.s*s.f.v);
+    out+=`<div>${fmt(pr)} ${s.op} ${term(s.f)} = ${i===p.steps.length-1?`<span class="res">${fmt(acc)}</span>`:fmt(acc)}</div>`;});return out;}
+const tipOf=p=>p.kind==='single'?'先看符號:同號得正、異號得負,再把數字直接乘或除。':'由左到右一步一步算,每一步都看同號得正、異號得負。';
+const opS=o=>'<span>'+o+'</span>';
+/* 正負數加減 */
+function genAdd(hard){ const n=hard?4:2; const terms=[{s:sgn(),v:rand(2,20)}],ops=[];
+  for(let i=1;i<n;i++){ ops.push(Math.random()<.5?'＋':'－'); terms.push({s:sgn(),v:rand(2,15)}); }
+  let val=terms[0].s*terms[0].v; ops.forEach((o,i)=>{ const t=terms[i+1].s*terms[i+1].v; val+= o==='＋'?t:-t; });
+  return {kind:'add',terms,ops,answer:val}; }
+function renderAdd(p){ let h=term(p.terms[0]); p.ops.forEach((o,i)=>h+=' '+opS(o)+' '+term(p.terms[i+1])); return h+' '+opS('=')+' <span class="qm">?</span>'; }
+function stepsAdd(p){ let acc=p.terms[0].s*p.terms[0].v,out=''; p.ops.forEach((o,i)=>{ const prev=acc,t=p.terms[i+1].s*p.terms[i+1].v; acc+= o==='＋'?t:-t;
+  out+='<div>'+fmt(prev)+' '+opS(o)+' '+term(p.terms[i+1])+' '+opS('=')+' '+(i===p.ops.length-1?'<span class="res">'+fmt(acc)+'</span>':fmt(acc))+'</div>'; }); return out; }
+function qtextAdd(p){ let s=pterm(p.terms[0]); p.ops.forEach((o,i)=>s+=' '+o+' '+pterm(p.terms[i+1])); return s+' ='; }
+/* 一元一次方程式 */
+function sgnStr(v){ return v<0?'－ '+Math.abs(v):'＋ '+v; }
+function genEq(hard){ const x=sgn()*rand(2,12),a=rand(2,9),b=sgn()*rand(1,20);
+  if(!hard) return {kind:'eq',a,b,c:a*x+b,x,answer:x};
+  const c=rand(1,a-1),d=(a-c)*x+b; return {kind:'eq2',a,b,c,d,x,answer:x}; }
+function renderEq(p){ if(p.kind==='eq') return `<span class="pos">${p.a}</span>x ${sgnStr(p.b)} ${opS('=')} ${p.c}${opS('，')} x ${opS('=')} <span class="qm">?</span>`;
+  return `<span class="pos">${p.a}</span>x ${sgnStr(p.b)} ${opS('=')} <span class="pos">${p.c}</span>x ${sgnStr(p.d)}${opS('，')} x ${opS('=')} <span class="qm">?</span>`; }
+function stepsEq(p){ if(p.kind==='eq'){ const r=p.c-p.b; return `<div>移項:${p.a}x ${opS('=')} ${p.c} ${p.b<0?'＋':'－'} ${Math.abs(p.b)} ${opS('=')} ${r}</div><div>x ${opS('=')} ${r} ÷ ${p.a} ${opS('=')} <span class="res">${p.x}</span></div>`; }
+  const lc=p.a-p.c,rc=p.d-p.b; return `<div>把 x 移同邊:(${p.a}−${p.c})x ${opS('=')} ${rc}</div><div>${lc}x ${opS('=')} ${rc} → x ${opS('=')} <span class="res">${p.x}</span></div>`; }
+function qtextEq(p){ return p.kind==='eq'?`${p.a}x ${sgnStr(p.b)} = ${p.c}, x=`:`${p.a}x ${sgnStr(p.b)} = ${p.c}x ${sgnStr(p.d)}, x=`; }
+/* 副本主題註冊表 —— 插入口:加一個主題 = 加一個副本(之後接真題庫就往這裡塞) */
+const TOPICS={
+  muldiv:{ id:'muldiv', unit_id:'signed-muldiv', name:'正負數乘除', biome:'volcano', diff:2, face:['monsters','dragon_fire'], gen:genSingle, boss:genChain, render:eqHTML, steps:buildSteps, tip:tipOf, qtext:qTextOf },
+  add:{ id:'add', unit_id:'signed-numbers', name:'正負數加減', biome:'cave', diff:1, face:['monsters','slime_green'], gen:()=>genAdd(false), boss:()=>genAdd(true), render:renderAdd, steps:stepsAdd, tip:()=>'正負數加減:減負數=加正數、加負數=減正數;可想成在數線上移動。', qtext:qtextAdd },
+  eq:{ id:'eq', unit_id:'linear-eq', name:'一元一次方程式', biome:'temple', diff:3, face:['monsters','mummy'], gen:()=>genEq(false), boss:()=>genEq(true), render:renderEq, steps:stepsEq, tip:()=>'解方程式:常數移到另一邊(移項變號),合併後兩邊除以 x 的係數。', qtext:qtextEq },
+};
+let TOPIC=TOPICS.muldiv;
+/* 綜合副本:把 mixPool 裡的題型混著出(段考複習=交錯練習)。每題記到它真正的來源單元 */
+let mixPool=['muldiv','add','eq'];
+let mixTitle='綜合 · 段考複習';   // 綜合/複習副本進去時顯示的標題
+function genMix(){ const t=mixPool[rand(0,mixPool.length-1)]; const p=TOPICS[t].gen(); p._t=t; return p; }
+function genMixBoss(){ const t=mixPool[rand(0,mixPool.length-1)]; const p=(TOPICS[t].boss||TOPICS[t].gen)(); p._t=t; return p; }
+TOPICS.mix={ id:'mix', unit_id:'signed-muldiv', name:'綜合 · 段考複習', biome:'night', diff:3, face:null, gen:genMix, boss:genMixBoss,
+  render:p=>TOPICS[p._t].render(p), steps:p=>TOPICS[p._t].steps(p), tip:p=>TOPICS[p._t].tip(p), qtext:p=>TOPICS[p._t].qtext(p) };
+/* 科目表 —— 插入口:某科有了對應主題就填進 topics,選單自動出 */
+const SUBJECTS=[{id:'數學',icon:'📐',topics:['muldiv','add','eq']},{id:'生物',icon:'🧬',topics:[]},{id:'國文',icon:'📖',topics:[]}];
+/* 每科配色(遊戲按鈕/傳送門用)*/
+const BTN={ '數學':{bg:'#2f56b8',lip:'#1b3576',th:'#1b3576'}, '生物':{bg:'#2f9e6b',lip:'#1a6544',th:'#1a6544'}, '國文':{bg:'#b3742b',lip:'#7a4d16',th:'#7a4d16'} };
+const starStr=d=>'★★★☆☆☆'.slice(3-d,6-d);
+const faceImg=f=>f?`<img src="${P(f[0],f[1])}" alt="">`:'🔀';
+/* biome:每個副本的場景背景 + 怪物池 + BOSS 池(每次進副本隨機抽,所以同單元每次都不一樣)*/
+const BIOMES={
+  volcano:{bg:'volcano',mons:[['dragon_fire','火龍'],['dragon_red','赤焰龍'],['imp_purple','小惡魔'],['lizard_green','火蜥蜴'],['scorpion','火蠍'],['gargoyle','石魔像'],['lava_golem','熔岩魔像','monsters_new'],['iron_golem','鋼鐵魔像','monsters_new'],['rainbow_beetle','彩虹甲蟲','monsters_new']],boss:[['dragon_twohead','雙頭魔龍'],['demon_king','熔岩魔王'],['manticore','蠍尾獅','monsters_new']]},
+  cave:{bg:'cave',mons:[['slime_green','綠史萊姆'],['bat','暗影蝙蝠'],['spider','洞穴蜘蛛'],['goblin','哥布林'],['mushroom_trio','蕈菇怪'],['slime_mustache','鬍子史萊姆'],['octopus_cat','章魚貓','monsters_new'],['space_slime','太空史萊姆','monsters_new'],['rainbow_slime','彩虹史萊姆','monsters_new'],['crystal_slime','水晶史萊姆','monsters_new']],boss:[['spider_queen','蜘蛛女王'],['dark_knight','洞窟守衛'],['hydra_sand','九頭沙龍','monsters_new']]},
+  temple:{bg:'temple',mons:[['mummy','木乃伊'],['gargoyle_stone','石像鬼'],['ghost','幽靈'],['cursed_mirror','詛咒之鏡'],['skeleton','骷髏兵'],['mimic_chest','寶箱怪'],['mech_cat','機械貓','monsters_new'],['mech_bird','機械鳥','monsters_new'],['mech_spider2','機械蛛兵','monsters_new'],['mech_cannon','機械砲','monsters_new']],boss:[['reaper','死神'],['vampire','吸血鬼'],['dark_knight','黑騎士']]},
+  forest:{bg:'forest',mons:[['wolf','惡狼'],['fox','妖狐'],['mushroom_red','紅蘑菇'],['tree_sapling','樹妖苗'],['swamp_beast','沼澤獸'],['naga','娜迦'],['fox_mushroom','蘑菇狐','monsters_new'],['mossy_dino','苔蘚龍','monsters_new'],['winged_goat','翼山羊','monsters_new'],['green_dragon2','青鱗龍','monsters_new'],['cactus_flower','花仙人掌','monsters_new'],['rainbow_mushroom','彩虹菇','monsters_new']],boss:[['treant','古樹妖'],['hydra','九頭蛇'],['earth_dragon','大地龍','monsters_new']]},
+  snow:{bg:'snow',mons:[['golem_ice','冰魔像'],['ice_cube','冰塊怪'],['ice_wraith','冰魂'],['snowman','雪人'],['wolf','雪狼'],['ice_dragon','冰龍','monsters_new'],['ice_cat','冰晶貓','monsters_new'],['ice_bear','冰晶熊','monsters_new'],['ice_serpent','冰蛇','monsters_new'],['water_spirit','水靈','monsters_new'],['water_fairy','水精靈','monsters_new'],['seahorse_dragon','海馬龍','monsters_new'],['sheep_mermaid','綿羊人魚','monsters_new'],['music_mermaid','樂音人魚','monsters_new']],boss:[['hydra','寒霜巨獸'],['dragon_twohead','霜龍'],['rainbow_dragon','彩虹龍','monsters_new']]},
+  night:{bg:'night',mons:[['ghost_skull','骷髏幽魂'],['devil_small','小魔'],['imp_purple','紫惡魔'],['eye_monster','眼魔'],['gargoyle_gray','灰石魔'],['spider_purple','紫蜘蛛'],['galaxy_rabbit','星空兔','monsters_new'],['galaxy_cat','星空貓','monsters_new'],['galaxy_unicorn','星空獨角獸','monsters_new'],['galaxy_octopus','星空章魚','monsters_new'],['constellation_bear','星座熊','monsters_new'],['moon_spirit','月靈','monsters_new'],['constellation_jelly','星座水母','monsters_new'],['storm_ghost','雷靈','monsters_new']],boss:[['reaper','夜之死神'],['demon_king','魔王'],['constellation_lion','星座獅','monsters_new'],['black_hole','黑洞','monsters_new'],['galaxy_spiral','星系漩渦','monsters_new']]},
+};
+/* 每個生態的副本名(大地圖上方大標題,依 biome 變化,不再全部叫「靈焰之洞」) */
+const BIOME_NAME={ volcano:'烈焰熔窟', cave:'晶露洞天', temple:'塵封神殿', forest:'霧隱幽林', snow:'寒霜雪原', night:'星河夜境' };
+function setDgTitle(biome, sub){ const n=$('dgName'); if(n) n.textContent=BIOME_NAME[biome]||'靈焰之洞'; if(sub!=null){ const s=$('dgSub'); if(s) s.textContent=sub; } }
+function shuffled(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rand(0,i); const t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function genPOS(n){ const p=[]; for(let i=0;i<n;i++){ const t=n>1?i/(n-1):0; const x=Math.round(12+t*79); const y=Math.round(84-t*30+(i%2?-9:6)); p.push([x,y]); } return p; }
+function buildDungeon(topic){ const b=BIOMES[(topic&&topic.biome)]||BIOMES.cave;
+  const nMon=rand(3,4); const chosen=shuffled(b.mons).slice(0,nMon); const boss=b.boss[rand(0,b.boss.length-1)];
+  const nodes=[{t:'start'}];
+  chosen.forEach(m=>nodes.push({t:'mon',cat:m[2]||'monsters',mon:m[0],hp:3,name:m[1]}));
+  nodes.push({t:'boss',cat:boss[2]||'bosses',mon:boss[0],hp:5,name:boss[1]});
+  const goal=topic&&topic.goal;   // 委託目標決定終點:討伐→BOSS 就是終點;救援/尋物→終點是村民/寶物;一般練習→靈焰機關
+  if(goal && goal.kind==='boss'){ /* BOSS 就是最後一關,不再接機關 */ }
+  else if(goal){ nodes.push({t:'goal',goalKind:goal.kind,icon:goal.icon,name:goal.label}); }
+  else { nodes.push({t:'machine'}); }
+  return {nodes,bg:b.bg}; }
+
+/* ===== 單元目錄(units.json)+ 學期分層(國一上/國一下…),與網頁「國一上/國一下」對標 ===== */
+let CATALOG={units:[],subjects:[]};
+let curTerm=localStorage.getItem('kg2_term')||'';   // 遊戲各記各的(localStorage),不與網頁共用
+let curSelect=null;
+const termOf=u=>(u.grade||'')+(u.term||'');
+const termVal=k=>({'國一':1,'國二':2,'國三':3}[k.slice(0,2)]||9)*10+(k.slice(2)==='下'?2:1);
+function catUnits(){ if(CATALOG.units&&CATALOG.units.length) return CATALOG.units;   // 後備:目錄還沒載入就用內建三題型
+  return Object.values(TOPICS).filter(t=>t.unit_id&&t.id!=='mix').map(t=>({id:t.unit_id,title:t.name,subject:'數學',grade:'國一',term:'上',ready:true})); }
+function allTerms(){ return [...new Set(catUnits().map(termOf))].filter(Boolean).sort((a,b)=>termVal(a)-termVal(b)); }   // 有內容的學期才出現
+function subjMeta(id){ return (CATALOG.subjects||[]).find(x=>x.id===id) || {id,icon:((SUBJECTS.find(z=>z.id===id)||{}).icon)||'📘',color:'#5a6472'}; }
+function darken(hex,f){ if(!/^#[0-9a-f]{6}$/i.test(hex)) return '#333'; const n=parseInt(hex.slice(1),16); const r=Math.round(((n>>16)&255)*(1-f)),g=Math.round(((n>>8)&255)*(1-f)),b=Math.round((n&255)*(1-f)); return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+function subjColor(id){ if(BTN[id]) return BTN[id]; const col=subjMeta(id).color||'#5a6472'; const d=darken(col,.42); return {bg:col,lip:d,th:d}; }
+function inlineTopic(u){ const d=UNIT_DUNGEON[u.id]; return d&&d.ready?d.topic:null; }   // 有內建題型 → 回 topic id
+function unitPlayable(u){ return !!(inlineTopic(u) || (!window.PACKED && u&&u.file&&u.ready!==false)); }   // 能玩=內建題型 或 可嵌題庫單元頁(打包單機版沒有單元檔,只留內建)
+/* 對標題庫:只要有真正的單元頁就用它出題(題庫改題 → 遊戲即時同步)。打包單機版沒有單元檔 → 退回內建題型 */
+function preferUnitPage(u){ return !window.PACKED && !!(u&&u.file&&u.ready!==false); }
+function coursesFor(subj){ return (CATALOG.courses||[]).filter(c=>c.subject===subj); }   // 該科的課本版本(康軒/南一/翰林)
+function selectedCourse(subj){ const cs=coursesFor(subj); if(!cs.length) return null;
+  const cid=settings&&settings.course_by_subject&&settings.course_by_subject[subj];   // 版本由家長後台決定;訪客/未設定=預設(第一個版本)
+  return cs.find(c=>c.id===cid)||cs[0]; }
+function unitTitle(uid){ const u=catUnits().find(x=>x.id===uid); return (u&&u.title)||uid; }   // unit_id → 中文標題
+async function loadCatalog(){ try{ if(window.UNITS_JSON) CATALOG=window.UNITS_JSON; else { const r=await fetch('units.json?v='+Date.now(),{cache:'no-store'}); CATALOG=await r.json(); } }catch(e){}   // 加時間戳+no-store:題庫更新 units.json 後不會被瀏覽器/GitHub Pages 快取擋住
+  const ts=allTerms(); if(!curTerm||!ts.includes(curTerm)) curTerm=ts[0]||'國一上'; }
+function termTabs(subjId){ let ts=allTerms().filter(t=>catUnits().some(u=>termOf(u)===t&&unitPlayable(u)&&(!subjId||u.subject===subjId))); if(ts.length<=1) return '';
+  return '<div class="termtabs">'+ts.map(t=>`<button class="tt${t===curTerm?' on':''}" onclick="setTerm('${t}')">${t}</button>`).join('')+'</div>'; }
+window.setTerm=(t)=>{ curTerm=t; localStorage.setItem('kg2_term',t); if(curSelect) curSelect(); };
+
+/* 靈焰 */
+const FLAME='<svg viewBox="0 0 24 28"><path d="M12 1 C17 8 21 12 12 27 C3 12 7 8 12 1 Z" fill="#22d3ee" stroke="#0891b2" stroke-width="1.2"/><path d="M12 10 C14.5 14 16 16 12 23 C8 16 9.5 14 12 10 Z" fill="#a5f3fc"/></svg>';
+function renderFlames(){const html=[...Array(MAXF)].map((_,i)=>{const on=i<flames;return `<div class="flame ${on?'':'out'} ${on&&flames===1?'low':''}">${FLAME}</div>`;}).join('');
+  $('flamesMap').innerHTML=html; $('flamesBattle').innerHTML=html;}
+
+/* 技能:一鍵開選單 → 選 → 施放動畫 → 效果 */
+$('skBtn').onclick=()=>{ if(busy||$('act').classList.contains('go2'))return;
+  $('skMenu').innerHTML='<h4>選擇要施放的技能</h4>'+Object.entries(SKILLS).map(([k,s])=>
+    `<button class="skitem" ${s.n<=0?'disabled':''} onclick="castSkill('${k}')">
+      <span class="ic">${s.ic}</span><span class="nm">${s.name}<small>${s.desc}</small></span><span class="cnt">×${s.n}</span></button>`).join('')
+    +'<button class="cancel" onclick="closeSkMenu()">取消</button>';
+  $('skMenu').classList.add('on'); };
+window.closeSkMenu=()=>$('skMenu').classList.remove('on');
+window.castSkill=(k)=>{ const s=SKILLS[k]; if(!s||s.n<=0)return; s.n--; closeSkMenu();
+  const h=$('bHero'); h.classList.add('cast'); setTimeout(()=>h.classList.remove('cast'),550);
+  setTimeout(()=>fireSkill(k),360); };
+function fireSkill(k){
+  if(k==='hint'){ $('hintPop').innerHTML='💡 '+TOPIC.tip(problem); $('hintPop').classList.add('on');
+    clearTimeout(fireSkill._t); fireSkill._t=setTimeout(()=>$('hintPop').classList.remove('on'),6000); }
+  if(k==='reroll'){ problem = pickProblem(); $('eq').innerHTML=TOPIC.render(problem); entry=''; showEntry(); toast('🎲 換了一題!'); } }   // 重骰也不會骰到這趟出過的題
+
+/* 地圖 */
+let NODES=[{t:'start'},{t:'mon',cat:'monsters',mon:'slime_green',hp:3,name:'綠史萊姆'},{t:'mon',cat:'monsters',mon:'bat',hp:3,name:'暗影蝙蝠'},
+  {t:'mon',cat:'monsters',mon:'mushroom_trio',hp:3,name:'蕈菇怪'},{t:'boss',cat:'bosses',mon:'spider_queen',hp:5,name:'蜘蛛女王'},{t:'machine'}];
+let POS=[[12,86],[30,64],[50,78],[68,54],[83,66],[91,38]];
+let cur=0, battle=null;
+
+function layout(){
+  $('trailLine').setAttribute('points',POS.map(p=>p.join(',')).join(' '));
+  $('nodes').innerHTML=NODES.map((n,i)=>{const done=i<=cur&&n.t!=='start'&&n.t!=='machine'&&n.t!=='goal';
+    let inner=n.t==='machine'?'<span class="machineIcon">⚙️</span>':n.t==='start'?'<span style="font-size:22px">🏁</span>':n.t==='goal'?`<span class="machineIcon" style="animation:none">${n.icon||'🎯'}</span>`:`<img src="${P(n.cat,n.mon)}" alt="">`;
+    let lbl=n.t==='machine'?'靈焰機關':n.t==='start'?'入口':n.t==='goal'?(n.name||'目標'):(n.t==='boss'?'守關 · ':'')+(n.name||'');
+    return `<div class="node t-${n.t} ${done?'done':''}" style="left:${POS[i][0]}%;top:${POS[i][1]}%">
+      <div class="disc">${inner}</div><div class="lbl">${lbl}</div>${done?'<div class="stamp">淨</div>':''}</div>`;}).join('');
+  moveHero();
+}
+function moveHero(){$('hero').style.left=POS[cur][0]+'%';$('hero').style.top=POS[cur][1]+'%';}
+function toast(t,ms=1400){const el=$('toast');el.innerHTML=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),ms);}
+
+$('go').onclick=()=>{ if($('go').disabled||cur>=NODES.length-1) return;
+  const next=cur+1, node=NODES[next];
+  $('go').disabled=true; $('hero').classList.add('walk'); cur=next; moveHero();
+  setTimeout(()=>{ $('hero').classList.remove('walk'); (node.t==='machine'||node.t==='goal')?ending():startBattle(node); },760);
+};
+function goalVerb(n){ if(!n) return '前進 ▸'; if(n.t==='machine') return '啟動機關 ✦';
+  if(n.t==='goal') return (n.goalKind==='rescue'?'救出他 ✦':n.goalKind==='fetch'?'取得寶物 ✦':'完成委託 ✦'); return '前進 ▸'; }
+function refreshGo(){ if(cur>=NODES.length-1){ $('go').style.display='none'; return; }
+  $('go').style.display=''; $('go').disabled=false; const next=NODES[cur+1];
+  $('go').innerHTML=goalVerb(next)+' <small>(Enter / 空白)</small>';
+  $('go').classList.toggle('reach', !!(next&&(next.t==='machine'||next.t==='goal'))); }
+
+/* 戰鬥 */
+let problem,entry='',busy=false,pending=null;
+let siege=null, siegeBest=+(localStorage.getItem('kg2_siege')||0);   // 無限守城:{cleared, units};靈焰=survival
+function startBattle(node){ battle={node,hp:node.hp,max:node.hp}; renderShields();
+  $('bTitle').textContent=(node.t==='boss'?'守關 · ':'')+node.name;
+  $('monImg').src=P(node.cat,node.mon); $('mon').className='mon bob'; renderMonHP(); renderFlames();
+  $('battle').classList.add('on');
+  if(node.examUnits){ startExamMode(node); } else if(node.unitFile){ startUnitMode(node); } else { if(node.topic&&TOPICS[node.topic]) TOPIC=TOPICS[node.topic]; setInlineMode(); askQ(); }   // 委託:每隻怪可用不同 topic
+}
+/* iframe 單元戰鬥:題目來自題庫單元頁,答對→魔物扣血,對錯都寫回聯絡簿 */
+let ifBattle=null, unitSeq=0, examRun=null;   // examRun:段考綜合測驗(逐題交錯載入不同單元的題庫頁)
+function setInlineMode(){ ifBattle=null; examRun=null; hideExamNext(); $('unitWrap').classList.remove('on'); $('unitFrame').src='about:blank'; $('panel').style.display=''; $('bubble').style.display=''; }
+function startUnitMode(node){ ifBattle=node;
+  $('panel').style.display='none'; $('bubble').style.display='none';
+  $('uTitle').textContent=node.unitTitle||''; $('uHint').style.display='none';
+  $('unitFrame').src=node.unitFile+'?level='+(node.unitLevel||'basic')+'&t='+Date.now()+'_'+(++unitSeq);   // 難度依關卡遞進(前段基礎、後段進階、BOSS 混合=全題型),而不是全鎖 basic;Date.now() 防快取
+  $('unitWrap').classList.add('on'); }
+/* 段考綜合測驗 runner:把整組單元「逐題交錯」——每一題換一個單元的題庫頁(?exam=1 隱藏單元自己的下一題/難度),用各單元原生批改(postMessage),記到真正來源單元 */
+function startExamMode(node){ ifBattle=node; examRun={list:node.examUnits, last:null};
+  $('panel').style.display='none'; $('bubble').style.display='none'; $('uHint').style.display='none';
+  $('unitWrap').classList.add('on'); loadExamQ(); }
+function loadExamQ(){ if(!examRun||!ifBattle) return; const L=examRun.list;
+  const pool = L.length>1 ? L.filter(u=>u!==examRun.last) : L;
+  const u = pool[rand(0,pool.length-1)]; examRun.last=u;
+  ifBattle.unitId=u.id; ifBattle.unitTitle=u.title;   // 記錄/批改都認這一題真正的來源單元
+  $('uTitle').textContent='📋 '+u.title;
+  hideExamNext();
+  $('unitFrame').src=u.file+'?level=mix&exam=1&t='+Date.now()+'_'+(++unitSeq); }
+function showExamNext(){ $('examNext').classList.add('on'); }
+function hideExamNext(){ $('examNext').classList.remove('on'); }
+if($('examNext')) $('examNext').onclick=()=>{ if(examRun) loadExamQ(); };
+function onUnitAnswer(correct){ if(!battle||!ifBattle) return;
+  bumpAnswered();   // 累積答題數 +1(排行榜)
+  if(user&&sb) sb.rpc('log_activity',{p_day:todayStr(),p_unit:ifBattle.unitId,p_done:1,p_correct:correct?1:0}).then(r=>{},e=>{});   // 寫回聯絡簿
+  if(correct){ heroLunge(); battle.hp--; renderMonHP(); monFX('hit'); floatDmg('−1');
+    if(battle.hp<=0){ monFX('die'); ifBattle=null; setTimeout(winBattle,650); return; }
+  } else { if(useShield()){ floatDmg('🛡 擋下',true); toast('🛡 防風罩擋下!(剩 '+shields+' 個)'); }
+    else if(flames>0){ flames--; renderFlames(); floatDmg('靈焰 −1',true); } monFX('atk');
+    if(siege&&flames<=0){ setTimeout(endSiege,800); return; } }   // 守城:靈焰熄=結束
+  if(examRun){ showExamNext(); } }   // 段考:單元不會自己換題,顯示「下一題」讓玩家換到下一個單元
+window.addEventListener('message',e=>{ const d=e.data; if(!d||!ifBattle) return;
+  if(d.type==='unit-ready'){ $('uHint').style.display=(d.supports&&d.supports.indexOf('hint')>=0)?'':'none'; }
+  else if(d.type==='unit-progress'){ onUnitAnswer(!!d.unitCorrect); }
+  else if(d.type==='unit-mistake'){ if(user&&sb) sb.rpc('log_mistake',{p_unit:ifBattle.unitId,p_q:d.q||'',p_ans:String(d.ans==null?'':d.ans),p_given:String(d.given==null?'':d.given),p_explain:'',p_tip:d.tip||'',p_choices:d.choices||null}).then(r=>{},e=>{}); } });
+if($('uHint')) $('uHint').onclick=()=>{ const f=$('unitFrame'); if(f&&f.contentWindow) f.contentWindow.postMessage({type:'unit-command',cmd:'hint'},'*'); };
+function renderMonHP(){let h='';for(let i=0;i<battle.max;i++)h+=`<span class="pip ${i<battle.hp?'on':''}"></span>`;$('monHP').innerHTML=h;}
+/* 出題:同一趟副本內不重複(最多試 30 次;題型空間用盡就重置紀錄) */
+function pickProblem(){ const isBoss = battle.node.t==='boss' && !!TOPIC.boss;
+  const gen=()=>isBoss?TOPIC.boss():TOPIC.gen();
+  for(let i=0;i<30;i++){ const c=gen(); const k=TOPIC.qtext(c); if(!askedQ.has(k)){ askedQ.add(k); return c; } }
+  askedQ.clear(); const c=gen(); askedQ.add(TOPIC.qtext(c)); return c; }
+function askQ(){ problem = pickProblem();
+  $('eq').innerHTML=TOPIC.render(problem); entry=''; showEntry(); $('explain').classList.remove('show'); $('hintPop').classList.remove('on');
+  $('pad').classList.remove('dim'); $('pad').style.display=''; $('skBtn').style.display=''; $('skBtn').disabled=false; $('act').innerHTML='⚔ 攻 擊 <small>(Enter)</small>'; $('act').className='act'; busy=false; }
+function showEntry(){const b=$('box');
+  if(entry===''||entry==='-'){b.textContent=entry==='-'?'−':'?';b.className='box';}
+  else{b.textContent=entry.replace('-','−');b.className='box filled';}}
+function floatDmg(t,out){const d=document.createElement('div');d.className='dmg'+(out?' out':'');d.textContent=t;
+  d.style.left=(38+Math.random()*30)+'%';d.style.top='24%';$('floatL').appendChild(d);setTimeout(()=>d.remove(),800);}
+function monFX(c){const m=$('mon');m.classList.remove('bob');m.classList.add(c);setTimeout(()=>{m.classList.remove(c);if(c!=='die')m.classList.add('bob');},c==='die'?600:450);}
+function heroLunge(){const h=$('bHero');h.classList.add('lunge');setTimeout(()=>h.classList.remove('lunge'),200);}
+
+function submit(){ if(busy||ifBattle||!problem)return; if(entry===''||entry==='-')return;   // iframe 模式或無題目時不跑 inline 判分
+  busy=true; $('pad').classList.add('dim'); $('skBtn').disabled=true;
+  const correct=parseInt(entry,10)===problem.answer;
+  bumpAnswered();   // 累積答題數 +1(排行榜)
+  feedLog(correct, problem, entry.replace('-','−'));   // 打怪 = 練習:寫回聯絡簿(登入才寫)
+  const b=$('box'); b.className='box '+(correct?'ok':'no'); b.textContent=entry.replace('-','−');
+  if(correct){ heroLunge(); battle.hp--; renderMonHP(); monFX('hit'); floatDmg('−1');
+    if(battle.hp<=0){ monFX('die'); setTimeout(winBattle,650);} else setTimeout(askQ,650);
+  } else {
+    if(useShield()){ floatDmg('🛡 擋下',true); toast('🛡 防風罩擋下!(剩 '+shields+' 個)'); }
+    else if(flames>0){ flames--; renderFlames(); floatDmg('靈焰 −1',true); }
+    monFX('atk');
+    if(siege&&flames<=0){ setTimeout(endSiege,800); return; }   // 守城:靈焰熄=結束
+    $('pad').style.display='none'; $('skBtn').style.display='none';
+    $('steps').innerHTML=TOPIC.steps(problem); $('tip').textContent=TOPIC.tip(problem); $('explain').classList.add('show');
+    $('act').innerHTML='了解,再出招 ▸'; $('act').className='act go2'; pending=askQ;
+  }
+}
+$('act').onclick=()=>{ if($('act').classList.contains('go2')){ const f=pending;pending=null; $('explain').classList.remove('show'); if(f)f(); return;} submit(); };
+function closeBattleUI(){ $('battle').classList.remove('on'); $('unitWrap').classList.remove('on'); $('unitFrame').src='about:blank'; ifBattle=null; examRun=null; hideExamNext(); }
+let winResume=null;   // 勝利對話框:按「確定」才回地圖
+function showWin(node, rewards, onOk){ $('winImg').src=P(node.cat,node.mon);
+  $('winTitle').textContent='⚔️ 打倒了 '+(node.name||'魔物')+'!';
+  $('winRw').innerHTML=rewards.join('<br>');
+  winResume=onOk; $('winPop').classList.add('on'); }
+$('winOk').onclick=()=>{ if(!$('winPop').classList.contains('on')) return; $('winPop').classList.remove('on'); const f=winResume; winResume=null; if(f) f(); };
+function winBattle(){ mats.wood+=2;
+  const node=battle.node, mon=node.mon; let dex='', dexRw='';   // 圖鑑登錄:打倒就 +1,首次登錄提示;第 3 次收服 → ✦+1 獎勵
+  if(mon){ const was=codex[mon]||0; codex[mon]=was+1;
+    if(was===0){ dex=' · 圖鑑+1 📖'; dexRw='📖 魔物圖鑑 +1'; }
+    else if(codex[mon]===3){ mats.star+=1; dex=' · ⭐收服 '+node.name+' ✦+1'; dexRw='⭐ 收服 '+node.name+' · ✦ 星塵 +1'; } }
+  renderMats(); saveState();
+  if(siege){ siege.cleared++; toast('🏰 守下第 '+siege.cleared+' 波!🪵+2'+dex); setTimeout(spawnSiegeWave,650); return; }   // 守城:survival 節奏,不跳對話框、直接下一波(靈焰不回復)
+  if(cur>=NODES.length-1){ setTimeout(()=>{ closeBattleUI(); ending(); },900); return; }   // 剛打倒的就是最後一關(BOSS 討伐/BOSS 進攻:BOSS=終點)→ 直接結局
+  let flameRw=''; if(flames<MAXF){ flames++; renderFlames(); flameRw='🔥 靈焰 +1'; }
+  const rw=['🪵 木材 +2']; if(flameRw) rw.push(flameRw); if(dexRw) rw.push(dexRw);
+  showWin(node, rw, ()=>{ closeBattleUI(); layout(); refreshGo(); }); }   // 按「確定」才收掉戰鬥、回副本地圖
+
+/* 鍵盤 */
+$('pad').addEventListener('click',e=>{const b=e.target.closest('.k');if(!b||busy)return;typeKey(b.dataset.k);});
+function typeKey(k){ if(k==='del')entry=entry.slice(0,-1); else if(k==='sign')entry=entry.startsWith('-')?entry.slice(1):'-'+entry;
+  else if(entry.replace('-','').length<4)entry+=k; showEntry(); }
+document.addEventListener('keydown',e=>{
+  const inBattle=$('battle').classList.contains('on'), inEnd=$('ending').classList.contains('on');
+  if($('winPop').classList.contains('on')){ if(e.key==='Enter'||e.key===' '){e.preventDefault();$('winOk').click();} return; }   // 勝利對話框優先吃鍵盤
+  if(inEnd){ if(e.key==='Enter'||e.key===' '){e.preventDefault();$('again').click();} return; }
+  if(!inBattle){ if((e.key==='Enter'||e.key===' ')&&$('go').style.display!=='none'&&!$('go').disabled){e.preventDefault();$('go').click();} return; }
+  if(ifBattle) return;   // 題庫 iframe 戰鬥:鍵盤交給 iframe 自己處理,別觸發 inline 攻擊
+  if($('skMenu').classList.contains('on')){ if(e.key==='Escape')closeSkMenu(); return; }
+  if(e.key==='Enter'){e.preventDefault();$('act').click();return;} if(busy)return;
+  if(/^[0-9]$/.test(e.key))typeKey(e.key); else if(e.key==='-')typeKey('sign'); else if(e.key==='Backspace')typeKey('del'); });
+
+/* 結局 */
+function fireworks(n){ const el=$('ending'), colors=['#f5c542','#22d3ee','#ff6b9d','#7ef29a','#ff9a3c'];
+  for(let i=0;i<n;i++){ const s=document.createElement('div'); s.className='spark'; s.style.left='50%'; s.style.top='40%'; s.style.background=colors[i%colors.length];
+    const ang=(i/n)*6.283, dist=120+((i*37)%160);
+    s.style.setProperty('--dx',Math.cos(ang)*dist+'px'); s.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    s.style.animation=`boom ${1+((i*13)%80)/100}s ease-out ${((i*7)%50)/100}s forwards`; el.appendChild(s); } }
+function ending(){ const el=$('ending');
+  if(curQuest){ const q=curQuest; curQuest=null; const already=q.repeatable?false:questDoneToday(q.id); if(!q.repeatable) markQuestDone(q.id);   // 委託完成:給獎勵 + 劇情收尾(repeatable 事件每次都給、不寫入每日完成)
+    if(!already){ mats.wood+=(q.reward.wood||0); if(q.reward.star) mats.star+=q.reward.star; }
+    const k=q.goal&&q.goal.kind;   // 依委託種類給不同的結局標題
+    let newRelic=false;
+    if(k==='fetch'&&q.relic){ newRelic=!relics[q.relic]; relics[q.relic]=1; }   // 尋物→收進寶物圖鑑(重複已擁有則不重複提示)
+    renderMats(); saveState();
+    $('endTitle').textContent = k==='rescue'?'🙋 成功救援!' : k==='fetch'?'📦 尋回寶物!' : k==='exam'?'📋 段考複習完成!' : k==='boss'?'👹 討伐成功!' : '✅ 委託完成!';
+    $('endSub').innerHTML=q.done+(newRelic?'<br>🏆 <b style="color:#f5c542">新寶物入手!已收進寶物圖鑑</b>':'')+(already?'<br><span style="color:#cfe3ee">(今天已領過獎勵)</span>':`<br><b style="color:#f5c542">獎勵 🪵+${q.reward.wood||0}${q.reward.star?' · ✦+'+q.reward.star:''}</b>`);
+    el.classList.add('on'); fireworks(46); return; }
+  const tier=flames, big=tier>=3, mid=tier>=1;
+  mats.wood+=3; if(big) mats.star+=1; renderMats(); saveState();   // 通關掉素材,一次全對加星塵
+  $('endTitle').textContent=big?'🎆 滿級靈焰煙火!':mid?'🎇 靈焰煙火':'⚙️ 機關啟動';
+  $('endSub').innerHTML=big?'零失手!你點亮了整座洞穴,獲得<b style="color:#f5c542">稀有掉落 + 完美稱號</b>。'
+    :mid?`帶著 ${tier} 朵靈焰抵達,煙火升空,獲得好掉落。`
+    :'靈焰全滅,但你仍完成了任務——機關運轉,只是沒有煙火。<br>下次守住靈焰,天空會更美。';
+  el.classList.add('on'); fireworks(big?70:mid?36:0);
+}
+$('again').onclick=()=>{ $('ending').classList.remove('on'); $('ending').querySelectorAll('.spark').forEach(s=>s.remove()); showScreen('village'); if(user&&sb) loadDaily().then(renderReviewBubble); };
+
+/* 村莊 hub */
+function clampOval(x,y){ const cx=50,cy=80,rx=40,ry=12; let dx=(x-cx)/rx,dy=(y-cy)/ry; const d=Math.hypot(dx,dy); if(d>1){dx/=d;dy/=d;} return [cx+dx*rx,cy+dy*ry]; }
+function moveVHero(x,y){ $('vhero').style.left=x+'%'; $('vhero').style.top=y+'%'; $('vhero').classList.add('walk'); clearTimeout(moveVHero._t); moveVHero._t=setTimeout(()=>$('vhero').classList.remove('walk'),620);
+  const m=$('vmount'); if(m){ m.style.left=x+'%'; m.style.top=y+'%'; } }   // 坐騎跟著英雄走
+function applySkin(){ const src=P('players',(shop&&shop.skin)||'paladin'); ['vhero','hero'].forEach(id=>{ const w=$(id), i=w&&w.querySelector('img'); if(i)i.src=src; }); const b=$('bHero'); if(b)b.src=src; }
+function applyMount(){ let m=$('vmount');
+  if(!shop||!shop.mount){ if(m)m.style.display='none'; return; }
+  if(!m){ m=document.createElement('div'); m.id='vmount'; m.innerHTML='<img alt="">'; $('vstage').appendChild(m); }
+  m.querySelector('img').src=P('mounts',shop.mount); m.style.display='';
+  m.style.left=$('vhero').style.left||'50%'; m.style.top=$('vhero').style.top||'80%'; }
+$('vstage').addEventListener('click',e=>{ const r=$('vstage').getBoundingClientRect();
+  const [x,y]=clampOval((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100); moveVHero(x,y); });
+/* 傳送門:走到門口=進該科副本(空間化選科)。SUBJECTS 有幾科就長幾個門 */
+let portalTimer=null;
+/* 對標家長後台:傳送門=「家長有開(selected_units) ∩ 遊戲能玩」的科目,不寫死 */
+/* 副本開放集合(唯一判定):嚴格照家長設定。有後台但未登入 → 空集合(什麼都不開,要登入);登入 → 只開家長勾的 selected_units;無後台的打包單機 demo → 不設限(展示用) */
+function openedSet(){ if(!sb) return null; if(!user) return new Set(); return new Set((settings&&settings.selected_units)||[]); }
+function openedPlayableSubjects(){ const opened=openedSet();
+  const order=(CATALOG.subjects||[]).map(s=>s.id);
+  return [...new Set(catUnits().filter(u=>unitPlayable(u)&&(!opened||opened.has(u.id))).map(u=>u.subject))].sort((a,b)=>((order.indexOf(a)+1)||99)-((order.indexOf(b)+1)||99)); }
+function renderEventPortal(){ const stage=$('vstage'); if(!stage||$('evtPortal')) return;   // 事件入口(建一次,常駐村中央)
+  const d=document.createElement('div'); d.id='evtPortal'; d.className='evtportal'; d.innerHTML='<div class="er">⚔️</div><div class="el">🔴 事件</div>';
+  d.addEventListener('click',e=>{ e.stopPropagation(); openEvents(); }); stage.appendChild(d); }
+function renderReviewBubble(){ const stage=$('vstage'); if(!stage) return; const old=$('revbub'); if(old) old.remove();
+  if(!dueReview||dueReview.count<=0) return;
+  const d=document.createElement('div'); d.id='revbub'; d.className='revbub'; d.innerHTML='🩹 錯題複習<br><b>'+dueReview.count+'</b> 題到期';
+  d.addEventListener('click',e=>{ e.stopPropagation(); startReview(dueReview.topics.join(',')); });
+  stage.appendChild(d); }
+function renderPortals(){ const stage=$('vstage'); if(!stage) return; stage.querySelectorAll('.portal').forEach(e=>e.remove());
+  const subs=openedPlayableSubjects(), hint=$('vhint');
+  if(!subs.length){ if(hint) hint.innerHTML=(sb&&!user)?'先<b>☁️ 登入</b>(村莊上方)才會出現副本 · 副本會依<b>家長開放的單元</b>顯示':'家長還沒開放遊戲能玩的單元 · 點上面 <b>📒 聯絡簿 → 家長後台</b> 開放'; return; }
+  if(hint) hint.textContent='🌀 點傳送門進副本 · 👆 上面也有功能 · 點地面走走';
+  const n=subs.length;
+  subs.forEach((id,i)=>{ const x=Math.round(n===1?50:18+(i/(n-1))*64), y=52, c=subjColor(id);
+    const d=document.createElement('div'); d.className='portal'; d.style.left=x+'%'; d.style.top=y+'%';
+    d.innerHTML=`<div class="ring" style="border-color:${c.bg};box-shadow:0 0 22px -2px ${c.bg}">${subjMeta(id).icon}</div><div class="pl">${id}</div>`;
+    d.addEventListener('click',e=>{ e.stopPropagation();
+      const hy=80-12*Math.sqrt(Math.max(0,1-((x-50)/40)**2)); moveVHero(x,hy);   // 走到門正下方的橢圓上緣
+      clearTimeout(portalTimer); portalTimer=setTimeout(()=>openUnitSelect(id),460); });   // 先走過去再開;460ms 內開別的面板就取消
+    stage.appendChild(d); }); }
+/* ===== 村莊功能 dispatcher + 插入口(未來功能:這裡加一個 case + 一個 open 函式即可)===== */
+let settings=null;
+let dueReview={count:0,topics:[]}, todayProg={}, streakN=0;   // 到期錯題 / 今日各單元做題數 / 連續達標(給委託板、副本徽章、錯題泡泡共用)
+async function loadDaily(){ if(!user||!sb){ dueReview={count:0,topics:[]}; todayProg={}; streakN=0; return; }
+  try{
+    const {data:st}=await sb.from('settings').select('selected_units,daily_goals,rest_days,exam_groups,course_by_subject').eq('user_id',user.id).maybeSingle();
+    settings = st ? {selected_units:st.selected_units||[],daily_goals:st.daily_goals||{},rest_days:st.rest_days||[],exam_groups:st.exam_groups||[],course_by_subject:st.course_by_subject||{}} : (settings||{selected_units:[],daily_goals:{},rest_days:[],exam_groups:[],course_by_subject:{}});
+    const from=new Date(); from.setDate(from.getDate()-45);
+    const {data:act}=await sb.from('activity').select('*').gte('day',fmtD(from));
+    const byDay={}; (act||[]).forEach(r=>{(byDay[r.day]=byDay[r.day]||{})[r.unit_id]={done:r.done,correct:r.correct};});
+    todayProg=byDay[fmtD(new Date())]||{};
+    const enabled=(settings.selected_units||[]).filter(u=>settings.daily_goals[u]!=null);
+    const dayComplete=m=>{ if(!enabled.length)return false; return enabled.every(u=>{const c=cfgOf(u),a=m[u],v=c.mode==='correct'?(a?.correct||0):(a?.done||0);return a&&v>=c.target;}); };
+    let s=0,d=new Date(),rest=settings.rest_days||[];
+    for(let i=0;i<60;i++){ const ds=fmtD(d); if(rest.includes(d.getDay())){ d.setDate(d.getDate()-1); continue; }
+      const comp=dayComplete(byDay[ds]||{}); if(ds===fmtD(new Date())&&!comp){ d.setDate(d.getDate()-1); continue; }
+      if(comp){ s++; d.setDate(d.getDate()-1); } else break; }
+    streakN=s;
+    const {data:mk}=await sb.from('mistakes').select('unit_id,due').lte('due',fmtD(new Date()));
+    const t={}; let n=0; (mk||[]).forEach(r=>{ const dg=UNIT_DUNGEON[r.unit_id]; if(dg&&dg.ready){ t[dg.topic]=1; n++; } });
+    dueReview={count:n,topics:Object.keys(t)};
+  }catch(e){} }
+const UNIT_DUNGEON = {   // 插入口:單元 id → 對應的副本主題。接真題庫時每個 unit 加一筆,每日板就會出「進副本」
+  'signed-muldiv': { topic:'muldiv', ready:true },
+  'signed-numbers': { topic:'add', ready:true },
+  'linear-eq': { topic:'eq', ready:true },
+  // TODO 插入口: 'bio-cell': {topic:'bioCell', ready:true} …
+};
+window.villageAction=(key)=>{
+  if(key==='dungeon') return openSubjectSelect();     // 選科目 → 選單元(讀 SUBJECTS + 家長開放的 selected_units)
+  if(key==='daily')   return openQuests();
+  if(key==='shop')    return openShop();
+  if(key==='tower')   return openTower();
+  if(key==='codex')   return openCodex();
+  if(key==='hero')    return openChar();
+};
+/* 通用面板(每日/商店/圖鑑/系統塔 都用這個 → 加功能不用再刻 UI)*/
+function openSheet(title, html){ clearTimeout(portalTimer); $('sheetHead').textContent=title; $('sheetBody').innerHTML=html; $('sheet').classList.add('on'); }
+window.closeSheet=()=>$('sheet').classList.remove('on');
+
+/* 每日任務板:讀聯絡簿現成的 settings.daily_goals + activity + streak */
+const fmtD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function cfgOf(uid){ const g=settings&&settings.daily_goals[uid]; if(g==null)return null; if(typeof g==='number')return{target:g,mode:'attempts'}; return{target:g.target||10,mode:g.mode||'attempts'}; }
+function progBadge(uid){ if(!user||!settings||!settings.daily_goals||settings.daily_goals[uid]==null) return '';   // 家長有設每日題數才顯示今日進度
+  const c=cfgOf(uid), a=todayProg[uid]||{}, v=c.mode==='correct'?(a.correct||0):(a.done||0), ok=v>=c.target;
+  return `<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px;background:${ok?'#2f9e6b':'rgba(255,255,255,.28)'};color:#fff;white-space:nowrap">今日 ${v}/${c.target}${ok?' ✓':''}</span>`; }
+/* ===== 每日委託:有故事的每日任務,從家長開放的單元隨機抽題(取代舊每日任務清單)===== */
+let curQuest=null;
+let questDone=JSON.parse(localStorage.getItem('kg2_quest')||'null')||{date:'',ids:[]};
+function questDoneToday(id){ return questDone.date===todayStr()&&questDone.ids.indexOf(id)>=0; }
+function markQuestDone(id){ if(questDone.date!==todayStr()) questDone={date:todayStr(),ids:[]}; if(questDone.ids.indexOf(id)<0){ questDone.ids.push(id); localStorage.setItem('kg2_quest',JSON.stringify(questDone)); } }
+const VILLAGERS=['阿旺','阿美','小虎','阿福','小玉','阿明','鐵匠','阿嬤'];
+function openPlayableUnits(){ const opened=openedSet();
+  return catUnits().filter(u=>unitPlayable(u)&&(!opened||opened.has(u.id))); }
+const RELICS=[['星辰碎片','💫'],['古老符文','📜'],['龍之鱗片','🐉'],['遺忘之鑰','🗝️'],['月光寶石','🌕'],['勇者徽章','🏅']];   // [名稱, 圖示]:尋物委託的寶物,收進寶物圖鑑
+function todaysQuests(){ const ds=todayStr(), seed=ds.split('-').reduce((a,c)=>a+(+c),0), v=VILLAGERS[seed%VILLAGERS.length], relic=RELICS[seed%RELICS.length][0];
+  return [   // 三種委託各有專屬終點:救援→救出村民 / 尋物→取得寶物 / 討伐→BOSS 就是終點(不再全部收在靈焰機關)
+    {id:'rescue|'+ds, icon:'🆘', title:'救援 '+v, story:'村民「'+v+'」被怪物困在'+BIOME_NAME.forest+'裡!殺出一條路,把 '+v+' 平安帶回村莊。', done:v+' 得救了,全村都感謝你!', biome:'forest', goal:{kind:'rescue',icon:'🙋',label:'救出 '+v}, reward:{wood:3}},
+    {id:'fetch|'+ds, icon:'🔍', title:'尋回 '+relic, story:'傳說中的「'+relic+'」遺落在'+BIOME_NAME.snow+'深處,擊退沿途守衛、把它帶回來。', done:'你尋回了「'+relic+'」!村莊祭壇重新亮起。', biome:'snow', relic:relic, goal:{kind:'fetch',icon:'📦',label:'取得 '+relic}, reward:{wood:2,star:1}},
+    {id:'boss|'+ds, icon:'👹', title:'討伐'+BIOME_NAME.volcano+'首領', story:BIOME_NAME.volcano+'深處的首領甦醒,威脅村莊 —— 直搗巢穴、打倒牠!', done:'首領被擊退,村莊平安了!', biome:'volcano', goal:{kind:'boss'}, reward:{wood:2,star:2}},
+  ]; }
+async function openQuests(){
+  if(!user||!sb){ openSheet('📜 每日委託','<div class="ph">登入後,這裡每天會有委託任務(從家長開放的單元出題),完成給素材/靈焰。<br><br><button class="dLogin" onclick="closeSheet();openLogin()">☁️ 登入</button></div>'); return; }
+  openSheet('📜 每日委託','<div class="ph">讀取中…</div>');
+  await loadDaily(); renderReviewBubble();   // 先刷新連續達標/到期錯題,再用新值畫
+  const units=openPlayableUnits(), qs=todaysQuests();
+  const cards=qs.map(q=>{ const done=questDoneToday(q.id), can=units.length&&!done;
+    return `<button class="gbtn" ${can?'':'disabled'} style="background:${done?'#5f7a5a':'#b3742b'};border-bottom:4px solid ${done?'#3f5539':'#7a4d16'};color:#fff" ${can?`onclick="closeSheet();startQuest('${q.id}')"`:''}><span class="gth" style="background:${done?'#3f5539':'#7a4d16'}">${done?'✅':q.icon}</span><span class="gmid"><span class="gname">${q.title}</span><span class="gsub">${done?'今天已完成 ✓':q.story}</span></span><span class="ggo">${done?'已完成':'出發 ›'}</span></button>`; }).join('');
+  const note = units.length? '' : '<div class="ph" style="padding:8px 2px 0;font-size:12px">家長還沒開放可玩的單元,先到 📒聯絡簿→家長後台 開放。</div>';
+  openSheet('📜 每日委託', `<div class="dtop">🔥 連續達標 <b>${streakN}</b> 天 · 委託完成給素材/靈焰</div><div class="ph" style="padding:2px 2px 8px;font-size:12px">從你開放的單元隨機出題 · 選做的,不做也沒關係,只是沒獎勵</div><div class="gsel">${cards}</div>${note}`); }
+window.startQuest=(id)=>{ const q=todaysQuests().find(x=>x.id===id); if(!q) return;
+  const units=openPlayableUnits(); if(!units.length){ toast('家長還沒開放可玩的單元'); return; }
+  siege=null; curQuest=q; const dg=buildDungeon({biome:q.biome, goal:q.goal}); NODES=dg.nodes; POS=genPOS(NODES.length);
+  NODES.forEach(n=>{ if(n.t==='mon'||n.t==='boss'){ const u=units[rand(0,units.length-1)], tp=inlineTopic(u); delete n.topic; delete n.unitFile; delete n.unitId; if(preferUnitPage(u)){ n.unitFile=u.file; n.unitId=u.id; n.unitTitle=u.title; } else if(tp){ n.topic=tp; } } });   // 每隻怪抽一個開放單元出題(優先用真正的單元頁)
+  assignUnitLevels();
+  const url=`url('assets/bg/${dg.bg}.jpg')`; $('map').style.backgroundImage=url; $('battle').style.backgroundImage=url;
+  setDgTitle(dg.bg, q.icon+' '+q.title);
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); };
+/* ===== 事件:無限守城 / BOSS進攻(村中紅色閃爍入口)===== */
+function openEvents(){
+  if(!user||!sb){ openSheet('🔴 事件','<div class="ph">登入後才有事件(無限守城、BOSS進攻,大挑戰大獎勵)。<br><br><button class="dLogin" onclick="closeSheet();openLogin()">☁️ 登入</button></div>'); return; }
+  const can=openPlayableUnits().length>0;
+  const siegeCard=`<button class="gbtn" ${can?'':'disabled'} style="background:#7a2f2f;border-bottom:4px solid #4e1c1c;color:#fff" ${can?'onclick="closeSheet();startSiege()"':''}><span class="gth" style="background:#4e1c1c">🏰</span><span class="gmid"><span class="gname">無限守城</span><span class="gsub">一波波怪來襲,靈焰撐到底 · 最佳 ${siegeBest} 波</span></span><span class="ggo">開戰 ›</span></button>`;
+  const bossCard=`<button class="gbtn" ${can?'':'disabled'} style="background:#5a2a6a;border-bottom:4px solid #3a1a45;color:#fff" ${can?'onclick="closeSheet();startBossEvent()"':''}><span class="gth" style="background:#3a1a45">👹</span><span class="gmid"><span class="gname">BOSS 進攻</span><span class="gsub">血厚魔王來襲,打倒給大獎(✦星塵)</span></span><span class="ggo">討伐 ›</span></button>`;
+  openSheet('🔴 事件 · 限時大場面', `<div class="ph" style="padding:2px 2px 8px;font-size:12px">大挑戰、獎勵更大 · 題目從你開放的單元出</div><div class="gsel">${siegeCard}${bossCard}</div>${can?'':'<div class="ph">家長還沒開放可玩的單元。</div>'}`); }
+function siegeAssign(node){ const u=siege.units[rand(0,siege.units.length-1)], tp=inlineTopic(u); delete node.topic; delete node.unitFile; delete node.unitId; if(preferUnitPage(u)){ node.unitFile=u.file; node.unitId=u.id; node.unitTitle=u.title; } else if(tp){ node.topic=tp; }
+  node.unitLevel = siege.cleared<3?'basic':siege.cleared<7?'adv':'mix'; }   // 守城:越後面的波難度越高(basic→adv→mix)
+function startSiege(){ curQuest=null; const units=openPlayableUnits(); if(!units.length){ toast('家長還沒開放可玩的單元'); return; }
+  siege={cleared:0, units:units}; $('battle').style.backgroundImage="url('assets/bg/night.jpg')";
+  flames=MAXF; resetSkills(); renderShields(); showScreen('village'); spawnSiegeWave(); }
+function spawnSiegeWave(){ if(!siege) return; const b=BIOMES.night, m=b.mons[rand(0,b.mons.length-1)];
+  const node={t:'mon',cat:m[2]||'monsters',mon:m[0],hp:2,name:'第 '+(siege.cleared+1)+' 波 · '+m[1]}; siegeAssign(node); startBattle(node); }
+function endSiege(){ if(!siege) return; const n=siege.cleared; siege=null;   // idempotent:iframe 守城靈焰熄後 800ms 內若又答題,別讓 endSiege 重複發獎/重開結算
+  $('battle').classList.remove('on'); $('unitWrap').classList.remove('on'); $('unitFrame').src='about:blank'; ifBattle=null;
+  const rec=n>siegeBest; if(rec){ siegeBest=n; localStorage.setItem('kg2_siege',String(n)); }
+  const reward=Math.max(1,Math.floor(n*1.5)); mats.wood+=reward; if(n>=10) mats.star+=1; renderMats(); saveState();
+  $('endTitle').textContent='🏰 守城結束'; $('endSub').innerHTML='你撐了 <b style="color:#f5c542">'+n+'</b> 波!'+(rec?' 🎉 新紀錄!':' (最佳 '+siegeBest+' 波)')+'<br>🪵+'+reward+(n>=10?' · ✦+1':'');
+  $('ending').classList.add('on'); fireworks(n>=10?60:28); }
+function startBossEvent(){ curQuest=null; siege=null; const units=openPlayableUnits(); if(!units.length){ toast('家長還沒開放可玩的單元'); return; }
+  const inl=[...new Set(units.map(inlineTopic).filter(Boolean))];
+  NODES=[{t:'start'},{t:'boss',cat:'bosses',mon:'demon_king',hp:10,name:'進攻魔王'}]; POS=genPOS(NODES.length);   // BOSS=終點,不再接靈焰機關
+  if(inl.length>=2){ mixPool=inl; mixTitle='BOSS 進攻'; TOPIC=TOPICS.mix; }
+  else if(inl.length===1){ TOPIC=TOPICS[inl[0]]; }
+  else { const u=units[0]; NODES[1].unitFile=u.file; NODES[1].unitId=u.id; NODES[1].unitTitle=u.title; }
+  NODES[1].unitLevel='mix';   // BOSS 進攻:全題型
+  curQuest={id:'boss-event', title:'BOSS 進攻', done:'魔王被擊退,村莊守住了!', goal:{kind:'boss'}, reward:{wood:4,star:2}, repeatable:true};   // 事件=可重複大挑戰,每次都給獎(同無限守城)
+  $('battle').style.backgroundImage="url('assets/bg/night.jpg')"; $('map').style.backgroundImage="url('assets/bg/night.jpg')";
+  setDgTitle('night','👹 BOSS 進攻'); if($('dgName'))$('dgName').textContent='魔王討伐';   // 事件用專屬大標
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
+function showScreen(s){ $('village').style.display=s==='village'?'flex':'none'; $('map').style.display=s==='map'?'flex':'none'; }
+function startDungeon(topicId){ curQuest=null; siege=null; if(topicId&&TOPICS[topicId]) TOPIC=TOPICS[topicId];
+  const dg=buildDungeon(TOPIC); NODES=dg.nodes; POS=genPOS(NODES.length);   // 每次進副本:隨機場景+怪物
+  const url=`url('assets/bg/${dg.bg}.jpg')`; $('map').style.backgroundImage=url; $('battle').style.backgroundImage=url;
+  setDgTitle(dg.bg, (TOPIC.id==='mix'?mixTitle:TOPIC.name)+' · 第 1 章');
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
+/* iframe 單元副本:題目來自題庫單元頁(u.file),每隻怪都嵌同一單元;打贏=練那個單元 */
+/* 難度遞進:一般怪前段基礎、後段進階;BOSS 混合(=該單元全部題型)。讓一趟副本涵蓋 basic+adv+mix,而不是全鎖 basic 只出一半題目 */
+function assignUnitLevels(){ const mons=NODES.filter(n=>n.t==='mon'); const nm=mons.length;
+  mons.forEach((n,i)=>{ n.unitLevel = (nm>=2 && i>=Math.ceil(nm/2)) ? 'adv' : 'basic'; });
+  NODES.filter(n=>n.t==='boss').forEach(n=>{ n.unitLevel='mix'; }); }
+const SUBJECT_BIOME={'數學':'cave','生物':'forest','國文':'temple','英文':'snow','歷史':'temple','地理':'forest','公民':'night','自然':'volcano','社會':'night'};
+window.startUnitById=(id)=>{ const u=(CATALOG.units||[]).find(x=>x.id===id); if(u) startUnitDungeon(u); };
+function startUnitDungeon(u){ curQuest=null; siege=null;
+  const tp=inlineTopic(u), biome=(tp&&TOPICS[tp]&&TOPICS[tp].biome)||SUBJECT_BIOME[u.subject]||'cave';   // 有內建題型的沿用它原本的場景(乘除→烈焰熔窟…),其餘照科目
+  const dg=buildDungeon({biome}); NODES=dg.nodes; POS=genPOS(NODES.length);
+  NODES.forEach(n=>{ if(n.t==='mon'||n.t==='boss'){ n.unitFile=u.file; n.unitId=u.id; n.unitTitle=u.title; } });   // 每隻怪都用這個單元出題
+  assignUnitLevels();
+  const url=`url('assets/bg/${dg.bg}.jpg')`; $('map').style.backgroundImage=url; $('battle').style.backgroundImage=url;
+  setDgTitle(dg.bg, u.title+' · 第 1 章');
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
+/* 副本:學期(國一上/下…)→ 科目 → 單元。目錄讀 units.json,playable 用內建題型、其餘準備中 */
+function openSubjectSelect(){ curSelect=openSubjectSelect;
+  if(sb&&!user){ openSheet('⚔️ 選擇科目','<div class="ph">先登入,副本才會依<b>家長開放的單元</b>出現。<br><br><button class="dLogin" onclick="closeSheet();openLogin()">☁️ 登入</button></div>'); return; }   // 未登入不給進副本(要照家長設定)
+  const opened=openedSet();
+  const units=catUnits().filter(u=>termOf(u)===curTerm&&unitPlayable(u)&&(!opened||opened.has(u.id)));   // 只算可玩+家長有開的
+  const order=(CATALOG.subjects||[]).map(s=>s.id);
+  const subs=[...new Set(units.map(u=>u.subject))].sort((a,b)=>((order.indexOf(a)+1)||99)-((order.indexOf(b)+1)||99));
+  const rows=subs.map(id=>{ const c=subjColor(id), n=units.filter(u=>u.subject===id).length;
+    return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="openUnitSelect('${id}')"><span class="gth" style="background:${c.th}">${subjMeta(id).icon}</span><span class="gmid"><span class="gname">${id}副本</span><span class="gsub">${n} 個可玩單元</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
+  openSheet('⚔️ 選擇科目', termTabs()+`<div class="gsel">${rows||'<div class="ph">這個學期還沒有可玩的副本(其他單元可到聯絡簿練)。</div>'}</div>`); }
+window.openUnitSelect=(subjId)=>{ curSelect=()=>openUnitSelect(subjId);
+  const opened=openedSet();   // 登入且有設定 → 只開放家長勾的
+  const avail=u=>u.subject===subjId&&unitPlayable(u)&&(!opened||opened.has(u.id));   // 只顯示:可玩(遊戲有題型)+ 家長有開的單元
+  if(!catUnits().some(u=>avail(u)&&termOf(u)===curTerm)){ const pick=catUnits().find(avail); if(pick){ curTerm=termOf(pick); localStorage.setItem('kg2_term',curTerm); } }   // 這學期這科沒可玩單元 → 跳到有的學期
+  const c=subjColor(subjId);
+  const course=selectedCourse(subjId);
+  let units=catUnits().filter(u=>avail(u)&&termOf(u)===curTerm);
+  if(course){ const seq=course.sequence||[]; units=units.slice().sort((a,b)=>{ const ia=seq.indexOf(a.id),ib=seq.indexOf(b.id); return (ia<0?999:ia)-(ib<0?999:ib); }); }   // 照課本版本排序
+  const playTopics=units.map(inlineTopic).filter(Boolean);   // 綜合只混內建題型
+  const rows=units.map(u=>{ const topic=inlineTopic(u), t=topic?TOPICS[topic]:null;
+    const go = preferUnitPage(u) ? `startUnitById('${u.id}')` : `startDungeon('${topic}')`;   // 有單元頁就播真題(與題庫同步);打包版才用內建題型
+    const thumb = t&&t.face ? faceImg(t.face) : '📜';                                         // 有內建題型的仍保留怪物頭像+難度星星
+    const sub = t ? `<span class="gstars">${starStr(t.diff||2)}${progBadge(u.id)}</span>` : `<span class="gsub">題庫出題${progBadge(u.id)}</span>`;
+    return `<button class="gbtn" style="background:${c.bg};border-bottom:4px solid ${c.lip};color:#fff" onclick="closeSheet();${go}"><span class="gth" style="background:${c.th}">${thumb}</span><span class="gmid"><span class="gname">${u.title}</span>${sub}</span><span class="ggo">進入 ›</span></button>`; }).join('');
+  const mixBtn=playTopics.length>=2?`<button class="gbtn" style="background:#c99a2a;border-bottom:4px solid #86671b;color:#3a2c06" onclick="closeSheet();startMix('${playTopics.join(',')}')"><span class="gth" style="background:#86671b;color:#ffe6a0">🔀</span><span class="gmid"><span class="gname">綜合 · 段考複習</span><span class="gsub" style="color:#5a4408">把這學期可玩的題型混著考(交錯練習,最有效)</span></span><span class="ggo">進入 ›</span></button>`:'';
+  const examSection=renderExamGroups(subjId);   // 家長在網頁圈的段考組(settings.exam_groups)
+  openSheet('⚔️ '+subjId+' · '+curTerm+(course?' · '+course.title:''), `<button class="backbar" onclick="openSubjectSelect()">‹ 換科目</button>`+termTabs(subjId)+`<div class="gsel">${rows||'<div class="ph">這科在遊戲裡的副本還在準備中,其他單元可先到聯絡簿練。</div>'}${mixBtn}</div>`+examSection); };
+/* 家長段考組:把 exam_groups 的 unit_ids(用 ready+家長開放 過濾)逐題交錯考,列成紫色段考入口 */
+function examGroupUnits(g){ const opened=openedSet(); return ((g&&g.unit_ids)||[]).map(uid=>catUnits().find(u=>u.id===uid)).filter(u=>u&&preferUnitPage(u)&&(!opened||opened.has(u.id))); }   // 有題庫頁(ready)+家長已開的才算
+function renderExamGroups(subjId){
+  const groups=((settings&&settings.exam_groups)||[]).filter(g=>g&&g.active!==false&&(g.subject||'數學')===subjId);
+  if(!groups.length) return '';
+  const btns=groups.map(g=>{ const n=examGroupUnits(g).length, gid=(g.id||g.name||'').replace(/'/g,'');
+    if(!n) return `<button class="gbtn" disabled style="background:#e7e4da;border-bottom:4px solid #cfccc0"><span class="gth" style="background:#d3d0c5">📋</span><span class="gmid"><span class="gname" style="color:#6b6862">段考 · ${g.name}</span><span class="gsub" style="color:#8a857b">這組沒有可玩的單元(要家長開放)</span></span></button>`;
+    return `<button class="gbtn" style="background:#7a3fb0;border-bottom:4px solid #4e2775;color:#fff" onclick="closeSheet();startExamGroupById('${gid}')"><span class="gth" style="background:#4e2775;color:#ffe6a0">📋</span><span class="gmid"><span class="gname">段考 · ${g.name}</span><span class="gsub">家長圈的範圍 · ${n} 個單元逐題交錯</span></span><span class="ggo">進入 ›</span></button>`; }).join('');
+  return `<div style="font-size:12px;color:#8a857b;margin:14px 2px 6px;letter-spacing:1px">📋 家長設定的段考組</div><div class="gsel">${btns}</div>`; }
+window.startExamGroupById=(gid)=>{ const g=((settings&&settings.exam_groups)||[]).find(x=>(x.id||x.name)===gid); if(g) startExamGroup(g); };
+function startExamGroup(g){ curQuest=null; siege=null; const units=examGroupUnits(g);
+  if(!units.length){ toast('這組沒有可玩的單元(要家長開放+有題庫頁)'); return; }
+  const hp=Math.min(12,Math.max(6,units.length*3));   // 需答對幾題才通關(＝魔王血量)
+  NODES=[{t:'start'},{t:'boss',cat:'bosses',mon:'reaper',hp:hp,name:'段考 · '+g.name,examUnits:units}]; POS=genPOS(2);
+  curQuest={id:'exam-'+(g.id||g.name), title:'段考 · '+g.name, done:'段考範圍複習完成!整組單元逐題交錯練了一輪。', goal:{kind:'exam'}, reward:{wood:3,star:1}, repeatable:true};
+  const bg="url('assets/bg/night.jpg')"; $('battle').style.backgroundImage=bg; $('map').style.backgroundImage=bg;
+  setDgTitle('night','📋 '+g.name); if($('dgName'))$('dgName').textContent='段考複習';
+  flames=MAXF; cur=0; resetSkills(); renderShields(); renderFlames(); layout(); refreshGo(); showScreen('map'); }
+window.startMix=(csv)=>{ mixTitle='綜合 · 段考複習'; mixPool=csv.split(','); startDungeon('mix'); };
+window.startReview=(csv)=>{ curQuest=null; mixTitle='錯題複習副本'; mixPool=csv.split(','); startDungeon('mix'); };   // 錯題複習副本(對標網頁錯題本):練今天到期錯題的單元
+/* 魔物圖鑑:蒐集=打怪。所有 biome 的怪+BOSS 去重,打倒才顯形,擊敗 3 次=收服 ⭐ */
+const TAME=3;
+function allCreatures(){ const seen=new Set(), list=[];
+  Object.values(BIOMES).forEach(b=>{ b.mons.forEach(m=>{ if(!seen.has(m[0])){seen.add(m[0]); list.push({cat:m[2]||'monsters',mon:m[0],name:m[1]});} });
+    b.boss.forEach(m=>{ if(!seen.has(m[0])){seen.add(m[0]); list.push({cat:m[2]||'bosses',mon:m[0],name:m[1],boss:true});} }); });
+  return list; }
+function openCodex(){ const list=allCreatures();
+  const found=list.filter(c=>(codex[c.mon]||0)>0).length, tamed=list.filter(c=>(codex[c.mon]||0)>=TAME).length;
+  const cells=list.map(c=>{ const n=codex[c.mon]||0, disc=n>0, tame=n>=TAME;
+    return `<div class="cdx${disc?'':' lock'}${tame?' tame':''}">${c.boss?'<div class="cdxbadge">BOSS</div>':''}<div class="cdxi"><img src="${P(c.cat,c.mon)}" alt=""></div><div class="cdxn">${disc?c.name:'？？？'}</div><div class="cdxc">${disc?'擊敗 ×'+n+(tame?' ⭐':''):'未發現'}</div></div>`; }).join('');
+  const gotRelics=RELICS.filter(([nm])=>relics[nm]).length;   // 寶物圖鑑:尋物委託尋回的寶物
+  const relicCells=RELICS.map(([nm,ic])=>{ const got=!!relics[nm];
+    return `<div class="cdx${got?'':' lock'}"><div class="cdxi" style="font-size:40px;display:flex;align-items:center;justify-content:center">${got?ic:'❓'}</div><div class="cdxn">${got?nm:'？？？'}</div><div class="cdxc">${got?'已尋回 ✓':'未尋回'}</div></div>`; }).join('');
+  openSheet('📖 圖鑑', `<div class="dtop" style="background:#eef6f8;border:1px solid #bce3ea;color:#0e7490">🏆 已收服 <b>${tamed}</b>/${list.length} · 已發現 <b>${found}</b><br><span style="font-size:12px;color:#6b8b93">打怪就登錄;同一隻擊敗 ${TAME} 次=收服 ⭐</span></div><div class="cdxgrid">${cells}</div>`
+    +`<div class="shophd">🏆 寶物圖鑑 · ${gotRelics}/${RELICS.length}</div><div class="ph" style="padding:0 2px 8px;font-size:12px;color:#6b8b93">完成村莊的「尋物」委託,把寶物帶回來就會收進這裡</div><div class="cdxgrid">${relicCells}</div>`); }
+/* ===== 角色狀態:把現有的造型/圖鑑/連續達標/守城紀錄集中顯示,等級由「總擊敗數」算(答對才打得贏 → 越練越高,守住學習第一)===== */
+function heroStat(){ const total=Object.values(codex).reduce((a,b)=>a+(+b||0),0);
+  let lvl=1, acc=0, need=6; while(total>=acc+need){ acc+=need; lvl++; need=4+lvl*2; }   // 每級所需遞增:L1→2:6、L2→3:8、L3→4:10…
+  return {total, lvl, into:total-acc, need}; }
+function heroTitle(lvl){ return lvl>=12?'傳說':lvl>=8?'英雄':lvl>=4?'勇者':'見習冒險者'; }
+function statCard(label,val){ return `<div class="cdx" style="padding:10px 6px"><div style="font-size:19px;font-weight:800;color:#0e7490">${val}</div><div style="font-size:11px;color:#6b8b93;margin-top:3px">${label}</div></div>`; }
+function openChar(){ const list=allCreatures();
+  const found=list.filter(c=>(codex[c.mon]||0)>0).length, tamed=list.filter(c=>(codex[c.mon]||0)>=TAME).length, gotRelics=RELICS.filter(([nm])=>relics[nm]).length;
+  const H=heroStat(), title=heroTitle(H.lvl), pct=Math.round(H.into/H.need*100);
+  const name = user? (user.email.split('@')[0]||'勇者').slice(0,16) : '小勇者(未登入)';
+  const skinName=(SKINS.find(([id])=>id===((shop&&shop.skin)||'paladin'))||['','聖騎士'])[1];
+  const mountName= (shop&&shop.mount)? ((MOUNTS.find(([id])=>id===shop.mount)||['','坐騎'])[1]) : '—';
+  const head=`<div style="display:flex;gap:14px;align-items:center;background:#eef6f8;border:1px solid #bce3ea;border-radius:14px;padding:12px">
+    <div style="width:78px;height:78px;flex:0 0 78px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center"><img src="${P('players',(shop&&shop.skin)||'paladin')}" style="width:72px;height:72px;object-fit:contain" alt=""></div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:16px;font-weight:800;color:#0e7490">${name} <span style="font-size:12px;background:#0e7490;color:#fff;padding:1px 8px;border-radius:10px;margin-left:4px">Lv.${H.lvl} ${title}</span></div>
+      <div style="font-size:12px;color:#6b8b93;margin:3px 0 6px">造型 ${skinName} · 坐騎 ${mountName}</div>
+      <div style="height:9px;background:#d5e7ec;border-radius:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#22d3ee,#0e7490)"></div></div>
+      <div style="font-size:11px;color:#6b8b93;margin-top:3px">距下一級還要擊敗 <b>${H.need-H.into}</b> 隻 (${H.into}/${H.need})</div>
+    </div></div>`;
+  const grid=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-top:12px">
+    ${statCard('🪵 木材',mats.wood)}${statCard('✦ 星塵',mats.star)}${statCard('🛡 防風罩',shields)}${statCard('🔥 連續達標',streakN+' 天')}
+    ${statCard('📖 圖鑑發現',found+'/'+list.length)}${statCard('⭐ 已收服',tamed+' 種')}${statCard('🏆 寶物',gotRelics+'/'+RELICS.length)}${statCard('🏰 守城最佳',siegeBest+' 波')}</div>`;
+  const note=`<div class="ph" style="font-size:12px;color:#6b8b93;padding-top:8px">等級來自你「總共擊敗的怪物數」(目前 ${H.total})——答對才打得贏,練越多等級越高。造型/坐騎到 🏪 商店換。</div>`;
+  const esc=s=>(s||'').replace(/</g,'&lt;');
+  // 班級榜:綽號/班級碼/公開開關由家長在 parent.html 設,遊戲端唯讀顯示(myProfile),只提供「看同學榜」
+  let board;
+  if(!user){ board=`<div class="shophd">🏅 班級榜</div><div class="ph" style="font-size:12px">登入後,家長在 <b>parent.html</b> 開啟「班級排行」就能跟同學互看角色卡。</div>`; }
+  else if(myProfile && myProfile.opted_in && myProfile.group_code){
+    board=`<div class="shophd">🏅 班級榜</div><div style="background:#eef6f8;border:1px solid #bce3ea;border-radius:12px;padding:10px;font-size:13px;color:#0e7490">
+      已加入 · 班級 <b>${esc(myProfile.group_code)}</b>${myProfile.nickname?' · 綽號 <b>'+esc(myProfile.nickname)+'</b>':''}
+      <div style="margin-top:9px"><button class="dLogin" style="background:#0e7490;width:100%" onclick="openBoard()">🏅 看同學榜</button></div>
+      <div style="font-size:11px;color:#6b8b93;margin-top:7px">綽號/班級碼/公開設定在 📒 家長後台(parent.html);遊戲只上傳你的 等級/答題數/圖鑑/連續達標。</div></div>`;
+  } else {
+    board=`<div class="shophd">🏅 班級榜</div><div class="ph" style="font-size:12px">還沒加入。請家長到 <b>parent.html</b> 設定綽號/班級碼並打開「加入班級排行」,就能跟同學互看角色卡與排行。</div>`;
+  }
+  openSheet('🧙 角色狀態', head+grid+note+board); }
+window.openBoard=async()=>{ if(!user||!sb){ toast('請先登入'); return; }
+  await loadMyProfile();
+  const grp = myProfile && myProfile.group_code;
+  if(!myProfile || !myProfile.opted_in || !grp){ openSheet('🏅 同學榜','<div class="ph">還沒加入班級榜。<br>請家長到 <b>parent.html</b> 設定班級碼並打開「加入班級排行」。</div>'); return; }
+  openSheet('🏅 同學榜 · 班級 '+grp,'<div class="ph">讀取中…</div>');
+  await upsertProfile();   // 先把自己最新數值送上去,才會出現在榜上
+  let rows=[];
+  try{ const {data,error}=await sb.rpc('get_class_board',{p_group:grp}); if(error) throw error; rows=data||[]; }
+  catch(e){ openSheet('🏅 同學榜','<div class="ph">班級榜功能還沒開通。<br>請先到 Supabase 的 SQL Editor 跑一次題庫側的 <b>sql/public-profile.sql</b>,再回來看。<br><br><span style="font-size:12px;color:#8a857b">('+((e&&e.message)||e)+')</span></div>'); return; }
+  if(!rows.length){ openSheet('🏅 同學榜 · 班級 '+grp,'<div class="ph">這個班級還沒有人公開角色卡。<br>把班級碼給同學,大家都請家長在 parent.html 打開「加入班級排行」就會出現。</div>'); return; }
+  const cells=rows.map((r,i)=>{ const me=(myProfile && r.nickname===myProfile.nickname);
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    return `<button class="gbtn" style="background:${me?'#0e7490':'#5f7a5a'};border-bottom:4px solid ${me?'#0a5560':'#3f5539'};color:#fff"><span class="gth" style="background:${me?'#0a5560':'#3f5539'};font-weight:800;font-size:15px">${medal}</span><span class="gmid"><span class="gname">${(r.nickname||'無名')}${me?' (你)':''}</span><span class="gsub">Lv.${r.level} · 答題 ${r.answered} · 圖鑑 ${r.dex_count} · 🔥${r.streak}</span></span></button>`; }).join('');
+  openSheet('🏅 同學榜 · 班級 '+grp, `<div class="ph" style="font-size:12px;padding:0 2px 8px">依 等級 → 答題數 排序 · 只顯示有公開的同學</div><div class="gsel">${cells}</div>`); }
+/* 商店:素材換造型/坐騎/技能次數(只賣外觀+便利,不賣跳過學習)*/
+const SKINS=[['paladin','聖騎士'],['knight','騎士'],['warrior_axe','斧戰士'],['barbarian','蠻族'],['assassin','刺客'],['ranger','遊俠'],['monk','武僧'],['martial_artist','武術家'],['mage','法師'],['sorcerer','術士'],['witch','女巫'],['druid','德魯伊'],['priest','祭司'],['healer','治療師'],['bard','吟遊詩人'],['alchemist','鍊金術士'],['engineer','工程師'],['gnome','侏儒'],['cat_warrior','貓劍士'],['pirate_dog','海盜狗']];
+const MOUNTS=[['unicorn','獨角獸'],['pegasus','天馬'],['alicorn','聖翼獸']];
+const PRICE={skin:5,mount:18};
+function shopBtn(kind,id,price){ const owned=(kind==='skin'?shop.skins:shop.mounts), equipped=(kind==='skin'?shop.skin:shop.mount)===id;
+  if(equipped) return '<button class="sbuy on" disabled>裝備中 ✓</button>';
+  if(owned.includes(id)) return `<button class="sbuy eq" onclick="equipItem('${kind}','${id}')">裝備</button>`;
+  return `<button class="sbuy" ${mats.star<price?'disabled':''} onclick="buyItem('${kind}','${id}',${price})">✦ ${price}</button>`; }
+function skillRow(k,nm,price){ const cur=(shop.skill[k]||0), base=k==='hint'?2:1, cap=3;
+  const btn=cur>=cap?'<button class="sbuy on" disabled>已滿</button>':`<button class="sbuy" ${mats.wood<price?'disabled':''} onclick="buySkill('${k}',${price})">🪵 ${price}</button>`;
+  return `<div class="drow"><div class="di"><div class="dn">${nm} · 每趟副本次數</div><div class="ds">每趟副本可用 ${base+cur} 次${cur?' (+'+cur+')':''}</div></div>${btn}</div>`; }
+function openShop(){
+  const skins=SKINS.map(([id,nm])=>`<div class="cdx"><div class="cdxi"><img src="${P('players',id)}" alt=""></div><div class="cdxn">${nm}</div>${shopBtn('skin',id,PRICE.skin)}</div>`).join('');
+  const mounts=MOUNTS.map(([id,nm])=>`<div class="cdx"><div class="cdxi"><img src="${P('mounts',id)}" alt=""></div><div class="cdxn">${nm}</div>${shopBtn('mount',id,PRICE.mount)}</div>`).join('');
+  openSheet('🏪 商店', `<div class="dtop" style="background:#eef6f8;border:1px solid #bce3ea;color:#0e7490">🪵 <b>${mats.wood}</b> 木材 · ✦ <b>${mats.star}</b> 星塵<br><span style="font-size:12px;color:#6b8b93">造型/坐騎用星塵、技能次數用木材。只賣外觀與便利,不賣「跳過學習」</span></div>`
+    +`<div class="shophd">🎭 英雄造型</div><div class="cdxgrid">${skins}</div>`
+    +`<div class="shophd">🐎 坐騎(村莊裡跟著你走)</div><div class="cdxgrid">${mounts}</div>`
+    +`<div class="shophd">🛡 防風罩(答錯自動擋一次,用完要補)</div><div class="drow"><div class="di"><div class="dn">🛡 防風罩 ×3</div><div class="ds">目前持有 ${shields} 個</div></div><button class="sbuy" ${mats.wood<12?'disabled':''} onclick="buyShields(3,12)">🪵 12</button></div>`
+    +`<div class="shophd">✨ 技能強化(永久)</div>`+skillRow('hint','💡 提示',20)+skillRow('reroll','🎲 重骰',25)); }
+window.buyShields=(n,price)=>{ if(mats.wood<price){ toast('木材不夠'); return; } mats.wood-=price; shop.shields=(shop.shields||0)+n; shields=shop.shields; renderMats(); renderShields(); saveState(); toast('🛡 防風罩 +'+n); openShop(); };
+/* 新手說明:進遊戲第一次自動跳,之後點村莊的 ❓ 隨時看 */
+function openHelp(){ localStorage.setItem('kg2_seen','1');
+  openSheet('❓ 這是什麼 · 怎麼玩', `<div class="ph" style="line-height:1.9">
+<b>這是你「學習聯絡簿」的遊戲版</b> —— 家長在網頁開放的單元,會變成這裡的副本;<b>答對題目 = 打敗怪物</b>。你答的每一題都會算回聯絡簿(月曆、進度同步)。<br><br>
+<b>👉 從哪開始?</b> 點上排 <b>⚔️ 副本</b> → 選科目 → 選單元 → 打怪。或走到村裡的 <b>🌀 傳送門</b>。<br><br>
+<b>各個地方在幹嘛:</b><br>
+⚔️ <b>副本</b> — 選單元打怪練習(＝網頁的今日/單元)<br>
+📜 <b>每日委託</b> — 每天的故事任務(救村民/討伐),完成給獎<br>
+🔴 <b>事件</b>(村中閃紅)— 無限守城 / BOSS進攻,大挑戰大獎<br>
+🩹 <b>錯題泡泡</b> — 有到期錯題才冒,複習你答錯的(＝網頁錯題本)<br>
+🏪 <b>商店</b> — 素材換造型/坐騎/防風罩/技能<br>
+📒 <b>聯絡簿</b> — 回網頁 / 家長後台<br>
+📖 <b>圖鑑</b> — 打怪收集魔物<br><br>
+🔥 <b>靈焰</b>是你的表現條,答錯少一朵;🛡 <b>防風罩</b>能自動擋一次答錯(用完到商店補)。<b>沒有血量、不會 game over</b>,放心答!<br><br>
+<span style="color:#8aa;font-size:12px">版本 ${BUILD}</span>
+</div>`); }
+window.buyItem=(kind,id,price)=>{ if(mats.star<price){ toast('星塵不夠了'); return; } mats.star-=price;
+  (kind==='skin'?shop.skins:shop.mounts).push(id);
+  if(kind==='skin'){ shop.skin=id; applySkin(); } else { shop.mount=id; applyMount(); }
+  renderMats(); saveState(); toast('入手並裝備!'); openShop(); };
+window.equipItem=(kind,id)=>{ if(kind==='skin'){ shop.skin=id; applySkin(); } else { shop.mount=id; applyMount(); } saveState(); openShop(); };
+window.buySkill=(k,price)=>{ if(mats.wood<price){ toast('木材不夠'); return; } mats.wood-=price; shop.skill[k]=(shop.skill[k]||0)+1; renderMats(); saveState(); toast('技能次數 +1!'); openShop(); };
+/* 傳送門:回聯絡簿 / 家長後台(改開放單元、課本版本、段考範圍都在後台)+ 顯示目前版本(唯讀)*/
+function openTower(){
+  const subjs=[...new Set((CATALOG.courses||[]).map(c=>c.subject))];
+  const verRows=subjs.map(subj=>{ const c=selectedCourse(subj); return `<div class="drow"><div class="di"><div class="dn">${subjMeta(subj).icon} ${subj}</div></div><div class="ds" style="font-weight:700;color:var(--card-ink)">${c?c.title:'—'}</div></div>`; }).join('');
+  openSheet('🌀 傳送門',
+    `<button class="gbtn" style="background:#2f56b8;border-bottom:4px solid #1b3576;color:#fff" onclick="location.href='index.html'"><span class="gth" style="background:#1b3576">🏠</span><span class="gmid"><span class="gname">回學習聯絡簿</span><span class="gsub">今日任務 · 月曆 · 錯題本</span></span><span class="ggo">前往 ›</span></button>`
+    +`<div style="height:9px"></div>`
+    +`<button class="gbtn" style="background:#b3742b;border-bottom:4px solid #7a4d16;color:#fff" onclick="location.href='parent.html'"><span class="gth" style="background:#7a4d16">🛠️</span><span class="gmid"><span class="gname">家長後台</span><span class="gsub">改開放單元 / 課本版本 / 段考範圍</span></span><span class="ggo">前往 ›</span></button>`
+    +`<div class="shophd">📘 目前課本版本(家長後台可改)</div>`+(verRows||'<div class="ph">版本資料載入中…</div>')); }
+$('mapBack').onclick=()=>{ curQuest=null; siege=null; showScreen('village'); if(user&&sb) loadDaily().then(renderReviewBubble); };
+
+/* init */
+$('village').style.backgroundImage="url('assets/bg/village.jpg')";
+$('map').style.backgroundImage="url('assets/bg/cave.jpg')"; $('battle').style.backgroundImage="url('assets/bg/cave.jpg')";
+$('vhero').style.left='50%'; $('vhero').style.top='80%';
+renderFlames(); renderMats(); renderPortals(); renderEventPortal(); applySkin(); applyMount(); showScreen('village'); boot(); window.addEventListener('resize',layout);
+if(!localStorage.getItem('kg2_seen')) setTimeout(openHelp,700);   // 第一次進遊戲自動跳說明
+</script>
+</body>
+</html>
