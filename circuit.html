@@ -210,8 +210,8 @@ next();
   function showHint(){if(typeof answered!=='undefined'&&answered)return;var t='';try{t=buildTip();}catch(e){}if(!t)return;box().innerHTML='💡 提示：'+t;}
   function eliminateOne(){showHint();}          /* 數字輸入題：先給弱提示（沿用 buildTip） */
   if(typeof next==='function'){var _n=next;next=function(){var h=document.getElementById('game-hint');if(h)h.remove();return _n.apply(this,arguments);};}
-  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();});
-  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint']},'*');}
+  window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='unit-command')return;if(d.cmd==='hint')showHint();if(d.cmd==='fifty')eliminateOne();if(d.cmd==='reroll'){if(typeof answered!=='undefined'&&answered)return;var h=document.getElementById('game-hint');if(h)h.remove();if(typeof nextProblem==='function')nextProblem();}});
+  if(window.parent!==window){window.parent.postMessage({type:'unit-ready',supports:['hint','reroll']},'*');}
 })();
 </script>
 <script>
